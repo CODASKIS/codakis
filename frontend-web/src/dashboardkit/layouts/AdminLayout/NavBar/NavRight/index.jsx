@@ -11,7 +11,6 @@ import FeatherIcon from 'feather-icons-react';
 // project imports
 import { useDashboardMenu } from 'contexts/DashboardMenuContext';
 import ConfirmModal from '@/components/common/ConfirmModal';
-import NotificationBell from '@/dashboard/components/NotificationBell';
 import {
   clearSession,
   getSession,
@@ -84,9 +83,6 @@ export default function NavRight() {
             </Form>
           </Dropdown.Menu>
         </Dropdown>
-      </ListGroup.Item>
-      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item">
-        <NotificationBell />
       </ListGroup.Item>
       <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item">
         <Dropdown className="drp-user codakis-user-dropdown" align="end">
