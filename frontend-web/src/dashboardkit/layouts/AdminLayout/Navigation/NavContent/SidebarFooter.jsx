@@ -3,15 +3,9 @@ import { useTranslation } from 'react-i18next';
 import FeatherIcon from 'feather-icons-react';
 import { canUpgradeToPremium, getSession, isPremiumUser } from '@/auth/authStore';
 import { getProfilePath } from '@/auth/roles';
+import { getUserAvatarUrl } from '@/lib/uiAvatars';
 
 const UPGRADE_HREF = '/themes#abonnement';
-
-function getInitials(name) {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
-}
 
 export function SidebarAccountFoot() {
   const { t } = useTranslation();
@@ -22,19 +16,22 @@ export function SidebarAccountFoot() {
   const profilePath = getProfilePath(session.role);
   const isPremium = isPremiumUser();
   const showOffer = canUpgradeToPremium();
-  const initials = getInitials(session.name);
+  const showPlan = session.role === 'candidat';
+  const avatarSrc = getUserAvatarUrl(session.name, 32, session.avatarUrl);
 
   return (
     <div className="codakis-sidebar-account">
       <Link to={profilePath} className="codakis-sidebar-account__profile">
         <span className="codakis-sidebar-account__avatar" aria-hidden>
-          {initials}
+          <img src={avatarSrc} alt="" width={32} height={32} />
         </span>
         <span className="codakis-sidebar-account__meta">
           <strong className="codakis-sidebar-account__name">{session.name}</strong>
-          <span className="codakis-sidebar-account__plan">
-            {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
-          </span>
+          {showPlan ? (
+            <span className="codakis-sidebar-account__plan">
+              {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
+            </span>
+          ) : null}
         </span>
       </Link>
 

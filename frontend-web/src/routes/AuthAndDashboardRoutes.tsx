@@ -6,9 +6,39 @@ import ForgotPasswordPage from "../auth/pages/ForgotPasswordPage";
 import DashboardKitLayout from "../dashboard/layout/DashboardKitLayout";
 import DashboardSalesHome from "../dashboard/pages/DashboardSalesHome";
 import DashboardPlaceholderPage from "../dashboard/pages/DashboardPlaceholderPage";
+import AdminSchoolsPage from "../dashboard/pages/admin/AdminSchoolsPage";
+import AdminBlogPage from "../dashboard/pages/admin/AdminBlogPage";
+import AdminBlogEditPage from "../dashboard/pages/admin/AdminBlogEditPage";
+import AdminPaymentsPage from "../dashboard/pages/admin/AdminPaymentsPage";
+import AdminUsersPage from "../dashboard/pages/admin/AdminUsersPage";
+import AdminUserDetailPage from "../dashboard/pages/admin/AdminUserDetailPage";
+import AdminSchoolDetailPage from "../dashboard/pages/admin/AdminSchoolDetailPage";
+import AdminSettingsPage from "../dashboard/pages/admin/AdminSettingsPage";
+import AdminProfilePage from "../dashboard/pages/admin/AdminProfilePage";
+import AdminContentPage from "../dashboard/pages/admin/AdminContentPage";
+import AdminLeconEditPage from "../dashboard/pages/admin/AdminLeconEditPage";
+import AdminQuestionEditPage from "../dashboard/pages/admin/AdminQuestionEditPage";
+import AdminQuizEditPage from "../dashboard/pages/admin/AdminQuizEditPage";
+import AdminExamEditPage from "../dashboard/pages/admin/AdminExamEditPage";
+import AdminThemeEditPage from "../dashboard/pages/admin/AdminThemeEditPage";
+import GerantProfilePage from "../dashboard/pages/gerant/GerantProfilePage";
+import GerantSettingsPage from "../dashboard/pages/gerant/GerantSettingsPage";
+import MoniteurProfilePage from "../dashboard/pages/moniteur/MoniteurProfilePage";
+import GerantEtablissementPage from "../dashboard/pages/gerant/GerantEtablissementPage";
+import GerantMoniteursPage from "../dashboard/pages/gerant/GerantMoniteursPage";
+import GerantInscriptionsPage from "../dashboard/pages/gerant/GerantInscriptionsPage";
+import GerantForfaitsPage from "../dashboard/pages/gerant/GerantForfaitsPage";
 import CandidatConsortPage from "../dashboard/pages/candidat/CandidatConsortPage";
 import CandidatProfilePage from "../dashboard/pages/candidat/CandidatProfilePage";
+import CandidatCoursesPage from "../dashboard/pages/candidat/CandidatCoursesPage";
+import CandidatLessonPage from "../dashboard/pages/candidat/CandidatLessonPage";
+import CandidatExamsPage from "../dashboard/pages/candidat/CandidatExamsPage";
+import CandidatTakeAssessmentPage from "../dashboard/pages/candidat/CandidatTakeAssessmentPage";
 import CandidatSchoolPage from "../dashboard/pages/candidat/CandidatSchoolPage";
+import CandidatSeancesPage from "../dashboard/pages/candidat/CandidatSeancesPage";
+import MoniteurPlanningPage from "../dashboard/pages/moniteur/MoniteurPlanningPage";
+import MoniteurElevesPage from "../dashboard/pages/moniteur/MoniteurElevesPage";
+import MoniteurCreneauxPage from "../dashboard/pages/moniteur/MoniteurCreneauxPage";
 import type { UserRole } from "../auth/types";
 
 function withAuth(role: UserRole, element: React.ReactNode) {
@@ -43,11 +73,27 @@ export function AdminRoutes() {
       element: withAuth("admin", <DashboardKitLayout role="admin" />),
       children: [
         { index: true, element: <DashboardSalesHome role="admin" /> },
-        { path: "auto-ecoles", element: <DashboardPlaceholderPage role="admin" /> },
-        { path: "contenu", element: <DashboardPlaceholderPage role="admin" /> },
-        { path: "paiements", element: <DashboardPlaceholderPage role="admin" /> },
-        { path: "utilisateurs", element: <DashboardPlaceholderPage role="admin" /> },
-        { path: "parametres", element: <DashboardPlaceholderPage role="admin" /> },
+        { path: "auto-ecoles", element: <AdminSchoolsPage /> },
+        { path: "auto-ecoles/:id", element: <AdminSchoolDetailPage /> },
+        { path: "contenu", element: <AdminContentPage /> },
+        { path: "contenu/lecons/nouveau", element: <AdminLeconEditPage /> },
+        { path: "contenu/lecons/:id/modifier", element: <AdminLeconEditPage /> },
+        { path: "contenu/questions/nouveau", element: <AdminQuestionEditPage /> },
+        { path: "contenu/questions/:id/modifier", element: <AdminQuestionEditPage /> },
+        { path: "contenu/quiz/nouveau", element: <AdminQuizEditPage /> },
+        { path: "contenu/quiz/:id/modifier", element: <AdminQuizEditPage /> },
+        { path: "contenu/examens/nouveau", element: <AdminExamEditPage /> },
+        { path: "contenu/examens/:id/modifier", element: <AdminExamEditPage /> },
+        { path: "contenu/themes/nouveau", element: <AdminThemeEditPage /> },
+        { path: "contenu/themes/:id/modifier", element: <AdminThemeEditPage /> },
+        { path: "blog", element: <AdminBlogPage /> },
+        { path: "blog/nouveau", element: <AdminBlogEditPage /> },
+        { path: "blog/:id/modifier", element: <AdminBlogEditPage /> },
+        { path: "paiements", element: <AdminPaymentsPage /> },
+        { path: "utilisateurs", element: <AdminUsersPage /> },
+        { path: "utilisateurs/:id", element: <AdminUserDetailPage /> },
+        { path: "profil", element: <AdminProfilePage /> },
+        { path: "parametres", element: <AdminSettingsPage /> },
       ],
     },
   ]);
@@ -60,8 +106,12 @@ export function CandidatRoutes() {
       element: withAuth("candidat", <DashboardKitLayout role="candidat" />),
       children: [
         { index: true, element: <DashboardSalesHome role="candidat" /> },
-        { path: "cours", element: <DashboardPlaceholderPage role="candidat" /> },
-        { path: "examens", element: <DashboardPlaceholderPage role="candidat" /> },
+        { path: "cours", element: <CandidatCoursesPage /> },
+        { path: "cours/lecon/:id", element: <CandidatLessonPage /> },
+        { path: "examens", element: <CandidatExamsPage /> },
+        { path: "examens/quiz/:id", element: <CandidatTakeAssessmentPage mode="quiz" /> },
+        { path: "examens/examen/:id", element: <CandidatTakeAssessmentPage mode="examen" /> },
+        { path: "seances", element: <CandidatSeancesPage /> },
         { path: "consort", element: <CandidatConsortPage /> },
         { path: "auto-ecole", element: <CandidatSchoolPage /> },
         { path: "profil", element: <CandidatProfilePage /> },
@@ -77,10 +127,10 @@ export function MoniteurRoutes() {
       element: withAuth("moniteur", <DashboardKitLayout role="moniteur" />),
       children: [
         { index: true, element: <DashboardSalesHome role="moniteur" /> },
-        { path: "eleves", element: <DashboardPlaceholderPage role="moniteur" /> },
-        { path: "planning", element: <DashboardPlaceholderPage role="moniteur" /> },
-        { path: "creneaux", element: <DashboardPlaceholderPage role="moniteur" /> },
-        { path: "profil", element: <DashboardPlaceholderPage role="moniteur" /> },
+        { path: "eleves", element: <MoniteurElevesPage /> },
+        { path: "planning", element: <MoniteurPlanningPage /> },
+        { path: "creneaux", element: <MoniteurCreneauxPage /> },
+        { path: "profil", element: <MoniteurProfilePage /> },
       ],
     },
   ]);
@@ -93,11 +143,13 @@ export function GerantRoutes() {
       element: withAuth("gerant", <DashboardKitLayout role="gerant" />),
       children: [
         { index: true, element: <DashboardSalesHome role="gerant" /> },
-        { path: "inscriptions", element: <DashboardPlaceholderPage role="gerant" /> },
-        { path: "forfaits", element: <DashboardPlaceholderPage role="gerant" /> },
-        { path: "moniteurs", element: <DashboardPlaceholderPage role="gerant" /> },
+        { path: "inscriptions", element: <GerantInscriptionsPage /> },
+        { path: "forfaits", element: <GerantForfaitsPage /> },
+        { path: "moniteurs", element: <GerantMoniteursPage /> },
         { path: "statistiques", element: <DashboardPlaceholderPage role="gerant" /> },
-        { path: "etablissement", element: <DashboardPlaceholderPage role="gerant" /> },
+        { path: "profil", element: <GerantProfilePage /> },
+        { path: "etablissement", element: <GerantEtablissementPage /> },
+        { path: "parametres", element: <GerantSettingsPage /> },
       ],
     },
   ]);

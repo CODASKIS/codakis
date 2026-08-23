@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { BrowserRouter as Router, Navigate, Routes, Route } from "react-router";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import CookieConsentBanner from "./components/common/CookieConsentBanner";
@@ -14,7 +15,9 @@ import {
 } from "./routes/AuthAndDashboardRoutes";
 
 export default function App() {
-  return (
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
+
+  const app = (
     <Router>
       <ScrollToTop />
       <RoutePageLoader />
@@ -39,4 +42,10 @@ export default function App() {
       <CookieConsentBanner />
     </Router>
   );
+
+  if (!googleClientId) {
+    return app;
+  }
+
+  return <GoogleOAuthProvider clientId={googleClientId}>{app}</GoogleOAuthProvider>;
 }

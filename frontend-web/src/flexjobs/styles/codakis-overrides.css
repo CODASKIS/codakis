@@ -957,13 +957,17 @@
 .fj-school-map-block {
   display: grid;
   gap: 0;
+  margin-bottom: 3.2rem;
+  isolation: isolate;
 }
 
 @media (min-width: 992px) {
   .fj-school-map-block {
     grid-template-columns: minmax(0, 1fr) 34rem;
-    grid-template-rows: auto;
+    grid-template-rows: 40rem;
     column-gap: 0;
+    align-items: start;
+    overflow: hidden;
   }
 }
 
@@ -978,7 +982,8 @@
     grid-column: 1;
     grid-row: 1;
     min-height: 40rem;
-    margin-right: -6rem;
+    height: 40rem;
+    margin-right: -4rem;
   }
 }
 
@@ -1008,8 +1013,14 @@
   .fj-school-map-block__panel {
     grid-column: 2;
     grid-row: 1;
-    align-self: stretch;
+    align-self: start;
+    height: 40rem;
+    max-height: 40rem;
+    min-height: 0;
     margin-top: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     box-shadow: 0 0.4rem 2rem rgba(0, 0, 0, 0.08);
   }
 }
@@ -1093,8 +1104,12 @@
 }
 
 .fj-school-packs {
-  margin-top: 3.2rem;
+  margin-top: 0;
   padding-top: 0.8rem;
+  width: 100%;
+  clear: both;
+  position: relative;
+  z-index: 1;
 }
 
 .fj-school-forfait-packs__head {
@@ -1506,6 +1521,46 @@
 
 .fj-school-pack-card.is-featured {
   background: var(--fj-pack-surface, var(--fj-surface-alt));
+}
+
+.fj-school-forfait-packs__flow {
+  margin: 0.8rem 0 0;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--fj-text-muted);
+}
+
+.fj-pack-drawer__flow-hint {
+  margin: 0 0 1.2rem;
+  padding: 1rem 1.2rem;
+  border-radius: 0.4rem;
+  background: #f0fdf4;
+  border: 0.1rem solid #bbf7d0;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: #166534;
+}
+
+.fj-pack-drawer__role-note {
+  margin: 0;
+  padding: 1rem 1.2rem;
+  border-radius: 0.4rem;
+  background: #fff7ed;
+  border: 0.1rem solid #fed7aa;
+  font-size: 1.35rem;
+  line-height: 1.5;
+  color: #9a3412;
+}
+
+.fj-root a.fj-pricing-dark__btn.fj-pricing-dark__btn--as-button,
+.fj-pricing-dark__btn.fj-pricing-dark__btn--as-button {
+  display: inline-flex;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  text-decoration: none;
 }
 
 .fj-school-pack-card__secondary {

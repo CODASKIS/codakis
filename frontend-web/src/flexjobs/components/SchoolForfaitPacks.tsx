@@ -1,8 +1,9 @@
 import { ArrowRight, Check, Info, Star } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
-import { AUTH_PATHS } from "../../constants/authPaths";
+import { isAuthenticatedForRole } from "../../auth/authStore";
+import { isCandidateEnrolled } from "../../auth/candidateEnrollment";
 import {
   DRIVING_HOUR_OPTIONS,
   formatForfaitPrice,
@@ -27,6 +28,8 @@ type SchoolForfaitPacksProps = {
   title?: string;
   subtitle?: string;
   className?: string;
+  /** Ouvre le tiroir du forfait après connexion / inscription (query ?buy=). */
+  initialBuyForfaitId?: string | null;
 };
 
 type PackCardProps = {
@@ -38,6 +41,7 @@ type PackCardProps = {
   codeMode: "salle" | "online";
   onCodeModeChange: (mode: "salle" | "online") => void;
   onViewDetails: () => void;
+  onBuyNow: () => void;
 };
 
 function PackCard({
@@ -49,16 +53,15 @@ function PackCard({
   codeMode,
   onCodeModeChange,
   onViewDetails,
+  onBuyNow,
 }: PackCardProps) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith("en") ? "en" : "fr";
   const showHours = type === "conduiteSeule" || type === "complet";
   const showCodeMode = type === "codeSeul";
   const featured = Boolean(forfait.featured);
-
-  const signupHref = school
-    ? `${AUTH_PATHS.register.candidat}?school=${encodeURIComponent(school.id)}`
-    : AUTH_PATHS.register.candidat;
+  const isCandidat = isAuthenticatedForRole("candidat");
+  const canPayNow = Boolean(school && isCandidat && !isCandidateEnrolled());
 
   return (
     <article
@@ -149,13 +152,24 @@ function PackCard({
       </p>
 
       <div className="fj-pricing-dark__footer fj-school-pack-card__footer">
-        <Link
-          to={signupHref}
-          className={`fj-pricing-dark__btn${featured ? " is-featured" : ""}`}
-        >
-          <span>{t("packs.signup")}</span>
-          <ArrowRight size={20} strokeWidth={1.5} className="fj-pricing-dark__btn-icon" aria-hidden />
-        </Link>
+        {school ? (
+          <button
+            type="button"
+            className={`fj-pricing-dark__btn fj-pricing-dark__btn--as-button${featured ? " is-featured" : ""}`}
+            onClick={canPayNow ? onBuyNow : onViewDetails}
+          >
+            <span>{canPayNow ? t("packs.buyForfait") : t("packs.chooseForfait")}</span>
+            <ArrowRight size={20} strokeWidth={1.5} className="fj-pricing-dark__btn-icon" aria-hidden />
+          </button>
+        ) : (
+          <Link
+            to="/auto-ecoles"
+            className={`fj-pricing-dark__btn${featured ? " is-featured" : ""}`}
+          >
+            <span>{t("packs.findSchool")}</span>
+            <ArrowRight size={20} strokeWidth={1.5} className="fj-pricing-dark__btn-icon" aria-hidden />
+          </Link>
+        )}
         <button type="button" className="fj-btn fj-btn--outline fj-btn--block fj-school-pack-card__secondary" onClick={onViewDetails}>
           {t("packs.viewContent")}
         </button>
@@ -169,15 +183,22 @@ type DetailSelection = {
   forfait: SchoolForfait;
 };
 
-export default function SchoolForfaitPacks({ school, title, subtitle, className }: SchoolForfaitPacksProps) {
+export default function SchoolForfaitPacks({
+  school,
+  title,
+  subtitle,
+  className,
+  initialBuyForfaitId,
+}: SchoolForfaitPacksProps) {
   const { t } = useTranslation();
+  const location = useLocation();
   const [selectedHours, setSelectedHours] = useState<DrivingHourOption>(20);
   const [codeMode, setCodeMode] = useState<"salle" | "online">("salle");
   const [detailPack, setDetailPack] = useState<DetailSelection | null>(null);
 
-  const signupHref = school
-    ? `${AUTH_PATHS.register.candidat}?school=${encodeURIComponent(school.id)}`
-    : AUTH_PATHS.register.candidat;
+  useEffect(() => {
+    setDetailPack(null);
+  }, [location.pathname, location.search]);
 
   const packs = useMemo(() => {
     return PACK_TYPES.map((type) => {
@@ -223,11 +244,22 @@ export default function SchoolForfaitPacks({ school, title, subtitle, className 
     if (updated) setDetailPack(updated);
   }, [packs, detailPack?.type]);
 
+  useEffect(() => {
+    if (!initialBuyForfaitId || detailPack) return;
+    const match = packs.find((pack) => pack.forfait.id === initialBuyForfaitId);
+    if (match) setDetailPack(match);
+  }, [initialBuyForfaitId, packs, detailPack]);
+
+  function handleBuyNow(type: SchoolForfaitType, forfait: SchoolForfait) {
+    setDetailPack({ type, forfait });
+  }
+
   return (
     <section className={`fj-school-forfait-packs${className ? ` ${className}` : ""}`} id="forfaits">
       <div className="fj-school-forfait-packs__head">
         <h2 className="fj-school-formations__title">{title ?? t("packs.title")}</h2>
         {subtitle ? <p className="fj-school-forfait-packs__subtitle">{subtitle}</p> : null}
+        {school ? <p className="fj-school-forfait-packs__flow">{t("packs.purchaseFlowHint")}</p> : null}
       </div>
 
       <div className="fj-pricing-dark">
@@ -243,6 +275,7 @@ export default function SchoolForfaitPacks({ school, title, subtitle, className 
               codeMode={codeMode}
               onCodeModeChange={setCodeMode}
               onViewDetails={() => setDetailPack({ type, forfait })}
+              onBuyNow={() => handleBuyNow(type, forfait)}
             />
           ))}
         </div>
@@ -257,7 +290,6 @@ export default function SchoolForfaitPacks({ school, title, subtitle, className 
           type={detailPack.type}
           forfait={detailPack.forfait}
           school={school}
-          signupHref={signupHref}
         />
       ) : null}
     </section>

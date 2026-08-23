@@ -1,0 +1,49 @@
+.codakis-quill-editor {
+  .ql-toolbar.ql-snow {
+    border-radius: 6px 6px 0 0;
+    border-color: #e5e5e5;
+    background: #fafafa;
+  }
+
+  .ql-container.ql-snow {
+    border-radius: 0 0 6px 6px;
+    border-color: #e5e5e5;
+    font-family: inherit;
+    font-size: 14px;
+  }
+
+  .ql-editor {
+    min-height: 240px;
+    line-height: 1.6;
+  }
+}
+
+.fj-blog-article__content {
+  h1,
+  h2,
+  h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  ul,
+  ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  blockquote {
+    border-left: 0.25rem solid var(--codakis-green, #1db96a);
+    padding-left: 1rem;
+    color: #555;
+    margin: 1rem 0;
+  }
+
+  a {
+    color: var(--codakis-green, #1db96a);
+  }
+}

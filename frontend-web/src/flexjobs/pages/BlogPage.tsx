@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
+import Loader from "../../components/common/Loader";
 import BlogCard, { BlogFeaturedCard } from "../components/BlogCard";
 import Container from "../components/Container";
 import SubNav from "../components/SubNav";
@@ -76,7 +77,7 @@ export default function BlogPage() {
           </div>
 
           {loading && posts.length === 0 ? (
-            <p className="text-center py-8 text-[1.6rem]">{t("blog.loading")}</p>
+            <Loader variant="inline" theme="flexjobs" message={t("blog.loading")} />
           ) : posts.length === 0 ? (
             <p className="text-center py-8 text-[1.6rem]">
               {error ? t("blog.error") : t("blog.empty")}

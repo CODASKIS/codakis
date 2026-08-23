@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
+import CodakisLoaderPanel from "@/components/common/CodakisLoaderPanel";
 import { beginPageLoad, isPageReady, subscribePageReady } from "@/lib/pageLoadReady";
 import { waitForPublicPageReady } from "@/lib/waitForDashboardContent";
-import { CODAKIS_LOGO_ICON } from "./BrandLogo";
 
 const MIN_VISIBLE_MS = 320;
 const MAX_WAIT_MS = 12000;
-const LOADER_LOGO_PX = 40;
 
 function isAdminShellPath(pathname: string): boolean {
   return (
@@ -79,25 +79,15 @@ export default function RoutePageLoader() {
 
   if (!visible) return null;
 
-  return (
+  return createPortal(
     <div
-      className={`fj-page-loader${adminShell ? " fj-page-loader--admin" : ""}`}
+      className={`codakis-loader-overlay${adminShell ? " codakis-loader-overlay--admin" : ""}`}
       role="status"
       aria-live="polite"
       aria-label={t("common.loadingPage")}
     >
-      <div className="fj-page-loader__panel">
-        <img
-          src={CODAKIS_LOGO_ICON}
-          alt=""
-          className="fj-page-loader__logo"
-          width={LOADER_LOGO_PX}
-          height={LOADER_LOGO_PX}
-          aria-hidden
-        />
-        <div className="fj-page-loader__spinner" aria-hidden />
-        <p className="fj-page-loader__text">{t("common.loading")}</p>
-      </div>
-    </div>
+      <CodakisLoaderPanel message={t("common.loading")} />
+    </div>,
+    document.body,
   );
 }

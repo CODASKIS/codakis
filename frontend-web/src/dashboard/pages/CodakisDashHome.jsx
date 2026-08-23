@@ -9,6 +9,7 @@ import { SalesCustomerSatisfactionChartData } from "@/dashboardkit/views/dashboa
 import { SalesAccountChartData } from "@/dashboardkit/views/dashboard/DashSales/chart/sales-account-chart";
 import { SalesSupportChartData } from "@/dashboardkit/views/dashboard/DashSales/chart/sales-support-chart";
 import { SalesSupportChartData1 } from "@/dashboardkit/views/dashboard/DashSales/chart/sales-support-chart1";
+import GerantDashboardMoniteurs from "../components/GerantDashboardMoniteurs";
 import { getRoleDashboardData } from "../data/codakisDashboardData";
 
 function ConsortPieChart({ labels }) {
@@ -76,6 +77,11 @@ export default function CodakisDashHome({ role }) {
 
   return (
     <Row className="codakis-dash-home">
+      {role === "gerant" ? (
+        <Col md={12}>
+          <GerantDashboardMoniteurs />
+        </Col>
+      ) : null}
       <Col md={12} xl={6}>
         <Card className="flat-card">
           <div className="row-table">

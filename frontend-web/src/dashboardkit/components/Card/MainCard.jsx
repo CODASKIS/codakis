@@ -99,27 +99,28 @@ export default function MainCard({ isOption, title, children, cardClass, optionC
     mainCardBodyClass = [...mainCardBodyClass, CardBodyClass];
   }
 
+  const cardBody = <Card.Body className={mainCardBodyClass.join(' ')}>{children}</Card.Body>;
+  const cardContent = isOption ? (
+    <Collapse in={!collapseCard}>
+      <div>{cardBody}</div>
+    </Collapse>
+  ) : (
+    cardBody
+  );
+
   return fullCard ? (
     <Card
       className={mainCardClass.join(' ')}
       style={{ position: 'fixed', top: 0, left: 0, right: 0, width: windowSize.width, height: windowSize.height }}
     >
       {cardHeader}
-      <Collapse in={!collapseCard}>
-        <div>
-          <Card.Body className={mainCardBodyClass.join(' ')}>{children}</Card.Body>
-        </div>
-      </Collapse>
+      {cardContent}
       {loader}
     </Card>
   ) : (
     <Card className={mainCardClass.join(' ')}>
       {cardHeader}
-      <Collapse in={!collapseCard}>
-        <div>
-          <Card.Body className={mainCardBodyClass.join(' ')}>{children}</Card.Body>
-        </div>
-      </Collapse>
+      {cardContent}
       {loader}
     </Card>
   );

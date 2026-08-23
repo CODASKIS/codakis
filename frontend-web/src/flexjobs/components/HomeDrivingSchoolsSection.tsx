@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -5,12 +6,24 @@ import {
   groupDrivingSchoolsByCity,
   MOCK_DRIVING_SCHOOLS,
 } from "../../data/mockDrivingSchools";
+import { fetchPublicSchools, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
+import type { DrivingSchool } from "../../data/mockDrivingSchools";
 import Button from "./Button";
 import Container from "./Container";
 
 export default function HomeDrivingSchoolsSection() {
   const { t } = useTranslation();
-  const cityGroups = groupDrivingSchoolsByCity(MOCK_DRIVING_SCHOOLS);
+  const [schools, setSchools] = useState<DrivingSchool[]>(MOCK_DRIVING_SCHOOLS);
+
+  useEffect(() => {
+    void fetchPublicSchools()
+      .then((items) => {
+        if (items.length > 0) setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)));
+      })
+      .catch(() => setSchools(MOCK_DRIVING_SCHOOLS));
+  }, []);
+
+  const cityGroups = useMemo(() => groupDrivingSchoolsByCity(schools), [schools]);
 
   return (
     <section className="fj-section fj-home-schools" aria-labelledby="home-schools-title">

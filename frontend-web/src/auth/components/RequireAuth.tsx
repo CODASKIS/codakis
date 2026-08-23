@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import type { ReactNode } from "react";
-import { getSession } from "../authStore";
+import { getAccessToken } from "../../lib/authApi";
+import { getSession, hydrateSessionFromApi } from "../authStore";
 import type { UserRole } from "../types";
 
 type RequireAuthProps = {
@@ -10,9 +12,43 @@ type RequireAuthProps = {
 
 export default function RequireAuth({ role, children }: RequireAuthProps) {
   const location = useLocation();
-  const session = getSession();
+  const [ready, setReady] = useState(false);
+  const [allowed, setAllowed] = useState(false);
 
-  if (!session || session.role !== role) {
+  useEffect(() => {
+    let cancelled = false;
+
+    void (async () => {
+      const token = getAccessToken();
+      if (!token) {
+        if (!cancelled) {
+          setAllowed(false);
+          setReady(true);
+        }
+        return;
+      }
+
+      let session = getSession();
+      if (!session || !session.id) {
+        session = (await hydrateSessionFromApi()) ?? null;
+      }
+
+      if (!cancelled) {
+        setAllowed(session?.role === role);
+        setReady(true);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [role]);
+
+  if (!ready) {
+    return null;
+  }
+
+  if (!allowed) {
     return <Navigate to="/connexion" replace state={{ from: location.pathname }} />;
   }
 

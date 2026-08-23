@@ -1,0 +1,82 @@
+from urllib.parse import quote_plus
+
+from pydantic import AliasChoices, Field, model_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+    postgres_user: str = Field(default="postgres", validation_alias=AliasChoices("POSTGRES_USER"))
+    postgres_password: str = Field(default="", validation_alias=AliasChoices("POSTGRES_PASSWORD"))
+    postgres_db: str = Field(default="codaski_db", validation_alias=AliasChoices("POSTGRES_DB"))
+    postgres_host: str = Field(default="localhost", validation_alias=AliasChoices("POSTGRES_HOST"))
+    postgres_port: int = Field(default=5432, validation_alias=AliasChoices("POSTGRES_PORT"))
+
+    database_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("DATABASE_URL"),
+    )
+    jwt_secret: str = Field(
+        default="dev-secret-change-me",
+        validation_alias=AliasChoices("JWT_SECRET", "SECRET_KEY"),
+    )
+    jwt_algorithm: str = Field(default="HS256", validation_alias=AliasChoices("JWT_ALGORITHM", "ALGORITHM"))
+    jwt_access_expire_minutes: int = 60
+    jwt_refresh_expire_days: int = 14
+
+    default_admin_email: str = "admin@codakis.cm"
+    default_admin_password: str = "Admin123!"
+    default_admin_prenom: str = "Admin"
+    default_admin_nom: str = "CODAKIS"
+
+    google_client_id: str = ""
+
+    email_mode: str = "console"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = "noreply@codakis.cm"
+
+    otp_expire_minutes: int = 15
+    otp_length: int = 6
+
+    cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
+    frontend_url: str = "http://localhost:5173"
+    app_env: str = "development"
+    cms_upload_dir: str = Field(default="uploads/cms", validation_alias=AliasChoices("CMS_UPLOAD_DIR"))
+    cms_max_upload_bytes: int = Field(default=5_242_880, validation_alias=AliasChoices("CMS_MAX_UPLOAD_BYTES"))
+
+    @staticmethod
+    def _url_has_password(url: str) -> bool:
+        if not url or url.startswith("sqlite"):
+            return True
+        try:
+            credentials = url.split("://", 1)[1].split("@", 1)[0]
+        except IndexError:
+            return False
+        return ":" in credentials
+
+    @model_validator(mode="after")
+    def resolve_database_url(self) -> "Settings":
+        if self.database_url.startswith("sqlite"):
+            return self
+
+        if self.database_url and self._url_has_password(self.database_url):
+            return self
+
+        user = quote_plus(self.postgres_user)
+        password = quote_plus(self.postgres_password) if self.postgres_password else ""
+        auth = f"{user}:{password}@" if password else f"{user}@"
+        self.database_url = (
+            f"postgresql+psycopg://{auth}{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
+        )
+        return self
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+
+settings = Settings()

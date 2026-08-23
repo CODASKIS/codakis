@@ -2,7 +2,8 @@ import { Search } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { resolveCmsMediaUrl, type BlogPostListItem } from "../../lib/cms-api";
+import type { BlogPostListItem } from "../../lib/cms-api";
+import CmsCoverImage from "../../components/common/CmsCoverImage";
 
 type BlogArticleAsideProps = {
   relatedPosts: BlogPostListItem[];
@@ -65,12 +66,11 @@ export default function BlogArticleAside({ relatedPosts }: BlogArticleAsideProps
           <h2>{t("blogArticle.relatedTitle")}</h2>
           <ul>
             {relatedPosts.map((post) => {
-              const cover = resolveCmsMediaUrl(post.cover_image_url);
               const dateLabel = formatDate(post.published_at, dateLocale);
               return (
                 <li key={post.slug}>
                   <Link to={`/blog/${post.slug}`} className="fj-blog-aside-related__item">
-                    <img src={cover} alt="" loading="lazy" />
+                    <CmsCoverImage url={post.cover_image_url} loading="lazy" />
                     <div>
                       <span className="fj-blog-aside-related__title">{post.title}</span>
                       {dateLabel ? (

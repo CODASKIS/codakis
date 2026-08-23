@@ -10,9 +10,6 @@ import navitemcollapse from 'menu-items-collapse';
 import { navigationItems, navigationCollapseItems } from '../../../menu/runtimeMenu';
 import * as actionType from 'store/actions';
 
-// assets
-import avatar2 from 'assets/images/user/avatar-2.jpg';
-
 // -----------------------|| NAVIGATION ||-----------------------//
 
 export default function Navigation() {

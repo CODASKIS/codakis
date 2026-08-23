@@ -1,0 +1,4 @@
+ALTER TABLE auto_ecoles ADD COLUMN IF NOT EXISTS quartier TEXT;
+ALTER TABLE auto_ecoles ADD COLUMN IF NOT EXISTS description_longue TEXT;
+ALTER TABLE auto_ecoles ADD COLUMN IF NOT EXISTS access_info TEXT;
+ALTER TABLE auto_ecoles ADD COLUMN IF NOT EXISTS horaires JSONB;

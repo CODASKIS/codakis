@@ -1,6 +1,6 @@
 /* Typographie vitrine — Nunito + échelle html 62.5% → 1rem = 10px */
 
-html {
+html:has(.fj-root) {
   font-size: 62.5%;
 }
 

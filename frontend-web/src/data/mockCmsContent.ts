@@ -29,7 +29,7 @@ export const MOCK_BLOG_POSTS: BlogPostListItem[] = [
     slug: "paiement-mobile-money-permis",
     title: "Payer son forfait permis avec Mobile Money",
     excerpt: "Orange Money et MTN MoMo : étapes sécurisées pour acheter un forfait conduite sur CODAKIS.",
-    cover_image_url: "https://images.unsplash.com/photo-1563013544-824ae1b70498?auto=format&fit=crop&w=800&q=80",
+    cover_image_url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80",
     author_name: "Équipe CODAKIS",
     published_at: "2026-01-22T11:00:00Z",
   },

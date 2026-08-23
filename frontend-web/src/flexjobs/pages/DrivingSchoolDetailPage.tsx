@@ -1,11 +1,11 @@
+import { useEffect, useState } from "react";
 import { Car, Clock, MapPin, Phone, TriangleAlert } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
-import {
-  buildSchoolMapEmbedUrl,
-  MOCK_DRIVING_SCHOOLS,
-} from "../../data/mockDrivingSchools";
+import { buildSchoolMapEmbedUrl, MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
+import { fetchPublicSchool, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
+import type { DrivingSchool } from "../../data/mockDrivingSchools";
 import Container from "../components/Container";
 import DrivingSchoolLogo from "../components/DrivingSchoolLogo";
 import DrivingSchoolMeta from "../components/DrivingSchoolMeta";
@@ -18,10 +18,31 @@ const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const;
 
 export default function DrivingSchoolDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const buyForfaitId = searchParams.get("buy");
   const { t, i18n } = useTranslation();
   const subNavItems = useSecondaryNavItems();
   const lang = i18n.language.startsWith("en") ? "en" : "fr";
-  const school = MOCK_DRIVING_SCHOOLS.find((item) => item.id === id);
+  const [school, setSchool] = useState<DrivingSchool | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    setLoading(true);
+    void fetchPublicSchool(id)
+      .then((detail) => setSchool(mapPublicSchoolToDrivingSchool(detail, detail.forfaits)))
+      .catch(() => setSchool(MOCK_DRIVING_SCHOOLS.find((item) => item.id === id) ?? null))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return (
+      <>
+        <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
+        <Container><p className="fj-tech-empty">{t("common.loading")}</p></Container>
+      </>
+    );
+  }
 
   if (!school) {
     return (
@@ -126,6 +147,7 @@ export default function DrivingSchoolDetailPage() {
             title={t("schoolDetail.formationsTitle", { name: schoolTitle })}
             subtitle={t("packs.subtitleSchool")}
             className="fj-school-packs"
+            initialBuyForfaitId={buyForfaitId}
           />
         </Container>
 

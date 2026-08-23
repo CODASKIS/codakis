@@ -28,6 +28,10 @@
         font-family: Nunito, system-ui, sans-serif;
       }
 
+      html {
+        font-size: 16px;
+      }
+
       .codakis-boot {
         display: flex;
         min-height: 100vh;
@@ -35,20 +39,27 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.2rem;
-        padding: 2rem;
+        gap: 12px;
+        padding: 32px;
       }
 
       .codakis-boot__logo {
-        width: 5.6rem;
-        height: 5.6rem;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        flex-shrink: 0;
         object-fit: contain;
       }
 
       .codakis-boot__spinner {
-        width: 2.8rem;
-        height: 2.8rem;
-        border: 0.25rem solid #dcfce7;
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+        min-height: 32px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+        border: 3px solid #dcfce7;
         border-top-color: #00a859;
         border-radius: 50%;
         animation: codakis-spin 0.8s linear infinite;
@@ -56,7 +67,7 @@
 
       .codakis-boot__text {
         margin: 0;
-        font-size: 1.4rem;
+        font-size: 14px;
         font-weight: 600;
         color: #64748b;
       }
@@ -81,8 +92,8 @@
           class="codakis-boot__logo"
           src="/images/logo-simple.png"
           alt=""
-          width="56"
-          height="56"
+          width="40"
+          height="40"
         />
         <div class="codakis-boot__spinner" aria-hidden="true"></div>
         <p class="codakis-boot__text">Chargement…</p>

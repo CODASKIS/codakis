@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useNavigate } from "react-router";
 import { Menu, LogOut, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import ConfirmModal from "../../components/common/ConfirmModal";
 import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession } from "../../auth/authStore";
 import { ROLE_CONFIG } from "../../auth/roles";
@@ -16,11 +17,13 @@ export default function DashboardLayout({ role }: DashboardLayoutProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const session = getSession();
   const navGroups = getDashboardNav(role);
 
-  function handleLogout() {
+  function performLogout() {
     clearSession();
+    setShowLogoutConfirm(false);
     navigate(ROLE_CONFIG[role].loginPath, { replace: true });
   }
 
@@ -96,12 +99,22 @@ export default function DashboardLayout({ role }: DashboardLayoutProps) {
             <p className="codakis-dash__welcome">
               {t("dashboard.welcome", { name: session?.name ?? t("dashboard.user") })}
             </p>
-            <button type="button" className="codakis-dash__logout" onClick={handleLogout}>
+            <button type="button" className="codakis-dash__logout" onClick={() => setShowLogoutConfirm(true)}>
               <LogOut size={16} aria-hidden />
               {t("dashboard.logout")}
             </button>
           </div>
         </header>
+
+        <ConfirmModal
+          show={showLogoutConfirm}
+          title={t("dashboard.logoutConfirmTitle")}
+          message={t("dashboard.logoutConfirmMessage")}
+          variant="primary"
+          confirmLabel={t("dashboard.logout")}
+          onCancel={() => setShowLogoutConfirm(false)}
+          onConfirm={performLogout}
+        />
 
         <div className="codakis-dash__content">
           <Outlet />

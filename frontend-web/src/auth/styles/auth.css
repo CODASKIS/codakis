@@ -1,6 +1,15 @@
-/* Auth — split layout (LimeSurvey-inspired, CODAKIS theme) */
+/* Auth — split layout (LimeSurvey-inspired, CODAKIS theme)
+   Même échelle que la vitrine : 1rem = 10px */
+
+html:has(.codakis-auth) {
+  font-size: 62.5%;
+}
 
 .codakis-auth {
+  font-family: Nunito, "Open Sans", system-ui, sans-serif;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  color: #3e3d3f;
   display: grid;
   min-height: 100vh;
   min-height: 100dvh;
@@ -159,8 +168,8 @@
 
 @media (max-width: 991px) {
   .codakis-auth__brand {
-    min-height: 14rem;
-    max-height: 20rem;
+    min-height: 11rem;
+    max-height: 14rem;
     flex-shrink: 0;
     padding: 1.6rem;
   }
@@ -383,6 +392,23 @@
 
 .codakis-auth-box__action:hover {
   background: var(--fj-cta-hover, #158a4e);
+}
+
+.codakis-auth-google-wrap {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 0.4rem;
+}
+
+.codakis-auth-google-wrap > div {
+  width: 100% !important;
+  max-width: 100%;
+}
+
+.codakis-auth-google-wrap iframe {
+  width: 100% !important;
+  max-width: 100%;
 }
 
 /* Google OAuth button */

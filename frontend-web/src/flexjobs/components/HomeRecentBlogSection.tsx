@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import Button from "./Button";
+import Loader from "../../components/common/Loader";
 import BlogRecentCard from "./BlogRecentCard";
 import Container from "./Container";
 import { useBlogPosts } from "../hooks/useCmsData";
@@ -33,7 +34,7 @@ export default function HomeRecentBlogSection() {
         </div>
 
         {loading && recentPosts.length === 0 ? (
-          <p className="fj-home-blog__status">{t("home.blogLoading")}</p>
+          <Loader variant="inline" theme="flexjobs" message={t("home.blogLoading")} />
         ) : error && recentPosts.length === 0 ? (
           <p className="fj-home-blog__status">{t("home.blogError")}</p>
         ) : (

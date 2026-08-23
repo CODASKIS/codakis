@@ -1,6 +1,8 @@
 import { Link, useNavigate } from 'react-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListGroup } from 'react-bootstrap';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import {
   clearSession,
   getSession,
@@ -15,16 +17,17 @@ const MOBILE_MAX_WIDTH = 1024;
 export default function NavLeft() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { width } = useWindowSize();
   const session = getSession();
   const profilePath = session ? getProfilePath(session.role) : '/';
   const enrollment = session?.role === 'candidat' ? getCandidateEnrollment() : null;
   const enrolled = session?.role === 'candidat' && isCandidateEnrolled();
 
-  function handleLogout(event) {
-    event.preventDefault();
+  function performLogout() {
     const role = session?.role;
     clearSession();
+    setShowLogoutConfirm(false);
     navigate(role ? ROLE_CONFIG[role].loginPath : '/connexion', { replace: true });
   }
 
@@ -76,11 +79,21 @@ export default function NavLeft() {
       </ListGroup.Item>
 
       <ListGroup.Item as="li" bsPrefix=" ">
-        <Link to="#" className="codakis-mob-nav__link codakis-mob-nav__link--muted" onClick={handleLogout}>
+        <Link to="#" className="codakis-mob-nav__link codakis-mob-nav__link--muted" onClick={(event) => { event.preventDefault(); setShowLogoutConfirm(true); }}>
           <i className="material-icons-two-tone">logout</i>
           <span>{t('dashboard.logout')}</span>
         </Link>
       </ListGroup.Item>
+
+      <ConfirmModal
+        show={showLogoutConfirm}
+        title={t('dashboard.logoutConfirmTitle')}
+        message={t('dashboard.logoutConfirmMessage')}
+        variant="primary"
+        confirmLabel={t('dashboard.logout')}
+        onCancel={() => setShowLogoutConfirm(false)}
+        onConfirm={performLogout}
+      />
     </ListGroup>
   );
 }

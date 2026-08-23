@@ -54,14 +54,25 @@ export function getRoleFromPath(pathname: string): UserRole | null {
 export function getProfilePath(role: UserRole): string {
   switch (role) {
     case "admin":
-      return "/admin/parametres";
+      return "/admin/profil";
     case "candidat":
       return "/espace/candidat/profil";
     case "moniteur":
       return "/espace/moniteur/profil";
     case "gerant":
-      return "/espace/gerant/etablissement";
+      return "/espace/gerant/profil";
     default:
       return "/";
+  }
+}
+
+export function getSettingsPath(role: UserRole): string {
+  switch (role) {
+    case "admin":
+      return "/admin/parametres";
+    case "gerant":
+      return "/espace/gerant/parametres";
+    default:
+      return getProfilePath(role);
   }
 }

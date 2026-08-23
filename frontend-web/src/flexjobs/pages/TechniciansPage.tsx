@@ -1,9 +1,15 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { resolveSearchQueryLabel, normalizeThemeCode } from "../../i18n/themeLabels";
-import { filterDrivingSchools, MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
+import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
+import {
+  fetchPublicSchools,
+  filterPublicSchools,
+  mapPublicSchoolToDrivingSchool,
+} from "../../lib/publicSchoolsApi";
+import type { DrivingSchool } from "../../data/mockDrivingSchools";
 import Container from "../components/Container";
 import DrivingSchoolCard from "../components/DrivingSchoolCard";
 import HeaderSearch from "../components/HeaderSearch";
@@ -17,14 +23,54 @@ export default function TechniciansPage() {
   const { t } = useTranslation();
   const subNavItems = useSecondaryNavItems();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [schools, setSchools] = useState<DrivingSchool[]>(MOCK_DRIVING_SCHOOLS);
   const query = searchParams.get("q") ?? "";
   const city = searchParams.get("ville") ?? "";
   const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
 
-  const results = useMemo(
-    () => filterDrivingSchools(MOCK_DRIVING_SCHOOLS, query, city),
-    [query, city],
-  );
+  useEffect(() => {
+    void fetchPublicSchools()
+      .then((items) => {
+        if (items.length > 0) {
+          setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)));
+        }
+      })
+      .catch(() => {
+        setSchools(MOCK_DRIVING_SCHOOLS);
+      });
+  }, []);
+
+  const results = useMemo(() => {
+    if (schools === MOCK_DRIVING_SCHOOLS) {
+      const q = query.trim().toLowerCase();
+      const c = city.trim().toLowerCase();
+      return schools.filter((item) => {
+        if (c && !item.city.toLowerCase().includes(c)) return false;
+        if (!q) return true;
+        return `${item.name} ${item.city} ${item.address}`.toLowerCase().includes(q);
+      });
+    }
+    const apiItems = schools.map((s) => ({
+      id: s.id,
+      name: s.name,
+      city: s.city,
+      district: s.district,
+      address: s.address,
+      phone: s.phone,
+      logo_url: s.logoUrl ?? null,
+      description: s.description.fr,
+      long_description: s.longDescription.fr,
+      access_info: s.accessInfo.fr,
+      site_web: null,
+      latitude: s.latitude,
+      longitude: s.longitude,
+      country_code: "CM",
+      price_from: s.priceFrom,
+      certified_since: s.certifiedSince,
+      hours: s.hours,
+    }));
+    return filterPublicSchools(apiItems, query, city).map((item) => mapPublicSchoolToDrivingSchool(item));
+  }, [schools, query, city]);
 
   const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -60,59 +106,34 @@ export default function TechniciansPage() {
       ? themeCode
         ? t("schools.headingTheme", { theme: displayQuery })
         : t("schools.headingQuery", { query: displayQuery })
-      : t("schools.heading");
+      : t("schools.headingAll");
 
   return (
     <>
       <PageMeta title={t("schools.metaTitle")} description={t("schools.metaDescription")} />
       <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
+      <HeaderSearch defaultKeyword={query} defaultLocation={city} />
 
-      <section className="fj-section fj-tech-search">
-        <Container>
-          <div className="fj-tech-search__intro">
-            <h1>{heading}</h1>
-            <p>{t("schools.intro")}</p>
+      <Container>
+        <h1 className="fj-page-title">{heading}</h1>
+        <p className="fj-page-lead">{t("schools.lead")}</p>
+
+        {paginatedResults.length === 0 ? (
+          <p className="fj-tech-empty">{t("schools.empty")}</p>
+        ) : (
+          <div className="fj-job-list">
+            {paginatedResults.map((school) => (
+              <DrivingSchoolCard key={school.id} school={school} />
+            ))}
           </div>
+        )}
 
-          <div className="mb-8">
-            <HeaderSearch defaultKeyword={query} defaultLocation={city} />
-          </div>
+        <Pagination page={currentPage} pageSize={PAGE_SIZE} total={results.length} onPageChange={handlePageChange} />
 
-          <div className="fj-tech-search-main">
-            <div className="fj-tech-search-meta">
-              <p>{t("schools.count", { count: results.length })}</p>
-            </div>
-
-            {results.length === 0 ? (
-              <div className="fj-tech-empty fj-tech-empty--box">
-                <p>{t("schools.empty")}</p>
-                <Link to="/auto-ecoles" className="fj-btn fj-btn--outline">
-                  {t("schools.seeAll")}
-                </Link>
-              </div>
-            ) : (
-              <>
-                <div className="fj-job-list">
-                  {paginatedResults.map((school, index) => (
-                    <DrivingSchoolCard
-                      key={school.id}
-                      school={school}
-                      isNew={(currentPage - 1) * PAGE_SIZE + index < 3}
-                    />
-                  ))}
-                </div>
-
-                <Pagination
-                  page={currentPage}
-                  pageSize={PAGE_SIZE}
-                  total={results.length}
-                  onPageChange={handlePageChange}
-                />
-              </>
-            )}
-          </div>
-        </Container>
-      </section>
+        <p className="mt-4">
+          <Link to="/" className="fj-link-muted">{t("schools.backHome")}</Link>
+        </p>
+      </Container>
     </>
   );
 }

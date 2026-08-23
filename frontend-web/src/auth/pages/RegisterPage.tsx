@@ -1,8 +1,9 @@
-import { FormEvent, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { FormEvent, useMemo, useState } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
+import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
 import { supportedLanguages } from "../../i18n";
 import {
   AuthDivider,
@@ -11,12 +12,19 @@ import {
   AuthInputBox,
   AuthPasswordInput,
   AuthSelect,
-  GoogleAuthButton,
 } from "../components/AuthFormControls";
+import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSignInButton";
 import AuthSplitLayout from "../components/AuthSplitLayout";
-import { getPostLoginPath, isAuthenticatedForRole, loginWithGoogle, register } from "../authStore";
+import {
+  AuthApiError,
+  isAuthenticatedForRole,
+  loginWithGoogle,
+  registerCandidatAccount,
+  resolveAuthRedirect,
+} from "../authStore";
 import { ROLE_CONFIG } from "../roles";
 import { AUTH_PATHS } from "../../constants/authPaths";
+import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
 
 type RegisterPageProps = {
   role: "candidat";
@@ -25,7 +33,14 @@ type RegisterPageProps = {
 export default function RegisterPage({ role }: RegisterPageProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const config = ROLE_CONFIG[role];
+  const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
+  const purchaseSchool = useMemo(
+    () => (purchaseIntent ? MOCK_DRIVING_SCHOOLS.find((s) => s.id === purchaseIntent.schoolId) : null),
+    [purchaseIntent],
+  );
+
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -34,9 +49,10 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [country, setCountry] = useState("cm");
   const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (isAuthenticatedForRole(role)) {
-    return <Navigate to={getPostLoginPath(role)} replace />;
+    return <Navigate to={resolveAuthRedirect(role)} replace />;
   }
 
   function applyLanguage() {
@@ -45,13 +61,26 @@ export default function RegisterPage({ role }: RegisterPageProps) {
     }
   }
 
-  function handleGoogleSignup() {
-    applyLanguage();
-    const session = loginWithGoogle();
-    navigate(getPostLoginPath(session.role), { replace: true });
+  function finishAuth() {
+    if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+    navigate(resolveAuthRedirect(role), { replace: true });
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleGoogleSignup(idToken: string) {
+    setError("");
+    setLoading(true);
+    applyLanguage();
+    try {
+      await loginWithGoogle(idToken);
+      finishAuth();
+    } catch (err) {
+      setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
 
@@ -61,17 +90,30 @@ export default function RegisterPage({ role }: RegisterPageProps) {
     }
 
     applyLanguage();
-
-    register(role, {
-      fullName: fullName.trim(),
-      username: username.trim(),
-      password,
-      phone: phone.trim() || undefined,
-      city: city.trim() || undefined,
-      country,
-    });
-    navigate(getPostLoginPath(role), { replace: true });
+    setLoading(true);
+    try {
+      await registerCandidatAccount(
+        {
+          fullName: fullName.trim(),
+          username: username.trim(),
+          password,
+          phone: phone.trim() || undefined,
+          city: city.trim() || undefined,
+          country,
+        },
+        language.startsWith("en") ? "en" : "fr",
+      );
+      finishAuth();
+    } catch (err) {
+      setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const loginHref = purchaseIntent
+    ? `${AUTH_PATHS.login}?${searchParams.toString()}`
+    : config.loginPath;
 
   return (
     <>
@@ -82,12 +124,26 @@ export default function RegisterPage({ role }: RegisterPageProps) {
       <AuthSplitLayout backHref={AUTH_PATHS.login} backLabel={t("auth.backToLogin")}>
         <div className="codakis-auth__panel codakis-auth__panel--wide codakis-auth__panel--register">
           <h1 className="codakis-auth__title">{t("auth.register.title")}</h1>
-          <p className="codakis-auth__subtitle">{t(`auth.roles.${role}.registerHint`)}</p>
+          <p className="codakis-auth__subtitle">
+            {purchaseSchool
+              ? t("auth.register.purchaseHint", { school: purchaseSchool.name })
+              : t(`auth.roles.${role}.registerHint`)}
+          </p>
 
-          <GoogleAuthButton label={t("auth.google.signUp")} onClick={handleGoogleSignup} />
-          <AuthDivider label={t("auth.orDivider")} />
+          <p className="codakis-auth-form__hint">{t("auth.register.freeAccountHint")}</p>
 
-          <form className="codakis-auth-form" onSubmit={handleSubmit} noValidate>
+          {isGoogleAuthEnabled() ? (
+            <>
+              <GoogleSignInButton
+                label={t("auth.google.signUp")}
+                onSuccess={(token) => void handleGoogleSignup(token)}
+                onError={() => setError(t("auth.errors.google"))}
+              />
+              <AuthDivider label={t("auth.orDivider")} />
+            </>
+          ) : null}
+
+          <form className="codakis-auth-form" onSubmit={(event) => void handleSubmit(event)} noValidate>
             <AuthField label={t("auth.fields.fullName")} htmlFor="fullName">
               <AuthInputBox>
                 <AuthInput
@@ -105,8 +161,8 @@ export default function RegisterPage({ role }: RegisterPageProps) {
               <AuthInputBox>
                 <AuthInput
                   id="register-username"
-                  type="text"
-                  autoComplete="username"
+                  type="email"
+                  autoComplete="email"
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
                   placeholder={t("auth.fields.emailPlaceholder")}
@@ -179,14 +235,14 @@ export default function RegisterPage({ role }: RegisterPageProps) {
 
             {error ? <p className="codakis-auth-form__error">{error}</p> : null}
 
-            <button type="submit" className="codakis-auth-form__submit">
-              {t("auth.register.submit")}
+            <button type="submit" className="codakis-auth-form__submit" disabled={loading}>
+              {loading ? t("common.loading") : purchaseSchool ? t("auth.register.submitAndContinue") : t("auth.register.submit")}
             </button>
           </form>
 
           <p className="codakis-auth-form__footer">
             {t("auth.register.hasAccount")}{" "}
-            <Link to={config.loginPath}>{t("auth.register.loginLink")}</Link>
+            <Link to={loginHref}>{t("auth.register.loginLink")}</Link>
           </p>
         </div>
       </AuthSplitLayout>

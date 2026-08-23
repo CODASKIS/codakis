@@ -5,7 +5,7 @@ import PageMeta from "../../components/common/PageMeta";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
 import { supportedLanguages } from "../../i18n";
-import { getPostLoginPath, isAuthenticatedForRole, register } from "../../auth/authStore";
+import { AuthApiError, getPostLoginPath, isAuthenticatedForRole, registerDrivingSchool } from "../../auth/authStore";
 import Container from "../components/Container";
 import PageBreadcrumb from "../components/PageBreadcrumb";
 import SubNav from "../components/SubNav";
@@ -85,6 +85,8 @@ export default function SchoolRegisterPage() {
   const [language, setLanguage] = useState(i18n.language);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (isAuthenticatedForRole("gerant")) {
     return <Navigate to={getPostLoginPath("gerant")} replace />;
@@ -99,6 +101,7 @@ export default function SchoolRegisterPage() {
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
+    setSuccess("");
 
     if (
       !schoolName.trim() ||
@@ -125,27 +128,39 @@ export default function SchoolRegisterPage() {
 
     applyLanguage();
 
-    register("gerant", {
-      fullName: fullName.trim(),
-      username: email.trim(),
-      password,
-      phone: phone.trim(),
-      city: city.trim(),
-      country,
-      schoolName: schoolName.trim(),
-      schoolAddress: schoolAddress.trim() || undefined,
-      mintRegistration: mintRegistration.trim() || undefined,
-      legalName: legalName.trim() || undefined,
-      rccm: rccm.trim() || undefined,
-      website: website.trim() || undefined,
-      description: description.trim() || undefined,
-      managerRole: managerRole.trim() || undefined,
-      instructorCount: instructorCount.trim() || undefined,
-      vehicleCount: vehicleCount.trim() || undefined,
-      yearsOperating: yearsOperating.trim() || undefined,
-    });
-
-    navigate(getPostLoginPath("gerant"), { replace: true });
+    void (async () => {
+      setLoading(true);
+      try {
+        const message = await registerDrivingSchool(
+          {
+            fullName: fullName.trim(),
+            username: email.trim(),
+            password,
+            phone: phone.trim(),
+            city: city.trim(),
+            country,
+            schoolName: schoolName.trim(),
+            schoolAddress: schoolAddress.trim() || undefined,
+            mintRegistration: mintRegistration.trim() || undefined,
+            legalName: legalName.trim() || undefined,
+            rccm: rccm.trim() || undefined,
+            website: website.trim() || undefined,
+            description: description.trim() || undefined,
+            managerRole: managerRole.trim() || undefined,
+            instructorCount: instructorCount.trim() || undefined,
+            vehicleCount: vehicleCount.trim() || undefined,
+            yearsOperating: yearsOperating.trim() || undefined,
+          },
+          language.startsWith("en") ? "en" : "fr",
+        );
+        setSuccess(message);
+        navigate(AUTH_PATHS.login, { replace: true, state: { schoolRegistered: true } });
+      } catch (err) {
+        setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+      } finally {
+        setLoading(false);
+      }
+    })();
   }
 
   const benefits = t("schoolRegister.benefits", { returnObjects: true }) as Array<{
@@ -490,10 +505,11 @@ export default function SchoolRegisterPage() {
                 </fieldset>
 
                 {error ? <p className="text-[#c0392b] text-[1.4rem] mt-4">{error}</p> : null}
+                {success ? <p className="text-[#27ae60] text-[1.4rem] mt-4">{success}</p> : null}
 
                 <div className="fj-signup-submit">
-                  <button type="submit" className="fj-btn fj-btn--primary fj-signup-submit__btn">
-                    {t("schoolRegister.submit")}
+                  <button type="submit" className="fj-btn fj-btn--primary fj-signup-submit__btn" disabled={loading}>
+                    {loading ? t("common.loading") : t("schoolRegister.submit")}
                   </button>
                 </div>
 

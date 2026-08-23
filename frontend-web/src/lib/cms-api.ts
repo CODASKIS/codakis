@@ -50,9 +50,13 @@ export function resolveCmsMediaUrl(url?: string | null): string {
   if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/images/")) {
     return value;
   }
+  if (value.startsWith("images/")) {
+    return `/${value}`;
+  }
   if (value.startsWith("/api/")) {
     return `${API_URL}${value}`;
   }
+  if (!API_URL) return DEFAULT_COVER_IMAGE;
   return `${API_URL}/api/v1/public/media/${value.replace(/^\//, "")}`;
 }
 

@@ -1,15 +1,24 @@
 import { ArrowRight, Check, Info, X } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { isAuthenticatedForRole } from "../../auth/authStore";
-import { confirmForfaitPurchase } from "../../auth/candidateEnrollment";
+import { AUTH_PATHS } from "../../constants/authPaths";
+import { getSession, isAuthenticatedForRole } from "../../auth/authStore";
+import { confirmForfaitPurchase, isCandidateEnrolled } from "../../auth/candidateEnrollment";
+import {
+  buildLoginUrlForPurchase,
+  buildRegisterUrlForPurchase,
+  purchaseIntentFromSchool,
+  rememberPurchaseIntent,
+} from "../../auth/purchaseIntent";
 import {
   formatForfaitPrice,
   type DrivingSchool,
   type SchoolForfait,
   type SchoolForfaitType,
 } from "../../data/mockDrivingSchools";
+import MobileMoneyCheckout from "./MobileMoneyCheckout";
 
 type PackDetailDrawerProps = {
   open: boolean;
@@ -17,7 +26,6 @@ type PackDetailDrawerProps = {
   type: SchoolForfaitType;
   forfait: SchoolForfait;
   school?: DrivingSchool;
-  signupHref: string;
 };
 
 function useDrawerEffects(open: boolean, onClose: () => void) {
@@ -53,18 +61,15 @@ function getFeatureKeys(type: SchoolForfaitType, forfait: SchoolForfait): string
   return ["full1", "full2", "full3", "full4", "full5"];
 }
 
-export default function PackDetailDrawer({
-  open,
-  onClose,
-  type,
-  forfait,
-  school,
-  signupHref,
-}: PackDetailDrawerProps) {
+export default function PackDetailDrawer({ open, onClose, type, forfait, school }: PackDetailDrawerProps) {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const lang = i18n.language.startsWith("en") ? "en" : "fr";
   const isCandidat = isAuthenticatedForRole("candidat");
+  const session = getSession();
+  const alreadyEnrolled = isCandidateEnrolled();
+  const [paying, setPaying] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
 
   useDrawerEffects(open, onClose);
 
@@ -73,14 +78,104 @@ export default function PackDetailDrawer({
   const featureKeys = getFeatureKeys(type, forfait);
   const hours = forfait.drivingHours ?? 20;
 
-  function handleMockPayment() {
+  const purchaseIntent =
+    school && forfait.id
+      ? purchaseIntentFromSchool(school.id, forfait.id, type)
+      : null;
+
+  function handleStartPayment() {
     if (!school) return;
-    confirmForfaitPurchase(school.id, forfait.id, lang);
-    onClose();
-    navigate("/espace/candidat/auto-ecole");
+    setCheckoutOpen(true);
   }
 
-  return (
+  function handlePaymentSuccess(paymentRef: string) {
+    if (!school) return;
+    setPaying(true);
+    void confirmForfaitPurchase({
+      schoolId: school.id,
+      schoolName: school.name,
+      schoolCity: school.city,
+      forfaitId: forfait.id,
+      forfaitLabel: forfait.label[lang],
+      paymentRef,
+      lang,
+      packType: type,
+    }).then(() => {
+      setPaying(false);
+      onClose();
+      navigate("/espace/candidat/auto-ecole");
+    });
+  }
+
+  function handleRememberAndNavigate(href: string) {
+    if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+    onClose();
+    navigate(href);
+  }
+
+  let primaryAction: ReactNode;
+
+  if (!school) {
+    primaryAction = (
+      <Link to={AUTH_PATHS.register.candidat} className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
+        <span>{t("packs.createFreeAccount")}</span>
+        <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
+      </Link>
+    );
+  } else if (session && session.role !== "candidat") {
+    primaryAction = (
+      <p className="fj-pack-drawer__role-note">{t("packs.wrongRoleHint")}</p>
+    );
+  } else if (isCandidat && alreadyEnrolled) {
+    primaryAction = (
+      <Link to="/espace/candidat/auto-ecole" className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
+        <span>{t("packs.viewMySchool")}</span>
+        <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
+      </Link>
+    );
+  } else if (isCandidat) {
+    primaryAction = (
+      <button
+        type="button"
+        className="fj-pack-drawer__cta fj-pack-drawer__cta--primary"
+        onClick={handleStartPayment}
+        disabled={paying}
+      >
+        <span>{paying ? t("common.loading") : t("packs.payMobileMoney")}</span>
+        <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
+      </button>
+    );
+  } else if (purchaseIntent) {
+    primaryAction = (
+      <>
+        <button
+          type="button"
+          className="fj-pack-drawer__cta fj-pack-drawer__cta--primary"
+          onClick={() => handleRememberAndNavigate(buildRegisterUrlForPurchase(purchaseIntent))}
+        >
+          <span>{t("packs.createFreeAccountAndPay")}</span>
+          <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
+        </button>
+        <button
+          type="button"
+          className="fj-pack-drawer__cta fj-pack-drawer__cta--secondary"
+          onClick={() => handleRememberAndNavigate(buildLoginUrlForPurchase(purchaseIntent))}
+        >
+          {t("packs.loginToPay")}
+        </button>
+      </>
+    );
+  } else {
+    primaryAction = (
+      <Link to={AUTH_PATHS.register.candidat} className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
+        <span>{t("packs.createFreeAccount")}</span>
+        <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
+      </Link>
+    );
+  }
+
+  return createPortal(
+    <>
     <div className="fj-pack-drawer-root" role="presentation">
       <button type="button" className="fj-pack-drawer-backdrop" aria-label={t("packs.detail.close")} onClick={onClose} />
 
@@ -125,6 +220,8 @@ export default function PackDetailDrawer({
             ) : null}
           </div>
 
+          <p className="fj-pack-drawer__flow-hint">{t("packs.purchaseFlowHint")}</p>
+
           <p className="fj-pack-drawer__includes">{t("packs.detail.includes")}</p>
 
           <ul className="fj-pack-drawer__features">
@@ -146,26 +243,26 @@ export default function PackDetailDrawer({
         </div>
 
         <footer className="fj-pack-drawer__footer">
-          {isCandidat && school ? (
-            <button
-              type="button"
-              className="fj-pack-drawer__cta fj-pack-drawer__cta--primary"
-              onClick={handleMockPayment}
-            >
-              <span>{t("packs.payMobileMoney")}</span>
-              <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
-            </button>
-          ) : (
-            <Link to={signupHref} className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
-              <span>{school ? t("packs.loginToPay") : t("packs.signup")}</span>
-              <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
-            </Link>
-          )}
+          {primaryAction}
           <button type="button" className="fj-pack-drawer__cta fj-pack-drawer__cta--secondary" onClick={onClose}>
             {t("packs.detail.close")}
           </button>
         </footer>
       </aside>
     </div>
+    {school ? (
+      <MobileMoneyCheckout
+        open={checkoutOpen}
+        onClose={() => setCheckoutOpen(false)}
+        amount={forfait.price}
+        schoolId={school.id}
+        schoolName={school.name}
+        forfaitId={forfait.id}
+        forfaitLabel={forfait.label[lang]}
+        onSuccess={handlePaymentSuccess}
+      />
+    ) : null}
+    </>,
+    document.body,
   );
 }

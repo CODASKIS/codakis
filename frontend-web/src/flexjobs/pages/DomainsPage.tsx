@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
+import Loader from "../../components/common/Loader";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { MOCK_VITRINE_PLANS } from "../../data/mockCmsContent";
 import { getPlanPricing, type PlanPricing } from "../../lib/payment-api";
@@ -102,7 +103,7 @@ export default function DomainsPage() {
           </div>
 
           {loading && domains.length === 0 ? (
-            <p className="text-[1.6rem] text-[#667085]">{t("domains.loading")}</p>
+            <Loader variant="inline" theme="flexjobs" message={t("domains.loading")} />
           ) : visibleDomains.length === 0 ? (
             <p className="text-center py-8 text-[1.6rem]">{t("domains.empty")}</p>
           ) : (

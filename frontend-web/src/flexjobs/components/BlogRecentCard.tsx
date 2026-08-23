@@ -1,5 +1,6 @@
 import { Link } from "react-router";
-import { resolveCmsMediaUrl, type BlogPostListItem } from "../../lib/cms-api";
+import CmsCoverImage from "../../components/common/CmsCoverImage";
+import type { BlogPostListItem } from "../../lib/cms-api";
 
 type BlogRecentCardProps = {
   post: BlogPostListItem;
@@ -16,13 +17,12 @@ function formatShortDate(publishedAt: string | null | undefined) {
 
 /** Carte blog horizontale (image à gauche) — style Medicare. */
 export default function BlogRecentCard({ post }: BlogRecentCardProps) {
-  const cover = resolveCmsMediaUrl(post.cover_image_url);
   const dateLabel = formatShortDate(post.published_at);
 
   return (
     <article className="fj-home-blog-card">
       <Link to={`/blog/${post.slug}`} className="fj-home-blog-card__media no-underline hover:no-underline">
-        <img src={cover} alt="" loading="lazy" />
+        <CmsCoverImage url={post.cover_image_url} loading="lazy" />
       </Link>
       <div className="fj-home-blog-card__body">
         <h3 className="fj-home-blog-card__title">

@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
+import CmsCoverImage from "../../components/common/CmsCoverImage";
+import Loader from "../../components/common/Loader";
 import {
   fetchBlogPost,
   fetchBlogPosts,
-  resolveCmsMediaUrl,
   type BlogPostDetail,
   type BlogPostListItem,
 } from "../../lib/cms-api";
@@ -16,7 +17,7 @@ import Button from "../components/Button";
 import Container from "../components/Container";
 import SubNav from "../components/SubNav";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
-import { markdownToHtml } from "../utils/markdown";
+import { renderBlogBody } from "../../lib/blog-content";
 
 function authorInitials(name: string) {
   return name
@@ -70,7 +71,7 @@ export default function BlogDetailPage() {
             })
             .slice(0, 4),
         );
-        const contentHtml = await markdownToHtml(data.body);
+        const contentHtml = await renderBlogBody(data.body);
         if (!cancelled) {
           setHtml(contentHtml);
           setLoading(false);
@@ -91,7 +92,7 @@ export default function BlogDetailPage() {
   if (loading) {
     return (
       <Container className="fj-blog-article fj-blog-article--loading">
-        <p>{t("blogDetail.loading")}</p>
+        <Loader variant="inline" theme="flexjobs" message={t("blogDetail.loading")} />
       </Container>
     );
   }
@@ -107,7 +108,6 @@ export default function BlogDetailPage() {
     );
   }
 
-  const cover = resolveCmsMediaUrl(post.cover_image_url);
   const dateLabel = formatDate(post.published_at, i18n.language);
 
   return (
@@ -151,7 +151,7 @@ export default function BlogDetailPage() {
             </div>
 
             <div className="fj-blog-article__cover">
-              <img src={cover} alt="" />
+              <CmsCoverImage url={post.cover_image_url} loading="eager" />
             </div>
           </header>
         </Container>

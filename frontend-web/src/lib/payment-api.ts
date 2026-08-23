@@ -1,11 +1,14 @@
 import { apiFetch } from "./api";
+import { authFetch } from "./authApi";
 
 export type InitiatePaymentPayload = {
-  plan_id: string;
+  plan_id?: string;
+  forfait_id?: string;
+  auto_ecole_id?: string;
   payment_method?: "orange" | "mtn" | "moov";
   phone?: string;
   billing_period?: "monthly" | "yearly";
-  purpose?: "subscription" | "escrow_deposit" | "certification" | "registration";
+  purpose?: "subscription" | "escrow_deposit" | "certification" | "registration" | "enrollment";
 };
 
 export type InitiatePaymentResult = {
@@ -119,7 +122,9 @@ export async function initiatePayment(
     method: "POST",
     token,
     body: JSON.stringify({
-      plan_id: payload.plan_id,
+      plan_id: payload.plan_id ?? null,
+      forfait_id: payload.forfait_id ?? null,
+      auto_ecole_id: payload.auto_ecole_id ?? null,
       payment_method: payload.payment_method ?? null,
       phone: payload.phone ?? null,
       billing_period: payload.billing_period ?? "monthly",
@@ -148,7 +153,7 @@ export async function getPaymentStatus(
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-/** Confirme un paiement SebPay / CinetPay / K-PAY avec retries (statut parfois retardé au retour). */
+/** Confirme un paiement sandbox avec retries (statut parfois retardé au retour). */
 export async function confirmPaymentWithRetry(
   token: string,
   reference: string,
@@ -184,4 +189,47 @@ export async function confirmPaymentWithRetry(
     }
   }
   throw lastError ?? new Error("Confirmation impossible");
+}
+
+export type AdminPaymentStats = {
+  total_volume_fcfa: number;
+  completed_count: number;
+  pending_count: number;
+  failed_count: number;
+  enrollment_count: number;
+  subscription_count: number;
+};
+
+export type AdminPaymentItem = {
+  reference: string;
+  status: string;
+  purpose: string;
+  amount_fcfa: number;
+  channel: string;
+  phone: string;
+  message: string | null;
+  receipt_number: string | null;
+  payer_name: string | null;
+  payer_email: string | null;
+  school_name: string | null;
+  created_at: string;
+  completed_at: string | null;
+  inscription_id: string | null;
+};
+
+export async function fetchAdminPaymentStats(): Promise<AdminPaymentStats> {
+  return authFetch<AdminPaymentStats>("/api/v1/admin/payments/stats");
+}
+
+export async function fetchAdminPayments(params?: {
+  status?: string;
+  purpose?: string;
+  limit?: number;
+}): Promise<AdminPaymentItem[]> {
+  const search = new URLSearchParams();
+  if (params?.status) search.set("status", params.status);
+  if (params?.purpose) search.set("purpose", params.purpose);
+  if (params?.limit) search.set("limit", String(params.limit));
+  const query = search.toString();
+  return authFetch<AdminPaymentItem[]>(`/api/v1/admin/payments${query ? `?${query}` : ""}`);
 }

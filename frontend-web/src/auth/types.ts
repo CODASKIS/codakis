@@ -30,14 +30,17 @@ export type GerantSchoolProfile = {
   instructorCount?: string;
   vehicleCount?: string;
   yearsOperating?: string;
+  validated?: boolean;
 };
 
 export type AuthSession = {
+  id?: string;
   role: UserRole;
   email: string;
   name: string;
   phone?: string;
   city?: string;
+  avatarUrl?: string;
   /** Abonnement CODAKIS candidat — mock jusqu'au backend. */
   plan?: SubscriptionPlan;
   /** Rattachement auto-école — obligatoire pour conduite / dossier complet (CDC). */

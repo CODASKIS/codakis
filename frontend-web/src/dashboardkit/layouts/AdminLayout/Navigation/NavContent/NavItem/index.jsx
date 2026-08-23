@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useContext } from 'react';
-import { Link, NavLink, useLocation } from 'react-router';
+import { Link, NavLink } from 'react-router';
 
 // react-bootstrap
 import { ListGroup } from 'react-bootstrap';
@@ -14,15 +14,21 @@ import { ConfigContext } from 'contexts/ConfigContext';
 import * as actionType from 'store/actions';
 import useWindowSize from 'hooks/useWindowSize';
 
+function isNavItemActive(pathname, item) {
+  const activeKey = item.activeKey ?? item.id;
+  const segments = pathname.split('/').filter(Boolean);
+  if (activeKey === 'admin') {
+    return segments.length === 1 && segments[0] === 'admin';
+  }
+  return segments.includes(activeKey);
+}
+
 // -----------------------|| NAV ITEM ||-----------------------//
 
 export default function NavItem({ item }) {
   const windowSize = useWindowSize();
   const configContext = useContext(ConfigContext);
   const { dispatch } = configContext;
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  // @ts-ignore
-  const location = useLocation();
 
   let itemTitle = item.title;
   if (item.icon) {
@@ -43,11 +49,7 @@ export default function NavItem({ item }) {
     itemTarget = '_blank';
   }
   let navItemClass = ['pc-item'];
-  const currentIndex = document.location.pathname
-    .toString()
-    .split('/')
-    .findIndex((id) => id === item.id);
-  if (currentIndex > -1) {
+  if (isNavItemActive(document.location.pathname, item)) {
     navItemClass = [...navItemClass, 'active'];
   }
 

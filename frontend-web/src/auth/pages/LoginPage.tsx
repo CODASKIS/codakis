@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router";
+import { FormEvent, useMemo, useState } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { AUTH_PATHS } from "../../constants/authPaths";
@@ -11,22 +11,38 @@ import {
   AuthInputBox,
   AuthPasswordInput,
   AuthSelect,
-  GoogleAuthButton,
 } from "../components/AuthFormControls";
+import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSignInButton";
 import AuthSplitLayout from "../components/AuthSplitLayout";
-import { getPostLoginPath, getSession, loginWithCredentials, loginWithGoogle } from "../authStore";
+import {
+  AuthApiError,
+  getSession,
+  loginWithCredentials,
+  loginWithGoogle,
+  resolveAuthRedirect,
+} from "../authStore";
+import type { UserRole } from "../types";
+import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
+import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
 
 export default function LoginPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const session = getSession();
+  const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
+  const purchaseSchool = useMemo(
+    () => (purchaseIntent ? MOCK_DRIVING_SCHOOLS.find((s) => s.id === purchaseIntent.schoolId) : null),
+    [purchaseIntent],
+  );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   if (session) {
-    return <Navigate to={getPostLoginPath(session.role)} replace />;
+    return <Navigate to={resolveAuthRedirect(session.role)} replace />;
   }
 
   function applyLanguage() {
@@ -35,13 +51,26 @@ export default function LoginPage() {
     }
   }
 
-  function handleGoogleLogin() {
-    applyLanguage();
-    const newSession = loginWithGoogle();
-    navigate(getPostLoginPath(newSession.role), { replace: true });
+  function finishAuth(role: UserRole) {
+    if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+    navigate(resolveAuthRedirect(role), { replace: true });
   }
 
-  function handleSubmit(event: FormEvent) {
+  async function handleGoogleLogin(idToken: string) {
+    setError("");
+    setLoading(true);
+    applyLanguage();
+    try {
+      const newSession = await loginWithGoogle(idToken);
+      finishAuth(newSession.role);
+    } catch (err) {
+      setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setError("");
 
@@ -51,9 +80,20 @@ export default function LoginPage() {
     }
 
     applyLanguage();
-    const newSession = loginWithCredentials(username.trim(), password);
-    navigate(getPostLoginPath(newSession.role), { replace: true });
+    setLoading(true);
+    try {
+      const newSession = await loginWithCredentials(username.trim(), password);
+      finishAuth(newSession.role);
+    } catch (err) {
+      setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+    } finally {
+      setLoading(false);
+    }
   }
+
+  const registerHref = purchaseIntent
+    ? `${AUTH_PATHS.register.candidat}?${searchParams.toString()}`
+    : AUTH_PATHS.register.candidat;
 
   return (
     <>
@@ -61,12 +101,24 @@ export default function LoginPage() {
       <AuthSplitLayout backHref="/" backLabel={t("auth.backToSite")}>
         <div className="codakis-auth__panel">
           <h1 className="codakis-auth__title">{t("auth.login.pageTitle")}</h1>
-          <p className="codakis-auth__subtitle">{t("auth.login.subtitle")}</p>
+          <p className="codakis-auth__subtitle">
+            {purchaseSchool
+              ? t("auth.login.purchaseHint", { school: purchaseSchool.name })
+              : t("auth.login.subtitle")}
+          </p>
 
-          <GoogleAuthButton label={t("auth.google.signIn")} onClick={handleGoogleLogin} />
-          <AuthDivider label={t("auth.orDivider")} />
+          {isGoogleAuthEnabled() ? (
+            <>
+              <GoogleSignInButton
+                label={t("auth.google.signIn")}
+                onSuccess={(token) => void handleGoogleLogin(token)}
+                onError={() => setError(t("auth.errors.google"))}
+              />
+              <AuthDivider label={t("auth.orDivider")} />
+            </>
+          ) : null}
 
-          <form className="codakis-auth-form" onSubmit={handleSubmit} noValidate>
+          <form className="codakis-auth-form" onSubmit={(event) => void handleSubmit(event)} noValidate>
             <AuthField label={t("auth.fields.emailOrUsername")} htmlFor="username">
               <AuthInputBox>
                 <AuthInput
@@ -108,8 +160,8 @@ export default function LoginPage() {
 
             {error ? <p className="codakis-auth-form__error">{error}</p> : null}
 
-            <button type="submit" className="codakis-auth-form__submit">
-              {t("auth.login.submit")}
+            <button type="submit" className="codakis-auth-form__submit" disabled={loading}>
+              {loading ? t("common.loading") : t("auth.login.submit")}
             </button>
           </form>
 
@@ -119,7 +171,7 @@ export default function LoginPage() {
 
           <p className="codakis-auth-form__footer">
             {t("auth.login.noAccount")}{" "}
-            <Link to={AUTH_PATHS.register.candidat}>{t("auth.login.registerLink")}</Link>
+            <Link to={registerHref}>{t("auth.login.registerLink")}</Link>
           </p>
         </div>
       </AuthSplitLayout>

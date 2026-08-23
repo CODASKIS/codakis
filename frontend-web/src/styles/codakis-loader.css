@@ -1,0 +1,95 @@
+/* Loader CODAKIS — tailles px fixes, indépendantes de l'échelle rem vitrine */
+
+:root {
+  --codakis-loader-logo-size: 40px;
+  --codakis-loader-spinner-size: 32px;
+  --codakis-loader-spinner-border: 3px;
+  --codakis-loader-text-size: 14px;
+  --codakis-loader-gap: 12px;
+  --codakis-loader-accent: #1db96a;
+  --codakis-loader-track: #e5e5e5;
+  --codakis-loader-text-color: #158a4e;
+}
+
+.codakis-loader-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--codakis-loader-gap);
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.codakis-loader-panel__logo {
+  display: block;
+  width: var(--codakis-loader-logo-size) !important;
+  height: var(--codakis-loader-logo-size) !important;
+  min-width: var(--codakis-loader-logo-size) !important;
+  min-height: var(--codakis-loader-logo-size) !important;
+  max-width: none !important;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.codakis-loader-panel__spinner {
+  width: var(--codakis-loader-spinner-size) !important;
+  height: var(--codakis-loader-spinner-size) !important;
+  min-width: var(--codakis-loader-spinner-size) !important;
+  min-height: var(--codakis-loader-spinner-size) !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border: var(--codakis-loader-spinner-border) solid var(--codakis-loader-track);
+  border-top-color: var(--codakis-loader-accent);
+  border-radius: 50%;
+  animation: codakis-loader-spin 0.75s linear infinite;
+  transform: none;
+}
+
+.codakis-loader-panel__text {
+  margin: 0;
+  font-size: var(--codakis-loader-text-size);
+  color: var(--codakis-loader-text-color);
+  font-weight: 500;
+}
+
+.codakis-loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(2px);
+  pointer-events: all;
+}
+
+.codakis-loader-overlay--admin {
+  background: rgba(248, 250, 252, 0.88);
+}
+
+.codakis-loader-inline {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6.4rem 0;
+  text-align: center;
+}
+
+@keyframes codakis-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codakis-loader-panel__spinner {
+    animation: none;
+  }
+}

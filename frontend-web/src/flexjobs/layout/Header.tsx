@@ -92,9 +92,6 @@ export default function Header() {
           <BrandLogo showTagline={false} />
 
           <div className="fj-mobile-bar__actions">
-            <Link to={AUTH_PATHS.login} className="fj-mobile-login">
-              {t("nav.login")}
-            </Link>
             <Link to="/auto-ecoles" className="fj-btn-nav-cta fj-btn-nav-cta--mobile">
               {t("nav.drivingSchools")}
             </Link>
