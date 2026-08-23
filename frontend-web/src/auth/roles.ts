@@ -20,7 +20,7 @@ export const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   candidat: {
     role: "candidat",
     loginPath: LOGIN_PATH,
-    registerPath: "/inscription/candidat",
+    registerPath: "/inscription",
     dashboardPath: "/espace/candidat",
     canRegister: true,
   },
@@ -33,7 +33,7 @@ export const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   gerant: {
     role: "gerant",
     loginPath: LOGIN_PATH,
-    registerPath: "/inscription/gerant",
+    registerPath: "/inscription-auto-ecole",
     dashboardPath: "/espace/gerant",
     canRegister: true,
   },

@@ -17,6 +17,21 @@ export type CandidateEnrollment = {
   paymentRef?: string;
 };
 
+export type GerantSchoolProfile = {
+  name: string;
+  address?: string;
+  mintRegistration?: string;
+  country?: string;
+  legalName?: string;
+  rccm?: string;
+  website?: string;
+  description?: string;
+  managerRole?: string;
+  instructorCount?: string;
+  vehicleCount?: string;
+  yearsOperating?: string;
+};
+
 export type AuthSession = {
   role: UserRole;
   email: string;
@@ -27,6 +42,8 @@ export type AuthSession = {
   plan?: SubscriptionPlan;
   /** Rattachement auto-école — obligatoire pour conduite / dossier complet (CDC). */
   enrollment?: CandidateEnrollment;
+  /** Profil établissement — gérant auto-école inscrit sur CODAKIS. */
+  school?: GerantSchoolProfile;
 };
 
 export type AuthCredentials = {
@@ -41,4 +58,14 @@ export type RegisterPayload = AuthCredentials & {
   city?: string;
   country?: string;
   schoolName?: string;
+  schoolAddress?: string;
+  mintRegistration?: string;
+  legalName?: string;
+  rccm?: string;
+  website?: string;
+  description?: string;
+  managerRole?: string;
+  instructorCount?: string;
+  vehicleCount?: string;
+  yearsOperating?: string;
 };

@@ -510,6 +510,13 @@
   text-decoration: underline;
 }
 
+.codakis-auth-form__hint {
+  margin: 0 0 1rem;
+  font-size: 1.3rem;
+  line-height: 1.5;
+  color: #667085;
+}
+
 .codakis-auth-hub {
   list-style: none;
   margin: 0;

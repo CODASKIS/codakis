@@ -16,10 +16,10 @@ import {
 import AuthSplitLayout from "../components/AuthSplitLayout";
 import { getPostLoginPath, isAuthenticatedForRole, loginWithGoogle, register } from "../authStore";
 import { ROLE_CONFIG } from "../roles";
-import type { UserRole } from "../types";
+import { AUTH_PATHS } from "../../constants/authPaths";
 
 type RegisterPageProps = {
-  role: Extract<UserRole, "candidat" | "gerant">;
+  role: "candidat";
 };
 
 export default function RegisterPage({ role }: RegisterPageProps) {
@@ -32,7 +32,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("cm");
-  const [schoolName, setSchoolName] = useState("");
   const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
 
@@ -61,11 +60,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
       return;
     }
 
-    if (role === "gerant" && !schoolName.trim()) {
-      setError(t("auth.errors.schoolRequired"));
-      return;
-    }
-
     applyLanguage();
 
     register(role, {
@@ -75,7 +69,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
       phone: phone.trim() || undefined,
       city: city.trim() || undefined,
       country,
-      schoolName: schoolName.trim() || undefined,
     });
     navigate(getPostLoginPath(role), { replace: true });
   }
@@ -86,7 +79,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
         title={t("auth.register.metaTitle", { role: t(`auth.roles.${role}.title`) })}
         description={t("auth.register.metaDescription")}
       />
-      <AuthSplitLayout backHref={config.loginPath} backLabel={t("auth.backToLogin")}>
+      <AuthSplitLayout backHref={AUTH_PATHS.login} backLabel={t("auth.backToLogin")}>
         <div className="codakis-auth__panel codakis-auth__panel--wide codakis-auth__panel--register">
           <h1 className="codakis-auth__title">{t("auth.register.title")}</h1>
           <p className="codakis-auth__subtitle">{t(`auth.roles.${role}.registerHint`)}</p>
@@ -107,20 +100,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
                 />
               </AuthInputBox>
             </AuthField>
-
-            {role === "gerant" ? (
-              <AuthField label={t("auth.fields.schoolName")} htmlFor="schoolName">
-                <AuthInputBox>
-                  <AuthInput
-                    id="schoolName"
-                    type="text"
-                    value={schoolName}
-                    onChange={(event) => setSchoolName(event.target.value)}
-                    placeholder={t("auth.fields.schoolNamePlaceholder")}
-                  />
-                </AuthInputBox>
-              </AuthField>
-            ) : null}
 
             <AuthField label={t("auth.fields.emailOrUsername")} htmlFor="register-username">
               <AuthInputBox>

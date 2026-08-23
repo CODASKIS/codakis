@@ -2,7 +2,9 @@
 export const AUTH_PATHS = {
   login: "/connexion",
   register: {
-    candidat: "/inscription/candidat",
-    gerant: "/inscription/gerant",
+    /** Inscription candidat (page auth) */
+    candidat: "/inscription",
+    /** Inscription auto-école (page vitrine publique) */
+    autoEcole: "/inscription-auto-ecole",
   },
 } as const;

@@ -30,6 +30,7 @@ export default function Footer() {
       links: [
         { label: t("nav.login"), to: AUTH_PATHS.login },
         { label: t("nav.signup"), to: AUTH_PATHS.register.candidat },
+        { label: t("nav.signupSchool"), to: AUTH_PATHS.register.autoEcole },
         { label: t("footer.loginSchool"), to: AUTH_PATHS.login },
         { label: t("footer.loginInstructor"), to: AUTH_PATHS.login },
       ],

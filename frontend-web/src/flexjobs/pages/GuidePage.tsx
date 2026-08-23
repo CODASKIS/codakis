@@ -94,7 +94,7 @@ export default function GuidePage({ variant }: GuidePageProps) {
             ))}
 
             <div className="mt-10 flex flex-wrap gap-4 justify-center">
-              <Button href={isClient ? "/auto-ecoles" : AUTH_PATHS.register.gerant} size="sm">
+              <Button href={isClient ? "/auto-ecoles" : AUTH_PATHS.register.autoEcole} size="sm">
                 {t(isClient ? "guide.clientCta" : "guide.schoolCta")}
               </Button>
               <Button href="/contact" variant="outline" size="sm">

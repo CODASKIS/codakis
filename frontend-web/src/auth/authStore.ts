@@ -75,6 +75,24 @@ export function register(role: UserRole, payload: RegisterPayload): AuthSession 
     phone: payload.phone?.trim() || undefined,
     city: payload.city?.trim() || undefined,
   };
+
+  if (role === "gerant" && payload.schoolName?.trim()) {
+    session.school = {
+      name: payload.schoolName.trim(),
+      address: payload.schoolAddress?.trim() || undefined,
+      mintRegistration: payload.mintRegistration?.trim() || undefined,
+      country: payload.country,
+      legalName: payload.legalName?.trim() || undefined,
+      rccm: payload.rccm?.trim() || undefined,
+      website: payload.website?.trim() || undefined,
+      description: payload.description?.trim() || undefined,
+      managerRole: payload.managerRole?.trim() || undefined,
+      instructorCount: payload.instructorCount?.trim() || undefined,
+      vehicleCount: payload.vehicleCount?.trim() || undefined,
+      yearsOperating: payload.yearsOperating?.trim() || undefined,
+    };
+  }
+
   setSession(session);
   return session;
 }

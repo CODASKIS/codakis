@@ -13,6 +13,7 @@
     "contact": "Contact",
     "login": "Sign in",
     "signup": "Sign up",
+    "signupSchool": "Register my driving school",
     "menu": "Main navigation",
     "mobileMenu": "Mobile menu",
     "search": "Search",
@@ -300,6 +301,7 @@
     "backToSite": "Back to site",
     "backToRoles": "Choose a workspace",
     "backToLogin": "Back to sign in",
+    "backToRegisterHub": "Choose registration type",
     "hub": {
       "metaTitle": "Sign in | CODAKIS",
       "metaDescription": "Access your candidate, instructor, manager or admin workspace.",
@@ -322,6 +324,23 @@
       "submit": "Create my account",
       "hasAccount": "Already have an account?",
       "loginLink": "Sign in"
+    },
+    "registerHub": {
+      "metaTitle": "Register | CODAKIS",
+      "metaDescription": "Create a candidate account or register your partner driving school on CODAKIS.",
+      "title": "Create an account",
+      "subtitle": "Choose the registration type that fits your profile.",
+      "candidatLead": "Revise theory, take mock exams and track your Consort file.",
+      "schoolTitle": "Partner driving school",
+      "schoolLead": "Publish your packages, manage enrolments and instructors on CODAKIS."
+    },
+    "registerSchool": {
+      "metaTitle": "Driving school registration | CODAKIS",
+      "metaDescription": "Register your approved driving school on the CODAKIS platform.",
+      "title": "Register my driving school",
+      "subtitle": "Create the manager workspace for your CODAKIS partner school.",
+      "submit": "Create school workspace",
+      "hint": "Your application will be reviewed by the CODAKIS team before listing in the directory."
     },
     "forgot": {
       "metaTitle": "Forgot password | CODAKIS",
@@ -360,7 +379,13 @@
       "cityPlaceholder": "Douala, Yaoundé…",
       "country": "Country (CEMAC zone)",
       "schoolName": "Driving school name",
-      "schoolNamePlaceholder": "Your school name"
+      "schoolNamePlaceholder": "Your school name",
+      "schoolAddress": "School address",
+      "schoolAddressPlaceholder": "District, street, landmark…",
+      "mintRegistration": "MINT approval number",
+      "mintRegistrationPlaceholder": "Approval number (if available)",
+      "managerName": "Manager / representative name",
+      "managerNamePlaceholder": "Manager first and last name"
     },
     "languages": {
       "fr": "Français",
@@ -392,6 +417,63 @@
         "registerHint": "Register your partner driving school on CODAKIS."
       }
     }
+  },
+  "schoolRegister": {
+    "metaTitle": "Register my driving school | CODAKIS",
+    "metaDescription": "Create your approved driving school manager account and publish your plans on CODAKIS.",
+    "navLabel": "Driving school registration",
+    "breadcrumb": "Register my driving school",
+    "title": "Join CODAKIS as a partner driving school",
+    "intro": "Complete your school profile, manager contact details and create your manager workspace to publish plans and manage enrolments.",
+    "verificationHint": "Your application will be reviewed by the CODAKIS team before listing in the directory.",
+    "formTitle": "Registration form",
+    "benefitsTitle": "Why CODAKIS?",
+    "submit": "Create school workspace",
+    "sections": {
+      "establishment": "Your school",
+      "manager": "Manager / owner",
+      "activity": "Activity",
+      "account": "Login account"
+    },
+    "fields": {
+      "legalName": "Legal name",
+      "legalNamePlaceholder": "Excellence Driving School Ltd",
+      "rccm": "Trade register no. (RCCM)",
+      "rccmPlaceholder": "RC/DLA/2020/B/12345",
+      "website": "Website",
+      "websitePlaceholder": "https://www.myschool.com",
+      "description": "School description",
+      "descriptionPlaceholder": "Specialities, areas served, strengths…",
+      "managerRole": "Manager role",
+      "managerRolePlaceholder": "Owner, director…",
+      "email": "Professional email",
+      "instructorCount": "Number of instructors",
+      "vehicleCount": "Number of vehicles",
+      "yearsOperating": "Years in operation",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter password",
+      "acceptTermsBefore": "I accept CODAKIS",
+      "acceptTermsLink": "terms of use",
+      "acceptTermsAfter": "."
+    },
+    "errors": {
+      "passwordMismatch": "Passwords do not match.",
+      "termsRequired": "You must accept the terms of use."
+    },
+    "benefits": [
+      {
+        "title": "Qualified visibility",
+        "text": "Appear in the approved driving school directory browsed by thousands of candidates."
+      },
+      {
+        "title": "Plans online",
+        "text": "Publish theory, driving or full packages and receive structured enrolments."
+      },
+      {
+        "title": "Simplified management",
+        "text": "Track files, assign instructors and run your activity from one workspace."
+      }
+    ]
   },
   "dashboard": {
     "nav": {

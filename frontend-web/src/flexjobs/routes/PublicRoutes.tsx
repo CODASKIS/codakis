@@ -9,6 +9,7 @@ import HomePage from "../pages/HomePage";
 import HowItWorksPage from "../pages/HowItWorksPage";
 import PrivacyPolicyPage from "../pages/PrivacyPolicyPage";
 import TermsOfUsePage from "../pages/TermsOfUsePage";
+import SchoolRegisterPage from "../pages/SchoolRegisterPage";
 import TechniciansPage from "../pages/TechniciansPage";
 import ConsortPage from "../pages/ConsortPage";
 import DrivingSchoolDetailPage from "../pages/DrivingSchoolDetailPage";
@@ -23,6 +24,7 @@ export default function PublicRoutes() {
     { path: "domaines", element: <Navigate to="/themes" replace /> },
     { path: "auto-ecoles", element: <TechniciansPage /> },
     { path: "auto-ecoles/:id", element: <DrivingSchoolDetailPage /> },
+    { path: "inscription-auto-ecole", element: <SchoolRegisterPage /> },
     { path: "techniciens", element: <Navigate to="/auto-ecoles" replace /> },
     { path: "consort", element: <ConsortPage /> },
     { path: "tarifs", element: <Navigate to="/themes#abonnement" replace /> },

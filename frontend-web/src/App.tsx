@@ -23,9 +23,9 @@ export default function App() {
         <Route path="/inscription/*" element={<InscriptionRoutes />} />
 
         <Route path="/signin" element={<Navigate to="/connexion" replace />} />
-        <Route path="/signup" element={<Navigate to="/inscription/candidat" replace />} />
+        <Route path="/signup" element={<Navigate to="/inscription" replace />} />
         <Route path="/login" element={<Navigate to="/connexion" replace />} />
-        <Route path="/register" element={<Navigate to="/inscription/candidat" replace />} />
+        <Route path="/register" element={<Navigate to="/inscription" replace />} />
 
         <Route path="/admin/*" element={<AdminRoutes />} />
         <Route path="/espace/candidat/*" element={<CandidatRoutes />} />

@@ -6731,17 +6731,25 @@ img.fj-tech-avatar {
   align-items: center;
   gap: 12px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .fj-page-loader__logo {
   width: 40px;
   height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
   object-fit: contain;
 }
 
 .fj-page-loader__spinner {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  flex-shrink: 0;
+  box-sizing: border-box;
   border: 3px solid #e5e5e5;
   border-top-color: var(--fj-cta-bg, #1db96a);
   border-radius: 50%;
@@ -6758,17 +6766,6 @@ img.fj-tech-avatar {
 .fj-page-loader--admin {
   z-index: 180;
   background: rgba(248, 250, 252, 0.88);
-}
-
-.fj-page-loader--admin .fj-page-loader__logo {
-  width: 36px;
-  height: 36px;
-}
-
-.fj-page-loader--admin .fj-page-loader__spinner {
-  width: 24px;
-  height: 24px;
-  border-width: 2.5px;
 }
 
 @keyframes fj-spin {

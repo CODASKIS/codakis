@@ -28,9 +28,11 @@ export function ConnexionRoutes() {
 
 export function InscriptionRoutes() {
   return useRoutes([
-    { path: "candidat", element: <RegisterPage role="candidat" /> },
-    { path: "gerant", element: <RegisterPage role="gerant" /> },
-    { path: "*", element: <Navigate to="/inscription/candidat" replace /> },
+    { index: true, element: <RegisterPage role="candidat" /> },
+    { path: "candidat", element: <Navigate to="/inscription" replace /> },
+    { path: "auto-ecole", element: <Navigate to="/inscription-auto-ecole" replace /> },
+    { path: "gerant", element: <Navigate to="/inscription-auto-ecole" replace /> },
+    { path: "*", element: <Navigate to="/inscription" replace /> },
   ]);
 }
 
