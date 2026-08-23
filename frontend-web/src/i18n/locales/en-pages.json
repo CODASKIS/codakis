@@ -1,0 +1,650 @@
+{
+  "breadcrumb": {
+    "home": "Home",
+    "blog": "Blog"
+  },
+  "footer": {
+    "privacy": "Privacy policy",
+    "terms": "Terms of use"
+  },
+  "blog": {
+    "metaTitle": "Blog | CODAKIS",
+    "metaDescription": "Tips, news and guides for candidates and driving schools.",
+    "searchLabel": "Search articles",
+    "searchPlaceholder": "Search articles and content",
+    "searchAria": "Search",
+    "loading": "Loading articles…",
+    "error": "Unable to load articles at the moment.",
+    "empty": "No articles published yet.",
+    "noResults": "No articles match your search.",
+    "tabsLabel": "Article categories",
+    "latest": "Latest articles",
+    "all": "All articles"
+  },
+  "domains": {
+    "metaDescription": "Revise the CEMAC highway code topic by topic on CODAKIS: lessons, quizzes and mock exams.",
+    "pageTitle": "Revise the CEMAC highway code",
+    "pageLead": "10 topics aligned with the Cameroon Highway Code — progress with lessons, quizzes and mock exams.",
+    "pagePurpose": "This page is for theory preparation on CODAKIS. Theory-only, driving-only or full packages are sold by each partner driving school on its profile page.",
+    "startRevision": "Start revising",
+    "subscriptionTitle": "Theory revision subscription",
+    "subscriptionLead": "Free or Premium: unlock full access to all 10 topics, unlimited quizzes and mock exams. Separate from packages sold by driving schools.",
+    "filterToggle": "Filter topics",
+    "searchLabel": "Search for a topic",
+    "searchPlaceholder": "Road signs, priorities, speed…",
+    "reset": "Reset",
+    "loading": "Loading topics…",
+    "empty": "No topics match your search."
+  },
+  "pricingPage": {
+    "metaTitle": "Plans | CODAKIS",
+    "metaDescription": "Choose the plan that fits your licence journey on CODAKIS.",
+    "faqTitle": "Frequently asked questions about CODAKIS pricing",
+    "faq": [
+      {
+        "question": "What's the difference between a CODAKIS subscription and driving school plans?",
+        "answer": "Free or Premium subscriptions cover theory preparation on CODAKIS only (10 CEMAC topics, quizzes, mock exams). Theory-only, driving-only or full packages are sold by MINT-approved partner driving schools, with Mobile Money payment and a QR enrolment receipt."
+      },
+      {
+        "question": "How do I buy a driving package?",
+        "answer": "From a partner driving school profile, choose a plan (theory only, driving only or full), pay via Orange Money or MTN MoMo. After confirmation, you receive a digital receipt and enrolment QR code."
+      },
+      {
+        "question": "Which payment methods are accepted?",
+        "answer": "Orange Money and MTN Mobile Money for candidate subscriptions and driving school packages. Partner establishments can also pay their SaaS subscription by bank transfer."
+      },
+      {
+        "question": "How does the Consort file work on CODAKIS?",
+        "answer": "From the app, track the 6 mandatory documents, receive deadline reminders and verify your file is complete before your administrative appointment."
+      }
+    ],
+    "guaranteeTitle": "Satisfaction guarantee",
+    "guaranteeBodyBefore": "With the CODAKIS guarantee, if you are not satisfied with our service quality, cancel your subscription and request a refund",
+    "guaranteeBodyContact": "(by phone, email or chat)",
+    "guaranteeBodyAfter": "within 14 days of creating or renewing your account.",
+    "thanksTitle": "Thank you for your trust",
+    "thanksBodyBefore": "CODAKIS delivers real value: approved driving schools, verified profiles and dedicated support. Visit our",
+    "thanksAbout": "About",
+    "thanksBodyMiddle": "page or",
+    "thanksContact": "contact our support team",
+    "thanksBodyAfter": "."
+  },
+  "contact": {
+    "metaTitle": "Contact | CODAKIS",
+    "metaDescription": "Questions about the directory, plans or your licence journey?",
+    "navHowItWorks": "How it works",
+    "navAbout": "About",
+    "navContact": "Contact",
+    "title": "Contact us",
+    "introBefore": "Our support team answers your questions about the directory, plans or your licence journey. Also check our",
+    "introFaqLink": "client FAQ",
+    "introAfter": "for common questions.",
+    "channels": {
+      "chat": {
+        "title": "Live chat",
+        "hoursWeek": "Mon – Fri: 8am – 6pm",
+        "hoursSat": "Sat: 9am – 2pm",
+        "meta": "Average response time: 1 min"
+      },
+      "phone": {
+        "title": "Phone",
+        "number": "+237 6XX XXX XXX",
+        "hoursWeek": "Mon – Fri: 8am – 6pm",
+        "hoursSat": "Sat: 9am – 2pm",
+        "meta": "Average response time: 3 min"
+      },
+      "email": {
+        "title": "Email",
+        "send": "Send a message",
+        "hint": "Our team will reply as soon as possible.",
+        "meta": "Average response time: 2 business days"
+      }
+    },
+    "inquiriesTitle": "Other enquiries",
+    "pressTitle": "Press & media",
+    "pressBefore": "For media requests, visit our",
+    "pressAbout": "About",
+    "pressAfter": "page or email contact@codakis.cm with subject « Press ».",
+    "partnersTitle": "Partnerships",
+    "partnersBody": "Companies and institutions: contact us for a partnership or enterprise account.",
+    "addressTitle": "Postal address",
+    "addressLine1": "CODAKIS",
+    "addressLine2": "Douala, Cameroon",
+    "addressLine3": "P.O. Box — Yaoundé"
+  },
+  "about": {
+    "metaTitle": "About | CODAKIS",
+    "metaDescription": "CODAKIS mission: support driving licence candidates and connect them with approved driving schools in Cameroon.",
+    "navHowItWorks": "How it works",
+    "navAbout": "About",
+    "navClientGuide": "Client guide",
+    "navSchoolGuide": "Driving school guide",
+    "heroTitle": "About",
+    "heroBrand": "CODAKIS",
+    "heroP1": "CODAKIS is the highway code learning platform and directory of approved driving schools in Cameroon. We support candidates from theory to the practical exam, with interactive courses, mock exams and transparent connections with verified establishments.",
+    "heroP2Before": "Our",
+    "heroSupportLink": "support team",
+    "heroP2After": "reviews every driving school file before publication to save you time and protect you from unapproved establishments. Whether you are preparing your theory test or managing a partner driving school, CODAKIS simplifies every step of the licence journey.",
+    "heroCta": "Find an approved driving school",
+    "stats": [
+      { "value": "10,000+", "label": "Candidates supported" },
+      { "value": "500+", "label": "Approved driving schools" },
+      { "value": "10", "label": "CEMAC theory topics" }
+    ],
+    "howTitleBefore": "How CODAKIS",
+    "howTitleAccent": "works",
+    "howItems": [
+      {
+        "title": "Learn at your own pace",
+        "text": "Topic-based courses, interactive quizzes and timed mock exams aligned with CEMAC standards and Cameroonian specifics."
+      },
+      {
+        "title": "Find an approved driving school",
+        "text": "Filter by city, compare plans, check pass rates and book driving slots with confidence."
+      },
+      {
+        "title": "Track your Consort file",
+        "text": "Guides, reminders and tracking of the 6 administrative documents to prepare calmly for your licence appointment."
+      }
+    ],
+    "benefitsTitleAccent": "Benefits",
+    "benefitsTitleAfter": "of CODAKIS",
+    "benefitsCta": "Get started",
+    "benefits": [
+      {
+        "title": "Quality approved driving schools",
+        "text": "Verified establishments across Cameroon, with transparent plans, candidate reviews and published pass rates."
+      },
+      {
+        "title": "Every driving school checked by our team",
+        "text": "We verify approval, manager identity and offer compliance before any publication in the CODAKIS directory."
+      },
+      {
+        "title": "Dedicated support and resources",
+        "text": "Practical guides, FAQ and a support team available to assist candidates and driving schools at every step."
+      },
+      {
+        "title": "Satisfaction guarantee",
+        "text": "If you are not satisfied with our service, request a refund within 14 days. It's simple and fast."
+      }
+    ],
+    "reviewsTitle": "CODAKIS reviews & testimonials",
+    "reviewsCta": "Learn more",
+    "originTitleAccent": "How & why",
+    "originTitleAfter": "CODAKIS was created",
+    "originP1": "CODAKIS was designed to offer a reliable alternative to unverified directories: a space where candidates and driving schools can connect with confidence.",
+    "originP2": "Facing questionable establishments and opaque licence journeys, we built a platform focused on approval, pedagogy and geographic proximity.",
+    "originP3Before": "Today, CODAKIS supports thousands of candidates in Cameroon. Also discover our",
+    "originHowItWorks": "How it works",
+    "originMiddle": "page or check our",
+    "originPricing": "plans",
+    "originAfter": ".",
+    "bannerTitleBefore": "Over 10,000 candidates have chosen CODAKIS to pass their",
+    "bannerTitleAccent": "licence",
+    "bannerCta": "Join CODAKIS",
+    "testimonials": [
+      {
+        "quote": "CODAKIS mock exams prepared me for exam day. I found an approved driving school near me in minutes.",
+        "author": "Marie K.",
+        "location": "Douala"
+      },
+      {
+        "quote": "CODAKIS approval brings us serious candidates. The geolocated directory changes everything for our driving school.",
+        "author": "Jean-Paul M.",
+        "location": "Yaoundé"
+      },
+      {
+        "quote": "Clear interface, structured courses and responsive driving schools. I recommend CODAKIS to my whole family.",
+        "author": "Aïcha B.",
+        "location": "Bafoussam"
+      }
+    ]
+  },
+  "howItWorks": {
+    "metaTitle": "How it works | CODAKIS",
+    "metaDescription": "Discover the candidate and driving school journey on CODAKIS.",
+    "breadcrumb": "How it works",
+    "title": "How it works",
+    "intro": [
+      "CODAKIS is the highway code learning platform and connection service with approved driving schools in Cameroon. Our goal is to support you from theory to the exam, through choosing your driving school and booking driving slots.",
+      "Whether you are a candidate wanting to revise theory, take mock exams or buy a driving plan, or a partner driving school manager, the journey is designed to be simple, transparent and adapted to the CEMAC context."
+    ],
+    "notice": "YOUR BEST GUARANTEE IS TO GO THROUGH CODAKIS: NEVER PAY FOR A PLAN OFF-PLATFORM BEFORE VERIFYING THE APPROVED DRIVING SCHOOL.",
+    "highlightsTitle": "CODAKIS fundamentals",
+    "highlightsNote": "CODAKIS facilitates the licence journey between candidates and approved driving schools. Create your account, revise theory or submit your establishment file to appear in the geolocated directory.",
+    "highlights": [
+      {
+        "title": "Gamified theory learning",
+        "body": "10 topics aligned with CEMAC standards, interactive quizzes, timed mock exams and visible progress tracking at every step.",
+        "moreLabel": "View topics",
+        "moreHref": "/themes"
+      },
+      {
+        "title": "Directory of approved driving schools",
+        "body": "Only CODAKIS-validated driving schools appear in the directory. Check pass rates, plans and reviews before enrolling.",
+        "moreLabel": "View directory",
+        "moreHref": "/auto-ecoles"
+      },
+      {
+        "title": "Support & guidance",
+        "body": "A dedicated team answers your questions about registration, plans, driving slots and using the platform.",
+        "moreLabel": "Contact us",
+        "moreHref": "/contact"
+      }
+    ],
+    "stepsTitle": "How it works:",
+    "steps": [
+      { "num": "1", "title": "Create your account", "text": "Sign up for free as a candidate or connect with Google in minutes." },
+      { "num": "2", "title": "Learn & progress", "text": "Follow topic-based courses, practise with quizzes and simulate the official mock exam." },
+      { "num": "3", "title": "Choose your driving school", "text": "Browse the directory of approved driving schools, compare plans and pay via Mobile Money." },
+      { "num": "4", "title": "Get your licence", "text": "Book driving slots, track your progress and prepare for the exam with confidence." }
+    ],
+    "clientFaqTitle": "For candidates",
+    "clientFaq": [
+      {
+        "question": "How do I find an approved driving school near me?",
+        "answer": "Create a candidate account, then browse the CODAKIS directory filtered by city or proximity. Each driving school displays its plans, pass rate and candidate reviews.",
+        "linkLabel": "Explore directory",
+        "linkHref": "/auto-ecoles"
+      },
+      {
+        "question": "Is candidate registration free?",
+        "answer": "Yes. You can create an account, access basic courses and take quizzes for free. Driving and complete plans are offered by partner driving schools.",
+        "linkLabel": "View pricing",
+        "linkHref": "/themes#abonnement"
+      },
+      {
+        "question": "Can I revise theory without enrolling at a driving school?",
+        "answer": "Absolutely. CODAKIS offers a self-paced highway code learning path. Driving school enrolment is only required for practical training and the exam.",
+        "linkLabel": "Start learning",
+        "linkHref": "/inscription/candidat"
+      }
+    ],
+    "schoolFaqTitle": "For driving schools",
+    "schoolFaq": [
+      {
+        "question": "How do I become a CODAKIS partner driving school?",
+        "answer": "Contact our team via the contact form or create a manager account. We verify your MINT approval before publishing your establishment in the directory.",
+        "linkLabel": "Driving school guide",
+        "linkHref": "/guide/auto-ecole"
+      },
+      {
+        "question": "How are Mobile Money payments handled?",
+        "answer": "Candidates pay via MTN MoMo or Orange Money. CODAKIS secures the transaction and notifies your driving school once payment is confirmed.",
+        "linkLabel": "Contact us",
+        "linkHref": "/contact"
+      }
+    ],
+    "includesTitle": "Our platform includes:",
+    "includes": [
+      { "title": "Structured learning", "text": "10 highway code topics aligned with CEMAC standards." },
+      { "title": "Verified driving schools", "text": "A transparent directory with plans and candidate reviews." },
+      { "title": "Dedicated support", "text": "A team at your side throughout the licence journey." }
+    ],
+    "signupCta": "Sign up for free",
+    "directoryCta": "View directory"
+  },
+  "guide": {
+    "clientMetaTitle": "Client guide | CODAKIS",
+    "clientMetaDescription": "Security tips and best practices for CODAKIS candidates.",
+    "schoolMetaTitle": "Driving school guide | CODAKIS",
+    "schoolMetaDescription": "Security tips and best practices for CODAKIS partner driving schools.",
+    "navClient": "Client guide",
+    "navSchool": "Driving school guide",
+    "navHowItWorks": "How it works",
+    "clientTitle": "Client guide",
+    "schoolTitle": "Driving school guide",
+    "introP1Before": "We are committed to giving you the best experience on CODAKIS.",
+    "introP1Strong": "Your best defence against scams is to stay vigilant, know our official practices and use your judgement.",
+    "introP2": "Here is essential information to recognise legitimate CODAKIS communications and report suspicious activity.",
+    "faqCount_one": "{{count}} FAQ",
+    "faqCount_other": "{{count}} FAQs",
+    "categoriesNav": "Guide categories",
+    "clientSections": [
+      {
+        "title": "How we communicate with you",
+        "intro": "CODAKIS only contacts you through official channels (@codakis.cm) or directly on the platform if you are registered.",
+        "qa": [
+          {
+            "q": "What should I do if I receive a suspicious message?",
+            "a": "Do not engage. Report the message immediately to contact@codakis.cm."
+          },
+          {
+            "q": "How do I recognise a legitimate email?",
+            "a": "CODAKIS emails relate to your account, subscription, licence journey or activity notifications on the platform."
+          }
+        ]
+      },
+      {
+        "title": "Warning signs to know",
+        "intro": "Your best defence against scams is to stay vigilant and know common practices.",
+        "qa": [
+          {
+            "q": "Request for money before enrolment",
+            "a": "CODAKIS never asks for upfront payment to « unlock » a driving school or plan off-platform."
+          },
+          {
+            "q": "Driving school without CODAKIS approval",
+            "a": "Always check the approval badge and candidate reviews before enrolling at an establishment."
+          }
+        ]
+      }
+    ],
+    "schoolSections": [
+      {
+        "title": "Secure your driving school registration",
+        "intro": "Only share your login credentials on the official CODAKIS platform. Our teams never ask for your password.",
+        "qa": [
+          {
+            "q": "Documents required for approval",
+            "a": "MINT approval, manager ID, proof of activity — only via your secure driving school space."
+          },
+          {
+            "q": "Partnership fees",
+            "a": "Official rates are published on the Plans page. Beware of payment requests off-platform."
+          }
+        ]
+      },
+      {
+        "title": "Best practices for driving schools",
+        "intro": "Protect your business and candidate trust by following these recommendations.",
+        "qa": [
+          {
+            "q": "Updating your profile",
+            "a": "Keep your plans, service area and availability up to date in your driving school space."
+          },
+          {
+            "q": "Reporting abusive behaviour",
+            "a": "Contact contact@codakis.cm to report any suspicious candidate profile or message."
+          }
+        ]
+      }
+    ],
+    "clientCta": "Find a driving school",
+    "schoolCta": "Become a partner driving school",
+    "contactCta": "Contact us"
+  },
+  "homeUtilityBar": {
+    "ariaLabel": "CODAKIS contact details",
+    "phone": "+237 6XX XXX XXX",
+    "phoneHint": "Questions? Call us",
+    "email": "contact@codakis.cm",
+    "emailHint": "Need help? Email us",
+    "hours": "Mon – Sat 08:00 – 18:00",
+    "hoursHint": "We are open"
+  },
+  "homeMemberTestimonials": {
+    "ratingLabel": "Excellent rating 4.8 out of 5",
+    "ratingStrong": "Excellent",
+    "ratingCount": "Over 500 reviews on CODAKIS",
+    "title": "What our members say",
+    "prevAria": "Previous testimonial",
+    "nextAria": "Next testimonial",
+    "items": [
+      {
+        "quote": "CODAKIS helped me revise theory effectively. Mock exams prepared me for exam day without stress.",
+        "highlights": ["revise theory", "Mock exams"],
+        "author": "Marie K.",
+        "role": "Candidate in Douala"
+      },
+      {
+        "quote": "The platform is easy to use and listed driving schools are genuinely approved. I feel confident about my licence.",
+        "highlights": ["easy to use", "genuinely approved"],
+        "author": "Sedric G.",
+        "role": "Candidate in Yaoundé"
+      },
+      {
+        "quote": "Thanks to CODAKIS, I found a driving school near me with a good pass rate in under 10 minutes.",
+        "highlights": ["CODAKIS", "under 10 minutes"],
+        "author": "Jean-Paul M.",
+        "role": "Candidate in Yaoundé"
+      },
+      {
+        "quote": "Run, don't walk: CODAKIS was an incredible experience to prepare for my theory exam.",
+        "highlights": ["CODAKIS", "incredible experience"],
+        "author": "Melissa E.",
+        "role": "Candidate in Bafoussam"
+      },
+      {
+        "quote": "Clear interface, interactive quizzes and detailed profiles. I chose the right driving school first time.",
+        "highlights": ["interactive quizzes", "first time"],
+        "author": "Shannon B.",
+        "role": "Candidate in Douala"
+      },
+      {
+        "quote": "CEMAC topics are well structured. My progress is visible at every step, like a fitness app.",
+        "highlights": ["CEMAC topics", "progress is visible"],
+        "author": "Aïcha B.",
+        "role": "Candidate in Bafoussam"
+      }
+    ]
+  },
+  "blogDetail": {
+    "loading": "Loading article…",
+    "notFound": "Article not found",
+    "backToBlog": "Back to blog",
+    "breadcrumbAria": "Breadcrumb",
+    "authorBefore": "By",
+    "updated": "Updated: {{date}}"
+  },
+  "pricingTable": {
+    "clientTypeAria": "Client type",
+    "billingToggleAria": "Toggle between monthly and yearly billing",
+    "loading": "Loading plans…",
+    "ctaPay": "Pay",
+    "ctaStart": "Get started"
+  },
+  "privacy": {
+    "metaTitle": "Privacy policy | CODAKIS",
+    "metaDescription": "CODAKIS privacy policy and cookies.",
+    "title": "Privacy policy",
+    "lastUpdatedLabel": "Last updated: {{date}}",
+    "lastUpdated": "13 January 2026",
+    "intro": "Thank you for visiting CODAKIS (hereinafter « we », « our » or « the platform »). This policy explains our practices regarding the collection, use and protection of personal data (« Data » or « Personal Information ») when you use our website, applications and services (collectively, the « Site »). CODAKIS is the data controller for your Data on the Site. By using the Site, you agree that your Information will be processed in accordance with this policy and our terms of use.",
+    "highlightsTitle": "Key points of the privacy policy",
+    "highlightsNoteBefore": "Also see our",
+    "highlightsNoteLink": "full privacy policy",
+    "highlightsNoteAfter": ".",
+    "fullTitle": "Full privacy policy",
+    "contactFormLink": "Contact form",
+    "highlights": [
+      {
+        "title": "Personal data we collect",
+        "body": "When you create an account, use our services, browse the directory, subscribe or contact us, you voluntarily provide certain information: name, email address, phone number, city, Consort file documents, etc. See section 2 for details."
+      },
+      {
+        "title": "Tracking technologies",
+        "body": "We may use cookies and similar technologies to measure audience, secure the Site and improve your experience. You can accept or refuse non-essential cookies via the banner shown on your first visit.",
+        "moreLabel": "Learn more",
+        "moreHref": "#cookies"
+      },
+      {
+        "title": "Use, retention and storage",
+        "body": "We retain your Data for as long as necessary to provide the service, comply with legal obligations and resolve disputes."
+      },
+      {
+        "title": "Sharing information",
+        "body": "Within legal limits, we may share your Information with technical providers, partner driving schools as part of enrolment, competent authorities or in case of corporate restructuring."
+      },
+      {
+        "title": "Your choices",
+        "body": "You can manage communication preferences, object to certain processing, request access, rectification or deletion of your Data, and withdraw marketing consent at any time."
+      },
+      {
+        "title": "Access and modification",
+        "body": "Registered users can modify their information from their candidate or driving school account, or by contacting us."
+      },
+      {
+        "title": "Policy updates",
+        "body": "We may update this policy by publishing a new version on the Site. For significant changes, we may notify you by email when required by law."
+      },
+      {
+        "title": "EEA residents / GDPR",
+        "body": "CODAKIS complies with the General Data Protection Regulation (GDPR). Data subjects may exercise their rights where applicable."
+      },
+      {
+        "title": "Contact",
+        "body": "For any questions about this policy: contact@codakis.cm or via our Contact page.",
+        "moreLabel": "Contact us",
+        "moreHref": "/contact"
+      }
+    ],
+    "fullSections": [
+      {
+        "title": "1. Scope",
+        "paragraphs": [
+          "CODAKIS is an online platform that supports driving licence candidates and connects them with approved driving schools in Cameroon. We provide services related to theory learning, driving school search, subscriptions and candidate and driving school account management."
+        ]
+      },
+      {
+        "id": "collecte",
+        "title": "2. Data we collect",
+        "paragraphs": ["The Data collected depends on how you use the Site."],
+        "subsections": [
+          {
+            "title": "Registration, services and account",
+            "paragraphs": [
+              "You can browse certain pages without creating an account. In that case, we may collect technical data (IP address, browser type, pages viewed, approximate geolocation data).",
+              "When you create a candidate or driving school account, you must provide certain information (valid email, identity, contact details, city, etc.). For purchases or subscriptions, billing information may be requested; payments are processed by external providers and we do not store full card details."
+            ]
+          },
+          {
+            "title": "Responses to your requests",
+            "paragraphs": [
+              "If you contact us (form, email, chat), we use the details provided to answer your questions and, where applicable, send service-related communications."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "3. Use, retention and storage",
+        "paragraphs": ["We process your Data for the following purposes:"],
+        "subsections": [
+          {
+            "title": "Site operation and service delivery",
+            "bullets": [
+              "Respond to your requests and provide customer support.",
+              "Manage your account, subscriptions and licence journey.",
+              "Display approved driving schools in the directory.",
+              "Connect candidates and partner driving schools.",
+              "Personalise content and improve Site security."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "8. Tracking technologies (cookies)",
+        "paragraphs": [
+          "When you visit, we collect usage information sent by your device (pages viewed, clicks, session duration). We use cookies and similar technologies to operate the Site, measure audience and remember your preferences."
+        ]
+      },
+      {
+        "title": "15. Contact us",
+        "paragraphs": [
+          "CODAKIS — Douala & Yaoundé, Cameroon.",
+          "Email: contact@codakis.cm"
+        ],
+        "showContactForm": true
+      }
+    ]
+  },
+  "terms": {
+    "metaTitle": "Terms of use | CODAKIS",
+    "metaDescription": "General terms of use for the CODAKIS platform.",
+    "title": "Terms of use",
+    "lastUpdatedLabel": "Last updated: {{date}}",
+    "lastUpdated": "16 January 2025",
+    "intro": "These terms of use, together with other legal documents incorporated by reference (collectively, the « Terms »), form the contract between CODAKIS (« we », « our » or « the platform ») and each user (« User », « you » or « your ») regarding access to and use of our website, applications and online services (collectively, the « Site » or « Service »).",
+    "legalNotice": "PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE SERVICE, AS THEY AFFECT YOUR LEGAL RIGHTS AND OBLIGATIONS. IF YOU DO NOT AGREE TO BE BOUND BY THESE TERMS, PLEASE STOP USING THE SERVICE IMMEDIATELY.",
+    "highlightsTitle": "Key points of the terms of use",
+    "highlightsNoteBefore": "Also see our",
+    "highlightsNoteLink": "full terms of use",
+    "highlightsNoteAfter": ".",
+    "fullTitle": "Full terms of use",
+    "privacyLink": "Read the privacy policy",
+    "contactFormLink": "Contact form",
+    "highlights": [
+      {
+        "title": "Your acceptance",
+        "body": "Each time you access and/or use the Service, you agree to be bound by these Terms and any applicable additional conditions."
+      },
+      {
+        "title": "Your privacy",
+        "body": "We collect certain information to enable CODAKIS to support your licence journey. You agree that we use this information in accordance with our privacy policy.",
+        "moreLabel": "Privacy policy",
+        "moreHref": "/politique-de-confidentialite"
+      },
+      {
+        "title": "Payments, subscriptions and cancellations",
+        "body": "You agree to honour payment obligations for services purchased on the Site. Subscriptions may renew automatically according to the chosen plan."
+      },
+      {
+        "title": "Contact",
+        "body": "For any questions about these Terms: contact@codakis.cm",
+        "moreLabel": "Contact us",
+        "moreHref": "/contact"
+      }
+    ],
+    "fullSections": [
+      {
+        "title": "1. What is CODAKIS?",
+        "paragraphs": [
+          "CODAKIS is a highway code learning platform and connection service between candidates and approved driving schools in Cameroon. By registering, you access courses, the geolocated directory, plans and associated resources."
+        ]
+      },
+      {
+        "id": "confidentialite",
+        "title": "3. Privacy",
+        "paragraphs": [
+          "Your privacy matters to us. See our privacy policy, which explains how we use the information you submit. This policy is incorporated by reference into these Terms."
+        ],
+        "showPrivacyLink": true
+      },
+      {
+        "id": "paiements",
+        "title": "8. Payments and subscriptions",
+        "paragraphs": [
+          "Current rates are displayed on the Plans page. Payments are processed by secure third-party providers (Mobile Money, etc.). Recurring subscriptions renew automatically according to the chosen period."
+        ]
+      },
+      {
+        "title": "18. Contact us",
+        "paragraphs": [
+          "CODAKIS — Douala & Yaoundé, Cameroon.",
+          "Email: contact@codakis.cm"
+        ],
+        "showContactForm": true
+      }
+    ]
+  },
+  "blogArticle": {
+    "asideAria": "Article sidebar",
+    "asideTitle": "Looking for an approved driving school?",
+    "asideText": "Browse the CODAKIS directory and find the right school near you.",
+    "asideCta": "Browse directory",
+    "relatedTitle": "Recommended articles",
+    "inlineCtaAria": "Call to action",
+    "inlineCtaTitle": "Find an approved driving school with CODAKIS",
+    "inlineCtaText": "Browse the directory, compare plans and book driving slots with confidence.",
+    "inlineCtaButton": "Get started",
+    "shareLabel": "Share this article",
+    "breadcrumbBlog": "Blog",
+    "byAuthor": "By",
+    "loading": "Loading article…",
+    "notFound": "Article not found",
+    "backToBlog": "Back to blog"
+  },
+  "pagination": {
+    "aria": "Results pagination",
+    "summary": "{{from}}–{{to}} of {{total}}",
+    "prev": "Previous page",
+    "next": "Next page"
+  },
+  "common": {
+    "loading": "Loading…",
+    "currency": "FCFA",
+    "loadingPage": "Loading page",
+    "loadingAria": "Loading"
+  }
+}

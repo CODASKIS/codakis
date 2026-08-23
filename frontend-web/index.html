@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/images/logo-simple.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        background: #fff;
+        font-family: Nunito, system-ui, sans-serif;
+      }
+
+      .codakis-boot {
+        display: flex;
+        min-height: 100vh;
+        min-height: 100dvh;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.2rem;
+        padding: 2rem;
+      }
+
+      .codakis-boot__logo {
+        width: 5.6rem;
+        height: 5.6rem;
+        object-fit: contain;
+      }
+
+      .codakis-boot__spinner {
+        width: 2.8rem;
+        height: 2.8rem;
+        border: 0.25rem solid #dcfce7;
+        border-top-color: #00a859;
+        border-radius: 50%;
+        animation: codakis-spin 0.8s linear infinite;
+      }
+
+      .codakis-boot__text {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: #64748b;
+      }
+
+      @keyframes codakis-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .codakis-boot__spinner {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="codakis-boot" role="status" aria-live="polite" aria-busy="true">
+        <img
+          class="codakis-boot__logo"
+          src="/images/logo-simple.png"
+          alt=""
+          width="56"
+          height="56"
+        />
+        <div class="codakis-boot__spinner" aria-hidden="true"></div>
+        <p class="codakis-boot__text">Chargement…</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

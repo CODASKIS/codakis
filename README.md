@@ -18,4 +18,18 @@ Les diagrammes UML, cahiers d'analyse/conception et ADR sont maintenus dans le d
 
 ## Démarrage
 
-> En cours de mise en place — les modules seront initialisés progressivement.
+### Portail web (vitrine)
+
+```bash
+cd frontend-web
+npm install
+npm run dev            # http://localhost:5173
+```
+
+**Langues :** FR / EN (sélecteur dans le header, mémorisé en local).
+
+**Stack v3 :** React 19, Vite, Tailwind 4, i18next — sans Clerk ni auth externe.
+
+**Pages :** `/`, `/auto-ecoles`, `/themes`, `/tarifs`, `/blog`, `/contact`, etc.
+
+> Backend API et espace admin — prochaines étapes.

@@ -1,0 +1,227 @@
+/* Site-wide motion & fluid interactions */
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .fj-root a:not(.fj-btn):not(.cookiepolicy__legal a):not(.cookiepolicy__learn-more),
+  .fj-root button:not(.fj-btn):not(.cookiepolicy__accept),
+  .fj-root .fj-btn,
+  .fj-root .fj-card,
+  .fj-root .fj-footer a,
+  .fj-root .fj-header-desktop a,
+  .fj-root .fj-domain-card,
+  .fj-root .fj-pricing-card,
+  .fj-root .fj-blog-card {
+    transition:
+      color 0.25s ease,
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      box-shadow 0.3s ease,
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.25s ease;
+  }
+
+  .fj-root .fj-btn:hover,
+  .fj-root .fj-card:hover,
+  .fj-root .fj-domain-card:hover,
+  .fj-root .fj-pricing-card:hover,
+  .fj-root .fj-blog-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .fj-root .fj-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .bs-motion-page {
+    will-change: opacity, transform;
+  }
+
+  .admin-root a,
+  .admin-root button,
+  .admin-root .admin-card,
+  .admin-root .admin-btn {
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.25s ease,
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .fj-root *,
+  .fj-root *::before,
+  .fj-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Cookie policy bar — style barre FlexJobs (Back | liens légaux | CTA) */
+.cookiepolicy {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99999;
+  padding: 1rem 0 calc(1rem + env(safe-area-inset-bottom, 0px));
+  background-color: #f8f9fa;
+  border-top: 0.1rem solid #e5e7eb;
+  box-shadow: 0 -0.2rem 0.8rem rgba(16, 24, 40, 0.06);
+}
+
+.cookiepolicy__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem 1.6rem;
+}
+
+.cookiepolicy__start {
+  flex: 0 0 auto;
+}
+
+.cookiepolicy__learn-more {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--fj-nav-bg, #13439b);
+  text-decoration: none;
+}
+
+.cookiepolicy__learn-more:hover {
+  color: var(--fj-cta-bg, #2f73f2);
+  text-decoration: underline;
+}
+
+.cookiepolicy__legal {
+  flex: 1 1 20rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem 0.6rem;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #667085;
+  text-align: center;
+}
+
+.cookiepolicy__legal a {
+  color: var(--fj-nav-bg, #13439b);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.cookiepolicy__legal a:hover {
+  color: var(--fj-cta-bg, #2f73f2);
+  text-decoration: underline;
+}
+
+.cookiepolicy__sep {
+  color: #98a2b3;
+}
+
+.cookiepolicy__copy {
+  color: #667085;
+}
+
+.cookiepolicy__action {
+  flex: 0 0 auto;
+}
+
+.cookiepolicy__accept {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 10rem;
+  min-height: 3.6rem;
+  padding: 0.6rem 2.4rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: var(--fj-cta-bg, #2f73f2);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.cookiepolicy__accept:hover {
+  background: var(--fj-cta-hover, #1a5ad9);
+}
+
+@media (max-width: 767px) {
+  .cookiepolicy__row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cookiepolicy__start {
+    text-align: center;
+  }
+
+  .cookiepolicy__legal {
+    flex-basis: auto;
+    font-size: 1rem;
+  }
+
+  .cookiepolicy__action {
+    width: 100%;
+  }
+
+  .cookiepolicy__accept {
+    width: 100%;
+  }
+}
+
+/* Legal page */
+.fj-legal-content {
+  max-width: 52rem;
+  padding-bottom: 4rem;
+}
+
+.fj-legal-block {
+  margin-bottom: 2rem;
+}
+
+.fj-legal-block h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  color: #101828;
+}
+
+.fj-legal-block p {
+  margin: 0;
+  line-height: 1.7;
+  color: #475467;
+}
+
+.fj-page-hero--compact {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.fj-page-hero--compact h1 {
+  margin: 0 0 0.75rem;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  color: #101828;
+}
+
+.fj-page-hero--compact .fj-page-hero__lead {
+  margin: 0;
+  max-width: 42rem;
+  color: #667085;
+  font-size: 1.0625rem;
+}

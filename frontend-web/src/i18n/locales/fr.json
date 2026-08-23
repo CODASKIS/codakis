@@ -1,0 +1,621 @@
+{
+  "lang": {
+    "fr": "FR",
+    "en": "EN",
+    "switch": "Changer de langue"
+  },
+  "nav": {
+    "drivingSchools": "Auto-écoles",
+    "howItWorks": "Comment ça marche",
+    "blog": "Conseils & actualités",
+    "themes": "Thèmes du code",
+    "subscription": "Abonnement CODAKIS",
+    "contact": "Contact",
+    "login": "Connexion",
+    "signup": "S'inscrire",
+    "menu": "Menu principal",
+    "mobileMenu": "Menu mobile",
+    "search": "Lancer la recherche",
+    "searchSchool": "Rechercher une auto-école",
+    "searchPlaceholder": "Auto-école, ville ou quartier…",
+    "locationPlaceholder": "Ville ou quartier",
+    "seeAllSchools": "Voir toutes les auto-écoles",
+    "consort": "Dossier Consort"
+  },
+  "home": {
+    "metaTitle": "CODAKIS — Apprendre le code de la route au Cameroun",
+    "metaDescription": "Plateforme d'apprentissage du code de la route et annuaire d'auto-écoles agréées au Cameroun.",
+    "heroTitle": "Réussissez votre code de la route au Cameroun",
+    "heroLead": "Cours interactifs, examens blancs et annuaire d'auto-écoles agréées, tout votre parcours permis sur une seule plateforme.",
+    "heroCta": "Commencer gratuitement",
+    "heroCtaSecondary": "Trouver une auto-école",
+    "heroBadge": "Auto-école agréée",
+    "heroProgress": "Bravo ! Vous progressez sur le thème {{theme}}.",
+    "partnersTitle": "Nos partenaires de paiement",
+    "pillarsTitle": "Plus qu'une simple application de quiz.",
+    "pillar1Title": "Apprendre à votre rythme",
+    "pillar1Text": "Cours, quiz et examens blancs alignés sur le référentiel CEMAC et les spécificités camerounaises.",
+    "pillar2Title": "Auto-écoles agréées",
+    "pillar2Text": "Seules les auto-écoles validées par CODAKIS apparaissent dans l'annuaire — transparence et confiance.",
+    "pillar3Title": "Parcours complet",
+    "pillar3Text": "Du code de la route au dossier Consort, en passant par la réservation de créneaux de conduite.",
+    "schoolsTitle": "Auto-écoles agréées près de chez vous",
+    "schoolsLead": "Comparez les forfaits, consultez les taux de réussite et choisissez l'établissement qui vous convient.",
+    "schoolsEmpty": "Aucune auto-école disponible pour le moment.",
+    "schoolsFrom": "À partir de",
+    "schoolsSuccessRate": "Taux de réussite",
+    "schoolsViewProfile": "Voir le profil",
+    "featuredTitle": "Des dizaines d'auto-écoles à travers le Cameroun",
+    "featuredLead": "Comparez les forfaits, consultez les taux de réussite et réservez vos créneaux de conduite en toute confiance.",
+    "featuredExplore": "Explorer l'annuaire",
+    "featuredThemes": "Voir les thèmes",
+    "themesTitle": "10 thèmes du code de la route CEMAC",
+    "themesLead": "Progressez thème par thème avec des leçons, quiz et examens blancs.",
+    "themesAll": "Tous les thèmes",
+    "themeLabels": {
+      "signalisation": "Signalisation routière",
+      "priorites": "Priorités & intersections",
+      "circulation": "Règles de circulation",
+      "vitesse": "Vitesse & distances de sécurité",
+      "stationnement": "Arrêt & stationnement",
+      "vehicule": "Véhicule, éclairage & équipements",
+      "documents": "Documents & contrôles",
+      "comportement": "Comportement, alcool & substances",
+      "usagers": "Usagers vulnérables",
+      "contexte_local": "Particularités camerounaises & CEMAC"
+    },
+    "ctaTitle": "Des milliers de candidats se préparent avec CODAKIS",
+    "ctaSubtitle": "Pourquoi choisir CODAKIS ?",
+    "ctaText": "Apprentissage gamifié, auto-écoles vérifiées et suivi du dossier Consort en un seul endroit.",
+    "ctaButton": "Trouver mon auto-école",
+    "blogEyebrow": "Articles récents",
+    "blogTitle": "Depuis notre blog",
+    "blogLoading": "Chargement des articles…",
+    "blogError": "Impossible de charger les articles pour le moment.",
+    "blogSeeAll": "Voir tous les articles"
+  },
+  "coverage": {
+    "title": "Mobile Money & dossier Consort en zone CEMAC",
+    "lead": "CODAKIS couvre les 6 pays de la CEMAC avec paiement Orange Money et MTN MoMo, et le suivi complet de votre dossier administratif permis.",
+    "orangeHint": "Paiement sécurisé",
+    "mtnHint": "Paiement instantané",
+    "consortHint": "6 pièces à suivre",
+    "stat1Value": "6",
+    "stat1Label": "Pays CEMAC",
+    "stat1Trend": "Zone couverte",
+    "stat2Value": "2",
+    "stat2Label": "Mobile Money",
+    "stat2Trend": "Orange & MTN",
+    "stat3Value": "6",
+    "stat3Label": "Pièces Consort",
+    "stat3Trend": "Suivi pas à pas",
+    "mapLegendCovered": "Couvert",
+    "mapLegendOther": "Hors zone",
+    "mapAriaLabel": "Carte de couverture CODAKIS en zone CEMAC",
+    "countries": {
+      "cameroon": "Cameroun",
+      "car": "République centrafricaine",
+      "chad": "Tchad",
+      "equatorialGuinea": "Guinée équatoriale",
+      "gabon": "Gabon",
+      "congo": "Congo"
+    }
+  },
+  "cookies": {
+    "learnMore": "En savoir plus",
+    "accept": "Accepter",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "rights": "© {{year}} CODAKIS. Tous droits réservés."
+  },
+  "mobile": {
+    "eyebrow": "Application mobile",
+    "title": "Révisez partout avec l'app CODAKIS",
+    "lead": "Téléchargez l'application pour accéder aux cours, quiz et examens blancs, même hors connexion.",
+    "feature1": "Cours et quiz offline",
+    "feature2": "Suivi de progression et streak",
+    "feature3": "Réservation de créneaux conduite",
+    "qrAlt": "QR code pour télécharger l'application CODAKIS",
+    "scan": "Scannez pour télécharger",
+    "stores": "Bientôt sur App Store et Google Play"
+  },
+  "consort": {
+    "metaTitle": "Dossier Consort | CODAKIS",
+    "metaDescription": "Suivez les 6 pièces obligatoires de votre dossier administratif permis de conduire au Cameroun.",
+    "title": "Votre dossier Consort",
+    "lead": "CODAKIS vous aide à suivre chaque pièce du dossier administratif requis pour le permis de conduire au Cameroun.",
+    "ctaText": "Créez votre compte pour suivre l'avancement de votre dossier pièce par pièce.",
+    "ctaButton": "Commencer avec CODAKIS",
+    "pieces": {
+      "id": { "title": "Pièce d'identité", "desc": "CNI ou passeport en cours de validité." },
+      "birth": { "title": "Certificat de naissance", "desc": "Copie légalisée ou original selon les exigences locales." },
+      "medical": { "title": "Certificat médical", "desc": "Délivré par un centre médical agréé, valide 3 mois." },
+      "photos": { "title": "Photos d'identité", "desc": "Format réglementaire, fond clair, conformes aux normes." },
+      "address": { "title": "Justificatif de domicile", "desc": "Facture récente ou attestation de résidence." },
+      "stamps": { "title": "Droits de timbres", "desc": "Timbres fiscaux requis pour le dossier Consort." }
+    }
+  },
+  "pricing": {
+    "title": "Choisissez la formule adaptée à vos besoins",
+    "audienceCandidates": "Candidats",
+    "audienceSchools": "Auto-écoles",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "empty": "Aucun forfait disponible pour le moment.",
+    "footnote": "Paiement sécurisé via Mobile Money. Les tarifs affichés sont indicatifs."
+  },
+  "footer": {
+    "description": "CODAKIS accompagne les candidats au permis de conduire au Cameroun : apprentissage du code, mise en relation avec des auto-écoles agréées, suivi du dossier Consort et parcours permis.",
+    "col1Title": "Préparer votre permis",
+    "col2Title": "À propos de CODAKIS",
+    "colAccountTitle": "Mon compte",
+    "col3Title": "Ressources",
+    "loginSchool": "Espace gérant auto-école",
+    "loginInstructor": "Espace moniteur",
+    "rights": "Tous droits réservés",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation"
+  },
+  "schools": {
+    "metaTitle": "Annuaire auto-écoles | CODAKIS",
+    "metaDescription": "Trouvez une auto-école agréée près de chez vous au Cameroun.",
+    "heading": "Auto-écoles agréées",
+    "headingQuery": "Auto-écoles — {{query}}",
+    "headingTheme": "Auto-écoles — {{theme}}",
+    "headingCity": "Auto-écoles près de {{city}}",
+    "intro": "Établissements vérifiés — forfaits, avis et taux de réussite.",
+    "loading": "Chargement de l'annuaire…",
+    "searching": "Recherche en cours…",
+    "error": "Impossible de charger l'annuaire pour le moment.",
+    "empty": "Aucune auto-école ne correspond à votre recherche.",
+    "count_one": "{{count}} auto-école trouvée",
+    "count_other": "{{count}} auto-écoles trouvées",
+    "seeAll": "Voir toutes les auto-écoles",
+    "certified": "Agréée CODAKIS",
+    "available": "Places disponibles",
+    "viewProfile": "Voir le profil complet",
+    "new": "Nouveau"
+  },
+  "schoolDetail": {
+    "breadcrumbHome": "Accueil",
+    "mapTitle": "Localisation — {{name}}",
+    "address": "Adresse",
+    "hours": "Horaires",
+    "contact": "Contact",
+    "contactCta": "Contactez-nous",
+    "closed": "Fermé",
+    "reviseCodeTitle": "Réviser le code en ligne",
+    "reviseCodeText": "Accédez aux cours CEMAC, quiz et examens blancs depuis CODAKIS, où que vous soyez.",
+    "reviseCodeCta": "Commencer les révisions",
+    "bookLessonTitle": "Réserver une leçon de conduite",
+    "bookLessonText": "Choisissez vos créneaux avec cette auto-école et suivez votre progression sur CODAKIS.",
+    "bookLessonCta": "Demander un créneau",
+    "formationsTitle": "Forfaits {{name}}",
+    "formationsTabs": "Types de forfait",
+    "accessTitle": "Délai et modalités d'accès",
+    "tabs": {
+      "codeSeul": "Code seul",
+      "conduiteSeule": "Conduite seule",
+      "complet": "Forfait complet"
+    },
+    "days": {
+      "mon": "Lundi",
+      "tue": "Mardi",
+      "wed": "Mercredi",
+      "thu": "Jeudi",
+      "fri": "Vendredi",
+      "sat": "Samedi",
+      "sun": "Dimanche"
+    },
+    "reviews_one": "{{count}} avis",
+    "reviews_other": "{{count}} avis",
+    "ratingAria": "Note {{rating}} sur 5, {{count}} avis",
+    "certifiedSince": "Agréée CODAKIS depuis {{date}}"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "currency": "FCFA"
+  },
+  "packs": {
+    "title": "Découvre nos forfaits permis",
+    "subtitle": "Forfaits code seul, conduite seule ou complet — tarifs fixés par chaque auto-école agréée MINT",
+    "subtitleSchool": "Tarifs publiés par cette auto-école — paiement Orange Money / MTN MoMo et reçu QR code",
+    "featured": "Favori",
+    "schoolPrice": "Tarif auto-école",
+    "publicPrice": "prix public",
+    "from": "À partir de",
+    "hoursShort": "cours",
+    "hoursAria": "Nombre d'heures de conduite",
+    "codeModeAria": "Mode de préparation code",
+    "codeSalle": "En salle",
+    "codeOnline": "En ligne",
+    "signup": "S'inscrire",
+    "loginToPay": "Se connecter pour acheter",
+    "payMobileMoney": "Payer par Mobile Money",
+    "viewContent": "Voir le détail du forfait",
+    "detail": {
+      "close": "Fermer",
+      "bestOffer": "Offre la plus économique",
+      "includes": "Ce forfait comprend",
+      "schoolNote": "Tarif proposé par {{name}} — rattaché à votre compte après confirmation du paiement Mobile Money.",
+      "features": {
+        "codeSeul": {
+          "salle1": "Inscription au code de la route",
+          "salle2": "Cours en salle avec moniteur agréé",
+          "salle3": "Accès CODAKIS Premium 3 mois",
+          "salle4": "Examens blancs illimités",
+          "online1": "Code 100 % en ligne sur CODAKIS",
+          "online2": "10 thèmes CEMAC + quiz",
+          "online3": "Suivi moniteur à distance",
+          "online4": "Examens blancs illimités"
+        },
+        "conduiteSeule": {
+          "drive1": "{{hours}} heures de conduite avec moniteur",
+          "drive2": "Évaluation initiale de niveau",
+          "drive3": "Réservation de créneaux sur CODAKIS",
+          "drive4": "Préparation à l'examen pratique"
+        },
+        "complet": {
+          "full1": "Formation au code CEMAC",
+          "full2": "{{hours}} heures de conduite incluses",
+          "full3": "Accompagnement dossier Consort",
+          "full4": "Paiement Mobile Money + reçu QR code",
+          "full5": "Examens blancs et suivi de progression"
+        }
+      }
+    },
+    "noteSchool": "Tarif indicatif pour {{name}} — confirmé à l'inscription.",
+    "noteOverview": "Tarif minimum constaté dans l'annuaire — chaque auto-école fixe ses propres prix.",
+    "footnote": "L'abonnement CODAKIS (Gratuit/Premium) couvre la révision théorique. Les forfaits conduite sont vendus par les auto-écoles partenaires.",
+    "overview": {
+      "codeSeul": {
+        "label": "Code seul",
+        "desc": "Préparation au code CEMAC en salle ou 100 % en ligne via CODAKIS."
+      },
+      "conduiteSeule": {
+        "label": "Conduite seule",
+        "desc": "Heures de conduite avec moniteur agréé — réservation de créneaux sur CODAKIS."
+      },
+      "complet": {
+        "label": "Forfait complet",
+        "desc": "Code + conduite, examens blancs et dossier Consort — parcours permis complet."
+      }
+    }
+  },
+  "sidebar": {
+    "promoTitle": "Vous cherchez une auto-école agréée ?",
+    "promoText": "Accédez à l'annuaire complet CODAKIS : profils vérifiés, avis et coordonnées.",
+    "alreadyMember": "Déjà inscrit ? Se connecter"
+  },
+  "search": {
+    "locationAria": "Rechercher par localisation",
+    "locationMenuAria": "Suggestions de localisation",
+    "locating": "Localisation en cours…",
+    "locationCurrent": "Ma position actuelle",
+    "locationCurrentValue": "Autour de moi",
+    "locationCountry": "Tout le Cameroun",
+    "locationAnywhere": "N'importe quelle ville"
+  },
+  "auth": {
+    "backToSite": "Retour au site",
+    "backToRoles": "Choisir un espace",
+    "backToLogin": "Retour à la connexion",
+    "hub": {
+      "metaTitle": "Connexion | CODAKIS",
+      "metaDescription": "Accédez à votre espace candidat, moniteur, gérant ou administrateur.",
+      "title": "Connexion",
+      "subtitle": "Choisissez votre espace pour vous connecter."
+    },
+    "login": {
+      "pageTitle": "Connexion",
+      "metaDescription": "Connectez-vous à votre espace CODAKIS.",
+      "subtitle": "Se connecter",
+      "submit": "Se connecter",
+      "forgot": "Mot de passe oublié ?",
+      "noAccount": "Pas encore de compte ?",
+      "registerLink": "Créer un compte"
+    },
+    "register": {
+      "metaTitle": "Inscription — {{role}} | CODAKIS",
+      "metaDescription": "Créez votre compte CODAKIS.",
+      "title": "Inscription",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "loginLink": "Se connecter"
+    },
+    "forgot": {
+      "metaTitle": "Mot de passe oublié | CODAKIS",
+      "metaDescription": "Réinitialisez votre mot de passe CODAKIS.",
+      "title": "Mot de passe oublié",
+      "subtitle": "Entrez votre e-mail pour recevoir un lien de réinitialisation.",
+      "hint": "Si vous ne recevez pas l'e-mail, contactez notre équipe support.",
+      "submit": "Envoyer",
+      "sent": "Si un compte existe pour {{email}}, vous recevrez un e-mail avec les instructions.",
+      "contact": "Contacter le support"
+    },
+    "google": {
+      "signIn": "Continuer avec Google",
+      "signUp": "S'inscrire avec Google"
+    },
+    "orDivider": "ou",
+    "password": {
+      "show": "Afficher le mot de passe",
+      "hide": "Masquer le mot de passe"
+    },
+    "fields": {
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "E-mail ou identifiant",
+      "credentials": "Identifiants",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Mot de passe",
+      "language": "Langue",
+      "fullName": "Nom complet",
+      "fullNamePlaceholder": "Prénom et nom",
+      "emailOrUsername": "E-mail ou identifiant",
+      "emailPlaceholder": "votre@email.com",
+      "phoneAndCity": "Téléphone et ville",
+      "phone": "Téléphone",
+      "phonePlaceholder": "+237 6 XX XX XX XX",
+      "city": "Ville",
+      "cityPlaceholder": "Douala, Yaoundé…",
+      "country": "Pays (zone CEMAC)",
+      "schoolName": "Nom de l'auto-école",
+      "schoolNamePlaceholder": "Nom de votre établissement"
+    },
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    },
+    "errors": {
+      "required": "Veuillez remplir tous les champs obligatoires.",
+      "schoolRequired": "Le nom de l'auto-école est obligatoire."
+    },
+    "roles": {
+      "admin": {
+        "title": "Administration",
+        "hint": "Gestion plateforme, contenu et agréments",
+        "registerHint": ""
+      },
+      "candidat": {
+        "title": "Espace candidat",
+        "hint": "Cours, examens blancs et dossier Consort",
+        "registerHint": "Créez votre compte pour réviser le code et suivre votre parcours permis."
+      },
+      "moniteur": {
+        "title": "Espace moniteur",
+        "hint": "Planning et suivi des élèves affectés",
+        "registerHint": ""
+      },
+      "gerant": {
+        "title": "Espace gérant",
+        "hint": "Inscriptions, forfaits et moniteurs de votre auto-école",
+        "registerHint": "Inscrivez votre auto-école partenaire sur CODAKIS."
+      }
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "aria": "Navigation de l'espace connecté",
+      "home": "Tableau de bord",
+      "schools": "Auto-écoles",
+      "content": "Contenu pédagogique",
+      "payments": "Paiements",
+      "users": "Utilisateurs",
+      "settings": "Paramètres",
+      "courses": "Mes cours",
+      "exams": "Quiz & examens",
+      "consort": "Dossier Consort",
+      "mySchool": "Mon auto-école",
+      "students": "Mes élèves",
+      "schedule": "Planning",
+      "slots": "Créneaux",
+      "enrollments": "Inscriptions",
+      "plans": "Forfaits",
+      "instructors": "Moniteurs",
+      "stats": "Statistiques",
+      "schoolProfile": "Fiche établissement",
+      "profile": "Mon profil"
+    },
+    "backToSite": "Retour au site public",
+    "userMenu": {
+      "planFree": "Gratuit",
+      "planPremium": "Premium",
+      "upgradeTitle": "Passer à CODAKIS Premium",
+      "upgradeSubtitle": "10 thèmes, quiz illimités et examens blancs",
+      "upgradeCta": "Passer à Premium",
+      "managePlan": "Gérer mon abonnement"
+    },
+    "profile": {
+      "title": "Mon profil",
+      "fullName": "Nom complet",
+      "email": "E-mail",
+      "phone": "Téléphone",
+      "city": "Ville",
+      "notProvided": "Non renseigné",
+      "schoolSection": "Forfait auto-école (via vitrine)",
+      "pack": "Forfait",
+      "enrolledSince": "Inscrit depuis le {{date}}",
+      "subscriptionSection": "Abonnement CODAKIS",
+      "premiumActive": "Accès Premium actif — tous les thèmes et examens illimités.",
+      "premiumHint": "Passez à Premium pour débloquer les 10 thèmes CEMAC et les examens blancs illimités.",
+      "consortSummary": "4 pièces validées sur 6 — complétez votre dossier administratif."
+    },
+    "enrollment": {
+      "notEnrolled": "Aucun forfait acheté",
+      "noneTitle": "Aucune auto-école rattachée",
+      "noneLead": "Votre auto-école est définie lors de l'achat d'un forfait sur la vitrine CODAKIS (Mobile Money). Parcourez les offres, choisissez un forfait — l'établissement partenaire est alors associé à votre compte avec reçu et QR code d'enrôlement.",
+      "browseForfaits": "Parcourir les forfaits",
+      "learnMore": "Comprendre le parcours",
+      "statusNone": "Sans forfait",
+      "statusConfirmed": "Paiement confirmé",
+      "statusPending": "Paiement en attente",
+      "enrolledOn": "Date d'inscription",
+      "receiptHint": "Reçu Mobile Money et QR code disponibles dans l'app.",
+      "paymentRef": "Réf. paiement : {{ref}}",
+      "contact": "Coordonnées",
+      "nextSteps": "Prochaines étapes",
+      "stepConsort": "Finaliser les pièces manquantes du dossier Consort",
+      "stepSlots": "Réserver vos créneaux de conduite sur CODAKIS",
+      "stepExam": "Préparer l'examen pratique avec votre moniteur",
+      "statsTitle": "Taux de réussite",
+      "successRate": "Élèves de cette auto-école",
+      "actions": "Actions rapides"
+    },
+    "openMenu": "Ouvrir le menu",
+    "closeMenu": "Fermer le menu",
+    "welcome": "Bonjour, {{name}}",
+    "user": "Utilisateur",
+    "logout": "Déconnexion",
+    "comingSoon": "Bientôt disponible",
+    "widgets": {
+      "total": "Total",
+      "average": "Moyenne",
+      "themesDone": "Thèmes révisés",
+      "drivingHours": "Heures de conduite",
+      "progressHint": "Progression sur les 10 thèmes CEMAC du code de la route.",
+      "consortHint": "Suivi des 6 pièces obligatoires du dossier administratif permis.",
+      "monthlyProgress": "Progression mensuelle",
+      "progressSeries": "Thèmes révisés",
+      "examSeries": "Score examens blancs",
+      "consortProgress": "Avancement dossier Consort",
+      "consortProgressHint": "4 pièces validées, 1 en cours et 1 manquante sur 6.",
+      "recentActivity": "Activité récente",
+      "themeSignal": "Signalisation",
+      "themePriority": "Priorités",
+      "themeCirculation": "Circulation",
+      "feedQuiz": "Quiz thème Signalisation réussi — 8/10",
+      "feedSchool": "Inscription confirmée — {{school}}",
+      "feedConsort": "Pièce d'identité validée dans votre dossier Consort",
+      "feedLesson": "Prochaine leçon de conduite — lundi 14h",
+      "feedExam": "Rappel : examen blanc disponible",
+      "timeToday": "Aujourd'hui",
+      "time2h": "Il y a 2 h",
+      "timeYesterday": "Hier",
+      "time3d": "Il y a 3 j",
+      "colStatus": "Statut",
+      "colAction": "Action",
+      "colSchool": "Auto-école",
+      "colCandidates": "Candidats",
+      "colStudent": "Élève",
+      "colDate": "Date",
+      "colDuration": "Durée",
+      "colCandidate": "Candidat",
+      "colPack": "Forfait",
+      "colAmount": "Montant",
+      "statusConfirmed": "Confirmé",
+      "statusPending": "En attente",
+      "statusPaid": "Payé",
+      "newEnrollments": "Nouvelles inscriptions",
+      "pendingMint": "Agréments en attente",
+      "avgSuccess": "Taux de réussite moyen",
+      "avgSuccessHint": "Moyenne des candidats sur l'ensemble des auto-écoles partenaires.",
+      "monthlyEnrollments": "Inscriptions du mois",
+      "monthlyEnrollmentsHint": "Nouveaux candidats inscrits via CODAKIS ce mois-ci.",
+      "paymentsChart": "Volume paiements Mobile Money",
+      "schoolDistribution": "Répartition auto-écoles",
+      "schoolDistributionHint": "Par région et statut d'agrément MINT.",
+      "recentSchools": "Auto-écoles récentes",
+      "lessonsToday": "Leçons aujourd'hui",
+      "evaluations": "Note moyenne",
+      "attendanceRate": "Taux de présence",
+      "attendanceRateHint": "Présence aux créneaux de conduite planifiés.",
+      "plannedHoursHint": "Heures de conduite planifiées sur les 3 dernières semaines.",
+      "lessonsChart": "Leçons planifiées",
+      "studentLevels": "Niveaux des élèves",
+      "studentLevelsHint": "Répartition débutant / intermédiaire / examen.",
+      "upcomingLessons": "Prochaines leçons",
+      "activePacks": "Forfaits actifs",
+      "openSlots": "Créneaux ouverts",
+      "schoolSuccessHint": "Taux de réussite aux examens — élèves de votre auto-école.",
+      "revenueHint": "Revenus Mobile Money encaissés sur les 3 derniers mois.",
+      "enrollmentsChart": "Inscriptions mensuelles",
+      "packDistribution": "Répartition forfaits",
+      "packDistributionHint": "Code seul, conduite seule et forfaits complets."
+    },
+    "consort": {
+      "pageTitle": "Mon dossier Consort",
+      "pageLead": "Suivez et complétez les 6 pièces obligatoires de votre dossier administratif permis de conduire.",
+      "tableTitle": "Suivi des pièces Consort",
+      "colPiece": "Pièce",
+      "colDate": "Date",
+      "progressLabel": "Avancement du dossier",
+      "progressHint": "Un dossier complet accélère votre inscription en préfecture.",
+      "footerText": "Besoin d'aide ? Votre auto-école partenaire peut valider chaque pièce avec vous.",
+      "actionUpload": "Téléverser la pièce",
+      "actionAdd": "Ajouter la pièce",
+      "validatedOn": "Validée le {{date}}",
+      "status": {
+        "validated": "Validée",
+        "pending": "En cours",
+        "missing": "Manquante"
+      }
+    },
+    "placeholder": {
+      "title": "Module en cours de déploiement",
+      "description": "Cette section sera connectée au backend CODAKIS dans une prochaine étape."
+    },
+    "admin": {
+      "metaTitle": "Administration | CODAKIS",
+      "metaDescription": "Tableau de bord administrateur CODAKIS.",
+      "title": "Administration CODAKIS",
+      "lead": "Supervision des auto-écoles, du contenu pédagogique et des paiements Mobile Money.",
+      "stats": {
+        "schools": "Auto-écoles agréées",
+        "candidates": "Candidats actifs",
+        "payments": "Volume paiements",
+        "success": "Taux réussite moyen"
+      },
+      "recentTitle": "Activité récente",
+      "recentPlaceholder": "Inscriptions et paiements",
+      "recentHint": "Les flux transactionnels et agréments MINT apparaîtront ici."
+    },
+    "candidat": {
+      "metaTitle": "Espace candidat | CODAKIS",
+      "metaDescription": "Suivez votre progression code et dossier Consort.",
+      "title": "Mon parcours permis",
+      "lead": "Révision CEMAC, examens blancs et suivi de votre auto-école.",
+      "stats": {
+        "progress": "Progression code",
+        "exams": "Dernier examen blanc",
+        "success": "Indice de réussite",
+        "consort": "Dossier Consort",
+        "consortHint": "pièces complétées"
+      },
+      "actionsTitle": "Actions rapides",
+      "actionCourses": "Reprendre les cours",
+      "actionExam": "Lancer un examen blanc",
+      "actionConsort": "Voir mon dossier Consort"
+    },
+    "moniteur": {
+      "metaTitle": "Espace moniteur | CODAKIS",
+      "metaDescription": "Planning et élèves affectés.",
+      "title": "Espace moniteur",
+      "lead": "Créneaux de conduite et suivi de vos élèves.",
+      "stats": {
+        "students": "Élèves affectés",
+        "slots": "Créneaux ouverts",
+        "slotsHint": "cette semaine",
+        "week": "Heures planifiées",
+        "rate": "Taux présence"
+      },
+      "scheduleTitle": "Planning de la semaine",
+      "schedulePlaceholder": "Calendrier partagé",
+      "scheduleHint": "Les réservations candidats apparaîtront ici."
+    },
+    "gerant": {
+      "metaTitle": "Espace gérant | CODAKIS",
+      "metaDescription": "Gérez votre auto-école partenaire.",
+      "title": "Mon auto-école",
+      "lead": "Inscriptions, forfaits et moniteurs — espace SaaS CODAKIS.",
+      "stats": {
+        "enrollments": "Inscriptions",
+        "revenue": "Revenus Mobile Money",
+        "instructors": "Moniteurs actifs",
+        "success": "Taux de réussite"
+      },
+      "inboxTitle": "Nouvelles inscriptions",
+      "inboxPlaceholder": "Tunnel transactionnel",
+      "inboxHint": "Forfaits achetés avec reçu QR code et statut de paiement."
+    }
+  }
+}

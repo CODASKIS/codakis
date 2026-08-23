@@ -1,0 +1,110 @@
+/* Typographie vitrine — Nunito + échelle html 62.5% → 1rem = 10px */
+
+html {
+  font-size: 62.5%;
+}
+
+.fj-root {
+  font-family: Nunito, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--fj-text, #3e3d3f);
+}
+
+@media screen and (max-width: 1024px) {
+  .fj-root {
+    font-size: 1.4rem;
+  }
+}
+
+.fj-root a:not([class*="fj-btn"]):not(.fj-billing-notice__link) {
+  color: var(--fj-link);
+}
+
+.fj-root a.fj-billing-notice__link {
+  color: #fff;
+  text-decoration: none;
+}
+
+.fj-root .fj-navbar a:not(.fj-btn-nav-cta):not(.fj-user-menu__panel a),
+.fj-root .fj-mobile-drawer a {
+  color: #fff;
+}
+
+.fj-root .fj-user-menu__panel a,
+.fj-root .fj-user-menu__panel .fj-user-menu__logout {
+  color: var(--fj-link) !important;
+}
+
+.fj-root a.fj-btn {
+  text-decoration: none;
+}
+
+.fj-root a.fj-btn--primary,
+.fj-root a.fj-btn-nav-cta {
+  color: #fff;
+}
+
+.fj-root a.fj-btn--primary:hover,
+.fj-root a.fj-btn-nav-cta:hover {
+  color: #fff;
+}
+
+.fj-root a.fj-btn--outline {
+  color: var(--fj-cta-bg);
+}
+
+.fj-root img {
+  max-width: 100%;
+  height: auto;
+}
+
+.fj-root button,
+.fj-root input,
+.fj-root select,
+.fj-root textarea {
+  font-family: inherit;
+}
+
+.fj-root h1,
+.fj-root h2,
+.fj-root h3,
+.fj-root h4,
+.fj-root h5,
+.fj-root h6 {
+  font-family: inherit;
+  color: var(--fj-nav-bg);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.fj-root h1 {
+  font-size: 2.8rem;
+}
+
+.fj-root h2 {
+  font-size: 2.4rem;
+}
+
+.fj-root h3 {
+  font-size: 2rem;
+}
+
+.fj-root h4 {
+  font-size: 1.8rem;
+}
+
+.fj-root h5 {
+  font-size: 1.6rem;
+}
+
+.fj-root h6 {
+  font-size: 1.4rem;
+}
+
+.fj-root small {
+  font-size: 1.4rem;
+  line-height: 1.6;
+}

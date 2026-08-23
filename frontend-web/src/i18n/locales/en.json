@@ -1,0 +1,621 @@
+{
+  "lang": {
+    "fr": "FR",
+    "en": "EN",
+    "switch": "Change language"
+  },
+  "nav": {
+    "drivingSchools": "Driving schools",
+    "howItWorks": "How it works",
+    "blog": "Tips & news",
+    "themes": "Theory topics",
+    "subscription": "CODAKIS subscription",
+    "contact": "Contact",
+    "login": "Sign in",
+    "signup": "Sign up",
+    "menu": "Main navigation",
+    "mobileMenu": "Mobile menu",
+    "search": "Search",
+    "searchSchool": "Search for a driving school",
+    "searchPlaceholder": "Driving school, city or district…",
+    "locationPlaceholder": "City or district",
+    "seeAllSchools": "View all driving schools",
+    "consort": "Consort file"
+  },
+  "home": {
+    "metaTitle": "CODAKIS — Learn the highway code in Cameroon",
+    "metaDescription": "Highway code learning platform and directory of approved driving schools in Cameroon.",
+    "heroTitle": "Pass your highway code in Cameroon",
+    "heroLead": "Interactive courses, mock exams and a directory of approved driving schools, your full licence journey on one platform.",
+    "heroCta": "Start for free",
+    "heroCtaSecondary": "Find a driving school",
+    "heroBadge": "Approved driving school",
+    "heroProgress": "Great! You're progressing on {{theme}}.",
+    "partnersTitle": "Our payment partners",
+    "pillarsTitle": "More than a simple quiz app.",
+    "pillar1Title": "Learn at your pace",
+    "pillar1Text": "Courses, quizzes and mock exams aligned with CEMAC standards and Cameroonian specifics.",
+    "pillar2Title": "Approved driving schools",
+    "pillar2Text": "Only CODAKIS-validated schools appear in the directory — transparency and trust.",
+    "pillar3Title": "Complete journey",
+    "pillar3Text": "From theory to practical driving — book slots and track your progress.",
+    "schoolsTitle": "Approved driving schools near you",
+    "schoolsLead": "Compare plans, check pass rates and choose the school that fits you.",
+    "schoolsEmpty": "No driving schools available at the moment.",
+    "schoolsFrom": "From",
+    "schoolsSuccessRate": "Pass rate",
+    "schoolsViewProfile": "View profile",
+    "featuredTitle": "Dozens of driving schools across Cameroon",
+    "featuredLead": "Compare plans, check pass rates and book driving slots with confidence.",
+    "featuredExplore": "Browse directory",
+    "featuredThemes": "View topics",
+    "themesTitle": "10 CEMAC highway code topics",
+    "themesLead": "Progress topic by topic with lessons, quizzes and mock exams.",
+    "themesAll": "All topics",
+    "themeLabels": {
+      "signalisation": "Road signs",
+      "priorites": "Priorities & intersections",
+      "circulation": "Traffic rules",
+      "vitesse": "Speed & safety distances",
+      "stationnement": "Stopping & parking",
+      "vehicule": "Vehicle, lighting & equipment",
+      "documents": "Documents & controls",
+      "comportement": "Behaviour, alcohol & substances",
+      "usagers": "Vulnerable road users",
+      "contexte_local": "Cameroon & CEMAC specifics"
+    },
+    "ctaTitle": "Thousands of candidates prepare with CODAKIS",
+    "ctaSubtitle": "Why choose CODAKIS?",
+    "ctaText": "Gamified learning, verified schools and progress tracking in one place.",
+    "ctaButton": "Find my driving school",
+    "blogEyebrow": "Recent articles",
+    "blogTitle": "From our blog",
+    "blogLoading": "Loading articles…",
+    "blogError": "Unable to load articles at the moment.",
+    "blogSeeAll": "View all articles"
+  },
+  "coverage": {
+    "title": "Mobile Money & Consort file across CEMAC",
+    "lead": "CODAKIS covers all 6 CEMAC countries with Orange Money and MTN MoMo payments, plus full tracking of your driving licence administrative file.",
+    "orangeHint": "Secure payment",
+    "mtnHint": "Instant payment",
+    "consortHint": "6 documents to track",
+    "stat1Value": "6",
+    "stat1Label": "CEMAC countries",
+    "stat1Trend": "Coverage zone",
+    "stat2Value": "2",
+    "stat2Label": "Mobile Money",
+    "stat2Trend": "Orange & MTN",
+    "stat3Value": "6",
+    "stat3Label": "Consort documents",
+    "stat3Trend": "Step-by-step tracking",
+    "mapLegendCovered": "Covered",
+    "mapLegendOther": "Outside zone",
+    "mapAriaLabel": "CODAKIS CEMAC coverage map of Africa",
+    "countries": {
+      "cameroon": "Cameroon",
+      "car": "Central African Republic",
+      "chad": "Chad",
+      "equatorialGuinea": "Equatorial Guinea",
+      "gabon": "Gabon",
+      "congo": "Congo"
+    }
+  },
+  "cookies": {
+    "learnMore": "Learn more",
+    "accept": "Accept",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use",
+    "rights": "© {{year}} CODAKIS. All rights reserved."
+  },
+  "mobile": {
+    "eyebrow": "Mobile app",
+    "title": "Study anywhere with the CODAKIS app",
+    "lead": "Download the app to access courses, quizzes and mock exams, even offline.",
+    "feature1": "Offline courses and quizzes",
+    "feature2": "Progress tracking and streaks",
+    "feature3": "Driving slot booking",
+    "qrAlt": "QR code to download the CODAKIS app",
+    "scan": "Scan to download",
+    "stores": "Coming soon on App Store and Google Play"
+  },
+  "consort": {
+    "metaTitle": "Consort file | CODAKIS",
+    "metaDescription": "Track the 6 mandatory documents for your driving licence application in Cameroon.",
+    "title": "Your Consort file",
+    "lead": "CODAKIS helps you track each administrative document required for your driving licence in Cameroon.",
+    "ctaText": "Create your account to track each document step by step.",
+    "ctaButton": "Get started with CODAKIS",
+    "pieces": {
+      "id": { "title": "ID document", "desc": "Valid national ID card or passport." },
+      "birth": { "title": "Birth certificate", "desc": "Certified copy or original as required locally." },
+      "medical": { "title": "Medical certificate", "desc": "Issued by an approved medical centre, valid 3 months." },
+      "photos": { "title": "ID photos", "desc": "Regulatory format, light background, compliant with standards." },
+      "address": { "title": "Proof of address", "desc": "Recent bill or certificate of residence." },
+      "stamps": { "title": "Stamp duties", "desc": "Fiscal stamps required for the Consort file." }
+    }
+  },
+  "pricing": {
+    "title": "Choose the plan that fits your needs",
+    "audienceCandidates": "Candidates",
+    "audienceSchools": "Driving schools",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "empty": "No plans available at the moment.",
+    "footnote": "Secure payment via Mobile Money. Prices shown are indicative."
+  },
+  "footer": {
+    "description": "CODAKIS supports driving licence candidates in Cameroon: theory learning, connection with approved driving schools, Consort file tracking and licence journey.",
+    "col1Title": "Prepare your licence",
+    "col2Title": "About CODAKIS",
+    "colAccountTitle": "My account",
+    "col3Title": "Resources",
+    "loginSchool": "Driving school manager",
+    "loginInstructor": "Instructor workspace",
+    "rights": "All rights reserved",
+    "privacy": "Privacy policy",
+    "terms": "Terms of use"
+  },
+  "schools": {
+    "metaTitle": "Driving schools directory | CODAKIS",
+    "metaDescription": "Find an approved driving school near you in Cameroon.",
+    "heading": "Approved driving schools",
+    "headingQuery": "Driving schools — {{query}}",
+    "headingTheme": "Driving schools — {{theme}}",
+    "headingCity": "Driving schools near {{city}}",
+    "intro": "Verified establishments — plans, reviews and pass rates.",
+    "loading": "Loading directory…",
+    "searching": "Searching…",
+    "error": "Unable to load the directory at the moment.",
+    "empty": "No driving school matches your search.",
+    "count_one": "{{count}} driving school found",
+    "count_other": "{{count}} driving schools found",
+    "seeAll": "View all driving schools",
+    "certified": "CODAKIS approved",
+    "available": "Slots available",
+    "viewProfile": "View full profile",
+    "new": "New"
+  },
+  "schoolDetail": {
+    "breadcrumbHome": "Home",
+    "mapTitle": "Location — {{name}}",
+    "address": "Address",
+    "hours": "Opening hours",
+    "contact": "Contact",
+    "contactCta": "Contact us",
+    "closed": "Closed",
+    "reviseCodeTitle": "Revise theory online",
+    "reviseCodeText": "Access CEMAC lessons, quizzes and mock exams on CODAKIS from anywhere.",
+    "reviseCodeCta": "Start revising",
+    "bookLessonTitle": "Book a driving lesson",
+    "bookLessonText": "Pick time slots with this driving school and track your progress on CODAKIS.",
+    "bookLessonCta": "Request a slot",
+    "formationsTitle": "Plans — {{name}}",
+    "formationsTabs": "Plan types",
+    "accessTitle": "Access times and registration",
+    "tabs": {
+      "codeSeul": "Theory only",
+      "conduiteSeule": "Driving only",
+      "complet": "Full package"
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "reviews_one": "{{count}} review",
+    "reviews_other": "{{count}} reviews",
+    "ratingAria": "Rating {{rating}} out of 5, {{count}} reviews",
+    "certifiedSince": "CODAKIS approved since {{date}}"
+  },
+  "common": {
+    "loading": "Loading…",
+    "currency": "FCFA"
+  },
+  "packs": {
+    "title": "Discover our licence packages",
+    "subtitle": "Theory-only, driving-only or full packages — prices set by each MINT-approved driving school",
+    "subtitleSchool": "Prices published by this driving school — Orange Money / MTN MoMo payment and QR receipt",
+    "featured": "Popular",
+    "schoolPrice": "Driving school rate",
+    "publicPrice": "public price",
+    "from": "From",
+    "hoursShort": "lessons",
+    "hoursAria": "Number of driving hours",
+    "codeModeAria": "Theory preparation mode",
+    "codeSalle": "In classroom",
+    "codeOnline": "Online",
+    "signup": "Sign up",
+    "loginToPay": "Sign in to purchase",
+    "payMobileMoney": "Pay via Mobile Money",
+    "viewContent": "View package details",
+    "detail": {
+      "close": "Close",
+      "bestOffer": "Best value offer",
+      "includes": "This package includes",
+      "schoolNote": "Price offered by {{name}} — linked to your account after Mobile Money payment confirmation.",
+      "features": {
+        "codeSeul": {
+          "salle1": "Highway code enrolment",
+          "salle2": "Classroom lessons with certified instructor",
+          "salle3": "3 months CODAKIS Premium access",
+          "salle4": "Unlimited mock exams",
+          "online1": "Fully online theory on CODAKIS",
+          "online2": "10 CEMAC topics + quizzes",
+          "online3": "Remote instructor follow-up",
+          "online4": "Unlimited mock exams"
+        },
+        "conduiteSeule": {
+          "drive1": "{{hours}} driving hours with instructor",
+          "drive2": "Initial skills assessment",
+          "drive3": "Slot booking on CODAKIS",
+          "drive4": "Practical exam preparation"
+        },
+        "complet": {
+          "full1": "CEMAC theory training",
+          "full2": "{{hours}} driving hours included",
+          "full3": "Consort file support",
+          "full4": "Mobile Money payment + QR receipt",
+          "full5": "Mock exams and progress tracking"
+        }
+      }
+    },
+    "noteSchool": "Indicative rate for {{name}} — confirmed at enrolment.",
+    "noteOverview": "Minimum rate in the directory — each school sets its own prices.",
+    "footnote": "CODAKIS subscription (Free/Premium) covers theory revision. Driving packages are sold by partner driving schools.",
+    "overview": {
+      "codeSeul": {
+        "label": "Theory only",
+        "desc": "CEMAC theory preparation in classroom or fully online via CODAKIS."
+      },
+      "conduiteSeule": {
+        "label": "Driving only",
+        "desc": "Driving hours with approved instructor — slot booking on CODAKIS."
+      },
+      "complet": {
+        "label": "Full package",
+        "desc": "Theory + driving, mock exams and Consort file — complete licence journey."
+      }
+    }
+  },
+  "sidebar": {
+    "promoTitle": "Looking for an approved driving school?",
+    "promoText": "Browse the full CODAKIS directory: verified profiles, reviews and contact details.",
+    "alreadyMember": "Already registered? Sign in"
+  },
+  "search": {
+    "locationAria": "Search by location",
+    "locationMenuAria": "Location suggestions",
+    "locating": "Locating…",
+    "locationCurrent": "My current location",
+    "locationCurrentValue": "Near me",
+    "locationCountry": "All of Cameroon",
+    "locationAnywhere": "Any city"
+  },
+  "auth": {
+    "backToSite": "Back to site",
+    "backToRoles": "Choose a workspace",
+    "backToLogin": "Back to sign in",
+    "hub": {
+      "metaTitle": "Sign in | CODAKIS",
+      "metaDescription": "Access your candidate, instructor, manager or admin workspace.",
+      "title": "Sign in",
+      "subtitle": "Choose your workspace to continue."
+    },
+    "login": {
+      "pageTitle": "Sign in",
+      "metaDescription": "Sign in to your CODAKIS workspace.",
+      "subtitle": "Sign in",
+      "submit": "Sign in",
+      "forgot": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Create an account"
+    },
+    "register": {
+      "metaTitle": "Register — {{role}} | CODAKIS",
+      "metaDescription": "Create your CODAKIS account.",
+      "title": "Register",
+      "submit": "Create my account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "forgot": {
+      "metaTitle": "Forgot password | CODAKIS",
+      "metaDescription": "Reset your CODAKIS password.",
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a reset link.",
+      "hint": "If you don't receive the email, contact our support team.",
+      "submit": "Send",
+      "sent": "If an account exists for {{email}}, you will receive an email with instructions.",
+      "contact": "Contact support"
+    },
+    "google": {
+      "signIn": "Continue with Google",
+      "signUp": "Sign up with Google"
+    },
+    "orDivider": "or",
+    "password": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "fields": {
+      "username": "Username",
+      "usernamePlaceholder": "Email or username",
+      "credentials": "Credentials",
+      "password": "Password",
+      "passwordPlaceholder": "Password",
+      "language": "Language",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "First and last name",
+      "emailOrUsername": "Email or username",
+      "emailPlaceholder": "you@email.com",
+      "phoneAndCity": "Phone and city",
+      "phone": "Phone",
+      "phonePlaceholder": "+237 6 XX XX XX XX",
+      "city": "City",
+      "cityPlaceholder": "Douala, Yaoundé…",
+      "country": "Country (CEMAC zone)",
+      "schoolName": "Driving school name",
+      "schoolNamePlaceholder": "Your school name"
+    },
+    "languages": {
+      "fr": "Français",
+      "en": "English"
+    },
+    "errors": {
+      "required": "Please fill in all required fields.",
+      "schoolRequired": "Driving school name is required."
+    },
+    "roles": {
+      "admin": {
+        "title": "Administration",
+        "hint": "Platform, content and approval management",
+        "registerHint": ""
+      },
+      "candidat": {
+        "title": "Candidate workspace",
+        "hint": "Courses, mock exams and Consort file",
+        "registerHint": "Create your account to revise theory and track your licence journey."
+      },
+      "moniteur": {
+        "title": "Instructor workspace",
+        "hint": "Schedule and assigned students",
+        "registerHint": ""
+      },
+      "gerant": {
+        "title": "Manager workspace",
+        "hint": "Enrolments, plans and instructors for your school",
+        "registerHint": "Register your partner driving school on CODAKIS."
+      }
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "aria": "Workspace navigation",
+      "home": "Dashboard",
+      "schools": "Driving schools",
+      "content": "Learning content",
+      "payments": "Payments",
+      "users": "Users",
+      "settings": "Settings",
+      "courses": "My courses",
+      "exams": "Quizzes & mock exams",
+      "consort": "Consort file",
+      "mySchool": "My driving school",
+      "students": "My students",
+      "schedule": "Schedule",
+      "slots": "Time slots",
+      "enrollments": "Enrolments",
+      "plans": "Plans",
+      "instructors": "Instructors",
+      "stats": "Statistics",
+      "schoolProfile": "School profile",
+      "profile": "My profile"
+    },
+    "backToSite": "Back to public site",
+    "userMenu": {
+      "planFree": "Free",
+      "planPremium": "Premium",
+      "upgradeTitle": "Upgrade to CODAKIS Premium",
+      "upgradeSubtitle": "10 topics, unlimited quizzes and mock exams",
+      "upgradeCta": "Upgrade to Premium",
+      "managePlan": "Manage subscription"
+    },
+    "profile": {
+      "title": "My profile",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "notProvided": "Not provided",
+      "schoolSection": "Driving school package (via catalogue)",
+      "pack": "Package",
+      "enrolledSince": "Enrolled since {{date}}",
+      "subscriptionSection": "CODAKIS subscription",
+      "premiumActive": "Premium active — all topics and unlimited mock exams.",
+      "premiumHint": "Upgrade to Premium to unlock all 10 CEMAC topics and unlimited mock exams.",
+      "consortSummary": "4 of 6 documents validated — complete your administrative file."
+    },
+    "enrollment": {
+      "notEnrolled": "No package purchased",
+      "noneTitle": "No driving school linked yet",
+      "noneLead": "Your driving school is assigned when you purchase a package on the CODAKIS catalogue (Mobile Money). Browse offers, pick a package — the partner school is then linked to your account with receipt and enrolment QR code.",
+      "browseForfaits": "Browse packages",
+      "learnMore": "Understand the journey",
+      "statusNone": "No package",
+      "statusConfirmed": "Payment confirmed",
+      "statusPending": "Payment pending",
+      "enrolledOn": "Enrolment date",
+      "receiptHint": "Mobile Money receipt and QR code available in the app.",
+      "paymentRef": "Payment ref.: {{ref}}",
+      "contact": "Contact details",
+      "nextSteps": "Next steps",
+      "stepConsort": "Complete missing Consort file documents",
+      "stepSlots": "Book your driving slots on CODAKIS",
+      "stepExam": "Prepare for the practical exam with your instructor",
+      "statsTitle": "Pass rate",
+      "successRate": "Students at this driving school",
+      "actions": "Quick actions"
+    },
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "welcome": "Hello, {{name}}",
+    "user": "User",
+    "logout": "Sign out",
+    "comingSoon": "Coming soon",
+    "widgets": {
+      "total": "Total",
+      "average": "Average",
+      "themesDone": "Topics reviewed",
+      "drivingHours": "Driving hours",
+      "progressHint": "Progress across the 10 CEMAC highway code topics.",
+      "consortHint": "Track the 6 mandatory licence administrative documents.",
+      "monthlyProgress": "Monthly progress",
+      "progressSeries": "Topics reviewed",
+      "examSeries": "Mock exam scores",
+      "consortProgress": "Consort file progress",
+      "consortProgressHint": "4 documents validated, 1 in progress and 1 missing out of 6.",
+      "recentActivity": "Recent activity",
+      "themeSignal": "Signs",
+      "themePriority": "Priority rules",
+      "themeCirculation": "Traffic",
+      "feedQuiz": "Signs topic quiz passed — 8/10",
+      "feedSchool": "Enrolment confirmed — {{school}}",
+      "feedConsort": "ID document validated in your Consort file",
+      "feedLesson": "Next driving lesson — Monday 2 PM",
+      "feedExam": "Reminder: mock exam available",
+      "timeToday": "Today",
+      "time2h": "2 h ago",
+      "timeYesterday": "Yesterday",
+      "time3d": "3 d ago",
+      "colStatus": "Status",
+      "colAction": "Action",
+      "colSchool": "Driving school",
+      "colCandidates": "Candidates",
+      "colStudent": "Student",
+      "colDate": "Date",
+      "colDuration": "Duration",
+      "colCandidate": "Candidate",
+      "colPack": "Package",
+      "colAmount": "Amount",
+      "statusConfirmed": "Confirmed",
+      "statusPending": "Pending",
+      "statusPaid": "Paid",
+      "newEnrollments": "New enrolments",
+      "pendingMint": "Pending approvals",
+      "avgSuccess": "Average pass rate",
+      "avgSuccessHint": "Average pass rate across all partner driving schools.",
+      "monthlyEnrollments": "Monthly enrolments",
+      "monthlyEnrollmentsHint": "New candidates enrolled via CODAKIS this month.",
+      "paymentsChart": "Mobile Money payment volume",
+      "schoolDistribution": "Driving school distribution",
+      "schoolDistributionHint": "By region and MINT approval status.",
+      "recentSchools": "Recent driving schools",
+      "lessonsToday": "Lessons today",
+      "evaluations": "Average rating",
+      "attendanceRate": "Attendance rate",
+      "attendanceRateHint": "Attendance at scheduled driving slots.",
+      "plannedHoursHint": "Planned driving hours over the last 3 weeks.",
+      "lessonsChart": "Planned lessons",
+      "studentLevels": "Student levels",
+      "studentLevelsHint": "Beginner / intermediate / exam-ready split.",
+      "upcomingLessons": "Upcoming lessons",
+      "activePacks": "Active packages",
+      "openSlots": "Open slots",
+      "schoolSuccessHint": "Exam pass rate — students at your driving school.",
+      "revenueHint": "Mobile Money revenue collected over the last 3 months.",
+      "enrollmentsChart": "Monthly enrolments",
+      "packDistribution": "Package distribution",
+      "packDistributionHint": "Theory-only, driving-only and full packages."
+    },
+    "consort": {
+      "pageTitle": "My Consort file",
+      "pageLead": "Track and complete the 6 mandatory administrative documents for your driving licence.",
+      "tableTitle": "Consort document tracker",
+      "colPiece": "Document",
+      "colDate": "Date",
+      "progressLabel": "File progress",
+      "progressHint": "A complete file speeds up your prefecture registration.",
+      "footerText": "Need help? Your partner driving school can validate each document with you.",
+      "actionUpload": "Upload document",
+      "actionAdd": "Add document",
+      "validatedOn": "Validated on {{date}}",
+      "status": {
+        "validated": "Validated",
+        "pending": "In progress",
+        "missing": "Missing"
+      }
+    },
+    "placeholder": {
+      "title": "Module being deployed",
+      "description": "This section will be connected to the CODAKIS backend in a next step."
+    },
+    "admin": {
+      "metaTitle": "Administration | CODAKIS",
+      "metaDescription": "CODAKIS admin dashboard.",
+      "title": "CODAKIS administration",
+      "lead": "Supervise driving schools, learning content and Mobile Money payments.",
+      "stats": {
+        "schools": "Approved schools",
+        "candidates": "Active candidates",
+        "payments": "Payment volume",
+        "success": "Average pass rate"
+      },
+      "recentTitle": "Recent activity",
+      "recentPlaceholder": "Enrolments and payments",
+      "recentHint": "Transaction flows and MINT approvals will appear here."
+    },
+    "candidat": {
+      "metaTitle": "Candidate workspace | CODAKIS",
+      "metaDescription": "Track your theory progress and Consort file.",
+      "title": "My licence journey",
+      "lead": "CEMAC revision, mock exams and driving school follow-up.",
+      "stats": {
+        "progress": "Theory progress",
+        "exams": "Latest mock exam",
+        "success": "Success index",
+        "consort": "Consort file",
+        "consortHint": "documents completed"
+      },
+      "actionsTitle": "Quick actions",
+      "actionCourses": "Resume courses",
+      "actionExam": "Start a mock exam",
+      "actionConsort": "View my Consort file"
+    },
+    "moniteur": {
+      "metaTitle": "Instructor workspace | CODAKIS",
+      "metaDescription": "Schedule and assigned students.",
+      "title": "Instructor workspace",
+      "lead": "Driving slots and student follow-up.",
+      "stats": {
+        "students": "Assigned students",
+        "slots": "Open slots",
+        "slotsHint": "this week",
+        "week": "Scheduled hours",
+        "rate": "Attendance rate"
+      },
+      "scheduleTitle": "Weekly schedule",
+      "schedulePlaceholder": "Shared calendar",
+      "scheduleHint": "Candidate bookings will appear here."
+    },
+    "gerant": {
+      "metaTitle": "Manager workspace | CODAKIS",
+      "metaDescription": "Manage your partner driving school.",
+      "title": "My driving school",
+      "lead": "Enrolments, plans and instructors — CODAKIS SaaS workspace.",
+      "stats": {
+        "enrollments": "Enrolments",
+        "revenue": "Mobile Money revenue",
+        "instructors": "Active instructors",
+        "success": "Pass rate"
+      },
+      "inboxTitle": "New enrolments",
+      "inboxPlaceholder": "Transaction tunnel",
+      "inboxHint": "Plans purchased with QR receipt and payment status."
+    }
+  }
+}

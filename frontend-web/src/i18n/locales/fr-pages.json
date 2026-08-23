@@ -1,0 +1,650 @@
+{
+  "breadcrumb": {
+    "home": "Accueil",
+    "blog": "Blog"
+  },
+  "footer": {
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation"
+  },
+  "blog": {
+    "metaTitle": "Blog | CODAKIS",
+    "metaDescription": "Conseils, actualités et guides pour candidats et auto-écoles.",
+    "searchLabel": "Rechercher dans les articles",
+    "searchPlaceholder": "Rechercher articles et contenus",
+    "searchAria": "Rechercher",
+    "loading": "Chargement des articles…",
+    "error": "Impossible de charger les articles pour le moment.",
+    "empty": "Aucun article publié pour le moment.",
+    "noResults": "Aucun article ne correspond à votre recherche.",
+    "tabsLabel": "Catégories d'articles",
+    "latest": "Derniers articles",
+    "all": "Tous les articles"
+  },
+  "domains": {
+    "metaDescription": "Révisez le code de la route CEMAC thème par thème sur CODAKIS : leçons, quiz et examens blancs.",
+    "pageTitle": "Réviser le code de la route CEMAC",
+    "pageLead": "10 thèmes alignés sur le Code Rousseau Cameroun — progressez avec des leçons, quiz et examens blancs.",
+    "pagePurpose": "Cette page sert à la préparation théorique sur CODAKIS. Les forfaits code, conduite ou complet sont proposés par chaque auto-école partenaire sur sa fiche établissement.",
+    "startRevision": "Commencer les révisions",
+    "subscriptionTitle": "Abonnement révision théorique",
+    "subscriptionLead": "Gratuit ou Premium : débloquez l'accès complet aux 10 thèmes, quiz illimités et examens blancs. Distinct des forfaits vendus par les auto-écoles.",
+    "filterToggle": "Filtrer les domaines",
+    "searchLabel": "Rechercher un domaine",
+    "searchPlaceholder": "Signalisation, priorités, vitesse…",
+    "reset": "Réinitialiser",
+    "loading": "Chargement des domaines…",
+    "empty": "Aucun domaine ne correspond à votre recherche."
+  },
+  "pricingPage": {
+    "metaTitle": "Forfaits | CODAKIS",
+    "metaDescription": "Choisissez la formule adaptée à votre parcours permis sur CODAKIS.",
+    "faqTitle": "Questions fréquentes sur les tarifs CODAKIS",
+    "faq": [
+      {
+        "question": "Quelle est la différence entre l'abonnement CODAKIS et les forfaits auto-école ?",
+        "answer": "L'abonnement Gratuit ou Premium couvre uniquement la préparation théorique sur CODAKIS (10 thèmes CEMAC, quiz, examens blancs). Les forfaits code seul, conduite seule ou complet sont vendus par les auto-écoles partenaires agréées MINT, avec paiement Mobile Money et reçu QR code."
+      },
+      {
+        "question": "Comment acheter un forfait conduite ?",
+        "answer": "Depuis la fiche d'une auto-école partenaire, choisissez un forfait (code seul, conduite seule ou complet), payez par Orange Money ou MTN MoMo. Après confirmation, vous recevez un reçu numérique et un QR code d'enrôlement."
+      },
+      {
+        "question": "Quels moyens de paiement sont acceptés ?",
+        "answer": "Orange Money et MTN Mobile Money pour les abonnements candidats et les forfaits auto-école. Les établissements partenaires peuvent aussi régler leur abonnement SaaS par virement bancaire."
+      },
+      {
+        "question": "Comment fonctionne le dossier Consort sur CODAKIS ?",
+        "answer": "Depuis l'application, suivez les 6 pièces obligatoires, recevez des rappels d'échéance et vérifiez la complétude de votre dossier avant le rendez-vous administratif."
+      }
+    ],
+    "guaranteeTitle": "Garantie satisfait ou remboursé",
+    "guaranteeBodyBefore": "Avec la garantie CODAKIS, si vous n'êtes pas satisfait de la qualité de notre service, résiliez votre abonnement et demandez un remboursement",
+    "guaranteeBodyContact": "(par téléphone, e-mail ou chat)",
+    "guaranteeBodyAfter": "dans les 14 jours suivant la création ou le renouvellement de votre compte.",
+    "thanksTitle": "Merci pour votre confiance",
+    "thanksBodyBefore": "CODAKIS vous apporte une réelle valeur : auto-écoles agréées, profils vérifiés et support dédié. Consultez notre page",
+    "thanksAbout": "À propos",
+    "thanksBodyMiddle": "ou",
+    "thanksContact": "contactez notre équipe support",
+    "thanksBodyAfter": "."
+  },
+  "contact": {
+    "metaTitle": "Contact | CODAKIS",
+    "metaDescription": "Une question sur l'annuaire, les forfaits ou votre parcours permis ?",
+    "navHowItWorks": "Comment ça marche",
+    "navAbout": "À propos",
+    "navContact": "Contact",
+    "title": "Contactez-nous",
+    "introBefore": "Notre équipe support répond à vos questions sur l'annuaire, les forfaits ou votre parcours permis. Consultez aussi notre",
+    "introFaqLink": "FAQ client",
+    "introAfter": "pour les questions fréquentes.",
+    "channels": {
+      "chat": {
+        "title": "Chat en direct",
+        "hoursWeek": "Lun – Ven : 8h – 18h",
+        "hoursSat": "Sam : 9h – 14h",
+        "meta": "Temps de réponse moyen : 1 min"
+      },
+      "phone": {
+        "title": "Téléphone",
+        "number": "+237 6XX XXX XXX",
+        "hoursWeek": "Lun – Ven : 8h – 18h",
+        "hoursSat": "Sam : 9h – 14h",
+        "meta": "Temps de réponse moyen : 3 min"
+      },
+      "email": {
+        "title": "E-mail",
+        "send": "Envoyer un message",
+        "hint": "Notre équipe vous répond dès que possible.",
+        "meta": "Temps de réponse moyen : 2 jours ouvrés"
+      }
+    },
+    "inquiriesTitle": "Autres demandes",
+    "pressTitle": "Presse & médias",
+    "pressBefore": "Pour toute demande média, consultez notre page",
+    "pressAbout": "À propos",
+    "pressAfter": "ou écrivez à contact@codakis.cm avec l'objet « Presse ».",
+    "partnersTitle": "Partenariats",
+    "partnersBody": "Entreprises et institutions : contactez-nous pour un partenariat ou un compte entreprise.",
+    "addressTitle": "Adresse postale",
+    "addressLine1": "CODAKIS",
+    "addressLine2": "Douala, Cameroun",
+    "addressLine3": "BP — Yaoundé"
+  },
+  "about": {
+    "metaTitle": "À propos | CODAKIS",
+    "metaDescription": "La mission de CODAKIS : accompagner les candidats au permis et connecter avec des auto-écoles agréées au Cameroun.",
+    "navHowItWorks": "Comment ça marche",
+    "navAbout": "À propos",
+    "navClientGuide": "Guide client",
+    "navSchoolGuide": "Guide auto-école",
+    "heroTitle": "À propos de",
+    "heroBrand": "CODAKIS",
+    "heroP1": "CODAKIS est la plateforme d'apprentissage du code de la route et d'annuaire d'auto-écoles agréées au Cameroun. Nous accompagnons les candidats de la théorie à l'examen pratique, avec des cours interactifs, des examens blancs et une mise en relation transparente avec des établissements vérifiés.",
+    "heroP2Before": "Notre",
+    "heroSupportLink": "équipe support",
+    "heroP2After": "contrôle chaque dossier d'auto-école avant publication pour vous faire gagner du temps et vous protéger des établissements non agréés. Que vous prépariez votre code ou que vous gériez une auto-école partenaire, CODAKIS simplifie chaque étape du parcours permis.",
+    "heroCta": "Trouver une auto-école agréée",
+    "stats": [
+      { "value": "10 000+", "label": "Candidats accompagnés" },
+      { "value": "500+", "label": "Auto-écoles agréées" },
+      { "value": "10", "label": "Thèmes du code CEMAC" }
+    ],
+    "howTitleBefore": "Comment CODAKIS",
+    "howTitleAccent": "fonctionne",
+    "howItems": [
+      {
+        "title": "Apprenez le code à votre rythme",
+        "text": "Cours par thème, quiz interactifs et examens blancs chronométrés alignés sur le référentiel CEMAC et les spécificités camerounaises."
+      },
+      {
+        "title": "Trouvez une auto-école agréée",
+        "text": "Filtrez par ville, comparez les forfaits, consultez les taux de réussite et réservez vos créneaux de conduite en toute confiance."
+      },
+      {
+        "title": "Suivez votre dossier Consort",
+        "text": "Guides, rappels et suivi des 6 pièces administratives pour préparer sereinement votre rendez-vous au permis de conduire."
+      }
+    ],
+    "benefitsTitleAccent": "Avantages",
+    "benefitsTitleAfter": "de CODAKIS",
+    "benefitsCta": "Commencer",
+    "benefits": [
+      {
+        "title": "Auto-écoles agréées de qualité",
+        "text": "Des établissements vérifiés partout au Cameroun, avec forfaits transparents, avis candidats et taux de réussite publiés."
+      },
+      {
+        "title": "Chaque auto-école contrôlée par nos équipes",
+        "text": "Nous vérifions l'agrément, l'identité des gérants et la conformité des offres avant toute publication dans l'annuaire CODAKIS."
+      },
+      {
+        "title": "Support et ressources dédiés",
+        "text": "Guides pratiques, FAQ et une équipe support disponible pour accompagner candidats et auto-écoles à chaque étape."
+      },
+      {
+        "title": "Garantie satisfait ou remboursé",
+        "text": "Si vous n'êtes pas satisfait de notre service, demandez un remboursement dans les 14 jours. C'est simple et rapide."
+      }
+    ],
+    "reviewsTitle": "Avis & témoignages CODAKIS",
+    "reviewsCta": "En savoir plus",
+    "originTitleAccent": "Comment & pourquoi",
+    "originTitleAfter": "CODAKIS a été créée",
+    "originP1": "CODAKIS a été conçue pour offrir une alternative fiable aux annuaires non vérifiés : un espace où candidats et auto-écoles peuvent se rencontrer en toute confiance.",
+    "originP2": "Face aux établissements douteux et aux parcours permis peu transparents, nous avons bâti une plateforme centrée sur l'agrément, la pédagogie et la proximité géographique.",
+    "originP3Before": "Aujourd'hui, CODAKIS accompagne des milliers de candidats au Cameroun. Découvrez aussi notre page",
+    "originHowItWorks": "Comment ça marche",
+    "originMiddle": "ou consultez nos",
+    "originPricing": "forfaits",
+    "originAfter": ".",
+    "bannerTitleBefore": "Plus de 10 000 candidats ont choisi CODAKIS pour réussir leur",
+    "bannerTitleAccent": "permis",
+    "bannerCta": "Rejoindre CODAKIS",
+    "testimonials": [
+      {
+        "quote": "Les examens blancs CODAKIS m'ont préparée au jour J. J'ai trouvé une auto-école agréée près de chez moi en quelques minutes.",
+        "author": "Marie K.",
+        "location": "Douala"
+      },
+      {
+        "quote": "L'agrément CODAKIS nous apporte des candidats sérieux. L'annuaire géolocalisé change tout pour notre auto-école.",
+        "author": "Jean-Paul M.",
+        "location": "Yaoundé"
+      },
+      {
+        "quote": "Interface claire, cours structurés et auto-écoles réactives. Je recommande CODAKIS à toute ma famille.",
+        "author": "Aïcha B.",
+        "location": "Bafoussam"
+      }
+    ]
+  },
+  "howItWorks": {
+    "metaTitle": "Comment ça marche | CODAKIS",
+    "metaDescription": "Découvrez le parcours candidat et auto-école sur CODAKIS.",
+    "breadcrumb": "Comment ça marche",
+    "title": "Comment ça marche",
+    "intro": [
+      "CODAKIS est la plateforme d'apprentissage du code de la route et de mise en relation avec les auto-écoles agréées au Cameroun. Notre objectif est de vous accompagner de la théorie à l'examen, en passant par le choix de votre auto-école et la réservation de vos créneaux de conduite.",
+      "Que vous soyez candidat souhaitant réviser le code, passer des examens blancs ou acheter un forfait conduite, ou gérant d'auto-école partenaire, le parcours est conçu pour être simple, transparent et adapté au contexte CEMAC."
+    ],
+    "notice": "VOTRE MEILLEURE GARANTIE EST DE PASSER PAR CODAKIS : NE PAYEZ JAMAIS UN FORFAIT HORS PLATEFORME AVANT D'AVOIR VÉRIFIÉ L'AUTO-ÉCOLE AGRÉÉE.",
+    "highlightsTitle": "Les fondamentaux de CODAKIS",
+    "highlightsNote": "CODAKIS facilite le parcours permis entre candidats et auto-écoles agréées. Créez votre compte, révisez le code ou soumettez le dossier de votre établissement pour apparaître dans l'annuaire géolocalisé.",
+    "highlights": [
+      {
+        "title": "Apprentissage gamifié du code",
+        "body": "10 thèmes alignés sur le référentiel CEMAC, quiz interactifs, examens blancs chronométrés et suivi de progression visible à chaque étape.",
+        "moreLabel": "Voir les thèmes",
+        "moreHref": "/themes"
+      },
+      {
+        "title": "Annuaire d'auto-écoles agréées",
+        "body": "Seules les auto-écoles validées par CODAKIS apparaissent dans l'annuaire. Consultez les taux de réussite, les forfaits et les avis avant de vous inscrire.",
+        "moreLabel": "Voir l'annuaire",
+        "moreHref": "/auto-ecoles"
+      },
+      {
+        "title": "Support & accompagnement",
+        "body": "Une équipe dédiée répond à vos questions sur l'inscription, les forfaits, les créneaux de conduite et l'utilisation de la plateforme.",
+        "moreLabel": "Nous contacter",
+        "moreHref": "/contact"
+      }
+    ],
+    "stepsTitle": "Comment ça marche :",
+    "steps": [
+      { "num": "1", "title": "Créez votre compte", "text": "Inscrivez-vous gratuitement en tant que candidat ou connectez-vous avec Google en quelques minutes." },
+      { "num": "2", "title": "Apprenez & progressez", "text": "Suivez les cours par thème, entraînez-vous avec des quiz et simulez l'examen blanc officiel." },
+      { "num": "3", "title": "Choisissez votre auto-école", "text": "Parcourez l'annuaire des auto-écoles agréées, comparez les forfaits et payez en Mobile Money." },
+      { "num": "4", "title": "Passez votre permis", "text": "Réservez vos créneaux de conduite, suivez votre progression et préparez l'examen en confiance." }
+    ],
+    "clientFaqTitle": "Pour les candidats",
+    "clientFaq": [
+      {
+        "question": "Comment trouver une auto-école agréée près de chez moi ?",
+        "answer": "Créez un compte candidat, puis parcourez l'annuaire CODAKIS filtré par ville ou proximité. Chaque auto-école affiche ses forfaits, son taux de réussite et les avis des candidats.",
+        "linkLabel": "Explorer l'annuaire",
+        "linkHref": "/auto-ecoles"
+      },
+      {
+        "question": "L'inscription candidat est-elle gratuite ?",
+        "answer": "Oui. Vous pouvez créer un compte, accéder aux cours de base et passer des quiz gratuitement. Les forfaits conduite et complets sont proposés par les auto-écoles partenaires.",
+        "linkLabel": "Voir les tarifs",
+        "linkHref": "/themes#abonnement"
+      },
+      {
+        "question": "Puis-je réviser le code sans m'inscrire à une auto-école ?",
+        "answer": "Absolument. CODAKIS propose un parcours d'apprentissage autonome du code de la route. L'inscription à une auto-école est nécessaire uniquement pour la formation pratique et l'examen.",
+        "linkLabel": "Commencer à apprendre",
+        "linkHref": "/inscription/candidat"
+      }
+    ],
+    "schoolFaqTitle": "Pour les auto-écoles",
+    "schoolFaq": [
+      {
+        "question": "Comment devenir auto-école partenaire CODAKIS ?",
+        "answer": "Contactez notre équipe via le formulaire de contact ou créez un compte gérant. Nous vérifions votre agrément MINT avant de publier votre établissement dans l'annuaire.",
+        "linkLabel": "Guide auto-école",
+        "linkHref": "/guide/auto-ecole"
+      },
+      {
+        "question": "Comment sont gérés les paiements Mobile Money ?",
+        "answer": "Les candidats paient via MTN MoMo ou Orange Money. CODAKIS sécurise la transaction et notifie votre auto-école dès confirmation du paiement.",
+        "linkLabel": "Nous contacter",
+        "linkHref": "/contact"
+      }
+    ],
+    "includesTitle": "Notre plateforme inclut :",
+    "includes": [
+      { "title": "Apprentissage structuré", "text": "10 thèmes du code alignés sur le référentiel CEMAC." },
+      { "title": "Auto-écoles vérifiées", "text": "Un annuaire transparent avec forfaits et avis candidats." },
+      { "title": "Support dédié", "text": "Une équipe à votre écoute tout au long du parcours permis." }
+    ],
+    "signupCta": "S'inscrire gratuitement",
+    "directoryCta": "Voir l'annuaire"
+  },
+  "guide": {
+    "clientMetaTitle": "Guide client | CODAKIS",
+    "clientMetaDescription": "Conseils de sécurité et bonnes pratiques pour les candidats CODAKIS.",
+    "schoolMetaTitle": "Guide auto-école | CODAKIS",
+    "schoolMetaDescription": "Conseils de sécurité et bonnes pratiques pour les auto-écoles partenaires CODAKIS.",
+    "navClient": "Guide client",
+    "navSchool": "Guide auto-école",
+    "navHowItWorks": "Comment ça marche",
+    "clientTitle": "Guide client",
+    "schoolTitle": "Guide auto-école",
+    "introP1Before": "Nous nous engageons à vous offrir la meilleure expérience sur CODAKIS.",
+    "introP1Strong": "Votre meilleure défense contre les arnaques est de rester vigilant, de connaître nos pratiques officielles et d'exercer votre jugement.",
+    "introP2": "Voici les informations essentielles pour reconnaître les communications légitimes de CODAKIS et signaler toute activité suspecte.",
+    "faqCount_one": "{{count}} FAQ",
+    "faqCount_other": "{{count}} FAQs",
+    "categoriesNav": "Catégories du guide",
+    "clientSections": [
+      {
+        "title": "Comment nous communiquons avec vous",
+        "intro": "CODAKIS ne vous contacte que via les canaux officiels (@codakis.cm) ou directement sur la plateforme si vous êtes inscrit.",
+        "qa": [
+          {
+            "q": "Que faire si je reçois un message suspect ?",
+            "a": "N'engagez pas la conversation. Signalez immédiatement le message à contact@codakis.cm."
+          },
+          {
+            "q": "Comment reconnaître un e-mail légitime ?",
+            "a": "Les e-mails CODAKIS concernent votre compte, votre abonnement, votre parcours permis ou les notifications d'activité sur la plateforme."
+          }
+        ]
+      },
+      {
+        "title": "Signaux d'alerte à connaître",
+        "intro": "Votre meilleure défense contre les arnaques est de rester vigilant et de connaître les pratiques courantes.",
+        "qa": [
+          {
+            "q": "Demande d'argent avant une inscription",
+            "a": "CODAKIS ne demande jamais de paiement anticipé pour « débloquer » une auto-école ou un forfait hors plateforme."
+          },
+          {
+            "q": "Auto-école sans agrément CODAKIS",
+            "a": "Vérifiez toujours le badge d'agrément et les avis candidats avant de vous inscrire dans un établissement."
+          }
+        ]
+      }
+    ],
+    "schoolSections": [
+      {
+        "title": "Sécuriser votre inscription auto-école",
+        "intro": "Ne communiquez vos identifiants que sur la plateforme officielle CODAKIS. Nos équipes ne demandent jamais votre mot de passe.",
+        "qa": [
+          {
+            "q": "Documents demandés lors de l'agrément",
+            "a": "Agrément MINT, pièce d'identité du gérant, justificatifs d'activité — uniquement via votre espace auto-école sécurisé."
+          },
+          {
+            "q": "Frais de partenariat",
+            "a": "Les tarifs officiels sont publiés sur la page Forfaits. Méfiez-vous des demandes de paiement hors plateforme."
+          }
+        ]
+      },
+      {
+        "title": "Bonnes pratiques pour les auto-écoles",
+        "intro": "Protégez votre activité et la confiance de vos candidats en suivant ces recommandations.",
+        "qa": [
+          {
+            "q": "Mise à jour du profil",
+            "a": "Maintenez vos forfaits, votre zone d'intervention et vos disponibilités à jour dans votre espace auto-école."
+          },
+          {
+            "q": "Signaler un comportement abusif",
+            "a": "Contactez contact@codakis.cm pour signaler tout profil candidat ou message suspect."
+          }
+        ]
+      }
+    ],
+    "clientCta": "Trouver une auto-école",
+    "schoolCta": "Devenir auto-école partenaire",
+    "contactCta": "Nous contacter"
+  },
+  "homeUtilityBar": {
+    "ariaLabel": "Coordonnées CODAKIS",
+    "phone": "+237 6XX XXX XXX",
+    "phoneHint": "Une question ? Appelez-nous",
+    "email": "contact@codakis.cm",
+    "emailHint": "Besoin d'aide ? Écrivez-nous",
+    "hours": "Lun – Sam 08:00 – 18:00",
+    "hoursHint": "Nous sommes ouverts"
+  },
+  "homeMemberTestimonials": {
+    "ratingLabel": "Note excellente 4,8 sur 5",
+    "ratingStrong": "Excellent",
+    "ratingCount": "Plus de 500 avis sur CODAKIS",
+    "title": "Ce que disent nos membres",
+    "prevAria": "Témoignage précédent",
+    "nextAria": "Témoignage suivant",
+    "items": [
+      {
+        "quote": "CODAKIS m'a aidée à réviser le code efficacement. Les examens blancs m'ont préparée au jour J sans stress.",
+        "highlights": ["réviser le code", "examens blancs"],
+        "author": "Marie K.",
+        "role": "Candidate à Douala"
+      },
+      {
+        "quote": "La plateforme est simple à utiliser et les auto-écoles listées sont réellement agréées. Je me sens en confiance pour mon permis.",
+        "highlights": ["simple à utiliser", "réellement agréées"],
+        "author": "Sedric G.",
+        "role": "Candidat à Yaoundé"
+      },
+      {
+        "quote": "Grâce à CODAKIS, j'ai trouvé une auto-école près de chez moi avec un bon taux de réussite en moins de 10 minutes.",
+        "highlights": ["CODAKIS", "moins de 10 minutes"],
+        "author": "Jean-Paul M.",
+        "role": "Candidat à Yaoundé"
+      },
+      {
+        "quote": "Run, ne marchez pas : CODAKIS a été une expérience incroyable pour préparer mon examen du code.",
+        "highlights": ["CODAKIS", "expérience incroyable"],
+        "author": "Melissa E.",
+        "role": "Candidate à Bafoussam"
+      },
+      {
+        "quote": "Interface claire, quiz interactifs et profils détaillés. J'ai choisi la bonne auto-école du premier coup.",
+        "highlights": ["quiz interactifs", "du premier coup"],
+        "author": "Shannon B.",
+        "role": "Candidate à Douala"
+      },
+      {
+        "quote": "Les thèmes CEMAC sont bien structurés. Ma progression est visible à chaque étape, comme sur une app de sport.",
+        "highlights": ["thèmes CEMAC", "progression est visible"],
+        "author": "Aïcha B.",
+        "role": "Candidate à Bafoussam"
+      }
+    ]
+  },
+  "blogDetail": {
+    "loading": "Chargement de l'article…",
+    "notFound": "Article introuvable",
+    "backToBlog": "Retour au blog",
+    "breadcrumbAria": "Fil d'Ariane",
+    "authorBefore": "Par",
+    "updated": "Mis à jour : {{date}}"
+  },
+  "pricingTable": {
+    "clientTypeAria": "Type de client",
+    "billingToggleAria": "Basculer entre facturation mensuelle et annuelle",
+    "loading": "Chargement des forfaits…",
+    "ctaPay": "Payer",
+    "ctaStart": "Commencer"
+  },
+  "privacy": {
+    "metaTitle": "Politique de confidentialité | CODAKIS",
+    "metaDescription": "Politique de confidentialité et cookies de CODAKIS.",
+    "title": "Politique de confidentialité",
+    "lastUpdatedLabel": "Dernière mise à jour : {{date}}",
+    "lastUpdated": "13 janvier 2026",
+    "intro": "Merci de visiter CODAKIS (ci-après « nous », « notre » ou « la plateforme »). Cette politique explique nos pratiques en matière de collecte, d'utilisation et de protection des données personnelles (les « Données » ou « Informations personnelles ») lorsque vous utilisez notre site, nos applications et nos services (collectivement, le « Site »). CODAKIS est le responsable du traitement de vos Données dans le cadre du Site. En utilisant le Site, vous acceptez que vos Informations soient traitées conformément à la présente politique, ainsi qu'à nos conditions d'utilisation.",
+    "highlightsTitle": "Points clés de la politique de confidentialité",
+    "highlightsNoteBefore": "Consultez également notre",
+    "highlightsNoteLink": "politique de confidentialité complète",
+    "highlightsNoteAfter": ".",
+    "fullTitle": "Politique de confidentialité complète",
+    "contactFormLink": "Formulaire de contact",
+    "highlights": [
+      {
+        "title": "Données personnelles que nous collectons",
+        "body": "Lorsque vous créez un compte, utilisez nos services, consultez l'annuaire, souscrivez à un abonnement ou nous contactez, vous nous communiquez volontairement certaines informations : nom, adresse e-mail, numéro de téléphone, ville, documents du dossier Consort, etc. Voir la section 2 pour plus de détails."
+      },
+      {
+        "title": "Technologies de suivi",
+        "body": "Nous pouvons utiliser des cookies et technologies similaires pour mesurer l'audience, sécuriser le Site et améliorer votre expérience. Vous pouvez accepter ou refuser les cookies non essentiels via le bandeau affiché lors de votre première visite.",
+        "moreLabel": "En savoir plus",
+        "moreHref": "#cookies"
+      },
+      {
+        "title": "Utilisation, conservation et stockage",
+        "body": "Nous conservons vos Données le temps nécessaire à la fourniture du service, au respect de nos obligations légales et à la résolution d'éventuels litiges."
+      },
+      {
+        "title": "Communication des informations",
+        "body": "Dans les limites permises par la loi, nous pouvons partager vos Informations avec nos prestataires techniques, les auto-écoles partenaires dans le cadre d'une inscription, les autorités compétentes ou en cas de restructuration de l'entreprise."
+      },
+      {
+        "title": "Vos choix",
+        "body": "Vous pouvez gérer vos préférences de communication, vous opposer à certains traitements, demander l'accès, la rectification ou la suppression de vos Données, et retirer votre consentement marketing à tout moment."
+      },
+      {
+        "title": "Accès et modification",
+        "body": "Les utilisateurs inscrits peuvent modifier leurs informations depuis leur espace candidat ou auto-école, ou en nous contactant."
+      },
+      {
+        "title": "Mises à jour de la politique",
+        "body": "Nous pouvons mettre à jour cette politique en publiant une nouvelle version sur le Site. En cas de changement important, nous pourrons vous en informer par e-mail lorsque la loi l'exige."
+      },
+      {
+        "title": "Résidents de l'EEE / RGPD",
+        "body": "CODAKIS respecte le Règlement général sur la protection des données (RGPD). Les personnes concernées peuvent exercer leurs droits dans la mesure où ils leur sont applicables."
+      },
+      {
+        "title": "Contact",
+        "body": "Pour toute question relative à cette politique : contact@codakis.cm ou via notre page Contact.",
+        "moreLabel": "Nous contacter",
+        "moreHref": "/contact"
+      }
+    ],
+    "fullSections": [
+      {
+        "title": "1. Périmètre",
+        "paragraphs": [
+          "CODAKIS est une plateforme en ligne qui accompagne les candidats au permis de conduire et met en relation avec des auto-écoles agréées au Cameroun. Nous proposons des services liés à l'apprentissage du code, à la recherche d'auto-écoles, aux abonnements et à la gestion de comptes candidats et auto-écoles."
+        ]
+      },
+      {
+        "id": "collecte",
+        "title": "2. Données que nous collectons",
+        "paragraphs": ["Les Données collectées dépendent de la façon dont vous utilisez le Site."],
+        "subsections": [
+          {
+            "title": "Inscription, services et compte",
+            "paragraphs": [
+              "Vous pouvez parcourir certaines pages sans créer de compte. Dans ce cas, nous pouvons collecter des données techniques (adresse IP, type de navigateur, pages consultées, données de géolocalisation approximative).",
+              "Lorsque vous créez un compte candidat ou auto-école, vous devez fournir certaines informations (e-mail valide, identité, coordonnées, ville, etc.). Pour les achats ou abonnements, des informations de facturation peuvent être demandées ; les paiements sont traités par des prestataires externes et nous ne stockons pas les données complètes de carte bancaire."
+            ]
+          },
+          {
+            "title": "Réponses à vos demandes",
+            "paragraphs": [
+              "Si vous nous contactez (formulaire, e-mail, chat), nous utilisons les coordonnées fournies pour répondre à vos questions et, le cas échéant, vous envoyer des communications liées au service."
+            ]
+          }
+        ]
+      },
+      {
+        "title": "3. Utilisation, conservation et stockage",
+        "paragraphs": ["Nous traitons vos Données pour les finalités suivantes :"],
+        "subsections": [
+          {
+            "title": "Exploitation du Site et fourniture des services",
+            "bullets": [
+              "Répondre à vos demandes et assurer le support client.",
+              "Gérer votre compte, vos abonnements et votre parcours permis.",
+              "Afficher les auto-écoles agréées dans l'annuaire.",
+              "Mettre en relation candidats et auto-écoles partenaires.",
+              "Personnaliser le contenu et améliorer la sécurité du Site."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cookies",
+        "title": "8. Technologies de suivi (cookies)",
+        "paragraphs": [
+          "Lors de votre visite, nous collectons des informations d'usage envoyées par votre appareil (pages vues, clics, durée de session). Nous utilisons des cookies et technologies similaires pour assurer le fonctionnement du Site, mesurer l'audience et mémoriser vos préférences."
+        ]
+      },
+      {
+        "title": "15. Nous contacter",
+        "paragraphs": [
+          "CODAKIS — Douala & Yaoundé, Cameroun.",
+          "E-mail : contact@codakis.cm"
+        ],
+        "showContactForm": true
+      }
+    ]
+  },
+  "terms": {
+    "metaTitle": "Conditions d'utilisation | CODAKIS",
+    "metaDescription": "Conditions générales d'utilisation de la plateforme CODAKIS.",
+    "title": "Conditions d'utilisation",
+    "lastUpdatedLabel": "Dernière mise à jour : {{date}}",
+    "lastUpdated": "16 janvier 2025",
+    "intro": "Les présentes conditions d'utilisation, ainsi que les autres documents juridiques incorporés par référence (collectivement, les « Conditions »), constituent le contrat entre CODAKIS (« nous », « notre » ou « la plateforme ») et chaque utilisateur (« Utilisateur », « vous » ou « votre ») concernant l'accès et l'utilisation de notre site, de nos applications et de nos services en ligne (collectivement, le « Site » ou le « Service »).",
+    "legalNotice": "VEUILLEZ LIRE ATTENTIVEMENT CES CONDITIONS AVANT D'UTILISER LE SERVICE, CAR ELLES AFFECTENT VOS DROITS ET OBLIGATIONS LÉGAUX. SI VOUS N'ACCEPTEZ PAS D'ÊTRE LIÉ PAR CES CONDITIONS, VEUILLEZ CESSER IMMÉDIATEMENT D'UTILISER LE SERVICE.",
+    "highlightsTitle": "Points clés des conditions d'utilisation",
+    "highlightsNoteBefore": "Consultez également nos",
+    "highlightsNoteLink": "conditions d'utilisation complètes",
+    "highlightsNoteAfter": ".",
+    "fullTitle": "Conditions d'utilisation complètes",
+    "privacyLink": "Lire la politique de confidentialité",
+    "contactFormLink": "Formulaire de contact",
+    "highlights": [
+      {
+        "title": "Votre acceptation",
+        "body": "Chaque fois que vous accédez au Service et/ou l'utilisez, vous acceptez d'être lié par ces Conditions et par toute condition supplémentaire applicable."
+      },
+      {
+        "title": "Votre vie privée",
+        "body": "Nous collectons certaines informations pour permettre à CODAKIS de vous accompagner dans votre parcours permis. Vous acceptez que nous utilisions ces informations conformément à notre politique de confidentialité.",
+        "moreLabel": "Politique de confidentialité",
+        "moreHref": "/politique-de-confidentialite"
+      },
+      {
+        "title": "Paiements, abonnements et annulations",
+        "body": "Vous vous engagez à honorer vos obligations de paiement pour les services achetés sur le Site. Les abonnements peuvent être renouvelés automatiquement selon la formule choisie."
+      },
+      {
+        "title": "Contact",
+        "body": "Pour toute question relative à ces Conditions : contact@codakis.cm",
+        "moreLabel": "Nous contacter",
+        "moreHref": "/contact"
+      }
+    ],
+    "fullSections": [
+      {
+        "title": "1. Qu'est-ce que CODAKIS ?",
+        "paragraphs": [
+          "CODAKIS est une plateforme d'apprentissage du code de la route et de mise en relation entre candidats et auto-écoles agréées au Cameroun. En vous inscrivant, vous accédez aux cours, à l'annuaire géolocalisé, aux forfaits et aux ressources associées."
+        ]
+      },
+      {
+        "id": "confidentialite",
+        "title": "3. Confidentialité",
+        "paragraphs": [
+          "Votre vie privée est importante pour nous. Consultez notre politique de confidentialité, qui explique comment nous utilisons les informations que vous soumettez. Cette politique est incorporée par référence aux présentes Conditions."
+        ],
+        "showPrivacyLink": true
+      },
+      {
+        "id": "paiements",
+        "title": "8. Paiements et abonnements",
+        "paragraphs": [
+          "Les tarifs en vigueur sont affichés sur la page Forfaits. Les paiements sont traités par des prestataires tiers sécurisés (Mobile Money, etc.). Les abonnements récurrents se renouvellent automatiquement selon la période choisie."
+        ]
+      },
+      {
+        "title": "18. Nous contacter",
+        "paragraphs": [
+          "CODAKIS — Douala & Yaoundé, Cameroun.",
+          "E-mail : contact@codakis.cm"
+        ],
+        "showContactForm": true
+      }
+    ]
+  },
+  "blogArticle": {
+    "asideAria": "Barre latérale article",
+    "asideTitle": "Vous cherchez une auto-école agréée ?",
+    "asideText": "Accédez à l'annuaire CODAKIS et trouvez l'établissement adapté près de chez vous.",
+    "asideCta": "Explorer l'annuaire",
+    "relatedTitle": "Articles recommandés",
+    "inlineCtaAria": "Appel à l'action",
+    "inlineCtaTitle": "Trouvez une auto-école agréée avec CODAKIS",
+    "inlineCtaText": "Parcourez l'annuaire, comparez les forfaits et réservez vos créneaux de conduite en toute confiance.",
+    "inlineCtaButton": "Commencer",
+    "shareLabel": "Partager cet article",
+    "breadcrumbBlog": "Blog",
+    "byAuthor": "Par",
+    "loading": "Chargement de l'article…",
+    "notFound": "Article introuvable",
+    "backToBlog": "Retour au blog"
+  },
+  "pagination": {
+    "aria": "Pagination des résultats",
+    "summary": "{{from}}–{{to}} sur {{total}}",
+    "prev": "Page précédente",
+    "next": "Page suivante"
+  },
+  "common": {
+    "loading": "Chargement…",
+    "currency": "FCFA",
+    "loadingPage": "Chargement de la page",
+    "loadingAria": "Chargement"
+  }
+}
