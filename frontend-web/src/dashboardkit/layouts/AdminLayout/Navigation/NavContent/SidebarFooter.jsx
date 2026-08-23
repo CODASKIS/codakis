@@ -1,48 +1,56 @@
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { canUpgradeToPremium } from '@/auth/authStore';
+import FeatherIcon from 'feather-icons-react';
+import { canUpgradeToPremium, getSession, isPremiumUser } from '@/auth/authStore';
 import { getProfilePath } from '@/auth/roles';
-import { getSession } from '@/auth/authStore';
-import { getCandidateEnrollment, isCandidateEnrolled } from '@/auth/candidateEnrollment';
 
 const UPGRADE_HREF = '/themes#abonnement';
 
-export function SidebarUpgrade() {
-  const { t } = useTranslation();
-  const session = getSession();
-
-  if (!canUpgradeToPremium()) return null;
-
-  return (
-    <div className="codakis-sidebar-upgrade">
-      <Link to={UPGRADE_HREF} className="codakis-sidebar-upgrade__link">
-        <i className="material-icons-two-tone">workspace_premium</i>
-        <span>{t('dashboard.userMenu.upgradeCta')}</span>
-      </Link>
-    </div>
-  );
+function getInitials(name) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase();
 }
 
-export function SidebarProfileLink() {
+export function SidebarAccountFoot() {
   const { t } = useTranslation();
   const session = getSession();
+
   if (!session) return null;
 
   const profilePath = getProfilePath(session.role);
-  const enrollment = session.role === 'candidat' ? getCandidateEnrollment() : null;
-  const enrolled = session.role === 'candidat' && isCandidateEnrolled();
+  const isPremium = isPremiumUser();
+  const showOffer = canUpgradeToPremium();
+  const initials = getInitials(session.name);
 
   return (
-    <div className="codakis-sidebar-profile">
-      <Link to={profilePath} className="codakis-sidebar-profile__link">
-        <i className="material-icons-two-tone">account_circle</i>
-        <span className="codakis-sidebar-profile__text">
-          <span className="codakis-sidebar-profile__label">{t('dashboard.profile.title')}</span>
-          {enrolled && enrollment?.schoolName ? (
-            <small className="codakis-sidebar-profile__school">{enrollment.schoolName}</small>
-          ) : null}
+    <div className="codakis-sidebar-account">
+      <Link to={profilePath} className="codakis-sidebar-account__profile">
+        <span className="codakis-sidebar-account__avatar" aria-hidden>
+          {initials}
+        </span>
+        <span className="codakis-sidebar-account__meta">
+          <strong className="codakis-sidebar-account__name">{session.name}</strong>
+          <span className="codakis-sidebar-account__plan">
+            {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
+          </span>
         </span>
       </Link>
+
+      {showOffer ? (
+        <Link to={UPGRADE_HREF} className="codakis-sidebar-account__offer">
+          <FeatherIcon icon="gift" size={16} />
+          <span>{t('dashboard.userMenu.claimOffer')}</span>
+        </Link>
+      ) : null}
+
+      {!showOffer && isPremium && session.role === 'candidat' ? (
+        <Link to={UPGRADE_HREF} className="codakis-sidebar-account__offer codakis-sidebar-account__offer--muted">
+          <FeatherIcon icon="star" size={16} />
+          <span>{t('dashboard.userMenu.managePlan')}</span>
+        </Link>
+      ) : null}
     </div>
   );
 }

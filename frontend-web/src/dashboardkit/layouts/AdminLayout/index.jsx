@@ -1,4 +1,4 @@
-import { useContext, useEffect, Suspense } from 'react';
+import { useContext, useEffect, useRef, Suspense } from 'react';
 import { Outlet } from 'react-router';
 
 // project imports
@@ -10,6 +10,7 @@ import useWindowSize from 'hooks/useWindowSize';
 import { ConfigContext } from 'contexts/ConfigContext';
 import * as actionType from 'store/actions';
 import Loader from 'components/Loader/Loader';
+import DashboardLoadObserver from '@/dashboard/components/DashboardLoadObserver';
 
 // -----------------------|| ADMIN LAYOUT ||-----------------------//
 
@@ -17,6 +18,7 @@ export default function AdminLayout() {
   const windowSize = useWindowSize();
   const configContext = useContext(ConfigContext);
   const bodyElement = document.body;
+  const contentRef = useRef(null);
   const { collapseLayout } = configContext.state;
   const { dispatch } = configContext;
   useEffect(() => {
@@ -39,7 +41,8 @@ export default function AdminLayout() {
       <NavBar />
       <Navigation />
       <div className={containerClass.join(' ')}>
-        <div className="pcoded-content">
+        <div className="pcoded-content" ref={contentRef}>
+          <DashboardLoadObserver contentRef={contentRef} />
           <>
             <Breadcrumb />
             <Suspense fallback={<Loader />}>
@@ -47,7 +50,6 @@ export default function AdminLayout() {
             </Suspense>
           </>
         </div>
-        
       </div>
     </>
   );

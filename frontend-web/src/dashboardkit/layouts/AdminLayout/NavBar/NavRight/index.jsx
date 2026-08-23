@@ -10,7 +10,6 @@ import FeatherIcon from 'feather-icons-react';
 // project imports
 import { useDashboardMenu } from 'contexts/DashboardMenuContext';
 import {
-  canUpgradeToPremium,
   clearSession,
   getSession,
   isPremiumUser,
@@ -23,6 +22,19 @@ import avatar2 from 'assets/images/user/avatar-2.jpg';
 
 const UPGRADE_HREF = '/themes#abonnement';
 
+function MenuLink({ to, icon, children, onClick, muted }) {
+  return (
+    <Link
+      to={to}
+      className={`dropdown-item codakis-user-menu__item${muted ? ' codakis-user-menu__item--muted' : ''}`}
+      onClick={onClick}
+    >
+      <FeatherIcon icon={icon} size={18} />
+      <span>{children}</span>
+    </Link>
+  );
+}
+
 // -----------------------|| NAV RIGHT ||-----------------------//
 
 export default function NavRight() {
@@ -31,7 +43,6 @@ export default function NavRight() {
   const session = getSession();
   const codakisMenu = useDashboardMenu();
   const roleTitle = codakisMenu?.roleTitle ?? 'CODAKIS';
-  const showUpgrade = canUpgradeToPremium();
   const isPremium = isPremiumUser();
   const displayName = session?.name ?? t('dashboard.user');
   const displayEmail = session?.email ?? '';
@@ -70,84 +81,62 @@ export default function NavRight() {
             <span>
               <span className="user-name">{displayName}</span>
               <span className="user-desc">
-                {enrolled && enrollment?.schoolName
-                  ? enrollment.schoolName
-                  : roleTitle}
+                {enrolled && enrollment?.schoolName ? enrollment.schoolName : roleTitle}
               </span>
             </span>
           </Dropdown.Toggle>
           <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown codakis-user-menu">
-            <Dropdown.Header className="codakis-user-menu__head">
-              <div className="codakis-user-menu__profile">
-                <img src={avatar2} alt="" className="codakis-user-menu__avatar" />
-                <div className="codakis-user-menu__identity">
-                  <strong className="codakis-user-menu__name">{displayName}</strong>
-                  {displayEmail ? <span className="codakis-user-menu__email">{displayEmail}</span> : null}
-                  <div className="codakis-user-menu__badges">
-                    <span className={`codakis-user-menu__plan${isPremium ? ' is-premium' : ''}`}>
-                      {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
+            <div className="codakis-user-menu__profile">
+              <img src={avatar2} alt="" className="codakis-user-menu__avatar" />
+              <div className="codakis-user-menu__identity">
+                <strong className="codakis-user-menu__name">{displayName}</strong>
+                {displayEmail ? <span className="codakis-user-menu__email">{displayEmail}</span> : null}
+                <div className="codakis-user-menu__badges">
+                  <span className={`codakis-user-menu__plan${isPremium ? ' is-premium' : ''}`}>
+                    {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
+                  </span>
+                  {session?.role === 'candidat' ? (
+                    <span className={`codakis-user-menu__school${enrolled ? ' is-enrolled' : ''}`}>
+                      {enrolled ? enrollment?.schoolName : t('dashboard.enrollment.notEnrolled')}
                     </span>
-                    {session?.role === 'candidat' ? (
-                      <span className={`codakis-user-menu__school${enrolled ? ' is-enrolled' : ''}`}>
-                        {enrolled
-                          ? enrollment?.schoolName
-                          : t('dashboard.enrollment.notEnrolled')}
-                      </span>
-                    ) : null}
-                  </div>
+                  ) : null}
                 </div>
               </div>
-            </Dropdown.Header>
+            </div>
 
-            {showUpgrade ? (
-              <div className="codakis-user-menu__upgrade-wrap">
-                <Link to={UPGRADE_HREF} className="codakis-user-menu__upgrade btn btn-primary">
-                  <i className="material-icons-two-tone">workspace_premium</i>
-                  <span>
-                    <strong>{t('dashboard.userMenu.upgradeCta')}</strong>
-                    <small>{t('dashboard.userMenu.upgradeSubtitle')}</small>
-                  </span>
-                </Link>
-              </div>
-            ) : null}
+            <Dropdown.Divider className="codakis-user-menu__divider" />
 
             {isPremium && session?.role === 'candidat' ? (
-              <Link to={UPGRADE_HREF} className="dropdown-item">
-                <i className="material-icons-two-tone">workspace_premium</i>
+              <MenuLink to={UPGRADE_HREF} icon="star">
                 {t('dashboard.userMenu.managePlan')}
-              </Link>
+              </MenuLink>
             ) : null}
 
             {session?.role === 'candidat' && enrolled ? (
-              <Link to="/espace/candidat/auto-ecole" className="dropdown-item">
-                <i className="material-icons-two-tone">domain</i>
+              <MenuLink to="/espace/candidat/auto-ecole" icon="home">
                 {t('dashboard.nav.mySchool')}
-              </Link>
+              </MenuLink>
             ) : null}
 
             {session?.role === 'candidat' && !enrolled ? (
-              <Link to="/auto-ecoles" className="dropdown-item">
-                <i className="material-icons-two-tone">shopping_cart</i>
+              <MenuLink to="/auto-ecoles" icon="shopping-cart">
                 {t('dashboard.enrollment.browseForfaits')}
-              </Link>
+              </MenuLink>
             ) : null}
 
-            <Link to={profilePath} className="dropdown-item">
-              <i className="material-icons-two-tone">account_circle</i>
+            <MenuLink to={profilePath} icon="user">
               {t('dashboard.profile.title')}
-            </Link>
+            </MenuLink>
 
-            <Link to="/" className="dropdown-item">
-              <i className="material-icons-two-tone">public</i>
+            <MenuLink to="/" icon="globe">
               {t('dashboard.backToSite')}
-            </Link>
+            </MenuLink>
 
-            <div className="codakis-user-menu__footer">
-              <Link to="#" className="dropdown-item codakis-user-menu__logout" onClick={handleLogout}>
-                <i className="material-icons-two-tone">logout</i>
-                {t('dashboard.logout')}
-              </Link>
-            </div>
+            <Dropdown.Divider className="codakis-user-menu__divider" />
+
+            <MenuLink to="#" icon="log-out" onClick={handleLogout} muted>
+              {t('dashboard.logout')}
+            </MenuLink>
           </Dropdown.Menu>
         </Dropdown>
       </ListGroup.Item>

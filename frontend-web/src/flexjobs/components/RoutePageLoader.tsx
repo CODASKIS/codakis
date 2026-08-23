@@ -1,16 +1,20 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
+import { beginPageLoad, isPageReady, subscribePageReady } from "@/lib/pageLoadReady";
+import { waitForPublicPageReady } from "@/lib/waitForDashboardContent";
 import { CODAKIS_LOGO_ICON } from "./BrandLogo";
 
-const MIN_VISIBLE_MS = 280;
+const MIN_VISIBLE_MS = 320;
+const MAX_WAIT_MS = 12000;
 
 function isAdminShellPath(pathname: string): boolean {
   return (
     pathname === "/dashboard" ||
     pathname === "/profile" ||
-    pathname.startsWith("/admin/") ||
-    pathname.startsWith("/dashboard/")
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/dashboard/") ||
+    pathname.startsWith("/espace/")
   );
 }
 
@@ -21,15 +25,47 @@ export default function RoutePageLoader() {
   const adminShell = isAdminShellPath(location.pathname);
 
   useEffect(() => {
-    setVisible(true);
-    const hideAt = window.setTimeout(() => setVisible(false), MIN_VISIBLE_MS);
-    return () => window.clearTimeout(hideAt);
-  }, [location.pathname, location.search, location.hash]);
+    let cancelled = false;
+    let hideTimer: number | undefined;
+    let maxTimer: number | undefined;
 
-  useEffect(() => {
-    const hideAt = window.setTimeout(() => setVisible(false), MIN_VISIBLE_MS);
-    return () => window.clearTimeout(hideAt);
-  }, []);
+    const hideLoader = () => {
+      if (cancelled) return;
+      hideTimer = window.setTimeout(() => {
+        if (!cancelled) setVisible(false);
+      }, MIN_VISIBLE_MS);
+    };
+
+    setVisible(true);
+    beginPageLoad();
+
+    if (adminShell) {
+      const unsubscribe = subscribePageReady(() => {
+        if (isPageReady()) hideLoader();
+      });
+      if (isPageReady()) hideLoader();
+
+      maxTimer = window.setTimeout(hideLoader, MAX_WAIT_MS);
+
+      return () => {
+        cancelled = true;
+        unsubscribe();
+        if (hideTimer) window.clearTimeout(hideTimer);
+        if (maxTimer) window.clearTimeout(maxTimer);
+      };
+    }
+
+    void waitForPublicPageReady().then(() => {
+      if (!cancelled) hideLoader();
+    });
+    maxTimer = window.setTimeout(hideLoader, MAX_WAIT_MS);
+
+    return () => {
+      cancelled = true;
+      if (hideTimer) window.clearTimeout(hideTimer);
+      if (maxTimer) window.clearTimeout(maxTimer);
+    };
+  }, [adminShell, location.pathname, location.search, location.hash]);
 
   if (!visible) return null;
 

@@ -7,7 +7,7 @@ import { ListGroup } from 'react-bootstrap';
 
 // project imports
 import NavGroup from './NavGroup';
-import { SidebarProfileLink, SidebarUpgrade } from './SidebarFooter';
+import { SidebarAccountFoot } from './SidebarFooter';
 import { ConfigContext } from 'contexts/ConfigContext';
 
 // third party
@@ -42,21 +42,17 @@ export default function NavContent({ navigation, activeNav }) {
     }
   });
 
-  let navContentNode = (
-    <SimpleBar style={{ height: 'calc(100vh - 70px - 7rem)' }}>
-      <ListGroup variant="flush" as="ul" bsPrefix=" " className="pc-navbar">
-        {navItems}
-      </ListGroup>
-    </SimpleBar>
+  const navList = (
+    <ListGroup variant="flush" as="ul" bsPrefix=" " className="pc-navbar">
+      {navItems}
+    </ListGroup>
   );
 
-  if (collapseLayout) {
-    navContentNode = (
-      <ListGroup variant="flush" as="ul" bsPrefix=" " className="pc-navbar">
-        {navItems}
-      </ListGroup>
-    );
-  }
+  let navContentNode = collapseLayout ? (
+    navList
+  ) : (
+    <SimpleBar className="codakis-navbar-scroll__bar">{navList}</SimpleBar>
+  );
 
   const mHeader = (
     <div className="m-header">
@@ -73,9 +69,10 @@ export default function NavContent({ navigation, activeNav }) {
       {mHeader}
 
       <div className="navbar-content next-scroll codakis-navbar-content">
-        {navContentNode}
-        <SidebarProfileLink />
-        <SidebarUpgrade />
+        <div className="codakis-navbar-scroll">{navContentNode}</div>
+        <div className="codakis-sidebar-foot">
+          <SidebarAccountFoot />
+        </div>
       </div>
     </>
   );
