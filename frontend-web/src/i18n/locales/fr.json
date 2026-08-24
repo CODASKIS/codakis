@@ -138,6 +138,26 @@
   },
   "pricing": {
     "title": "Choisissez la formule adaptée à vos besoins",
+    "pageTitle": "Tarifs CODAKIS",
+    "pageDescription": "Abonnement révision théorique pour candidats et offres pour auto-écoles partenaires.",
+    "pageEyebrow": "Tarification transparente",
+    "pageLead": "Deux modèles distincts : l'abonnement CODAKIS pour réviser le code, et les forfaits vendus par les auto-écoles agréées.",
+    "candidateBadge": "Candidats",
+    "candidateTitle": "Abonnement révision CODAKIS",
+    "candidateLead": "Accédez aux 10 thèmes CEMAC, cours, quiz et examens blancs après paiement Mobile Money.",
+    "candidateFeature1": "Cours théoriques complets et quiz illimités",
+    "candidateFeature2": "Examens blancs chronométrés",
+    "candidateFeature3": "Paiement Orange Money / MTN MoMo",
+    "candidateCta": "Créer mon compte candidat",
+    "schoolBadge": "Auto-écoles",
+    "schoolTitle": "Forfaits & inscription auto-école",
+    "schoolLead": "Les candidats paient votre forfait via CODAKIS. La plateforme prélève {{rate}} % de commission ; le reste vous est reversé.",
+    "schoolFeature1": "Visibilité dans l'annuaire géolocalisé CEMAC",
+    "schoolFeature2": "{{rate}} % commission CODAKIS — le solde revient à votre établissement",
+    "schoolFeature3": "Paiement Mobile Money sécurisé et reçu QR code",
+    "schoolCta": "Inscrire mon auto-école",
+    "commissionNote": "Lors de l'inscription d'un candidat à votre auto-école, CODAKIS prélève {{rate}} % du montant du forfait ; le solde vous est reversé automatiquement.",
+    "browseSchools": "Parcourir l'annuaire auto-écoles",
     "audienceCandidates": "Candidats",
     "audienceSchools": "Auto-écoles",
     "monthly": "Mensuel",
@@ -178,7 +198,38 @@
     "certified": "Agréée CODAKIS",
     "available": "Places disponibles",
     "viewProfile": "Voir le profil complet",
-    "new": "Nouveau"
+    "new": "Nouveau",
+    "from": "À partir de",
+    "registerSchool": "Inscrire mon auto-école",
+    "viewList": "Vue liste",
+    "viewGrid": "Vue grille",
+    "ratingAria": "Note {{rating}} sur 5",
+    "cardFeatureSuccess": "Taux de réussite indicatif : {{rate}} %",
+    "cardFeaturePayment": "Paiement Mobile Money — commission CODAKIS incluse",
+    "sort": {
+      "label": "Trier les résultats",
+      "name": "Nom",
+      "newest": "Plus récentes",
+      "priceAsc": "Prix croissant",
+      "priceDesc": "Prix décroissant"
+    },
+    "filters": {
+      "title": "Filtrer & affiner",
+      "clearAll": "Tout effacer",
+      "keyword": "Mot-clé",
+      "keywordPlaceholder": "Nom, quartier, adresse…",
+      "country": "Pays",
+      "allCountries": "Tous les pays CEMAC",
+      "city": "Ville / lieu",
+      "allCities": "Toutes les villes",
+      "price": "Prix du forfait (FCFA)",
+      "priceMin": "Min",
+      "priceMax": "Max",
+      "apply": "Appliquer les filtres",
+      "registerTitle": "Vous êtes une auto-école ?",
+      "registerLead": "Rejoignez l'annuaire CODAKIS, vendez vos forfaits et recevez vos paiements après commission plateforme.",
+      "registerCta": "Inscrire mon établissement"
+    }
   },
   "schoolDetail": {
     "breadcrumbHome": "Accueil",
@@ -266,7 +317,9 @@
       "ussdTitle": "Validez sur votre téléphone",
       "success": "Paiement confirmé — votre forfait est actif.",
       "error": "Le paiement n'a pas pu être confirmé. Réessayez ou vérifiez votre solde.",
-      "secure": "Paiement sécurisé CODAKIS — reçu QR code après confirmation"
+      "secure": "Paiement sécurisé CODAKIS — reçu QR code après confirmation",
+      "schoolReceives": "Versement auto-école",
+      "commissionNote": "CODAKIS prélève {{rate}} % de commission sur ce paiement"
     },
     "viewContent": "Voir le détail du forfait",
     "detail": {
@@ -521,6 +574,8 @@
     ]
   },
   "dashboard": {
+    "sidebarCollapse": "Réduire le menu",
+    "sidebarExpand": "Étendre le menu",
     "nav": {
       "aria": "Navigation de l'espace connecté",
       "home": "Tableau de bord",
@@ -574,6 +629,8 @@
       "pack": "Forfait",
       "enrolledSince": "Inscrit depuis le {{date}}",
       "subscriptionSection": "Abonnement CODAKIS",
+      "subscriptionCheckoutTitle": "Payer l'accès CODAKIS",
+      "subscriptionPlan": "Formule {{plan}}",
       "premiumActive": "Accès Premium actif — tous les thèmes et examens illimités.",
       "premiumHint": "Passez à Premium pour débloquer les 10 thèmes CEMAC et les examens blancs illimités.",
       "consortSummary": "Complétez votre dossier administratif permis.",
@@ -804,10 +861,13 @@
     "consort": {
       "pageTitle": "Mon dossier Consort",
       "pageLead": "Suivez et complétez les 6 pièces obligatoires de votre dossier administratif permis de conduire.",
+      "piecesNav": "Pièces du dossier",
       "tableTitle": "Suivi des pièces Consort",
       "colPiece": "Pièce",
       "colDate": "Date",
       "progressLabel": "Avancement du dossier",
+      "validatedShort": "Validées",
+      "pendingShort": "En cours",
       "progressHint": "Un dossier complet accélère votre inscription en préfecture.",
       "progressHintDynamic": "{{validated}} pièces validées, {{pending}} en cours et {{missing}} manquante(s) sur 6.",
       "footerText": "Besoin d'aide ? Votre auto-école partenaire peut valider chaque pièce avec vous.",
@@ -1050,6 +1110,7 @@
       "filterAllStatus": "Tous les statuts",
       "filterAllPurpose": "Tous les types",
       "refresh": "Actualiser",
+      "schoolPayout": "Versement auto-école",
       "stats": {
         "volume": "Volume encaissé",
         "completed": "Paiements confirmés",
@@ -1071,6 +1132,7 @@
         "context": "Objet",
         "school": "Auto-école",
         "amount": "Montant",
+        "commission": "Commission CODAKIS",
         "channel": "Canal",
         "status": "Statut",
         "date": "Date"
@@ -1154,6 +1216,7 @@
         "themes": "Thèmes",
         "lecons": "Leçons",
         "questions": "Questions",
+        "parcours": "Parcours cours",
         "quiz": "Quiz",
         "examens": "Examens blancs"
       },
@@ -1204,7 +1267,21 @@
       "illustration": "Image illustrative",
       "video": "Vidéo (lien)",
       "videoHint": "Lien YouTube ou Vimeo, ou URL directe d'un fichier MP4.",
-      "uploadError": "Échec du téléversement de l'image."
+      "uploadError": "Échec du téléversement de l'image.",
+      "coursePathTitle": "Parcours du module (leçons + quiz)",
+      "coursePathTheme": "Module",
+      "coursePathHint": "Ordre affiché au candidat — le quiz n'apparaît que lorsqu'il clique sur cette section.",
+      "coursePathEmpty": "Aucune section dans ce module. Ajoutez une leçon ou un quiz.",
+      "addLeconSection": "Ajouter une leçon",
+      "addQuizSection": "Ajouter un quiz au parcours",
+      "stepLecon": "Leçon",
+      "stepQuiz": "Quiz",
+      "inCourse": "Dans le cours",
+      "inCourseSection": "Section du parcours cours",
+      "quizActive": "Quiz actif",
+      "courseStepOrderHint": "Position dans le parcours (plus petit = plus tôt).",
+      "yes": "Oui",
+      "no": "Non"
     }
   },
   "gerant": {
@@ -1336,6 +1413,33 @@
       "placesLeft": "place(s) libre(s)"
     }
   },
+  "coursePlayer": {
+    "courseTitle": "Révision code CEMAC",
+    "exitModule": "Quitter le module",
+    "openNav": "Ouvrir la navigation",
+    "closeNav": "Fermer la navigation",
+    "moduleNav": "Navigation du cours",
+    "percentDone": "{{percent}} % terminé",
+    "themeQuiz": "Quiz du thème",
+    "next": "Suivant",
+    "finish": "Terminer le parcours",
+    "advancing": "Enregistrement…",
+    "pdfTitle": "Documents PDF",
+    "quizLabel": "Question 01/01",
+    "quizValidate": "Valider",
+    "quizValidating": "Vérification…",
+    "quizCorrect": "Bonne réponse !",
+    "quizWrong": "Réponse incorrecte.",
+    "quizRequired": "Validez la question ci-dessus pour continuer.",
+    "stepPosition": "Étape {{current}} / {{total}}",
+    "listen": "Écouter",
+    "listenPause": "Pause",
+    "listenLoading": "Génération audio…",
+    "listenUnavailable": "Lecture audio indisponible pour le moment.",
+    "quizAlreadyPassed": "Quiz réussi — vous pouvez continuer le parcours.",
+    "quizRetry": "Réessayer le quiz",
+    "speechAnswer": "Réponse {{label}} : {{text}}"
+  },
   "candidat": {
     "seances": {
       "title": "Mes séances de conduite",
@@ -1363,6 +1467,13 @@
       "curriculum": "Programme de formation",
       "allThemes": "Les thèmes du cours",
       "openThemeHint": "Ouvrez un thème pour consulter ses leçons.",
+      "openModuleHint": "Choisissez un module pour accéder à ses leçons.",
+      "openModule": "Ouvrir le module",
+      "startModule": "Commencer le module",
+      "moduleLead": "Parcourez les leçons de ce module une par une.",
+      "themeNotFound": "Module introuvable.",
+      "backCourses": "Retour aux cours",
+      "noQuizForModule": "Aucun quiz disponible pour ce module.",
       "themeLabel": "Thème {{number}}",
       "lessonCount_one": "{{count}} leçon",
       "lessonCount_other": "{{count}} leçons",
@@ -1394,7 +1505,9 @@
       "autoSubmitting": "Temps écoulé — envoi automatique de vos réponses…",
       "results": "Résultats",
       "passed": "Réussi",
-      "failed": "Échoué"
+      "failed": "Échoué",
+      "platformPaywallTitle": "Abonnement CODAKIS requis",
+      "platformPaywallLead": "Payez votre accès plateforme (cours, quiz et examens blancs) via Orange Money ou MTN MoMo. L'inscription en auto-école reste un paiement séparé avec commission CODAKIS incluse."
     }
   },
   "moniteur": {

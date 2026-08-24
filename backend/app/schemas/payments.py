@@ -31,6 +31,9 @@ class PaymentInitiateResponse(BaseModel):
     ussd_hint: str | None = None
     payment_url: str | None = None
     payment_token: str | None = None
+    commission_fcfa: int | None = None
+    school_payout_fcfa: int | None = None
+    commission_rate_pct: int | None = None
 
 
 class PaymentStatusResponse(BaseModel):
@@ -57,12 +60,30 @@ class ClientInvoiceResponse(BaseModel):
 class PlanPricingResponse(BaseModel):
     essentiel: int = 0
     pro: int = 5000
+    premium: int = 15000
     entreprise: int = 15000
     essentiel_yearly: int = 0
     pro_yearly: int = 50000
+    premium_yearly: int = 150000
     entreprise_yearly: int = 150000
     deposit_min_fcfa: int = 10000
     certification_fee_fcfa: int = 25000
+    platform_commission_rate_pct: int = 10
+
+
+class ClientSubscriptionResponse(BaseModel):
+    plan_id: str | None = None
+    plan_name: str
+    billing_label: str | None = None
+    status: str
+    expires_at: str
+    is_active: bool
+    seconds_remaining: int
+    days_remaining: int
+    hours_remaining: int
+    minutes_remaining: int
+    payment_reference: str | None = None
+    receipt_number: str | None = None
 
 
 class AdminPaymentStatsResponse(BaseModel):
@@ -72,6 +93,7 @@ class AdminPaymentStatsResponse(BaseModel):
     failed_count: int
     enrollment_count: int
     subscription_count: int
+    commission_total_fcfa: int = 0
 
 
 class AdminPaymentItem(BaseModel):
@@ -89,6 +111,9 @@ class AdminPaymentItem(BaseModel):
     school_name: str | None = None
     forfait_label: str | None = None
     context_label: str
+    commission_fcfa: int | None = None
+    school_payout_fcfa: int | None = None
+    commission_rate_pct: int | None = None
     created_at: datetime
     completed_at: datetime | None = None
     inscription_id: UUID | None = None

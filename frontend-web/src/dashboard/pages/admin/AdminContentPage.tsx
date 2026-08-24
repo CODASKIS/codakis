@@ -19,6 +19,7 @@ import {
   type PedagogyQuiz,
   type PedagogyTheme,
 } from "../../../lib/pedagogyApi";
+import AdminCoursePathPanel from "./AdminCoursePathPanel";
 
 export default function AdminContentPage() {
   const { t, i18n } = useTranslation();
@@ -77,6 +78,7 @@ export default function AdminContentPage() {
           <Nav.Item><Nav.Link eventKey="themes">{t("admin.pedagogy.tabs.themes")}</Nav.Link></Nav.Item>
           <Nav.Item><Nav.Link eventKey="lecons">{t("admin.pedagogy.tabs.lecons")}</Nav.Link></Nav.Item>
           <Nav.Item><Nav.Link eventKey="questions">{t("admin.pedagogy.tabs.questions")}</Nav.Link></Nav.Item>
+          <Nav.Item><Nav.Link eventKey="parcours">{t("admin.pedagogy.tabs.parcours")}</Nav.Link></Nav.Item>
           <Nav.Item><Nav.Link eventKey="quiz">{t("admin.pedagogy.tabs.quiz")}</Nav.Link></Nav.Item>
           <Nav.Item><Nav.Link eventKey="examens">{t("admin.pedagogy.tabs.examens")}</Nav.Link></Nav.Item>
         </Nav>
@@ -123,6 +125,7 @@ export default function AdminContentPage() {
                     <th>{t("admin.pedagogy.colTitle")}</th>
                     <th>{t("admin.pedagogy.colTheme")}</th>
                     <th>{t("admin.pedagogy.colStatus")}</th>
+                    <th>{t("admin.pedagogy.sortOrder")}</th>
                     <th />
                   </tr>
                 </thead>
@@ -132,6 +135,7 @@ export default function AdminContentPage() {
                       <td>{lecon.title}</td>
                       <td>{lecon.theme_code}</td>
                       <td><Badge bg={lecon.status === "published" ? "success" : "secondary"}>{lecon.status}</Badge></td>
+                      <td>{lecon.sort_order}</td>
                       <td className="text-end">
                         <Link to={`/admin/contenu/lecons/${lecon.id}/modifier`} className="btn btn-outline-primary btn-sm">{t("admin.pedagogy.edit")}</Link>
                       </td>
@@ -175,6 +179,10 @@ export default function AdminContentPage() {
             </div>
           </Tab.Pane>
 
+          <Tab.Pane eventKey="parcours">
+            <AdminCoursePathPanel themes={themes} />
+          </Tab.Pane>
+
           <Tab.Pane eventKey="quiz">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h6 className="mb-0">{t("admin.pedagogy.quizTitle")}</h6>
@@ -183,7 +191,7 @@ export default function AdminContentPage() {
             <div className="table-responsive">
               <Table hover className="align-middle mb-0">
                 <thead>
-                  <tr><th>{t("admin.pedagogy.colTitle")}</th><th>{t("admin.pedagogy.colTheme")}</th><th>{t("admin.pedagogy.colLinked")}</th><th /></tr>
+                  <tr><th>{t("admin.pedagogy.colTitle")}</th><th>{t("admin.pedagogy.colTheme")}</th><th>{t("admin.pedagogy.colLinked")}</th><th>{t("admin.pedagogy.sortOrder")}</th><th>{t("admin.pedagogy.inCourse")}</th><th /></tr>
                 </thead>
                 <tbody>
                   {quizPage.paginatedItems.map((quiz) => (
@@ -191,6 +199,8 @@ export default function AdminContentPage() {
                       <td>{quiz.title}</td>
                       <td>{quiz.theme_code}</td>
                       <td>{quiz.linked_count}</td>
+                      <td>{quiz.sort_order}</td>
+                      <td>{quiz.in_course_path ? t("admin.pedagogy.yes") : t("admin.pedagogy.no")}</td>
                       <td className="text-end">
                         <Link to={`/admin/contenu/quiz/${quiz.id}/modifier`} className="btn btn-outline-primary btn-sm">{t("admin.pedagogy.edit")}</Link>
                       </td>

@@ -10,6 +10,7 @@ from app.schemas.payments import (
     AdminPaymentItem,
     AdminPaymentStatsResponse,
     ClientInvoiceResponse,
+    ClientSubscriptionResponse,
     InitiatePaymentRequest,
     PaymentConfigResponse,
     PaymentInitiateResponse,
@@ -21,8 +22,10 @@ from app.services.payments import (
     admin_list_payments,
     admin_payment_stats,
     confirm_payment,
+    get_my_subscription,
     get_payment,
     get_payment_config,
+    get_plan_pricing,
     initiate_payment,
     list_user_invoices,
     payment_to_initiate_response,
@@ -46,12 +49,12 @@ def payment_config():
 
 @router.get("/plans/pricing", response_model=PlanPricingResponse)
 def plan_pricing():
-    return PlanPricingResponse()
+    return PlanPricingResponse(**get_plan_pricing())
 
 
-@router.get("/subscription/me")
-def my_subscription():
-    return None
+@router.get("/subscription/me", response_model=ClientSubscriptionResponse | None)
+def my_subscription(user: Utilisateur = Depends(AuthUser), db: Session = Depends(get_db)):
+    return get_my_subscription(db, user)
 
 
 @router.get("/invoices/me", response_model=list[ClientInvoiceResponse])
@@ -104,6 +107,7 @@ def payment_initiate(
             plan_id=payload.plan_id,
             forfait_id=forfait_id,
             auto_ecole_id=payload.auto_ecole_id,
+            billing_period=payload.billing_period,
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc

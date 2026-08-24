@@ -67,30 +67,47 @@ function buildForfaitsRecord(forfaits: PublicForfait[]): DrivingSchool["forfaits
   return empty;
 }
 
+function demoSchoolStats(id: string): { rating: number; reviewCount: number; successRate: number } {
+  const presets = [
+    { rating: 4.7, reviewCount: 42, successRate: 91 },
+    { rating: 4.5, reviewCount: 28, successRate: 88 },
+    { rating: 4.6, reviewCount: 36, successRate: 85 },
+    { rating: 4.4, reviewCount: 19, successRate: 87 },
+  ];
+  let index = 0;
+  for (let i = 0; i < id.length; i += 1) {
+    index = (index + id.charCodeAt(i)) % presets.length;
+  }
+  return presets[index] ?? presets[0];
+}
+
 export function mapPublicSchoolToDrivingSchool(item: PublicSchoolListItem, forfaits: PublicForfait[] = []): DrivingSchool {
-  const desc = item.description ?? "";
-  const longDesc = item.long_description ?? desc;
+  const desc = item.description?.trim() ?? "";
+  const longDesc = (item.long_description ?? desc).trim();
+  const cardText = longDesc || desc;
   const access = item.access_info ?? item.address;
   const hours = normalizeSchoolHours(item.hours ?? undefined);
   const hasCoords = item.latitude != null && item.longitude != null;
+  const stats = demoSchoolStats(item.id);
 
   return {
     id: item.id,
     name: item.name,
     logoUrl: item.logo_url ?? undefined,
+    countryCode: item.country_code?.toUpperCase(),
     city: item.city || "—",
     district: item.district ?? "",
     address: item.address,
     phone: item.phone ?? "",
     latitude: hasCoords ? item.latitude! : 4.0511,
     longitude: hasCoords ? item.longitude! : 9.7679,
-    rating: 4.5,
-    reviewCount: 0,
-    successRate: 85,
+    rating: stats.rating,
+    reviewCount: stats.reviewCount,
+    successRate: stats.successRate,
     priceFrom: item.price_from,
     available: true,
-    description: { fr: desc, en: desc },
-    longDescription: { fr: longDesc, en: longDesc },
+    description: { fr: desc || cardText, en: desc || cardText },
+    longDescription: { fr: longDesc || desc, en: longDesc || desc },
     accessInfo: { fr: access, en: access },
     certifiedSince: item.certified_since.slice(0, 10),
     hours,
@@ -98,10 +115,23 @@ export function mapPublicSchoolToDrivingSchool(item: PublicSchoolListItem, forfa
   };
 }
 
-export async function fetchPublicSchools(params?: { q?: string; ville?: string }): Promise<PublicSchoolListItem[]> {
+export type PublicSchoolSearchParams = {
+  q?: string;
+  ville?: string;
+  pays?: string;
+  price_min?: number;
+  price_max?: number;
+  sort?: string;
+};
+
+export async function fetchPublicSchools(params?: PublicSchoolSearchParams): Promise<PublicSchoolListItem[]> {
   const search = new URLSearchParams();
   if (params?.q) search.set("q", params.q);
   if (params?.ville) search.set("ville", params.ville);
+  if (params?.pays) search.set("pays", params.pays);
+  if (params?.price_min != null) search.set("price_min", String(params.price_min));
+  if (params?.price_max != null) search.set("price_max", String(params.price_max));
+  if (params?.sort) search.set("sort", params.sort);
   const query = search.toString();
   const response = await fetch(apiUrl(`/api/v1/public/auto-ecoles${query ? `?${query}` : ""}`));
   if (!response.ok) throw new Error("Impossible de charger les auto-écoles");

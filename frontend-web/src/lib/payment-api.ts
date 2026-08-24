@@ -20,6 +20,9 @@ export type InitiatePaymentResult = {
   ussd_hint: string | null;
   payment_url: string | null;
   payment_token: string | null;
+  commission_fcfa?: number | null;
+  school_payout_fcfa?: number | null;
+  commission_rate_pct?: number | null;
 };
 
 export type PaymentStatusResult = {
@@ -39,6 +42,9 @@ type InitiateDto = {
   ussd_hint: string | null;
   payment_url: string | null;
   payment_token: string | null;
+  commission_fcfa?: number | null;
+  school_payout_fcfa?: number | null;
+  commission_rate_pct?: number | null;
 };
 
 type StatusDto = {
@@ -68,11 +74,15 @@ export async function getPlanPricing(): Promise<PlanPricing> {
 export type PlanPricing = {
   essentiel: number;
   pro: number;
+  premium: number;
   entreprise: number;
   essentiel_yearly: number;
   pro_yearly: number;
+  premium_yearly?: number;
+  entreprise_yearly: number;
   deposit_min_fcfa: number;
   certification_fee_fcfa: number;
+  platform_commission_rate_pct?: number;
 };
 
 export type ClientSubscription = {
@@ -198,6 +208,7 @@ export type AdminPaymentStats = {
   failed_count: number;
   enrollment_count: number;
   subscription_count: number;
+  commission_total_fcfa?: number;
 };
 
 export type AdminPaymentItem = {
@@ -215,6 +226,9 @@ export type AdminPaymentItem = {
   school_name: string | null;
   forfait_label: string | null;
   context_label: string;
+  commission_fcfa?: number | null;
+  school_payout_fcfa?: number | null;
+  commission_rate_pct?: number | null;
   created_at: string;
   completed_at: string | null;
   inscription_id: string | null;

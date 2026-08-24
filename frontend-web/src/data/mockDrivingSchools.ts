@@ -19,6 +19,7 @@ export type DrivingSchool = {
   name: string;
   logoUrl?: string;
   logoColor?: string;
+  countryCode?: string;
   city: string;
   district: string;
   address: string;

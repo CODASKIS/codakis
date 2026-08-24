@@ -24,6 +24,16 @@ function ConfigProvider({ children }) {
           ...stateData,
           collapseMenu: !stateData.collapseMenu
         };
+      case actionType.COLLAPSE_LAYOUT: {
+        const next = !stateData.collapseLayout;
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('codakis-sidebar-collapsed', next ? '1' : '0');
+        }
+        return {
+          ...stateData,
+          collapseLayout: next
+        };
+      }
       case actionType.COLLAPSE_HEADERMENU:
         return {
           ...stateData,

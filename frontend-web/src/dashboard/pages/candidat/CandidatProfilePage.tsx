@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import { getSession, isPremiumUser, setSession } from "../../../auth/authStore";
+import { usePlatformCheckout } from "../../components/PlatformAccessPanel";
 import { getCandidateEnrollment, isCandidateEnrolled } from "../../../auth/candidateEnrollment";
 import {
   AuthApiError,
@@ -16,7 +17,7 @@ import {
   type ConsortDossier,
 } from "../../../lib/authApi";
 
-const UPGRADE_HREF = "/themes#abonnement";
+const UPGRADE_HREF = "/tarifs";
 
 type ProfileForm = {
   first_name: string;
@@ -40,6 +41,7 @@ export default function CandidatProfilePage() {
   const enrollment = getCandidateEnrollment();
   const enrolled = isCandidateEnrolled();
   const isPremium = isPremiumUser();
+  const { openCheckout, checkoutModal } = usePlatformCheckout();
 
   const [user, setUser] = useState<ApiUser | null>(null);
   const [consort, setConsort] = useState<ConsortDossier | null>(null);
@@ -101,6 +103,7 @@ export default function CandidatProfilePage() {
   const displayName = user ? `${user.first_name} ${user.last_name}`.trim() : session?.name ?? "—";
 
   return (
+    <>
     <Row>
       <Col lg={8}>
         {error ? <Alert variant="danger">{error}</Alert> : null}
@@ -253,9 +256,9 @@ export default function CandidatProfilePage() {
               {isPremium ? t("dashboard.profile.premiumActive") : t("dashboard.profile.premiumHint")}
             </p>
             {!isPremium ? (
-              <Link to={UPGRADE_HREF} className="btn btn-primary btn-sm w-100">
+              <Button type="button" variant="primary" size="sm" className="w-100" onClick={openCheckout}>
                 {t("dashboard.userMenu.upgradeCta")}
-              </Link>
+              </Button>
             ) : (
               <Link to={UPGRADE_HREF} className="btn btn-outline-primary btn-sm w-100">
                 {t("dashboard.userMenu.managePlan")}
@@ -282,5 +285,7 @@ export default function CandidatProfilePage() {
         </Card>
       </Col>
     </Row>
+    {checkoutModal}
+    </>
   );
 }

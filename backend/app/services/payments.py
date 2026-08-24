@@ -1,10 +1,11 @@
 import re
 import secrets
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
 from app.services.enrollments import create_inscription
 from app.services.notifications import push_notification
@@ -21,6 +22,12 @@ PLAN_LABELS = {
     "pro": "Abonnement Pro",
     "premium": "Abonnement Premium",
     "entreprise": "Abonnement Entreprise",
+}
+
+SUBSCRIPTION_PRICING: dict[str, dict[str, int]] = {
+    "pro": {"monthly": 5000, "yearly": 50000},
+    "premium": {"monthly": 15000, "yearly": 150000},
+    "entreprise": {"monthly": 15000, "yearly": 150000},
 }
 
 USSD_HINTS = {
@@ -49,6 +56,29 @@ def _new_receipt() -> str:
     return f"RC-{datetime.now(UTC).strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
 
 
+def get_plan_pricing() -> dict:
+    return {
+        "essentiel": 0,
+        "pro": SUBSCRIPTION_PRICING["pro"]["monthly"],
+        "premium": SUBSCRIPTION_PRICING["premium"]["monthly"],
+        "entreprise": SUBSCRIPTION_PRICING["entreprise"]["monthly"],
+        "essentiel_yearly": 0,
+        "pro_yearly": SUBSCRIPTION_PRICING["pro"]["yearly"],
+        "premium_yearly": SUBSCRIPTION_PRICING["premium"]["yearly"],
+        "entreprise_yearly": SUBSCRIPTION_PRICING["entreprise"]["yearly"],
+        "deposit_min_fcfa": 10000,
+        "certification_fee_fcfa": 25000,
+        "platform_commission_rate_pct": settings.platform_commission_rate_pct,
+    }
+
+
+def _calc_enrollment_split(amount_fcfa: int) -> tuple[int, int, int]:
+    rate = settings.platform_commission_rate_pct
+    commission = round(amount_fcfa * rate / 100)
+    payout = amount_fcfa - commission
+    return rate, commission, payout
+
+
 def get_payment_config() -> dict:
     return {
         "provider": "legacy",
@@ -69,10 +99,14 @@ def initiate_payment(
     plan_id: str | None = None,
     forfait_id: uuid.UUID | None = None,
     auto_ecole_id: uuid.UUID | None = None,
+    billing_period: str = "monthly",
 ) -> Paiement:
     normalized_phone = normalize_phone(phone)
     amount_fcfa = 0
     label_fr = "Paiement CODAKIS"
+    commission_fcfa: int | None = None
+    school_payout_fcfa: int | None = None
+    commission_rate_pct: int | None = None
 
     if purpose == "enrollment":
         if forfait_id is None or auto_ecole_id is None:
@@ -95,16 +129,25 @@ def initiate_payment(
         if existing:
             raise ValueError("Vous êtes déjà inscrit à cette auto-école")
         amount_fcfa = forfait.prix
-        label_fr = f"Forfait {forfait.label_fr} — {school.raison_sociale}"
+        commission_rate_pct, commission_fcfa, school_payout_fcfa = _calc_enrollment_split(amount_fcfa)
+        label_fr = (
+            f"Forfait {forfait.label_fr} — {school.raison_sociale} "
+            f"(CODAKIS {commission_rate_pct}% : {commission_fcfa:,} FCFA)".replace(",", " ")
+        )
     elif purpose == "subscription" and plan_id:
-        pricing = {"essentiel": 0, "pro": 5000, "entreprise": 15000}
-        amount_fcfa = pricing.get(plan_id, 5000)
-        label_fr = f"Abonnement CODAKIS {plan_id}"
+        if plan_id in {"essentiel", "free"}:
+            raise ValueError("Le plan gratuit ne nécessite pas de paiement")
+        period = "yearly" if billing_period == "yearly" else "monthly"
+        plan_prices = SUBSCRIPTION_PRICING.get(plan_id)
+        if plan_prices is None:
+            raise ValueError("Plan d'abonnement invalide")
+        amount_fcfa = plan_prices[period]
+        period_label = "annuel" if period == "yearly" else "mensuel"
+        label_fr = f"Abonnement CODAKIS {PLAN_LABELS.get(plan_id, plan_id)} ({period_label})"
     else:
         raise ValueError("Paramètres de paiement invalides")
 
     reference = _new_reference()
-    channel = CHANNEL_LABELS.get(payment_method, payment_method)
     paiement = Paiement(
         reference=reference,
         utilisateur_id=user.id,
@@ -113,6 +156,9 @@ def initiate_payment(
         plan_id=plan_id,
         purpose=purpose,
         amount_fcfa=amount_fcfa,
+        commission_fcfa=commission_fcfa,
+        school_payout_fcfa=school_payout_fcfa,
+        commission_rate_pct=commission_rate_pct,
         channel=payment_method,
         phone=normalized_phone,
         status="pending",
@@ -138,6 +184,9 @@ def payment_to_initiate_response(paiement: Paiement) -> dict:
         "ussd_hint": USSD_HINTS.get(paiement.channel),
         "payment_url": None,
         "payment_token": None,
+        "commission_fcfa": paiement.commission_fcfa,
+        "school_payout_fcfa": paiement.school_payout_fcfa,
+        "commission_rate_pct": paiement.commission_rate_pct,
     }
 
 
@@ -177,6 +226,11 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
 
     inscription = None
     if paiement.purpose == "enrollment" and paiement.inscription_id is None:
+        if paiement.commission_fcfa is None and paiement.amount_fcfa:
+            rate, commission, payout = _calc_enrollment_split(paiement.amount_fcfa)
+            paiement.commission_rate_pct = rate
+            paiement.commission_fcfa = commission
+            paiement.school_payout_fcfa = payout
         school = db.get(AutoEcole, paiement.auto_ecole_id) if paiement.auto_ecole_id else None
         forfait = db.get(Forfait, paiement.forfait_id) if paiement.forfait_id else None
         if school and forfait:
@@ -203,10 +257,65 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
                     "payment_ref": paiement.reference,
                 },
             )
+    elif paiement.purpose == "subscription":
+        plan_label = PLAN_LABELS.get(paiement.plan_id or "", paiement.plan_id or "CODAKIS")
+        push_notification(
+            db,
+            user.id,
+            type_="subscription_confirmed",
+            title_fr="Abonnement activé",
+            title_en="Subscription activated",
+            body_fr=f"Votre {plan_label} est actif. Accédez aux cours, quiz et examens. Reçu : {paiement.receipt_number}.",
+            body_en=f"Your {plan_label} is active. Access courses, quizzes and exams. Receipt: {paiement.receipt_number}.",
+            payload={"payment_ref": paiement.reference, "plan_id": paiement.plan_id},
+        )
 
     db.commit()
     db.refresh(paiement)
     return paiement
+
+
+def get_my_subscription(db: Session, user: Utilisateur) -> dict | None:
+    row = (
+        db.query(Paiement)
+        .filter(
+            Paiement.utilisateur_id == user.id,
+            Paiement.purpose == "subscription",
+            Paiement.status == "completed",
+        )
+        .order_by(Paiement.completed_at.desc())
+        .first()
+    )
+    if row is None:
+        return None
+
+    paid_at = row.completed_at or row.created_at
+    # Durée indicative : 30 jours (mensuel) ou 365 jours (annuel) selon le montant
+    yearly_amounts = {
+        SUBSCRIPTION_PRICING["pro"]["yearly"],
+        SUBSCRIPTION_PRICING["premium"]["yearly"],
+        SUBSCRIPTION_PRICING["entreprise"]["yearly"],
+    }
+    duration_days = 365 if row.amount_fcfa in yearly_amounts else 30
+    expires_at = paid_at + timedelta(days=duration_days)
+    now = datetime.now(UTC)
+    remaining = max(0, int((expires_at - now).total_seconds()))
+    days_remaining = max(0, (expires_at.date() - now.date()).days)
+
+    return {
+        "plan_id": row.plan_id,
+        "plan_name": PLAN_LABELS.get(row.plan_id or "", row.plan_id or "CODAKIS"),
+        "billing_label": "Annuel" if row.amount_fcfa in yearly_amounts else "Mensuel",
+        "status": "active" if remaining > 0 else "expired",
+        "expires_at": expires_at.isoformat(),
+        "is_active": remaining > 0,
+        "seconds_remaining": remaining,
+        "days_remaining": days_remaining,
+        "hours_remaining": remaining // 3600,
+        "minutes_remaining": (remaining % 3600) // 60,
+        "payment_reference": row.reference,
+        "receipt_number": row.receipt_number,
+    }
 
 
 def list_user_invoices(db: Session, user: Utilisateur) -> list[dict]:
@@ -272,6 +381,9 @@ def _payment_to_admin_item(db: Session, row: Paiement) -> dict:
         "school_name": school.raison_sociale if school else None,
         "forfait_label": forfait.label_fr if forfait else None,
         "context_label": _payment_context_label(row, school=school, forfait=forfait),
+        "commission_fcfa": row.commission_fcfa,
+        "school_payout_fcfa": row.school_payout_fcfa,
+        "commission_rate_pct": row.commission_rate_pct,
         "created_at": row.created_at,
         "completed_at": row.completed_at,
         "inscription_id": row.inscription_id,
@@ -283,13 +395,15 @@ def admin_payment_stats(db: Session) -> dict:
     completed = [row for row in rows if row.status == "completed"]
     pending = [row for row in rows if row.status == "pending"]
     failed = [row for row in rows if row.status == "failed"]
+    enrollment_completed = [row for row in completed if row.purpose == "enrollment"]
     return {
         "total_volume_fcfa": sum(row.amount_fcfa for row in completed),
         "completed_count": len(completed),
         "pending_count": len(pending),
         "failed_count": len(failed),
-        "enrollment_count": sum(1 for row in completed if row.purpose == "enrollment"),
+        "enrollment_count": len(enrollment_completed),
         "subscription_count": sum(1 for row in completed if row.purpose == "subscription"),
+        "commission_total_fcfa": sum(row.commission_fcfa or 0 for row in enrollment_completed),
     }
 
 

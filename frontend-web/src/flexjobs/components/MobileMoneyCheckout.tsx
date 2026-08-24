@@ -1,10 +1,11 @@
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { getAccessToken } from "../../lib/authApi";
 import {
   confirmPaymentWithRetry,
+  getPlanPricing,
   initiatePayment,
   type InitiatePaymentResult,
 } from "../../lib/payment-api";
@@ -40,6 +41,22 @@ export default function MobileMoneyCheckout({
   const [loading, setLoading] = useState(false);
   const [initResult, setInitResult] = useState<InitiatePaymentResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [commissionRate, setCommissionRate] = useState(10);
+
+  useEffect(() => {
+    if (!open) return;
+    void getPlanPricing()
+      .then((pricing) => setCommissionRate(pricing.platform_commission_rate_pct ?? 10))
+      .catch(() => setCommissionRate(10));
+  }, [open]);
+
+  const estimatedCommission = Math.round(amount * commissionRate / 100);
+  const estimatedPayout = amount - estimatedCommission;
+  const split = initResult ?? {
+    commission_rate_pct: commissionRate,
+    commission_fcfa: estimatedCommission,
+    school_payout_fcfa: estimatedPayout,
+  };
 
   if (!open) return null;
 
@@ -94,6 +111,20 @@ export default function MobileMoneyCheckout({
               {formatForfaitPrice(amount, i18n.language)} {t("common.currency")}
             </strong>
           </p>
+          {split.commission_rate_pct != null && split.commission_fcfa != null ? (
+            <div className="fj-mm-checkout__split">
+              <p>
+                {t("packs.checkout.schoolReceives")} :{" "}
+                <strong>
+                  {formatForfaitPrice(split.school_payout_fcfa ?? amount, i18n.language)}{" "}
+                  {t("common.currency")}
+                </strong>
+              </p>
+              <p className="fj-mm-checkout__commission">
+                {t("packs.checkout.commissionNote", { rate: split.commission_rate_pct })}
+              </p>
+            </div>
+          ) : null}
         </div>
 
         {step === "form" ? (

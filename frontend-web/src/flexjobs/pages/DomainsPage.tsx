@@ -126,6 +126,9 @@ export default function DomainsPage() {
           <div className="fj-themes-subscription__head">
             <h2>{t("domains.subscriptionTitle")}</h2>
             <p>{t("domains.subscriptionLead")}</p>
+            <Link to="/tarifs" className="fj-btn fj-btn--outline mt-3">
+              {t("nav.subscription")}
+            </Link>
           </div>
           <PricingTable plans={plans} loading={plansLoading} planPricing={planPricing} hideIntro />
         </Container>

@@ -43,12 +43,16 @@ Espace moniteur : `/espace/moniteur`
 
 ## Candidats
 
-| E-mail | Mot de passe | Plan | Usage |
-|---|---|---|---|
-| `candidat@demo.codakis.cm` | `Demo123!` | Free | Inscrit à **Auto-École Volant Vert** (forfait Code en ligne) — voir `/espace/candidat/auto-ecole` |
-| `premium@demo.codakis.cm` | `Demo123!` | Premium | Accès complet aux thèmes premium (abonnement simulé) |
+| E-mail | Mot de passe | Abonnement CODAKIS | Auto-école | Usage |
+|---|---|---|---|---|
+| `candidat@demo.codakis.cm` | `Demo123!` | **Pro** (payé — accès cours/quiz/examens) | Aucune | Candidat « code seul » : plateforme débloquée, pas encore inscrit en auto-école |
+| `premium@demo.codakis.cm` | `Demo123!` | **Premium** (payé) | **Auto-École Volant Vert** (forfait démo) | Parcours complet : plateforme + inscription auto-école + dossier Consort |
 
 Espace candidat : `/espace/candidat`
+
+> **Distinction importante**
+> - **Abonnement CODAKIS** = paiement plateforme (cours, quiz, examens blancs) — requis pour tous.
+> - **Inscription auto-école** = paiement séparé (forfait code/conduite) — seulement pour `premium@demo.codakis.cm` en démo.
 
 ### Parcours auto-école (dashboard)
 
@@ -143,9 +147,9 @@ Un quiz par thème : **Signalisation**, **Priorités**, **Vitesse**
 
 1. **Site public** — Ouvrir `/auto-ecoles` et vérifier les 3 auto-écoles de démo.
 2. **Blog** — Ouvrir `/blog` et lire un article.
-3. **Candidat free inscrit** — Se connecter avec `candidat@demo.codakis.cm` : voir l'auto-école rattachée sur `/espace/candidat/auto-ecole`.
-4. **Candidat sans inscription** — Se connecter avec un nouveau compte ou `premium@demo.codakis.cm`, aller sur `/espace/candidat/auto-ecoles`, choisir une auto-école et un forfait (Mobile Money).
-5. **Candidat premium** — Accéder aux thèmes premium et lire une leçon avec vidéo.
+3. **Candidat Pro (plateforme payée, sans auto-école)** — `candidat@demo.codakis.cm` : accès cours/quiz/examens, pas d'auto-école sur `/espace/candidat/auto-ecole` (parcourir les forfaits sur `/espace/candidat/auto-ecoles`).
+4. **Candidat Premium inscrit** — `premium@demo.codakis.cm` : plateforme + **Auto-École Volant Vert** sur `/espace/candidat/auto-ecole`, dossier Consort, séances.
+5. **Nouveau candidat** — Créer un compte : paywall actif jusqu'à souscription CODAKIS, puis inscription auto-école séparée via Mobile Money.
 6. **Quiz & examen** — Passer un quiz thématique puis l'examen blanc démo (questions avec médias).
 7. **Gérant** — Se connecter avec `gerant@demo.codakis.cm`, gérer forfaits et moniteurs.
 8. **Moniteur** — Se connecter avec `moniteur@demo.codakis.cm`, consulter le planning et les créneaux.
@@ -162,6 +166,8 @@ Pour repartir de zéro en local, vider les tables concernées ou recréer la bas
 ```bash
 cd backend
 source .venv/bin/activate
+# Optionnel : réaligner les comptes démo sur une base existante
+psql "$DATABASE_URL" -f scripts/migrate_demo_accounts.sql
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 

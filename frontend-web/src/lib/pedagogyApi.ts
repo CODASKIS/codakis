@@ -1,4 +1,4 @@
-import { authFetch, AuthApiError } from "./authApi";
+import { authFetch, AuthApiError, getAccessToken } from "./authApi";
 
 export type PedagogyTheme = {
   id: string;
@@ -61,6 +61,8 @@ export type PedagogyQuiz = {
   question_count: number;
   duree_minutes: number;
   est_actif: boolean;
+  sort_order: number;
+  in_course_path: boolean;
   linked_count: number;
   question_ids?: string[];
   created_at: string;
@@ -125,6 +127,10 @@ export async function changePassword(currentPassword: string, newPassword: strin
 // Admin
 export async function fetchAdminThemes(): Promise<PedagogyTheme[]> {
   return authFetch<PedagogyTheme[]>("/api/v1/admin/pedagogy/themes");
+}
+
+export async function fetchAdminCoursePath(themeId: string): Promise<CoursePath> {
+  return authFetch<CoursePath>(`/api/v1/admin/pedagogy/themes/${themeId}/path`);
 }
 
 export async function createAdminTheme(payload: {
@@ -238,6 +244,96 @@ export async function fetchCandidatLecons(themeId: string): Promise<PedagogyLeco
 
 export async function fetchCandidatLecon(id: string): Promise<PedagogyLecon> {
   return authFetch<PedagogyLecon>(`/api/v1/candidat/pedagogy/lecons/${id}`);
+}
+
+export type CandidatProgress = {
+  completed_lecon_ids: string[];
+  passed_quiz_ids: string[];
+  passed_examen_ids: string[];
+  total_lecons: number;
+  completed_count: number;
+  percent: number;
+};
+
+export type CoursePathStep = {
+  type: "lecon" | "quiz";
+  id: string;
+  ref: string;
+  title: string;
+  sort_order: number;
+  status?: string | null;
+};
+
+export type CoursePath = {
+  theme_id: string;
+  steps: CoursePathStep[];
+  completed_lecon_ids: string[];
+  passed_quiz_ids: string[];
+};
+
+export function stepRefForQuiz(quizId: string) {
+  return `quiz-${quizId}`;
+}
+
+export function parseStepRef(ref: string): { type: "lecon" | "quiz"; id: string } {
+  if (ref.startsWith("quiz-")) {
+    return { type: "quiz", id: ref.slice(5) };
+  }
+  return { type: "lecon", id: ref };
+}
+
+export async function fetchCandidatProgress(): Promise<CandidatProgress> {
+  return authFetch<CandidatProgress>("/api/v1/candidat/pedagogy/progress");
+}
+
+export async function completeCandidatLecon(leconId: string): Promise<CandidatProgress> {
+  return authFetch<CandidatProgress>(`/api/v1/candidat/pedagogy/lecons/${leconId}/complete`, {
+    method: "POST",
+  });
+}
+
+export async function fetchCandidatThemeCheckpoint(
+  themeId: string,
+  leconId?: string,
+): Promise<TakeQuestion | null> {
+  const query = leconId ? `?lecon_id=${encodeURIComponent(leconId)}` : "";
+  return authFetch<TakeQuestion | null>(`/api/v1/candidat/pedagogy/themes/${themeId}/checkpoint${query}`);
+}
+
+export async function fetchCandidatCoursePath(themeId: string): Promise<CoursePath> {
+  return authFetch<CoursePath>(`/api/v1/candidat/pedagogy/themes/${themeId}/path`);
+}
+
+export async function synthesizeCandidatSpeech(text: string, language?: string): Promise<Blob> {
+  const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "";
+  const url = base ? `${base}/api/v1/candidat/pedagogy/tts` : "/api/v1/candidat/pedagogy/tts";
+  const token = getAccessToken();
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ text, language }),
+  });
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    throw new AuthApiError(
+      typeof payload.detail === "string" ? payload.detail : "Synthèse vocale indisponible",
+      response.status,
+    );
+  }
+  return response.blob();
+}
+
+export async function validateCandidatCheckpoint(
+  questionId: string,
+  reponseId: string,
+): Promise<{ est_correcte: boolean; correct_reponse_id: string | null; explanation: string | null }> {
+  return authFetch("/api/v1/candidat/pedagogy/checkpoint/validate", {
+    method: "POST",
+    body: JSON.stringify({ question_id: questionId, reponse_id: reponseId }),
+  });
 }
 
 export async function fetchCandidatQuizList(): Promise<PedagogyQuiz[]> {

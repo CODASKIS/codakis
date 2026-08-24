@@ -25,6 +25,10 @@ export default function Breadcrumb() {
   const codakisMenu = useDashboardMenu();
   const menuSource = codakisMenu?.items ?? navigationItems ?? navigation.items;
 
+  const isCoursePlayer =
+    location.pathname.includes('/cours/lecon/') ||
+    (location.pathname.includes('/cours/module/') && location.pathname.includes('/etape/'));
+
   useEffect(() => {
     setMain({});
     setItem({});
@@ -52,6 +56,10 @@ export default function Breadcrumb() {
   let itemContent;
   let breadcrumbContent;
   let title = '';
+
+  if (isCoursePlayer) {
+    return null;
+  }
 
   if (main && main.type === 'collapse') {
     mainContent = (

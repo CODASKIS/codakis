@@ -34,10 +34,19 @@ npm run dev            # http://localhost:5173
 
 ### Application mobile (Flutter)
 
+Voir le guide complet : [`mobile/README.md`](mobile/README.md).
+
 ```bash
+# Terminal 1 — backend (port 8000)
+
+# Terminal 2 — émulateur léger (attendre l'écran d'accueil)
+cd mobile && ./scripts/start-emulator.sh
+adb devices   # doit afficher emulator-5554   device
+
+# Terminal 3 — app Flutter
 cd mobile
 flutter pub get
-flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000   # Android emulator
+flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
 
 Comptes démo : voir `TEST_ACCOUNTS.md`.

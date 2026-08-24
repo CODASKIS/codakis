@@ -3,6 +3,7 @@ import { useContext } from 'react';
 // project imports
 import NavLeft from './NavLeft';
 import NavRight from './NavRight';
+import SidebarToggle from './SidebarToggle';
 import { ConfigContext } from 'contexts/ConfigContext';
 
 // -----------------------|| NAV BAR ||-----------------------//
@@ -23,7 +24,10 @@ export default function NavBar() {
 
   let navBar = (
     <>
-      <div className="header-wrapper">
+      <div className="header-wrapper codakis-header-wrapper">
+        <div className="codakis-header-left d-none d-lg-flex">
+          <SidebarToggle />
+        </div>
         <div className={mobDrpClass.join(' ')}>
           <NavLeft />
         </div>

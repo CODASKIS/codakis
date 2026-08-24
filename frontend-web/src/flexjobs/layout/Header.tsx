@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router";
+import { Link, NavLink, useLocation, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
@@ -9,6 +9,15 @@ import HeaderSearch from "../components/HeaderSearch";
 export default function Header() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const isSchoolsDirectory = location.pathname.startsWith("/auto-ecoles");
+  const searchDefaults = isSchoolsDirectory
+    ? {
+        defaultKeyword: searchParams.get("q") ?? "",
+        defaultLocation: searchParams.get("ville") ?? "",
+      }
+    : undefined;
 
   const mainNav = [
     { to: "/auto-ecoles", label: t("nav.drivingSchools") },
@@ -31,7 +40,7 @@ export default function Header() {
           <div className="fj-container">
             <div className="fj-topbar__row">
               <BrandLogo />
-              <HeaderSearch />
+              <HeaderSearch {...searchDefaults} />
             </div>
           </div>
         </div>
@@ -99,7 +108,7 @@ export default function Header() {
         </div>
 
         <div className="fj-mobile-search">
-          <HeaderSearch variant="mobile" />
+          <HeaderSearch variant="mobile" {...searchDefaults} />
         </div>
 
         <div className="fj-mobile-lang">

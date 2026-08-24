@@ -7,6 +7,7 @@ from app.db.models import (
     Examen,
     ExamenQuestion,
     Lecon,
+    LeconProgress,
     Paiement,
     Question,
     Quiz,
@@ -53,39 +54,49 @@ def seed_lecons(db: Session, author: Utilisateur | None) -> None:
     if db.query(Lecon).count() > 0:
         return
     now = datetime.now(UTC)
+    demo_pdf = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    lesson_templates = (
+        ("introduction", "Introduction", "Notions essentielles et objectifs du module."),
+        ("approfondissement", "Approfondissement", "Cas pratiques et situations d'examen."),
+        ("synthese", "Synthèse", "Récapitulatif et fiche mémo à télécharger."),
+    )
     for code, title_fr, _title_en, _sort_order, _is_premium in THEME_SEED:
         theme = db.query(Theme).filter(Theme.code == code).first()
         if theme is None:
             continue
-        body = (
-            f"<p>Bienvenue dans le thème <strong>{title_fr}</strong>.</p>"
-            "<h2>Objectifs de la leçon</h2>"
-            "<ul>"
-            "<li>Comprendre les règles essentielles du thème CEMAC</li>"
-            "<li>Repérer les situations fréquentes à l'examen au Cameroun</li>"
-            "<li>Adopter les bons réflexes en circulation urbaine et interurbaine</li>"
-            "</ul>"
-            "<h2>Contenu</h2>"
-            f"<p>Cette leçon d'introduction couvre les bases de <em>{title_fr.lower()}</em>. "
-            "Lisez attentivement chaque section, puis entraînez-vous avec les quiz du même thème "
-            "depuis l'espace « Quiz & examens ».</p>"
-            "<h2>Conseil CODAKIS</h2>"
-            "<p>Alternez lecture et entraînement : 15 minutes de cours, puis un mini-quiz. "
-            "Visez au moins 35/40 à l'examen blanc avant de vous présenter au centre agréé.</p>"
-        )
-        db.add(
-            Lecon(
-                theme_id=theme.id,
-                slug=f"{code}-introduction",
-                title=f"Introduction — {title_fr}",
-                excerpt=f"Notions essentielles : {title_fr.lower()}.",
-                body=body,
-                sort_order=1,
-                status=StatutArticleBlog.published.value,
-                published_at=now,
-                author_id=author.id if author else None,
+        for index, (suffix, part_title, part_excerpt) in enumerate(lesson_templates, start=1):
+            body = (
+                f"<p>Bienvenue dans la leçon <strong>{part_title}</strong> du thème "
+                f"<em>{title_fr}</em>.</p>"
+                "<h2>Objectifs</h2>"
+                "<ul>"
+                "<li>Comprendre les règles essentielles du thème CEMAC</li>"
+                "<li>Repérer les situations fréquentes à l'examen au Cameroun</li>"
+                "<li>Adopter les bons réflexes en circulation urbaine et interurbaine</li>"
+                "</ul>"
+                f"<h2>{part_title}</h2>"
+                f"<p>Cette section couvre {part_excerpt.lower()} "
+                f"Relisez le contenu puis validez la question de contrôle avant de passer à la suite.</p>"
             )
-        )
+            if index == 3:
+                body += (
+                    "<h2>Document à télécharger</h2>"
+                    f'<p><a href="{demo_pdf}" target="_blank" rel="noopener">'
+                    f"Fiche PDF — {title_fr} (mémo CODAKIS)</a></p>"
+                )
+            db.add(
+                Lecon(
+                    theme_id=theme.id,
+                    slug=f"{code}-{suffix}",
+                    title=f"{part_title} — {title_fr}",
+                    excerpt=part_excerpt,
+                    body=body,
+                    sort_order=index,
+                    status=StatutArticleBlog.published.value,
+                    published_at=now,
+                    author_id=author.id if author else None,
+                )
+            )
     db.commit()
 
 
@@ -104,17 +115,34 @@ def _validate_reponses(reponses: list) -> None:
 
 
 def has_premium_access(db: Session, user: Utilisateur) -> bool:
-    """Un abonnement Premium payé et confirmé ouvre les thèmes premium."""
-    return (
+    """Accès plateforme : abonnement CODAKIS payé et confirmé (cours, quiz, examens)."""
+    return has_platform_access(db, user)
+
+
+def has_platform_access(db: Session, user: Utilisateur) -> bool:
+    row = (
         db.query(Paiement)
         .filter(
             Paiement.utilisateur_id == user.id,
             Paiement.purpose == "subscription",
             Paiement.status == "completed",
         )
+        .order_by(Paiement.completed_at.desc())
         .first()
-        is not None
     )
+    if row is None:
+        return False
+    if (row.amount_fcfa or 0) > 0:
+        return True
+    return row.plan_id in {"pro", "premium", "entreprise"}
+
+
+def ensure_platform_access(db: Session, user: Utilisateur) -> None:
+    if not has_platform_access(db, user):
+        raise ValueError(
+            "Abonnement CODAKIS requis pour accéder aux cours, quiz et examens. "
+            "Souscrivez via Mobile Money depuis votre espace candidat."
+        )
 
 
 def theme_to_public(db: Session, theme: Theme) -> dict:
@@ -397,6 +425,9 @@ def _sync_quiz_questions(db: Session, quiz: Quiz, question_ids: list[uuid.UUID])
 def create_quiz(db: Session, data) -> Quiz:
     if db.get(Theme, data.theme_id) is None:
         raise ValueError("Thème introuvable")
+    sort_order = data.sort_order
+    if sort_order <= 0:
+        sort_order = _next_course_sort_order(db, data.theme_id)
     quiz = Quiz(
         theme_id=data.theme_id,
         title=data.title.strip(),
@@ -404,6 +435,8 @@ def create_quiz(db: Session, data) -> Quiz:
         question_count=data.question_count,
         duree_minutes=data.duree_minutes,
         est_actif=data.est_actif,
+        sort_order=sort_order,
+        in_course_path=data.in_course_path,
     )
     db.add(quiz)
     db.flush()
@@ -429,6 +462,10 @@ def update_quiz(db: Session, quiz: Quiz, data) -> Quiz:
         quiz.duree_minutes = data.duree_minutes
     if data.est_actif is not None:
         quiz.est_actif = data.est_actif
+    if data.sort_order is not None:
+        quiz.sort_order = data.sort_order
+    if data.in_course_path is not None:
+        quiz.in_course_path = data.in_course_path
     if data.question_ids is not None:
         _sync_quiz_questions(db, quiz, data.question_ids)
     db.commit()
@@ -454,6 +491,8 @@ def quiz_to_admin(db: Session, quiz: Quiz) -> dict:
         "question_count": quiz.question_count,
         "duree_minutes": quiz.duree_minutes,
         "est_actif": quiz.est_actif,
+        "sort_order": quiz.sort_order,
+        "in_course_path": quiz.in_course_path,
         "linked_count": len(question_ids),
         "question_ids": question_ids,
         "created_at": quiz.created_at,
@@ -570,6 +609,22 @@ def get_examen_questions(db: Session, examen_id: uuid.UUID) -> list[Question]:
     return questions
 
 
+def _detail_for_storage(detail: dict) -> dict:
+    return {
+        "question_id": str(detail["question_id"]),
+        "reponse_id": str(detail["reponse_id"]) if detail.get("reponse_id") else None,
+        "correct_reponse_id": str(detail["correct_reponse_id"])
+        if detail.get("correct_reponse_id")
+        else None,
+        "est_correcte": detail["est_correcte"],
+        "explanation": detail.get("explanation"),
+    }
+
+
+def _details_for_response(details: list[dict]) -> list[dict]:
+    return [_detail_for_storage(item) for item in details]
+
+
 def _score_answers(questions: list[Question], answers: list) -> tuple[int, list[dict]]:
     answer_map = {item.question_id: item.reponse_id for item in answers}
     details: list[dict] = []
@@ -608,7 +663,7 @@ def submit_quiz(db: Session, candidat: Utilisateur, quiz: Quiz, answers: list) -
             nb_correctes=nb_correctes,
             nb_total=nb_total,
             reussi=reussi,
-            reponses_json=details,
+            reponses_json=[_detail_for_storage(item) for item in details],
         )
     )
     db.commit()
@@ -617,7 +672,7 @@ def submit_quiz(db: Session, candidat: Utilisateur, quiz: Quiz, answers: list) -
         "nb_correctes": nb_correctes,
         "nb_total": nb_total,
         "reussi": reussi,
-        "details": details,
+        "details": _details_for_response(details),
     }
 
 
@@ -638,7 +693,7 @@ def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: l
             nb_erreurs=nb_erreurs,
             reussi=reussi,
             duree_sec=duree_sec,
-            reponses_json=details,
+            reponses_json=[_detail_for_storage(item) for item in details],
         )
     )
     db.commit()
@@ -647,5 +702,202 @@ def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: l
         "nb_erreurs": nb_erreurs,
         "nb_total": nb_total,
         "reussi": reussi,
-        "details": details,
+        "details": _details_for_response(details),
+    }
+
+
+def _published_lecon_ids(db: Session) -> list[uuid.UUID]:
+    rows = (
+        db.query(Lecon.id)
+        .filter(Lecon.status == StatutArticleBlog.published.value)
+        .order_by(Lecon.sort_order.asc())
+        .all()
+    )
+    return [row[0] for row in rows]
+
+
+def _passed_quiz_ids(db: Session, candidat: Utilisateur) -> list[str]:
+    rows = (
+        db.query(TentativeQuiz.quiz_id)
+        .filter(TentativeQuiz.candidat_id == candidat.id, TentativeQuiz.reussi.is_(True))
+        .distinct()
+        .all()
+    )
+    return [str(row[0]) for row in rows]
+
+
+def _passed_examen_ids(db: Session, candidat: Utilisateur) -> list[str]:
+    rows = (
+        db.query(TentativeExamen.examen_id)
+        .filter(TentativeExamen.candidat_id == candidat.id, TentativeExamen.reussi.is_(True))
+        .distinct()
+        .all()
+    )
+    return [str(row[0]) for row in rows]
+
+
+def get_candidat_progress(db: Session, candidat: Utilisateur) -> dict:
+    published_ids = _published_lecon_ids(db)
+    total = len(published_ids)
+    if total == 0:
+        return {
+            "completed_lecon_ids": [],
+            "passed_quiz_ids": _passed_quiz_ids(db, candidat),
+            "passed_examen_ids": _passed_examen_ids(db, candidat),
+            "total_lecons": 0,
+            "completed_count": 0,
+            "percent": 0,
+        }
+    completed_rows = (
+        db.query(LeconProgress.lecon_id)
+        .filter(
+            LeconProgress.candidat_id == candidat.id,
+            LeconProgress.lecon_id.in_(published_ids),
+        )
+        .all()
+    )
+    completed_ids = [str(row[0]) for row in completed_rows]
+    completed_count = len(completed_ids)
+    percent = round(completed_count / total * 100) if total else 0
+    return {
+        "completed_lecon_ids": completed_ids,
+        "passed_quiz_ids": _passed_quiz_ids(db, candidat),
+        "passed_examen_ids": _passed_examen_ids(db, candidat),
+        "total_lecons": total,
+        "completed_count": completed_count,
+        "percent": percent,
+    }
+
+
+def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dict:
+    if lecon.status != StatutArticleBlog.published.value:
+        raise ValueError("Leçon indisponible")
+    existing = (
+        db.query(LeconProgress)
+        .filter(LeconProgress.candidat_id == candidat.id, LeconProgress.lecon_id == lecon.id)
+        .first()
+    )
+    if existing is None:
+        db.add(LeconProgress(candidat_id=candidat.id, lecon_id=lecon.id, completed_at=datetime.now(UTC)))
+        db.commit()
+    return get_candidat_progress(db, candidat)
+
+
+def get_theme_checkpoint(db: Session, theme_id: uuid.UUID, lecon: Lecon | None = None) -> dict | None:
+    questions = (
+        db.query(Question)
+        .options(joinedload(Question.reponses))
+        .filter(Question.theme_id == theme_id, Question.est_actif.is_(True))
+        .order_by(Question.created_at.asc())
+        .all()
+    )
+    if not questions:
+        return None
+    index = 0
+    if lecon is not None:
+        index = max(0, lecon.sort_order - 1) % len(questions)
+    return question_to_public(questions[index])
+
+
+def _next_course_sort_order(db: Session, theme_id: uuid.UUID) -> int:
+    lecon_max = (
+        db.query(Lecon.sort_order)
+        .filter(Lecon.theme_id == theme_id)
+        .order_by(Lecon.sort_order.desc())
+        .limit(1)
+        .scalar()
+    )
+    quiz_max = (
+        db.query(Quiz.sort_order)
+        .filter(Quiz.theme_id == theme_id, Quiz.in_course_path.is_(True))
+        .order_by(Quiz.sort_order.desc())
+        .limit(1)
+        .scalar()
+    )
+    return max(lecon_max or 0, quiz_max or 0) + 10
+
+
+def build_theme_course_steps(
+    db: Session,
+    theme_id: uuid.UUID,
+    *,
+    include_drafts: bool = False,
+    active_only: bool = True,
+) -> list[dict]:
+    lecon_query = db.query(Lecon).filter(Lecon.theme_id == theme_id)
+    if not include_drafts:
+        lecon_query = lecon_query.filter(Lecon.status == StatutArticleBlog.published.value)
+    lecons = lecon_query.order_by(Lecon.sort_order.asc(), Lecon.created_at.asc()).all()
+
+    quiz_query = db.query(Quiz).filter(Quiz.theme_id == theme_id, Quiz.in_course_path.is_(True))
+    if active_only:
+        quiz_query = quiz_query.filter(Quiz.est_actif.is_(True))
+    quizzes = quiz_query.order_by(Quiz.sort_order.asc(), Quiz.created_at.asc()).all()
+
+    steps: list[dict] = []
+    for lecon in lecons:
+        steps.append(
+            {
+                "type": "lecon",
+                "id": str(lecon.id),
+                "ref": str(lecon.id),
+                "title": lecon.title,
+                "sort_order": lecon.sort_order,
+                "status": lecon.status,
+            }
+        )
+
+    for quiz in quizzes:
+        if not get_quiz_questions(db, quiz.id):
+            continue
+        steps.append(
+            {
+                "type": "quiz",
+                "id": str(quiz.id),
+                "ref": f"quiz-{quiz.id}",
+                "title": quiz.title,
+                "sort_order": quiz.sort_order,
+                "status": "published" if quiz.est_actif else "draft",
+            }
+        )
+
+    steps.sort(key=lambda item: (item["sort_order"], item["type"] == "quiz", item["title"]))
+    return steps
+
+
+def get_theme_course_path(db: Session, theme_id: uuid.UUID, candidat: Utilisateur) -> dict:
+    steps = build_theme_course_steps(db, theme_id, include_drafts=False, active_only=True)
+    progress = get_candidat_progress(db, candidat)
+    return {
+        "theme_id": str(theme_id),
+        "steps": steps,
+        "completed_lecon_ids": progress["completed_lecon_ids"],
+        "passed_quiz_ids": progress["passed_quiz_ids"],
+    }
+
+
+def get_theme_course_path_admin(db: Session, theme_id: uuid.UUID) -> dict:
+    return {
+        "theme_id": str(theme_id),
+        "steps": build_theme_course_steps(db, theme_id, include_drafts=True, active_only=False),
+        "completed_lecon_ids": [],
+        "passed_quiz_ids": [],
+    }
+
+
+def validate_checkpoint_answer(db: Session, question_id: uuid.UUID, reponse_id: uuid.UUID) -> dict:
+    question = (
+        db.query(Question)
+        .options(joinedload(Question.reponses))
+        .filter(Question.id == question_id, Question.est_actif.is_(True))
+        .first()
+    )
+    if question is None:
+        raise ValueError("Question introuvable")
+    correct = next((item for item in question.reponses if item.est_correcte), None)
+    is_correct = bool(correct and correct.id == reponse_id)
+    return {
+        "est_correcte": is_correct,
+        "correct_reponse_id": str(correct.id) if correct else None,
+        "explanation": question.explanation,
     }

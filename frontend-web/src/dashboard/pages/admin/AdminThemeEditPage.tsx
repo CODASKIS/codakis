@@ -10,7 +10,9 @@ import {
   deleteAdminTheme,
   fetchAdminThemes,
   updateAdminTheme,
+  type PedagogyTheme,
 } from "../../../lib/pedagogyApi";
+import AdminCoursePathPanel from "./AdminCoursePathPanel";
 
 export default function AdminThemeEditPage() {
   const { t } = useTranslation();
@@ -22,12 +24,14 @@ export default function AdminThemeEditPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [form, setForm] = useState({ code: "", title_fr: "", title_en: "", sort_order: 0, is_premium: false });
+  const [themes, setThemes] = useState<PedagogyTheme[]>([]);
 
   const load = useCallback(async () => {
     if (isNew || !id) return;
     try {
-      const themes = await fetchAdminThemes();
-      const theme = themes.find((item) => item.id === id);
+      const themesData = await fetchAdminThemes();
+      setThemes(themesData);
+      const theme = themesData.find((item) => item.id === id);
       if (theme) {
         setForm({
           code: theme.code,
@@ -90,6 +94,13 @@ export default function AdminThemeEditPage() {
           ) : null}
         </div>
       </Form>
+
+      {!isNew && id ? (
+        <div className="mt-5 pt-4 border-top">
+          <h5 className="mb-3">{t("admin.pedagogy.coursePathTitle")}</h5>
+          <AdminCoursePathPanel themes={themes} themeId={id} />
+        </div>
+      ) : null}
     </MainCard>
   );
 }

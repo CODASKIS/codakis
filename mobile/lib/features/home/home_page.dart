@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../config/api_config.dart';
+import '../../core/app_theme.dart';
+import '../../widgets/codakis_shell.dart';
 import '../auth/auth_service.dart';
 import '../auth/login_page.dart';
 
@@ -20,8 +22,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('CODAKIS'),
+      backgroundColor: Colors.white,
+      appBar: CodakisAppBar(
         actions: [
           IconButton(
             tooltip: 'Déconnexion',
@@ -31,65 +33,55 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         children: [
-          Text(
-            'Espace candidat',
-            style: Theme.of(context).textTheme.headlineSmall,
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: CodakisColors.surfaceAlt,
+              borderRadius: BorderRadius.circular(CodakisRadii.card),
+              border: Border.all(color: CodakisColors.primary.withValues(alpha: 0.15)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Mon parcours permis', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 8),
+                Text(
+                  'Révision CEMAC, quiz chronométrés et suivi auto-école sur CODAKIS.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Backend : ${ApiConfig.baseUrl}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 24),
-          _NavCard(
+          const SizedBox(height: 20),
+          Text('Accès rapide', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 12),
+          CodakisFeatureCard(
             icon: Icons.menu_book_outlined,
             title: 'Cours & thèmes',
             subtitle: 'Révision code de la route CEMAC',
             onTap: () {},
           ),
-          _NavCard(
+          CodakisFeatureCard(
             icon: Icons.quiz_outlined,
             title: 'Quiz & examens blancs',
             subtitle: 'Entraînement chronométré',
             onTap: () {},
           ),
-          _NavCard(
+          CodakisFeatureCard(
             icon: Icons.directions_car_outlined,
             title: 'Mon auto-école',
             subtitle: 'Forfait, séances et dossier Consort',
             onTap: () {},
           ),
+          const SizedBox(height: 8),
+          Text(
+            'API : ${ApiConfig.baseUrl}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 13),
+          ),
         ],
-      ),
-    );
-  }
-}
-
-class _NavCard extends StatelessWidget {
-  const _NavCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: Icon(icon, color: const Color(0xFF0B6E4F)),
-        title: Text(title),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: onTap,
       ),
     );
   }

@@ -331,12 +331,172 @@ export default function GerantInscriptionsPage() {
 
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="mb-0">{t("gerant.inscriptions.seancesTitle")}</h6>
-                <Button size="sm" variant="primary" onClick={() => setShowSeance(true)}>{t("gerant.inscriptions.addSeance")}</Button>
+                {!showSeance ? (
+                  <Button size="sm" variant="primary" onClick={() => setShowSeance(true)}>
+                    {t("gerant.inscriptions.addSeance")}
+                  </Button>
+                ) : null}
               </div>
 
-              {selected.seances.length === 0 ? (
+              {showSeance ? (
+                <div className="codakis-seance-panel mb-4">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h6 className="mb-0">{t("gerant.inscriptions.addSeance")}</h6>
+                    <Button variant="link" size="sm" className="text-decoration-none" disabled={saving} onClick={() => setShowSeance(false)}>
+                      {t("common.cancel")}
+                    </Button>
+                  </div>
+                  <Form onSubmit={(e) => void handleCreateSeance(e)}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>{t("gerant.inscriptions.seanceMode")}</Form.Label>
+                      <div className="d-flex gap-3">
+                        <Form.Check
+                          type="radio"
+                          id="seance-mode-creneau"
+                          name="seanceMode"
+                          label={t("gerant.inscriptions.modeCreneau")}
+                          checked={seanceMode === "creneau"}
+                          onChange={() => setSeanceMode("creneau")}
+                        />
+                        <Form.Check
+                          type="radio"
+                          id="seance-mode-direct"
+                          name="seanceMode"
+                          label={t("gerant.inscriptions.modeDirect")}
+                          checked={seanceMode === "direct"}
+                          onChange={() => setSeanceMode("direct")}
+                        />
+                      </div>
+                    </Form.Group>
+
+                    {seanceMode === "creneau" ? (
+                      <Row className="g-3 mb-3">
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.colMoniteur")}</Form.Label>
+                            <Form.Select
+                              required
+                              value={seanceForm.moniteur_id}
+                              onChange={(e) => {
+                                const moniteurId = e.target.value;
+                                setSeanceForm((c) => ({ ...c, moniteur_id: moniteurId, creneau_id: "" }));
+                                void loadCreneauxForMoniteur(moniteurId);
+                              }}
+                            >
+                              <option value="">{t("gerant.inscriptions.selectMoniteur")}</option>
+                              {moniteurs.map((m) => (
+                                <option key={m.id} value={m.id}>
+                                  {m.first_name} {m.last_name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.selectCreneau")}</Form.Label>
+                            {creneauxLoading ? (
+                              <p className="text-muted small mb-0">{t("gerant.inscriptions.creneauxLoading")}</p>
+                            ) : (
+                              <Form.Select
+                                required
+                                value={seanceForm.creneau_id}
+                                disabled={!seanceForm.moniteur_id || availableCreneaux.length === 0}
+                                onChange={(e) => setSeanceForm((c) => ({ ...c, creneau_id: e.target.value }))}
+                              >
+                                <option value="">
+                                  {availableCreneaux.length === 0
+                                    ? t("gerant.inscriptions.noCreneaux")
+                                    : t("gerant.inscriptions.pickCreneau")}
+                                </option>
+                                {availableCreneaux.map((c) => (
+                                  <option key={c.id} value={c.id}>
+                                    {new Date(c.starts_at).toLocaleString()} — {c.places_libres}{" "}
+                                    {t("gerant.inscriptions.placesLeft")} ({c.lieu ?? "—"})
+                                  </option>
+                                ))}
+                              </Form.Select>
+                            )}
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    ) : (
+                      <Row className="g-3 mb-3">
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.colWhen")}</Form.Label>
+                            <Form.Control
+                              type="datetime-local"
+                              required
+                              value={seanceForm.starts_at}
+                              onChange={(e) => setSeanceForm((c) => ({ ...c, starts_at: e.target.value }))}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.duration")}</Form.Label>
+                            <Form.Control
+                              type="number"
+                              min={30}
+                              max={180}
+                              step={15}
+                              value={seanceForm.duration_minutes}
+                              onChange={(e) => setSeanceForm((c) => ({ ...c, duration_minutes: e.target.value }))}
+                            />
+                          </Form.Group>
+                        </Col>
+                        <Col md={6}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.colMoniteur")}</Form.Label>
+                            <Form.Select
+                              value={seanceForm.moniteur_id}
+                              onChange={(e) => setSeanceForm((c) => ({ ...c, moniteur_id: e.target.value }))}
+                            >
+                              <option value="">{t("gerant.inscriptions.unassigned")}</option>
+                              {moniteurs.map((m) => (
+                                <option key={m.id} value={m.id}>
+                                  {m.first_name} {m.last_name}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.lieu")}</Form.Label>
+                            <Form.Control value={seanceForm.lieu} onChange={(e) => setSeanceForm((c) => ({ ...c, lieu: e.target.value }))} />
+                          </Form.Group>
+                        </Col>
+                        <Col md={12}>
+                          <Form.Group>
+                            <Form.Label>{t("gerant.inscriptions.notes")}</Form.Label>
+                            <Form.Control
+                              as="textarea"
+                              rows={2}
+                              value={seanceForm.notes}
+                              onChange={(e) => setSeanceForm((c) => ({ ...c, notes: e.target.value }))}
+                            />
+                          </Form.Group>
+                        </Col>
+                      </Row>
+                    )}
+
+                    <div className="d-flex justify-content-end gap-2">
+                      <Button variant="outline-secondary" disabled={saving} onClick={() => setShowSeance(false)}>
+                        {t("common.cancel")}
+                      </Button>
+                      <Button type="submit" variant="primary" disabled={saving}>
+                        {saving ? t("gerant.inscriptions.saving") : t("gerant.inscriptions.saveSeance")}
+                      </Button>
+                    </div>
+                  </Form>
+                </div>
+              ) : null}
+
+              {!showSeance && selected.seances.length === 0 ? (
                 <p className="text-muted">{t("gerant.inscriptions.noSeances")}</p>
-              ) : (
+              ) : !showSeance ? (
                 <Table size="sm" hover className="align-middle">
                   <thead>
                     <tr>
@@ -381,129 +541,10 @@ export default function GerantInscriptionsPage() {
                     ))}
                   </tbody>
                 </Table>
-              )}
+              ) : null}
             </>
           ) : null}
         </Modal.Body>
-      </Modal>
-
-      <Modal show={showSeance} onHide={() => !saving && setShowSeance(false)} centered>
-        <Modal.Header closeButton><Modal.Title>{t("gerant.inscriptions.addSeance")}</Modal.Title></Modal.Header>
-        <Form onSubmit={(e) => void handleCreateSeance(e)}>
-          <Modal.Body>
-            <Form.Group className="mb-3">
-              <Form.Label>{t("gerant.inscriptions.seanceMode")}</Form.Label>
-              <div className="d-flex gap-3">
-                <Form.Check
-                  type="radio"
-                  id="seance-mode-creneau"
-                  name="seanceMode"
-                  label={t("gerant.inscriptions.modeCreneau")}
-                  checked={seanceMode === "creneau"}
-                  onChange={() => setSeanceMode("creneau")}
-                />
-                <Form.Check
-                  type="radio"
-                  id="seance-mode-direct"
-                  name="seanceMode"
-                  label={t("gerant.inscriptions.modeDirect")}
-                  checked={seanceMode === "direct"}
-                  onChange={() => setSeanceMode("direct")}
-                />
-              </div>
-            </Form.Group>
-
-            {seanceMode === "creneau" ? (
-              <Row className="g-3">
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.colMoniteur")}</Form.Label>
-                    <Form.Select
-                      required
-                      value={seanceForm.moniteur_id}
-                      onChange={(e) => {
-                        const moniteurId = e.target.value;
-                        setSeanceForm((c) => ({ ...c, moniteur_id: moniteurId, creneau_id: "" }));
-                        void loadCreneauxForMoniteur(moniteurId);
-                      }}
-                    >
-                      <option value="">{t("gerant.inscriptions.selectMoniteur")}</option>
-                      {moniteurs.map((m) => (
-                        <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.selectCreneau")}</Form.Label>
-                    {creneauxLoading ? (
-                      <p className="text-muted small mb-0">{t("gerant.inscriptions.creneauxLoading")}</p>
-                    ) : (
-                      <Form.Select
-                        required
-                        value={seanceForm.creneau_id}
-                        disabled={!seanceForm.moniteur_id || availableCreneaux.length === 0}
-                        onChange={(e) => setSeanceForm((c) => ({ ...c, creneau_id: e.target.value }))}
-                      >
-                        <option value="">
-                          {availableCreneaux.length === 0
-                            ? t("gerant.inscriptions.noCreneaux")
-                            : t("gerant.inscriptions.pickCreneau")}
-                        </option>
-                        {availableCreneaux.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {new Date(c.starts_at).toLocaleString()} — {c.places_libres} {t("gerant.inscriptions.placesLeft")} ({c.lieu ?? "—"})
-                          </option>
-                        ))}
-                      </Form.Select>
-                    )}
-                  </Form.Group>
-                </Col>
-              </Row>
-            ) : (
-              <Row className="g-3">
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.colWhen")}</Form.Label>
-                    <Form.Control type="datetime-local" required value={seanceForm.starts_at} onChange={(e) => setSeanceForm((c) => ({ ...c, starts_at: e.target.value }))} />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.duration")}</Form.Label>
-                    <Form.Control type="number" min={30} max={180} step={15} value={seanceForm.duration_minutes} onChange={(e) => setSeanceForm((c) => ({ ...c, duration_minutes: e.target.value }))} />
-                  </Form.Group>
-                </Col>
-                <Col md={6}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.colMoniteur")}</Form.Label>
-                    <Form.Select value={seanceForm.moniteur_id} onChange={(e) => setSeanceForm((c) => ({ ...c, moniteur_id: e.target.value }))}>
-                      <option value="">{t("gerant.inscriptions.unassigned")}</option>
-                      {moniteurs.map((m) => <option key={m.id} value={m.id}>{m.first_name} {m.last_name}</option>)}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.lieu")}</Form.Label>
-                    <Form.Control value={seanceForm.lieu} onChange={(e) => setSeanceForm((c) => ({ ...c, lieu: e.target.value }))} />
-                  </Form.Group>
-                </Col>
-                <Col md={12}>
-                  <Form.Group>
-                    <Form.Label>{t("gerant.inscriptions.notes")}</Form.Label>
-                    <Form.Control as="textarea" rows={2} value={seanceForm.notes} onChange={(e) => setSeanceForm((c) => ({ ...c, notes: e.target.value }))} />
-                  </Form.Group>
-                </Col>
-              </Row>
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="outline-secondary" disabled={saving} onClick={() => setShowSeance(false)}>{t("common.cancel")}</Button>
-            <Button type="submit" variant="primary" disabled={saving}>{saving ? t("gerant.inscriptions.saving") : t("gerant.inscriptions.saveSeance")}</Button>
-          </Modal.Footer>
-        </Form>
       </Modal>
     </Row>
   );

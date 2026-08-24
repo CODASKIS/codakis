@@ -48,6 +48,29 @@ class Settings(BaseSettings):
     cms_upload_dir: str = Field(default="uploads/cms", validation_alias=AliasChoices("CMS_UPLOAD_DIR"))
     cms_max_upload_bytes: int = Field(default=5_242_880, validation_alias=AliasChoices("CMS_MAX_UPLOAD_BYTES"))
 
+    platform_commission_rate_pct: int = Field(
+        default=10,
+        validation_alias=AliasChoices("PLATFORM_COMMISSION_RATE_PCT"),
+    )
+
+    elevenlabs_api_key: str = Field(default="", validation_alias=AliasChoices("ELEVENLABS_API_KEY"))
+    elevenlabs_voice_id: str = Field(
+        default="pNInz6obpgDQGcFmaJgB",
+        validation_alias=AliasChoices("ELEVENLABS_VOICE_ID"),
+    )
+    elevenlabs_voice_id_fr: str = Field(
+        default="XB0fDUnXU5powFXDhCwa",
+        validation_alias=AliasChoices("ELEVENLABS_VOICE_ID_FR"),
+    )
+    elevenlabs_voice_id_en: str = Field(
+        default="JBFqnCBsd6RMkjVDRZzb",
+        validation_alias=AliasChoices("ELEVENLABS_VOICE_ID_EN"),
+    )
+    elevenlabs_model_id: str = Field(
+        default="eleven_multilingual_v2",
+        validation_alias=AliasChoices("ELEVENLABS_MODEL_ID"),
+    )
+
     @staticmethod
     def _url_has_password(url: str) -> bool:
         if not url or url.startswith("sqlite"):

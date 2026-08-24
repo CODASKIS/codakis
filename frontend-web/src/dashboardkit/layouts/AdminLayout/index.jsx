@@ -9,8 +9,9 @@ import Breadcrumb from './Breadcrumb';
 import useWindowSize from 'hooks/useWindowSize';
 import { ConfigContext } from 'contexts/ConfigContext';
 import * as actionType from 'store/actions';
-import Loader from 'components/Loader/Loader';
+import Loader from '@/components/common/Loader';
 import DashboardLoadObserver from '@/dashboard/components/DashboardLoadObserver';
+import AnimatedPage from '@/components/motion/AnimatedPage';
 
 // -----------------------|| ADMIN LAYOUT ||-----------------------//
 
@@ -45,8 +46,10 @@ export default function AdminLayout() {
           <DashboardLoadObserver contentRef={contentRef} />
           <>
             <Breadcrumb />
-            <Suspense fallback={<Loader />}>
-              <Outlet />
+            <Suspense fallback={<Loader variant="section" />}>
+              <AnimatedPage>
+                <Outlet />
+              </AnimatedPage>
             </Suspense>
           </>
         </div>

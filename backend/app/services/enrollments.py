@@ -491,18 +491,36 @@ def moniteur_update_seance(
     return seance
 
 
-def list_public_schools(db: Session, *, query: str | None = None, city: str | None = None) -> list[dict]:
+def list_public_schools(
+    db: Session,
+    *,
+    query: str | None = None,
+    city: str | None = None,
+    country_code: str | None = None,
+    price_min: int | None = None,
+    price_max: int | None = None,
+    sort: str | None = None,
+) -> list[dict]:
     q = db.query(AutoEcole).filter(AutoEcole.est_validee.is_(True), AutoEcole.est_refusee.is_(False))
     schools = q.order_by(AutoEcole.raison_sociale.asc()).all()
     results: list[dict] = []
+    country_filter = country_code.strip().upper() if country_code and country_code.strip() else None
+
     for school in schools:
+        if country_filter and (school.country_code or "").upper() != country_filter:
+            continue
+        # Annuaire public : profils complets uniquement (géolocalisation ou vitrine démo).
+        if school.latitude is None and school.longitude is None:
+            logo = (school.logo_url or "").strip()
+            if not logo.startswith("/images/schools/"):
+                continue
         ville = db.get(Ville, school.ville_id)
         city_name = ville.nom if ville else ""
         if city and city.strip().lower() not in city_name.lower():
             continue
         if query and query.strip():
             needle = query.strip().lower()
-            haystack = f"{school.raison_sociale} {city_name} {school.adresse or ''}".lower()
+            haystack = f"{school.raison_sociale} {city_name} {school.adresse or ''} {school.description or ''}".lower()
             if needle not in haystack:
                 continue
         price_from = (
@@ -512,6 +530,11 @@ def list_public_schools(db: Session, *, query: str | None = None, city: str | No
             .limit(1)
             .scalar()
         )
+        price_from = price_from or 85000
+        if price_min is not None and price_from < price_min:
+            continue
+        if price_max is not None and price_from > price_max:
+            continue
         results.append(
             {
                 "id": school.id,
@@ -528,11 +551,21 @@ def list_public_schools(db: Session, *, query: str | None = None, city: str | No
                 "latitude": school.latitude,
                 "longitude": school.longitude,
                 "country_code": school.country_code,
-                "price_from": price_from or 85000,
+                "price_from": price_from,
                 "certified_since": school.validee_le or school.created_at,
                 "hours": normalize_school_hours(school.horaires),
             }
         )
+
+    sort_key = (sort or "name").lower()
+    if sort_key == "price_asc":
+        results.sort(key=lambda item: item["price_from"])
+    elif sort_key == "price_desc":
+        results.sort(key=lambda item: item["price_from"], reverse=True)
+    elif sort_key == "newest":
+        results.sort(key=lambda item: item["certified_since"], reverse=True)
+    else:
+        results.sort(key=lambda item: item["name"].lower())
     return results
 
 

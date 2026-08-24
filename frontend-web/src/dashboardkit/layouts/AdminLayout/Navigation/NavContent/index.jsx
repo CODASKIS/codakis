@@ -9,19 +9,23 @@ import { ListGroup } from 'react-bootstrap';
 import NavGroup from './NavGroup';
 import { SidebarAccountFoot } from './SidebarFooter';
 import { ConfigContext } from 'contexts/ConfigContext';
+import useWindowSize from 'hooks/useWindowSize';
 
 // third party
 import SimpleBar from 'simplebar-react';
 
 // assets — logo CODAKIS (sidebar sombre)
-const logo = "/images/logo.png";
+const logoFull = "/images/logo.png";
+const logoIcon = "/images/logo-simple.png";
 
 // -----------------------|| NAV CONTENT ||-----------------------//
 
 export default function NavContent({ navigation, activeNav }) {
   const configContext = useContext(ConfigContext);
+  const windowSize = useWindowSize();
 
   const { collapseLayout } = configContext.state;
+  const showIconLogo = collapseLayout && windowSize.width > 992;
 
   const navItems = navigation.map((item) => {
     let navItem = <></>;
@@ -56,8 +60,12 @@ export default function NavContent({ navigation, activeNav }) {
 
   const mHeader = (
     <div className="m-header">
-      <Link to="/" className="b-brand">
-        <img src={logo} alt="CODAKIS" className="logo logo-lg codakis-sidebar-logo" />
+      <Link to="/" className="b-brand" title="CODAKIS">
+        {!showIconLogo ? (
+          <img src={logoFull} alt="CODAKIS" className="logo logo-lg codakis-sidebar-logo" />
+        ) : (
+          <img src={logoIcon} alt="CODAKIS" className="logo logo-sm codakis-sidebar-logo codakis-sidebar-logo--icon" />
+        )}
       </Link>
     </div>
   );

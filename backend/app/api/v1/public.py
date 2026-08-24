@@ -14,9 +14,23 @@ router = APIRouter(prefix="/public", tags=["public"])
 def public_list_schools(
     q: str | None = Query(default=None),
     ville: str | None = Query(default=None),
+    pays: str | None = Query(default=None, alias="pays"),
+    country: str | None = Query(default=None),
+    price_min: int | None = Query(default=None, ge=0),
+    price_max: int | None = Query(default=None, ge=0),
+    sort: str | None = Query(default=None),
     db: Session = Depends(get_db),
 ):
-    return list_public_schools(db, query=q, city=ville)
+    country_code = pays or country
+    return list_public_schools(
+        db,
+        query=q,
+        city=ville,
+        country_code=country_code,
+        price_min=price_min,
+        price_max=price_max,
+        sort=sort,
+    )
 
 
 @router.get("/auto-ecoles/{school_id}", response_model=PublicSchoolDetail)

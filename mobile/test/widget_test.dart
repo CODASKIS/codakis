@@ -4,12 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:codakis_mobile/main.dart';
 
 void main() {
-  testWidgets('CODAKIS app boots to login', (tester) async {
+  testWidgets('CODAKIS app boots to onboarding', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const CodakisApp());
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('CODAKIS'), findsWidgets);
-    expect(find.text('Se connecter'), findsOneWidget);
+    expect(find.text('Passer'), findsOneWidget);
+    expect(find.text('Suivant'), findsOneWidget);
+    expect(find.text('Apprends à ton rythme'), findsOneWidget);
   });
 }

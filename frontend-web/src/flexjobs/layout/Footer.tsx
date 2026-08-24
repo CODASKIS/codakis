@@ -12,7 +12,7 @@ export default function Footer() {
       links: [
         { label: t("nav.drivingSchools"), to: "/auto-ecoles" },
         { label: t("nav.themes"), to: "/themes" },
-        { label: t("nav.subscription"), to: "/themes#abonnement" },
+        { label: t("nav.subscription"), to: "/tarifs" },
         { label: t("nav.howItWorks"), to: "/comment-ca-marche" },
       ],
     },
@@ -22,7 +22,7 @@ export default function Footer() {
         { label: t("nav.howItWorks"), to: "/comment-ca-marche" },
         { label: "CODAKIS", to: "/a-propos" },
         { label: t("nav.contact"), to: "/contact" },
-        { label: t("nav.subscription"), to: "/themes#abonnement" },
+        { label: t("nav.subscription"), to: "/tarifs" },
       ],
     },
     {

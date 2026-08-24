@@ -6,7 +6,7 @@ html:has(body.dashboardkit-active) {
 }
 
 body.dashboardkit-active {
-  font-family: 'Nunito', sans-serif !important;
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif !important;
 
   // Tailwind `.collapse { visibility: collapse }` entre en conflit avec Bootstrap Collapse
   .collapse.show,
@@ -86,13 +86,214 @@ body.dashboardkit-active {
   }
 
   // Sidebar noire (comme panneau auth)
+  .pc-sidebar {
+    transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .pc-header,
+  .pc-container,
+  .page-header {
+    transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .pc-sidebar .m-header {
     background: var(--codakis-black-deep);
+
+    .b-brand {
+      display: flex;
+      align-items: center;
+    }
 
     .logo-lg {
       max-height: 42px;
       width: auto;
       filter: brightness(0) invert(1);
+    }
+
+    .logo-sm.codakis-sidebar-logo--icon {
+      display: none !important;
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      filter: none;
+    }
+  }
+
+  &.minimenu .pc-sidebar .m-header,
+  .pc-sidebar.navbar-collapsed .m-header {
+    justify-content: center;
+    padding: 14px 10px;
+
+    .b-brand {
+      justify-content: center;
+      width: 100%;
+    }
+
+    .logo-lg {
+      display: none !important;
+    }
+
+    .logo-sm.codakis-sidebar-logo--icon {
+      display: block !important;
+      margin: 0 auto;
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      filter: none;
+    }
+  }
+
+  &.minimenu .pc-sidebar {
+    transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden !important;
+
+    .logo-lg,
+    .logo-sm.codakis-sidebar-logo--icon {
+      transition: opacity 0.22s ease, transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .navbar-content,
+    .codakis-navbar-scroll {
+      transition: opacity 0.2s ease;
+    }
+
+    .pc-caption,
+    .pc-badge,
+    .pc-mtext,
+    .pc-arrow,
+    .codakis-sidebar-account__meta,
+    .codakis-sidebar-account__name,
+    .codakis-sidebar-account__plan,
+    .codakis-sidebar-account__offer span {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      max-width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+      position: absolute !important;
+      pointer-events: none !important;
+    }
+
+    .navbar-content,
+    .codakis-navbar-scroll {
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+
+      &.ps {
+        overflow: hidden !important;
+      }
+    }
+
+    .pc-navbar > .pc-item {
+      margin: 0.22rem 0.5rem;
+    }
+
+    .pc-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100% !important;
+      max-width: 100% !important;
+      min-width: 0 !important;
+      padding: 0.72rem 0 !important;
+      min-height: 44px;
+      border-radius: 8px;
+      overflow: hidden;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .pc-micon {
+      margin-right: 0 !important;
+    }
+
+    .pc-item {
+      position: relative;
+      overflow: hidden;
+
+      &:hover > .pc-link {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        background: rgba(29, 185, 106, 0.18);
+        color: var(--codakis-green);
+
+        .pc-mtext,
+        .pc-arrow {
+          display: none !important;
+          visibility: hidden !important;
+        }
+
+        .pc-micon {
+          margin-right: 0 !important;
+        }
+      }
+    }
+
+    .codakis-sidebar-foot {
+      padding: 0.65rem 0.5rem 0.85rem;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .codakis-sidebar-account__profile,
+    .codakis-sidebar-account__offer {
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: hidden;
+
+      &:hover {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  }
+
+  @keyframes codakis-tooltip-in {
+    from {
+      opacity: 0;
+      transform: translateY(-50%) translateX(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+  }
+
+  &.minimenu .navbar-collapsed,
+  &.minimenu .pc-sidebar.navbar-collapsed {
+    .codakis-sidebar-account__meta,
+    .codakis-sidebar-account__offer span {
+      display: none !important;
+    }
+
+    .codakis-sidebar-account__profile {
+      justify-content: center;
+      padding: 0.45rem 0;
+      border-radius: 8px;
+
+      &:hover {
+        background: rgba(29, 185, 106, 0.14);
+      }
+    }
+
+    .codakis-sidebar-account__offer {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      margin: 0 auto;
+      border-radius: 50%;
+      justify-content: center;
+
+      span {
+        display: none !important;
+      }
+
+      &:hover {
+        transform: scale(1.06);
+      }
     }
   }
 
@@ -129,6 +330,38 @@ body.dashboardkit-active {
     background: #ffffff;
     box-shadow: 0 1px 0 rgba(29, 38, 48, 0.08);
     border-bottom: 0.1rem solid #e5e5e5;
+  }
+
+  .codakis-header-wrapper {
+    align-items: center;
+    width: 100%;
+    gap: 0.25rem;
+  }
+
+  .codakis-header-left {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    min-height: 70px;
+    margin-right: 0.35rem;
+
+    .pc-h-item {
+      min-height: 70px;
+    }
+  }
+
+  .codakis-sidebar-toggle {
+    margin: 0 !important;
+    padding: 0.55rem 0.7rem !important;
+    border: 0;
+    background: transparent;
+    border-radius: 6px;
+    transition: background 0.18s ease, color 0.18s ease;
+
+    &:hover,
+    &:focus {
+      background: rgba(29, 185, 106, 0.1);
+    }
   }
 
   .pc-head-link {
@@ -718,10 +951,10 @@ body.dashboardkit-active {
     text-decoration: none;
     color: #fff;
     border-radius: 8px;
-    transition: background 0.15s ease;
+    transition: background 0.18s ease, transform 0.12s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(29, 185, 106, 0.14);
       color: #fff;
     }
   }
@@ -782,16 +1015,18 @@ body.dashboardkit-active {
     color: rgba(255, 255, 255, 0.92);
     background: rgba(255, 255, 255, 0.1);
     border: none;
-    transition: background 0.15s ease, color 0.15s ease;
+    transition: background 0.18s ease, color 0.18s ease, transform 0.12s ease;
 
     svg {
       flex-shrink: 0;
       stroke: rgba(255, 255, 255, 0.92);
+      transition: stroke 0.18s ease;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.16);
+      background: rgba(29, 185, 106, 0.2);
       color: #fff;
+      transform: translateY(-1px);
 
       svg {
         stroke: #fff;
@@ -815,7 +1050,7 @@ body.dashboardkit-active {
   .navbar-collapsed {
     .codakis-sidebar-account__meta,
     .codakis-sidebar-account__offer span {
-      display: none;
+      display: none !important;
     }
 
     .codakis-sidebar-account__profile {
@@ -829,6 +1064,11 @@ body.dashboardkit-active {
       padding: 0;
       margin: 0 auto;
       border-radius: 50%;
+      justify-content: center;
+
+      span {
+        display: none !important;
+      }
     }
   }
 
@@ -2933,5 +3173,1592 @@ body.dashboardkit-active {
     font-variant-numeric: tabular-nums;
     font-size: 1rem;
     letter-spacing: 0.04em;
+  }
+
+  /* ─── Course player (IBM SkillsBuild + couleurs CODAKIS, sidebar gauche) ─── */
+  &.codakis-course-player-active {
+    .page-header {
+      display: none;
+    }
+
+    .pc-container .pcoded-content {
+      padding: 0;
+    }
+
+    .codakis-player {
+      margin: 0;
+      min-height: calc(100vh - #{$header-height});
+    }
+
+    .codakis-player__shell {
+      min-height: calc(100vh - #{$header-height} - 3.5rem);
+    }
+
+    .codakis-player-sidebar {
+      top: 3.5rem;
+      height: calc(100vh - #{$header-height} - 3.5rem);
+    }
+
+    .pc-sidebar {
+      transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden !important;
+      z-index: 20;
+    }
+
+    &.minimenu .pc-sidebar {
+      .pc-item:hover > .pc-link {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+
+        .pc-mtext {
+          display: none !important;
+        }
+      }
+
+      .codakis-sidebar-account__meta,
+      .codakis-sidebar-account__name,
+      .codakis-sidebar-account__plan,
+      .codakis-sidebar-account__offer span {
+        display: none !important;
+      }
+    }
+  }
+
+  .codakis-player {
+    margin: -1.5rem -1.5rem 0;
+    min-height: 100vh;
+    background: #f3f5f7;
+    animation: codakis-fade-up 0.35s ease;
+  }
+
+  .codakis-player__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1.5rem;
+    background: #fff;
+    color: var(--codakis-black);
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+
+  .codakis-player__topbar-start {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .codakis-player__menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: var(--codakis-black);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+
+    &:hover {
+      background: rgba(29, 185, 106, 0.08);
+      border-color: var(--codakis-green);
+      color: var(--codakis-green-dark);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+
+  .codakis-player__topbar-title {
+    min-width: 0;
+
+    strong {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.35;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--codakis-black);
+    }
+  }
+
+  .codakis-player__exit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid #d1d5db;
+    color: var(--codakis-black);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+
+    &:hover {
+      background: rgba(29, 185, 106, 0.08);
+      border-color: var(--codakis-green);
+      color: var(--codakis-green-dark);
+    }
+  }
+
+  .codakis-player__shell {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    min-height: calc(100vh - 56px);
+    transition: grid-template-columns 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .codakis-player--nav-closed .codakis-player__shell {
+    grid-template-columns: 0 minmax(0, 1fr);
+  }
+
+  .codakis-player__main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    animation: codakis-fade-up 0.4s ease 0.05s both;
+  }
+
+  .codakis-player__step {
+    margin: 0;
+    padding: 1.2rem 2.4rem 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .codakis-player__content {
+    flex: 1;
+    padding: 1.2rem 2.4rem 2rem;
+    max-width: 920px;
+  }
+
+  .codakis-player__hero {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 1.8rem;
+    min-height: 200px;
+    border-radius: 0;
+  }
+
+  .codakis-player__cover {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 0;
+  }
+
+  .codakis-player__hero-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem;
+    background: linear-gradient(180deg, rgba(19, 25, 32, 0.1) 0%, rgba(19, 25, 32, 0.88) 100%);
+    color: #fff;
+  }
+
+  .codakis-player__hero-overlay h1 {
+    margin: 0 0 0.5rem;
+    font-size: 2.4rem;
+    color: #fff;
+  }
+
+  .codakis-player__header h1 {
+    font-size: 2.6rem;
+    margin-bottom: 0.75rem;
+    color: var(--codakis-black);
+  }
+
+  .codakis-player__header p {
+    font-size: 1.5rem;
+    color: #6b7280;
+    line-height: 1.55;
+  }
+
+  .codakis-player-body {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 2rem 2.4rem;
+    font-size: 1.5rem;
+    line-height: 1.75;
+    color: #374151;
+
+    h2 {
+      font-size: 1.8rem;
+      margin: 2rem 0 0.75rem;
+      color: var(--codakis-black);
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid rgba(29, 185, 106, 0.25);
+    }
+
+    h3 {
+      font-size: 1.6rem;
+      margin: 1.5rem 0 0.6rem;
+      color: var(--codakis-black);
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    ul,
+    ol {
+      margin: 0 0 1.2rem;
+      padding-left: 1.6rem;
+    }
+
+    li {
+      margin-bottom: 0.45rem;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0;
+      margin: 1rem 0;
+    }
+
+    iframe,
+    video {
+      width: 100%;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      margin: 1.2rem 0;
+      background: #000;
+    }
+
+    blockquote {
+      margin: 1.2rem 0;
+      padding: 1rem 1.2rem;
+      border-left: 4px solid var(--codakis-green);
+      background: rgba(29, 185, 106, 0.08);
+      color: var(--codakis-black);
+    }
+  }
+
+  .codakis-player__footer {
+    padding: 0 2.4rem 2.4rem;
+    max-width: 920px;
+  }
+
+  .codakis-player__next {
+    width: 100%;
+    max-width: 320px;
+    border: 0;
+    border-radius: 0;
+    background: var(--codakis-green);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.4rem;
+    padding: 1rem 1.6rem;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.12s ease, box-shadow 0.18s ease;
+
+    &:hover:not(:disabled) {
+      background: var(--codakis-green-dark);
+      box-shadow: 0 4px 14px rgba(29, 185, 106, 0.35);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+  }
+
+  .codakis-player__next:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .codakis-player__quiz-hint {
+    margin-top: 1rem;
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+
+  .codakis-player-sidebar {
+    background: #fff;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow: hidden;
+    transform: translateX(0);
+    transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.28s ease;
+    z-index: 25;
+  }
+
+  .codakis-player--nav-closed .codakis-player-sidebar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .codakis-player-sidebar__header {
+    background: linear-gradient(135deg, var(--codakis-green-dark) 0%, var(--codakis-black-deep) 100%);
+    color: #fff;
+    padding: 1.4rem 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .codakis-player-sidebar__header h2 {
+    margin: 0 0 0.4rem;
+    font-size: 1.35rem;
+    line-height: 1.35;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .codakis-player-sidebar__header p {
+    margin: 0 0 0.85rem;
+    font-size: 1.1rem;
+    opacity: 0.92;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+  }
+
+  .codakis-player-sidebar__progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.28);
+    overflow: hidden;
+  }
+
+  .codakis-player-sidebar__progress span {
+    display: block;
+    height: 100%;
+    background: #fff;
+    transition: width 0.35s ease;
+  }
+
+  .codakis-player-sidebar__nav {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .codakis-player-sidebar__module-head {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    color: var(--codakis-black);
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: rgba(29, 185, 106, 0.08);
+    }
+  }
+
+  .codakis-player-sidebar__lessons {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .codakis-player-sidebar__lesson {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem 0.75rem 1.2rem;
+    color: #374151;
+    text-decoration: none;
+    font-size: 1.25rem;
+    line-height: 1.4;
+    border-left: 3px solid transparent;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: #f3f4f6;
+      color: var(--codakis-black);
+    }
+  }
+
+  .codakis-player-sidebar__lesson-icon {
+    flex-shrink: 0;
+    color: #9ca3af;
+  }
+
+  .codakis-player-sidebar__lesson.is-current {
+    background: rgba(29, 185, 106, 0.1);
+    border-left-color: var(--codakis-green);
+    color: var(--codakis-green-dark);
+    font-weight: 600;
+
+    .codakis-player-sidebar__lesson-icon {
+      color: var(--codakis-green);
+    }
+  }
+
+  .codakis-player-sidebar__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #d1d5db;
+    flex-shrink: 0;
+  }
+
+  .codakis-player-sidebar__dot--current {
+    border-color: var(--codakis-green);
+    background: var(--codakis-green);
+  }
+
+  .codakis-player-sidebar__dot--done {
+    border-color: var(--codakis-green);
+    background: var(--codakis-green);
+  }
+
+  .codakis-player-sidebar__backdrop {
+    display: none;
+  }
+
+  .codakis-player-quiz {
+    margin-top: 1.8rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 2rem;
+    animation: codakis-fade-up 0.35s ease 0.1s both;
+  }
+
+  .codakis-player-quiz__label {
+    margin: 0 0 0.35rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--codakis-green-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .codakis-player-quiz h3 {
+    margin: 0 0 1.25rem;
+    font-size: 1.6rem;
+    line-height: 1.45;
+  }
+
+  .codakis-player-quiz__options {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .codakis-player-quiz__option {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.9rem 0.75rem;
+    margin-bottom: 0.35rem;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+
+    input {
+      accent-color: var(--codakis-green);
+    }
+
+    &:hover {
+      background: #f9fafb;
+      border-color: #d1d5db;
+    }
+
+    &.is-selected {
+      background: rgba(29, 185, 106, 0.08);
+      border-color: var(--codakis-green);
+      box-shadow: inset 3px 0 0 var(--codakis-green);
+    }
+  }
+
+  .codakis-player-quiz__option-index {
+    font-weight: 700;
+    color: #6b7280;
+  }
+
+  .codakis-player-quiz__option.is-correct {
+    color: var(--codakis-green-dark);
+  }
+
+  .codakis-player-quiz__option.is-wrong {
+    color: #dc2626;
+  }
+
+  .codakis-player-quiz__submit {
+    margin-top: 1.25rem;
+    width: 100%;
+    max-width: 280px;
+    border: 0;
+    border-radius: 0;
+    background: var(--codakis-green);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.9rem 1.2rem;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.12s ease;
+
+    &:hover {
+      background: var(--codakis-green-dark);
+    }
+
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+
+  .codakis-listen {
+    margin: 1rem 0 1.25rem;
+  }
+
+  .codakis-listen__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: var(--codakis-green-dark);
+    font-weight: 600;
+    padding: 0.55rem 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--codakis-green);
+      background: rgba(29, 185, 106, 0.06);
+    }
+
+    &:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+  }
+
+  .codakis-listen__spin {
+    animation: codakis-spin 0.9s linear infinite;
+  }
+
+  .codakis-listen__error {
+    margin: 0.45rem 0 0;
+    font-size: 0.85rem;
+    color: #b45309;
+  }
+
+  .codakis-player-quiz--full {
+    .codakis-assessment__progress,
+    .codakis-assessment__step,
+    .codakis-assessment__question,
+    .codakis-assessment__nav {
+      margin-top: 1rem;
+    }
+  }
+
+  .codakis-player-pdf-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 1rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    text-decoration: none;
+    color: inherit;
+    margin-top: 0.5rem;
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &:hover {
+      border-color: var(--codakis-green);
+      background: rgba(29, 185, 106, 0.06);
+    }
+  }
+
+  .codakis-player-pdfs {
+    margin-top: 1.5rem;
+  }
+
+  .codakis-player--locked {
+    display: grid;
+    place-items: center;
+    min-height: 50vh;
+  }
+
+  .codakis-player__locked-card {
+    max-width: 480px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .codakis-player__locked-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 991px) {
+    .codakis-player__shell,
+    .codakis-player--nav-closed .codakis-player__shell {
+      grid-template-columns: 1fr;
+    }
+
+    .codakis-player-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: min(300px, 88vw);
+      height: 100vh;
+      z-index: 1050;
+      transform: translateX(-100%);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .codakis-player-sidebar.is-open {
+      transform: translateX(0);
+      box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .codakis-player--nav-closed .codakis-player-sidebar {
+      transform: translateX(-100%);
+    }
+
+    .codakis-player-sidebar__backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 1045;
+      border: 0;
+      background: rgba(19, 25, 32, 0.45);
+      cursor: pointer;
+      animation: codakis-fade-in 0.25s ease;
+    }
+
+    .codakis-player__content,
+    .codakis-player__footer,
+    .codakis-player__step {
+      padding-left: 1.2rem;
+      padding-right: 1.2rem;
+    }
+  }
+
+  @keyframes codakis-fade-in {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ─── IBM-style assessments (quiz / examen) ─── */
+  .codakis-assessment {
+    max-width: 960px;
+    margin: 0 auto;
+    animation: codakis-fade-up 0.35s ease;
+  }
+
+  .codakis-assessment__header {
+    margin-bottom: 1.25rem;
+  }
+
+  .codakis-assessment__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+    color: var(--codakis-green-dark);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--codakis-green);
+    }
+  }
+
+  .codakis-assessment__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+
+    h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #161616;
+    }
+  }
+
+  .codakis-assessment__timer {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    background: rgba(29, 185, 106, 0.12);
+    color: var(--codakis-green-dark);
+    border-radius: 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+
+    &.is-low {
+      background: #fff1f1;
+      color: #da1e28;
+    }
+
+    &.is-expired {
+      background: #f4f4f4;
+      color: #525252;
+    }
+  }
+
+  .codakis-assessment__progress {
+    height: 4px;
+    background: #e0e0e0;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--codakis-green-dark), var(--codakis-green));
+      transition: width 0.25s ease;
+    }
+  }
+
+  .codakis-assessment__step {
+    margin: 0 0 1rem;
+    font-size: 0.8rem;
+    color: #525252;
+    font-weight: 600;
+  }
+
+  .codakis-assessment__question {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .codakis-assessment__question--animate {
+    animation: codakis-fade-up 0.3s ease;
+  }
+
+  .codakis-assessment__prompt {
+    margin: 0 0 1rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: #161616;
+  }
+
+  .codakis-assessment__media {
+    display: block;
+    width: calc(100% + 3rem);
+    max-width: none;
+    max-height: none;
+    margin: 0 -1.5rem 1.25rem;
+    object-fit: cover;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .codakis-assessment .codakis-video,
+  .codakis-assessment__video {
+    width: calc(100% + 3rem);
+    max-width: none;
+    margin: 0 -1.5rem 1.25rem;
+    border-radius: 0;
+    border: 0;
+    border-bottom: 1px solid #e0e0e0;
+    aspect-ratio: 16 / 9;
+    background: #000;
+
+    iframe,
+    video {
+      border-radius: 0;
+    }
+  }
+
+  .codakis-assessment__options {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .codakis-assessment__option {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.85rem 0.75rem;
+    margin-bottom: 0.35rem;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+
+    input {
+      accent-color: var(--codakis-green-dark);
+    }
+
+    &:hover {
+      border-color: var(--codakis-green-dark);
+      background: #f4f4f4;
+    }
+
+    &.is-selected {
+      border-color: var(--codakis-green-dark);
+      background: rgba(29, 185, 106, 0.12);
+      box-shadow: inset 3px 0 0 var(--codakis-green-dark);
+    }
+  }
+
+  .codakis-assessment__option-index {
+    font-weight: 700;
+    color: #525252;
+    font-size: 0.85rem;
+  }
+
+  .codakis-assessment__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+  .codakis-assessment__nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 0;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.1s ease;
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .codakis-assessment__nav-btn--ghost {
+    background: #f4f4f4;
+    color: #161616;
+  }
+
+  .codakis-assessment__nav-btn--primary {
+    background: var(--codakis-green);
+    color: #fff;
+  }
+
+  .codakis-assessment__score {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 1.5rem;
+
+    &.is-pass .codakis-assessment__score-value {
+      color: var(--codakis-green);
+    }
+
+    &.is-fail .codakis-assessment__score-value {
+      color: #da1e28;
+    }
+  }
+
+  .codakis-assessment__score-value {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .codakis-assessment__review-item {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+
+    &.is-correct {
+      border-left: 3px solid var(--codakis-green);
+    }
+
+    &.is-wrong {
+      border-left: 3px solid #da1e28;
+    }
+
+    p {
+      margin: 0.5rem 0 0;
+      color: #525252;
+      font-size: 0.9rem;
+    }
+  }
+
+  .codakis-assessment__review-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  /* ─── Consort v2 ─── */
+  .codakis-consort-page__hero {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--codakis-green-dark) 0%, var(--codakis-black-deep) 100%);
+    color: #fff;
+    animation: codakis-fade-up 0.35s ease;
+  }
+
+  .codakis-consort-page__hero-icon {
+    width: 52px;
+    height: 52px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .codakis-consort-page__eyebrow {
+    margin: 0 0 0.25rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+  }
+
+  .codakis-consort-page__hero h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.5rem;
+    color: #fff;
+  }
+
+  .codakis-consort-page__hero p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.95rem;
+  }
+
+  .codakis-consort-page__stats {
+    display: flex;
+    gap: 1rem;
+
+    div {
+      text-align: center;
+      min-width: 4.5rem;
+    }
+
+    strong {
+      display: block;
+      font-size: 1.5rem;
+    }
+
+    span {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+  }
+
+  .codakis-consort-page__summary {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+
+    p {
+      margin: 0.75rem 0 0;
+      font-size: 0.9rem;
+      color: #525252;
+    }
+  }
+
+  .codakis-consort-page__progress {
+    height: 4px;
+    background: #e0e0e0;
+    margin-top: 0.75rem;
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--codakis-green);
+      transition: width 0.3s ease;
+    }
+  }
+
+  .codakis-consort-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .codakis-consort-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 1.25rem;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(22, 22, 22, 0.08);
+    }
+
+    &--validated {
+      border-left: 3px solid var(--codakis-green);
+    }
+
+    &--pending {
+      border-left: 3px solid #f59e0b;
+    }
+
+    &--missing {
+      border-left: 3px solid #da1e28;
+    }
+  }
+
+  .codakis-consort-card__head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.75rem;
+    align-items: start;
+    margin-bottom: 0.75rem;
+
+    h3 {
+      margin: 0 0 0.25rem;
+      font-size: 1rem;
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #525252;
+    }
+  }
+
+  .codakis-consort-card__icon {
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background: #f4f4f4;
+
+    &--validated {
+      color: var(--codakis-green);
+      background: rgba(0, 168, 89, 0.12);
+    }
+
+    &--pending {
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    &--missing {
+      color: #da1e28;
+      background: rgba(218, 30, 40, 0.1);
+    }
+  }
+
+  .codakis-consort-card__req {
+    font-size: 0.85rem;
+    color: #525252;
+    margin-bottom: 0.75rem;
+  }
+
+  .codakis-consort-card__date {
+    font-size: 0.8rem;
+    color: var(--codakis-green);
+    margin-bottom: 0.75rem;
+  }
+
+  .codakis-consort-aside section {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 0.95rem;
+      margin-bottom: 0.75rem;
+    }
+
+    dl {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+
+    dt {
+      color: #525252;
+      font-weight: 600;
+    }
+
+    dd {
+      margin-bottom: 0.65rem;
+    }
+
+    ol {
+      margin: 0;
+      padding-left: 1.1rem;
+      font-size: 0.875rem;
+      color: #525252;
+    }
+  }
+
+  .codakis-consort-page__footer {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background: rgba(0, 168, 89, 0.08);
+    border: 1px solid rgba(0, 168, 89, 0.2);
+  }
+
+  .codakis-consort-page__footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .codakis-seance-panel {
+    padding: 1.25rem;
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    animation: codakis-fade-up 0.25s ease;
+  }
+
+  /* Course player polish */
+  .codakis-player__hero {
+    border-radius: 0;
+  }
+
+  .codakis-player__cover {
+    border-radius: 0;
+  }
+
+  .codakis-player-body {
+    border-radius: 0;
+    animation: codakis-fade-up 0.35s ease;
+  }
+
+  .codakis-player-quiz {
+    border-radius: 0;
+    animation: codakis-fade-up 0.35s ease 0.1s both;
+  }
+
+  .codakis-player-quiz__option {
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      background: #f4f4f4;
+    }
+
+    &.is-selected {
+      background: rgba(29, 185, 106, 0.12);
+      box-shadow: inset 3px 0 0 var(--codakis-green-dark);
+    }
+  }
+
+  .codakis-player-sidebar__lesson {
+    transition: background 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      background: #f4f4f4;
+    }
+  }
+
+  .codakis-player__next {
+    transition: background 0.15s ease, transform 0.1s ease;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.05);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+  }
+
+  @keyframes codakis-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes codakis-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 991px) {
+    .codakis-consort-page__hero {
+      grid-template-columns: 1fr;
+    }
+
+    .codakis-consort-page__stats {
+      justify-content: flex-start;
+    }
+  }
+
+  .codakis-courses__module-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  .codakis-courses__module-card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "num title"
+      "num meta"
+      "go go";
+    gap: 0.75rem 1rem;
+    padding: 1.4rem 1.6rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+      border-color: var(--codakis-green);
+      box-shadow: 0 8px 24px rgba(29, 185, 106, 0.12);
+      transform: translateY(-2px);
+    }
+
+    &.is-locked {
+      opacity: 0.85;
+    }
+
+    .codakis-courses__module-number {
+      grid-area: num;
+    }
+
+    .codakis-courses__module-title {
+      grid-area: title;
+    }
+
+    .codakis-courses__module-meta {
+      grid-area: meta;
+    }
+  }
+
+  .codakis-courses__module-go {
+    grid-area: go;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--codakis-green-dark);
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+
+  .codakis-courses__module-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .codakis-courses__module-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .codakis-courses__back-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--codakis-green-dark);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--codakis-green);
+    }
+  }
+
+  .codakis-module-nav {
+    margin-bottom: 1.25rem;
+    overflow-x: auto;
+  }
+
+  .codakis-module-nav__list {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+  }
+
+  .codakis-module-nav__btn {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    color: var(--codakis-black);
+    font-size: 1.2rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color 0.18s ease, background 0.18s ease;
+
+    small {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #6b7280;
+    }
+
+    &:hover {
+      border-color: var(--codakis-green);
+      background: rgba(29, 185, 106, 0.06);
+    }
+
+    &.is-active {
+      border-color: var(--codakis-green);
+      background: rgba(29, 185, 106, 0.1);
+      color: var(--codakis-green-dark);
+    }
+  }
+
+  .codakis-module-nav__indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--codakis-green);
+  }
+
+  .codakis-player-sidebar__module-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.12);
+  }
+
+  .codakis-player-sidebar__module-tab {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.4rem;
+    padding: 0.35rem 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.18s ease, border-color 0.18s ease;
+
+    &:hover {
+      background: rgba(29, 185, 106, 0.2);
+      border-color: var(--codakis-green);
+      color: #fff;
+    }
+
+    &.is-active {
+      background: rgba(29, 185, 106, 0.28);
+      border-color: var(--codakis-green);
+      color: #fff;
+    }
+  }
+
+  .codakis-player-sidebar__module-tab-indicator {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--codakis-green);
+    pointer-events: none;
+  }
+
+  .bs-motion-page {
+    width: 100%;
+  }
+
+  &.minimenu .pc-sidebar .pc-item:hover > .pc-link {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    .pc-mtext,
+    .pc-arrow {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      opacity: 0 !important;
+    }
+  }
+
+  /* Neutralise le flyout DashboardKit en mode minimenu (évite le débordement vert au hover). */
+  &.minimenu .pc-sidebar .pc-item:hover > .pc-submenu {
+    display: none !important;
+  }
+
+  .codakis-admin-course-path__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .codakis-admin-course-path__item {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+  }
+
+  .codakis-admin-course-path__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: rgba(29, 185, 106, 0.12);
+    color: var(--codakis-green-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .codakis-admin-course-path__icon {
+    color: var(--codakis-green);
+  }
+
+  .codakis-admin-course-path__copy {
+    min-width: 0;
+
+    strong {
+      display: block;
+      line-height: 1.35;
+    }
+  }
+
+  .codakis-admin-course-path__meta {
+    display: block;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+}
+
+// Overrides hors imbrication — body.minimenu et dashboardkit-active sont sur le même élément
+body.dashboardkit-active.minimenu .pc-sidebar {
+  overflow: hidden !important;
+
+  .pc-navbar > .pc-item {
+    margin: 0.22rem 0.5rem;
+  }
+
+  .pc-item {
+    overflow: hidden;
+  }
+
+  .pc-link {
+    padding: 0.72rem 0 !important;
+    min-height: 44px;
+    border-radius: 8px;
+  }
+
+  .pc-item:hover > .pc-link {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding: 0.72rem 0 !important;
+
+    .pc-mtext,
+    .pc-arrow {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      max-width: 0 !important;
+      overflow: hidden !important;
+      opacity: 0 !important;
+    }
+
+    .pc-micon {
+      margin-right: 0 !important;
+    }
+  }
+
+  .pc-item:hover > .pc-submenu {
+    display: none !important;
+  }
+
+  .codakis-sidebar-foot,
+  .codakis-sidebar-account__profile,
+  .codakis-sidebar-account__offer {
+    overflow: hidden !important;
+    max-width: 100% !important;
+  }
+
+  .codakis-sidebar-account__meta,
+  .codakis-sidebar-account__name,
+  .codakis-sidebar-account__plan,
+  .codakis-sidebar-account__offer span {
+    display: none !important;
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import type { ReactNode } from "react";
+import Loader from "../../components/common/Loader";
 import { getAccessToken } from "../../lib/authApi";
 import { getSession, hydrateSessionFromApi } from "../authStore";
 import type { UserRole } from "../types";
@@ -45,7 +46,7 @@ export default function RequireAuth({ role, children }: RequireAuthProps) {
   }, [role]);
 
   if (!ready) {
-    return null;
+    return <Loader variant="page" />;
   }
 
   if (!allowed) {

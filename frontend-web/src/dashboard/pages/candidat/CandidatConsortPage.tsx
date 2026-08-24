@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Row, Col, Card, ProgressBar, Badge, Button, Alert, Table } from "react-bootstrap";
+import { Row, Col, Badge, Button, Alert } from "react-bootstrap";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import MainCard from "@/dashboardkit/components/Card/MainCard";
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckCircle2, Clock3, FileWarning, FolderOpen } from "lucide-react";
 import Loader from "../../../components/common/Loader";
+import ModuleSegmentNav from "../../components/common/ModuleSegmentNav";
 import { getCandidateEnrollment, isCandidateEnrolled } from "../../../auth/candidateEnrollment";
 import {
   AuthApiError,
@@ -32,6 +34,12 @@ function formatDate(value: string | null | undefined): string {
   return new Date(value).toLocaleDateString();
 }
 
+function statusIcon(status: ConsortPieceStatus) {
+  if (status === "validated") return <CheckCircle2 size={18} aria-hidden />;
+  if (status === "pending") return <Clock3 size={18} aria-hidden />;
+  return <FileWarning size={18} aria-hidden />;
+}
+
 export default function CandidatConsortPage() {
   const { t } = useTranslation();
   const enrollment = getCandidateEnrollment();
@@ -41,6 +49,7 @@ export default function CandidatConsortPage() {
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [activePieceKey, setActivePieceKey] = useState<string>(PIECE_KEYS[0]);
 
   const loadDossier = useCallback(async () => {
     setLoading(true);
@@ -84,207 +93,186 @@ export default function CandidatConsortPage() {
     }
   }
 
-  if (loading) {
-    return <Loader />;
-  }
-
   const pieces = dossier?.pieces ?? [];
   const dossierStatus = dossier?.statut ?? "pieces_incompletes";
 
+  const pieceSegments = useMemo(
+    () =>
+      PIECE_KEYS.map((key) => {
+        const piece = pieces.find((item) => item.key === key);
+        const status = (piece?.status ?? "missing") as ConsortPieceStatus;
+        return {
+          id: key,
+          label: t(`consort.pieces.${key}.title`),
+          meta: t(`dashboard.consort.status.${status}`),
+        };
+      }),
+    [pieces, t],
+  );
+
+  const activePiece = pieces.find((item) => item.key === activePieceKey);
+  const activeStatus = (activePiece?.status ?? "missing") as ConsortPieceStatus;
+
+  if (loading) {
+    return <Loader variant="section" />;
+  }
+
   return (
-    <Row className="g-4">
-      <Col lg={8}>
-        <MainCard title={t("dashboard.consort.pageTitle")} isOption={false} cardClass="" optionClass="" CardBodyClass="">
-          <p className="text-muted mb-4">{t("dashboard.consort.pageLead")}</p>
+    <div className="codakis-consort-page">
+      <header className="codakis-consort-page__hero">
+        <div className="codakis-consort-page__hero-icon" aria-hidden>
+          <FolderOpen size={28} strokeWidth={1.75} />
+        </div>
+        <div>
+          <p className="codakis-consort-page__eyebrow">{t("dashboard.nav.consort")}</p>
+          <h1>{t("dashboard.consort.pageTitle")}</h1>
+          <p>{t("dashboard.consort.pageLead")}</p>
+        </div>
+        <div className="codakis-consort-page__stats">
+          <div>
+            <strong>{stats.validated}</strong>
+            <span>{t("dashboard.consort.validatedShort")}</span>
+          </div>
+          <div>
+            <strong>{stats.pending}</strong>
+            <span>{t("dashboard.consort.pendingShort")}</span>
+          </div>
+          <div>
+            <strong>{stats.progress}%</strong>
+            <span>{t("dashboard.consort.progressLabel")}</span>
+          </div>
+        </div>
+      </header>
 
-          {error ? <Alert variant="danger">{error}</Alert> : null}
-          {success ? <Alert variant="success">{success}</Alert> : null}
+      {error ? <Alert variant="danger">{error}</Alert> : null}
+      {success ? <Alert variant="success">{success}</Alert> : null}
 
-          <div className="codakis-consort-summary mb-4 p-3 rounded bg-light">
-            <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-              <div className="d-flex align-items-center gap-2">
-                <strong>{t("dashboard.consort.progressLabel")}</strong>
-                <Badge bg={DOSSIER_STATUS_BADGE[dossierStatus] ?? "secondary"}>
-                  {t(`dashboard.consort.dossierStatus.${dossierStatus}`, { defaultValue: dossierStatus })}
+      <div className="codakis-consort-page__summary">
+        <Badge bg={DOSSIER_STATUS_BADGE[dossierStatus] ?? "secondary"}>
+          {t(`dashboard.consort.dossierStatus.${dossierStatus}`, { defaultValue: dossierStatus })}
+        </Badge>
+        <div className="codakis-consort-page__progress" aria-hidden>
+          <span style={{ width: `${stats.progress}%` }} />
+        </div>
+        <p>{t("dashboard.consort.progressHintDynamic", stats)}</p>
+      </div>
+
+      <Row className="g-4">
+        <Col lg={8}>
+          <ModuleSegmentNav
+            segments={pieceSegments}
+            activeId={activePieceKey}
+            onSelect={setActivePieceKey}
+            ariaLabel={t("dashboard.consort.piecesNav")}
+            className="codakis-consort-page__module-nav mb-4"
+          />
+
+          <AnimatePresence mode="wait">
+            <motion.article
+              key={activePieceKey}
+              className={`codakis-consort-card codakis-consort-card--${activeStatus}`}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="codakis-consort-card__head">
+                <span className={`codakis-consort-card__icon codakis-consort-card__icon--${activeStatus}`}>
+                  {statusIcon(activeStatus)}
+                </span>
+                <div>
+                  <h3>{t(`consort.pieces.${activePieceKey}.title`)}</h3>
+                  <p>{t(`consort.pieces.${activePieceKey}.desc`)}</p>
+                </div>
+                <Badge bg={activeStatus === "validated" ? "success" : activeStatus === "pending" ? "warning" : "danger"}>
+                  {t(`dashboard.consort.status.${activeStatus}`)}
                 </Badge>
               </div>
-              <span className="text-primary fw-bold">
-                {stats.validated}/{PIECE_KEYS.length} — {stats.progress}%
-              </span>
+              <p className="codakis-consort-card__req">
+                <strong>{t("dashboard.consort.requirementsLabel")} :</strong>{" "}
+                {t(`dashboard.consort.pieceRequirements.${activePieceKey}`)}
+              </p>
+              {activeStatus === "validated" && activePiece?.validated_at ? (
+                <p className="codakis-consort-card__date">
+                  {t("dashboard.consort.validatedOn", { date: formatDate(activePiece.validated_at) })}
+                </p>
+              ) : null}
+              {activeStatus !== "validated" ? (
+                <Button
+                  variant={activeStatus === "pending" ? "outline-secondary" : "primary"}
+                  size="sm"
+                  disabled={busyKey === activePieceKey || activeStatus === "pending"}
+                  onClick={() => void handleSubmit(activePieceKey)}
+                >
+                  {busyKey === activePieceKey
+                    ? t("dashboard.consort.submitting")
+                    : activeStatus === "pending"
+                      ? t("dashboard.consort.pendingReview")
+                      : t("dashboard.consort.actionAdd")}
+                </Button>
+              ) : null}
+            </motion.article>
+          </AnimatePresence>
+
+          <div className="codakis-consort-page__footer">
+            <p>{t("dashboard.consort.footerText")}</p>
+            <div className="codakis-consort-page__footer-actions">
+              <Link to="/consort" target="_blank" className="btn btn-outline-secondary btn-sm">
+                {t("dashboard.consort.publicGuide")}
+              </Link>
+              <Link to="/espace/candidat/cours" className="btn btn-primary btn-sm">
+                {t("dashboard.candidat.actionCourses")}
+              </Link>
             </div>
-            <ProgressBar now={stats.progress} variant="success" className="codakis-consort-progress" />
-            <p className="text-muted small mt-2 mb-0">
-              {t("dashboard.consort.progressHintDynamic", {
-                validated: stats.validated,
-                pending: stats.pending,
-                missing: stats.missing,
-              })}
-            </p>
           </div>
+        </Col>
 
-          <h6 className="mb-3">{t("dashboard.consort.tableTitle")}</h6>
-          <div className="table-responsive mb-4">
-            <Table hover className="align-middle">
-              <thead>
-                <tr>
-                  <th>{t("dashboard.consort.colPiece")}</th>
-                  <th>{t("dashboard.widgets.colStatus")}</th>
-                  <th>{t("dashboard.consort.colDate")}</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {PIECE_KEYS.map((key) => {
-                  const piece = pieces.find((item) => item.key === key);
-                  const status = (piece?.status ?? "missing") as ConsortPieceStatus;
-                  const badgeVariant =
-                    status === "validated" ? "success" : status === "pending" ? "warning" : "danger";
+        <Col lg={4}>
+          <aside className="codakis-consort-aside">
+            <section>
+              <h2>{t("dashboard.consort.dossierInfoTitle")}</h2>
+              <dl>
+                <dt>{t("dashboard.consort.dossierCreated")}</dt>
+                <dd>{formatDateTime(dossier?.created_at)}</dd>
+                <dt>{t("dashboard.consort.dossierUpdated")}</dt>
+                <dd>{formatDateTime(dossier?.updated_at)}</dd>
+                <dt>{t("dashboard.consort.dossierDepot")}</dt>
+                <dd>{formatDateTime(dossier?.date_depot)}</dd>
+              </dl>
+            </section>
 
-                  return (
-                    <tr key={key}>
-                      <td>
-                        <div className="fw-semibold">{t(`consort.pieces.${key}.title`)}</div>
-                        <small className="text-muted">{t(`consort.pieces.${key}.desc`)}</small>
-                      </td>
-                      <td>
-                        <Badge bg={badgeVariant}>{t(`dashboard.consort.status.${status}`)}</Badge>
-                      </td>
-                      <td>{status === "validated" ? formatDate(piece?.validated_at) : "—"}</td>
-                      <td className="text-end">
-                        {status !== "validated" ? (
-                          <Button
-                            variant="outline-primary"
-                            size="sm"
-                            disabled={busyKey === key || status === "pending"}
-                            onClick={() => void handleSubmit(key)}
-                          >
-                            {busyKey === key
-                              ? t("dashboard.consort.submitting")
-                              : status === "pending"
-                                ? t("dashboard.consort.pendingReview")
-                                : t("dashboard.consort.actionAdd")}
-                          </Button>
-                        ) : null}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </div>
+            <section>
+              <h2>{t("dashboard.consort.stepsTitle")}</h2>
+              <ol>
+                <li>{t("dashboard.consort.step1")}</li>
+                <li>{t("dashboard.consort.step2")}</li>
+                <li>{t("dashboard.consort.step3")}</li>
+                <li>{t("dashboard.consort.step4")}</li>
+              </ol>
+            </section>
 
-          <h6 className="mb-3">{t("dashboard.consort.detailsTitle")}</h6>
-          <Row className="g-3">
-            {PIECE_KEYS.map((key) => {
-              const piece = pieces.find((item) => item.key === key);
-              const status = (piece?.status ?? "missing") as ConsortPieceStatus;
-
-              return (
-                <Col md={6} key={key}>
-                  <Card className={`codakis-consort-piece codakis-consort-piece--${status} h-100`}>
-                    <Card.Body>
-                      <div className="d-flex justify-content-between align-items-start gap-2 mb-2">
-                        <h6 className="mb-0">{t(`consort.pieces.${key}.title`)}</h6>
-                        <Badge
-                          bg={status === "validated" ? "success" : status === "pending" ? "warning" : "danger"}
-                          className="text-uppercase"
-                        >
-                          {t(`dashboard.consort.status.${status}`)}
-                        </Badge>
-                      </div>
-                      <p className="text-muted small mb-2">{t(`consort.pieces.${key}.desc`)}</p>
-                      <p className="small mb-3">
-                        <strong>{t("dashboard.consort.requirementsLabel")} :</strong>{" "}
-                        {t(`dashboard.consort.pieceRequirements.${key}`)}
-                      </p>
-                      {status === "validated" && piece?.validated_at ? (
-                        <span className="small text-success">
-                          <i className="feather icon-check-circle me-1" />
-                          {t("dashboard.consort.validatedOn", { date: formatDate(piece.validated_at) })}
-                        </span>
-                      ) : null}
-                    </Card.Body>
-                  </Card>
-                </Col>
-              );
-            })}
-          </Row>
-
-          <div className="codakis-consort-footer mt-4 p-3 rounded">
-            <p className="mb-2">{t("dashboard.consort.footerText")}</p>
-            <Link to="/consort" className="btn btn-outline-secondary btn-sm me-2" target="_blank">
-              {t("dashboard.consort.publicGuide")}
-            </Link>
-            <Link to="/themes" className="btn btn-primary btn-sm me-2">
-              {t("dashboard.candidat.actionCourses")}
-            </Link>
-            <Link to="/espace/candidat/auto-ecoles" className="btn btn-outline-dark btn-sm">
-              {t("schools.heading")}
-            </Link>
-          </div>
-        </MainCard>
-      </Col>
-
-      <Col lg={4}>
-        <Card className="mb-4">
-          <Card.Body>
-            <h6 className="mb-3">{t("dashboard.consort.dossierInfoTitle")}</h6>
-            <dl className="mb-0 codakis-dl-compact">
-              <dt>{t("dashboard.consort.dossierId")}</dt>
-              <dd className="text-muted small text-break">{dossier?.id ?? "—"}</dd>
-              <dt>{t("dashboard.consort.dossierCreated")}</dt>
-              <dd>{formatDateTime(dossier?.created_at)}</dd>
-              <dt>{t("dashboard.consort.dossierUpdated")}</dt>
-              <dd>{formatDateTime(dossier?.updated_at)}</dd>
-              <dt>{t("dashboard.consort.dossierDepot")}</dt>
-              <dd>{formatDateTime(dossier?.date_depot)}</dd>
-            </dl>
-          </Card.Body>
-        </Card>
-
-        <Card className="mb-4">
-          <Card.Body>
-            <h6 className="mb-3">{t("dashboard.consort.stepsTitle")}</h6>
-            <ol className="small ps-3 mb-0">
-              <li className="mb-2">{t("dashboard.consort.step1")}</li>
-              <li className="mb-2">{t("dashboard.consort.step2")}</li>
-              <li className="mb-2">{t("dashboard.consort.step3")}</li>
-              <li>{t("dashboard.consort.step4")}</li>
-            </ol>
-          </Card.Body>
-        </Card>
-
-        {enrolled && enrollment ? (
-          <Card className="mb-4">
-            <Card.Body>
-              <h6 className="mb-2">{t("dashboard.nav.mySchool")}</h6>
-              <p className="fw-semibold mb-1">{enrollment.schoolName}</p>
-              {enrollment.schoolCity ? <p className="text-muted small mb-2">{enrollment.schoolCity}</p> : null}
-              <p className="text-muted small mb-3">{t("dashboard.consort.schoolValidationHint")}</p>
-              <Link to="/espace/candidat/auto-ecole" className="btn btn-outline-primary btn-sm">
-                {t("dashboard.nav.mySchool")}
-              </Link>
-            </Card.Body>
-          </Card>
-        ) : (
-          <Card className="mb-4">
-            <Card.Body>
-              <h6 className="mb-2">{t("dashboard.consort.noSchoolTitle")}</h6>
-              <p className="text-muted small mb-3">{t("dashboard.consort.noSchoolHint")}</p>
-              <Link to="/espace/candidat/auto-ecoles" className="btn btn-primary btn-sm">
-                {t("dashboard.enrollment.browseForfaits")}
-              </Link>
-            </Card.Body>
-          </Card>
-        )}
-
-        <Card>
-          <Card.Body>
-            <h6 className="mb-2">{t("dashboard.consort.helpTitle")}</h6>
-            <p className="text-muted small mb-0">{t("dashboard.consort.helpText")}</p>
-          </Card.Body>
-        </Card>
-      </Col>
-    </Row>
+            {enrolled && enrollment ? (
+              <section>
+                <h2>{t("dashboard.nav.mySchool")}</h2>
+                <p className="fw-semibold mb-1">{enrollment.schoolName}</p>
+                {enrollment.schoolCity ? <p className="text-muted small">{enrollment.schoolCity}</p> : null}
+                <p className="text-muted small">{t("dashboard.consort.schoolValidationHint")}</p>
+                <Link to="/espace/candidat/auto-ecole" className="btn btn-outline-primary btn-sm">
+                  {t("dashboard.nav.mySchool")}
+                </Link>
+              </section>
+            ) : (
+              <section>
+                <h2>{t("dashboard.consort.noSchoolTitle")}</h2>
+                <p className="text-muted small">{t("dashboard.consort.noSchoolHint")}</p>
+                <Link to="/espace/candidat/auto-ecoles" className="btn btn-primary btn-sm">
+                  {t("dashboard.enrollment.browseForfaits")}
+                </Link>
+              </section>
+            )}
+          </aside>
+        </Col>
+      </Row>
+    </div>
   );
 }

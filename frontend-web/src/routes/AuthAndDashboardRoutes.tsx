@@ -30,6 +30,8 @@ import GerantInscriptionsPage from "../dashboard/pages/gerant/GerantInscriptions
 import GerantForfaitsPage from "../dashboard/pages/gerant/GerantForfaitsPage";
 import CandidatConsortPage from "../dashboard/pages/candidat/CandidatConsortPage";
 import CandidatProfilePage from "../dashboard/pages/candidat/CandidatProfilePage";
+import CandidatModulePage from "../dashboard/pages/candidat/CandidatModulePage";
+import CandidatModulePlayerPage from "../dashboard/pages/candidat/CandidatModulePlayerPage";
 import CandidatCoursesPage from "../dashboard/pages/candidat/CandidatCoursesPage";
 import CandidatLessonPage from "../dashboard/pages/candidat/CandidatLessonPage";
 import CandidatExamsPage from "../dashboard/pages/candidat/CandidatExamsPage";
@@ -109,6 +111,8 @@ export function CandidatRoutes() {
       children: [
         { index: true, element: <DashboardSalesHome role="candidat" /> },
         { path: "cours", element: <CandidatCoursesPage /> },
+        { path: "cours/module/:themeId", element: <CandidatModulePage /> },
+        { path: "cours/module/:themeId/etape/:stepRef", element: <CandidatModulePlayerPage /> },
         { path: "cours/lecon/:id", element: <CandidatLessonPage /> },
         { path: "examens", element: <CandidatExamsPage /> },
         { path: "examens/quiz/:id", element: <CandidatTakeAssessmentPage mode="quiz" /> },

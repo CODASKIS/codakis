@@ -1,10 +1,14 @@
-import { BookOpen, ChevronRight, Crown, GraduationCap, Layers3, Lock } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Accordion, Badge, Col, Row } from "react-bootstrap";
+import { ChevronRight, Crown, GraduationCap, Layers3, Lock } from "lucide-react";
+import { motion } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { Badge, Col, Row } from "react-bootstrap";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
+import PlatformAccessPanel from "../../components/PlatformAccessPanel";
+import { fadeUpVariants, staggerContainer } from "../../../components/motion/motionPresets";
+import { isPremiumUser } from "../../../auth/authStore";
 import {
   AuthApiError,
   fetchCandidatLecons,
@@ -13,10 +17,9 @@ import {
   type PedagogyTheme,
 } from "../../../lib/pedagogyApi";
 
-const UPGRADE_HREF = "/themes#abonnement";
-
 export default function CandidatCoursesPage() {
   const { t, i18n } = useTranslation();
+  const isPremium = isPremiumUser();
   const [themes, setThemes] = useState<PedagogyTheme[]>([]);
   const [leconsByTheme, setLeconsByTheme] = useState<Record<string, PedagogyLecon[]>>({});
   const [loading, setLoading] = useState(true);
@@ -44,10 +47,6 @@ export default function CandidatCoursesPage() {
   }, [load]);
 
   const themeTitle = (theme: PedagogyTheme) => (i18n.language.startsWith("en") ? theme.title_en : theme.title_fr);
-  const totalLecons = useMemo(
-    () => Object.values(leconsByTheme).reduce((total, lecons) => total + lecons.length, 0),
-    [leconsByTheme],
-  );
 
   if (loading) return <Loader />;
 
@@ -61,6 +60,8 @@ export default function CandidatCoursesPage() {
           optionClass=""
           CardBodyClass=""
         >
+          <PlatformAccessPanel showBanner={!isPremium} />
+
           {error ? <div className="alert alert-danger py-2">{error}</div> : null}
 
           <section className="codakis-courses__hero">
@@ -78,11 +79,6 @@ export default function CandidatCoursesPage() {
                 <strong>{themes.length}</strong>
                 <span>{t("candidat.pedagogy.modules")}</span>
               </div>
-              <div>
-                <BookOpen size={20} aria-hidden />
-                <strong>{totalLecons}</strong>
-                <span>{t("candidat.pedagogy.lessons")}</span>
-              </div>
             </div>
           </section>
 
@@ -91,16 +87,22 @@ export default function CandidatCoursesPage() {
               <span>{t("candidat.pedagogy.curriculum")}</span>
               <h3>{t("candidat.pedagogy.allThemes")}</h3>
             </div>
-            <p>{t("candidat.pedagogy.openThemeHint")}</p>
+            <p>{t("candidat.pedagogy.openModuleHint")}</p>
           </div>
 
-          <Accordion alwaysOpen defaultActiveKey={["0"]} className="codakis-courses__outline">
+          <motion.div
+            className="codakis-courses__module-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {themes.map((theme, index) => (
-              <Accordion.Item eventKey={String(index)} key={theme.id}>
-                <Accordion.Header>
-                  <span className="codakis-courses__module-number">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
+              <motion.div key={theme.id} variants={fadeUpVariants}>
+                <Link
+                  to={`/espace/candidat/cours/module/${theme.id}`}
+                  className={`codakis-courses__module-card${theme.locked ? " is-locked" : ""}`}
+                >
+                  <span className="codakis-courses__module-number">{String(index + 1).padStart(2, "0")}</span>
                   <span className="codakis-courses__module-title">
                     <small>{t("candidat.pedagogy.themeLabel", { number: index + 1 })}</small>
                     <strong>{themeTitle(theme)}</strong>
@@ -118,67 +120,14 @@ export default function CandidatCoursesPage() {
                       })}
                     </span>
                   </span>
-                </Accordion.Header>
-                <Accordion.Body>
-                  {(leconsByTheme[theme.id] ?? []).length === 0 ? (
-                    <p className="codakis-courses__empty">{t("candidat.pedagogy.noLecons")}</p>
-                  ) : (
-                    <>
-                      <ol className="codakis-courses__lesson-list">
-                        {(leconsByTheme[theme.id] ?? []).map((lecon, lessonIndex) =>
-                          theme.locked ? (
-                            <li key={lecon.id}>
-                              <div className="codakis-courses__lesson is-locked">
-                                <span className="codakis-courses__lesson-step" aria-hidden>
-                                  <Lock size={14} strokeWidth={2} />
-                                </span>
-                                <span className="codakis-courses__lesson-copy">
-                                  <strong>{lecon.title}</strong>
-                                  {lecon.excerpt ? <span>{lecon.excerpt}</span> : null}
-                                </span>
-                              </div>
-                            </li>
-                          ) : (
-                            <li key={lecon.id}>
-                              <Link
-                                to={`/espace/candidat/cours/lecon/${lecon.id}`}
-                                className="codakis-courses__lesson"
-                              >
-                                <span className="codakis-courses__lesson-step" aria-hidden>
-                                  {lessonIndex + 1}
-                                </span>
-                                <span className="codakis-courses__lesson-copy">
-                                  <strong>{lecon.title}</strong>
-                                  {lecon.excerpt ? <span>{lecon.excerpt}</span> : null}
-                                </span>
-                                <span className="codakis-courses__lesson-action">
-                                  {t("candidat.pedagogy.readLesson")}
-                                  <ChevronRight size={18} aria-hidden />
-                                </span>
-                              </Link>
-                            </li>
-                          ),
-                        )}
-                      </ol>
-
-                      {theme.locked ? (
-                        <div className="codakis-courses__paywall">
-                          <Lock size={20} aria-hidden />
-                          <div>
-                            <strong>{t("candidat.pedagogy.lockedTitle")}</strong>
-                            <p>{t("candidat.pedagogy.lockedLead")}</p>
-                          </div>
-                          <Link to={UPGRADE_HREF} className="btn btn-primary btn-sm">
-                            {t("dashboard.userMenu.upgradeCta")}
-                          </Link>
-                        </div>
-                      ) : null}
-                    </>
-                  )}
-                </Accordion.Body>
-              </Accordion.Item>
+                  <span className="codakis-courses__module-go">
+                    {t("candidat.pedagogy.openModule")}
+                    <ChevronRight size={18} aria-hidden />
+                  </span>
+                </Link>
+              </motion.div>
             ))}
-          </Accordion>
+          </motion.div>
         </MainCard>
       </Col>
     </Row>

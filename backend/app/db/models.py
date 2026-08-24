@@ -255,6 +255,18 @@ class Lecon(Base):
     author: Mapped["Utilisateur | None"] = relationship(foreign_keys=[author_id])
 
 
+class LeconProgress(Base):
+    __tablename__ = "lecon_progress"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    candidat_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("utilisateurs.id"), nullable=False)
+    lecon_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("lecons.id"), nullable=False)
+    completed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    candidat: Mapped["Utilisateur"] = relationship(foreign_keys=[candidat_id])
+    lecon: Mapped["Lecon"] = relationship(foreign_keys=[lecon_id])
+
+
 class Question(Base):
     __tablename__ = "questions"
 
@@ -297,6 +309,8 @@ class Quiz(Base):
     question_count: Mapped[int] = mapped_column(nullable=False, default=10)
     duree_minutes: Mapped[int] = mapped_column(nullable=False, default=10)
     est_actif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    sort_order: Mapped[int] = mapped_column(nullable=False, default=100)
+    in_course_path: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
@@ -490,6 +504,9 @@ class Paiement(Base):
     plan_id: Mapped[str | None] = mapped_column(Text, nullable=True)
     purpose: Mapped[str] = mapped_column(String(32), default="subscription", nullable=False)
     amount_fcfa: Mapped[int] = mapped_column(nullable=False)
+    commission_fcfa: Mapped[int | None] = mapped_column(nullable=True)
+    school_payout_fcfa: Mapped[int | None] = mapped_column(nullable=True)
+    commission_rate_pct: Mapped[int | None] = mapped_column(nullable=True)
     channel: Mapped[str] = mapped_column(String(16), nullable=False)
     phone: Mapped[str] = mapped_column(String(32), nullable=False)
     status: Mapped[str] = mapped_column(String(16), default="pending", nullable=False)

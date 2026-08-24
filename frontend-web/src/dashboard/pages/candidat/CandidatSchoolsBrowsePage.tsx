@@ -5,7 +5,7 @@ import { MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
-import CmsCoverImage from "../../../components/common/CmsCoverImage";
+import { DEFAULT_DRIVING_SCHOOL_LOGO, resolveSchoolLogoUrl } from "../../../constants/assets";
 import { formatForfaitPrice } from "../../../data/mockDrivingSchools";
 import {
   fetchPublicSchools,
@@ -85,21 +85,17 @@ export default function CandidatSchoolsBrowsePage() {
             <div className="d-grid gap-3">
               {results.map((school) => (
                 <div key={school.id} className="border rounded p-3 d-flex flex-wrap gap-3 align-items-start">
-                  {school.logoUrl ? (
-                    <CmsCoverImage
-                      url={school.logoUrl}
-                      alt={school.name}
-                      className="rounded"
-                      style={{ width: 72, height: 72, objectFit: "cover" }}
-                    />
-                  ) : (
-                    <div
-                      className="rounded bg-light d-flex align-items-center justify-content-center text-muted"
-                      style={{ width: 72, height: 72 }}
-                    >
-                      AE
-                    </div>
-                  )}
+                  <img
+                    src={resolveSchoolLogoUrl(school.logoUrl)}
+                    alt=""
+                    className="rounded border bg-white"
+                    style={{ width: 72, height: 72, objectFit: "contain", padding: 6 }}
+                    loading="lazy"
+                    onError={(event) => {
+                      event.currentTarget.onerror = null;
+                      event.currentTarget.src = DEFAULT_DRIVING_SCHOOL_LOGO;
+                    }}
+                  />
                   <div className="flex-grow-1 min-w-0">
                     <div className="d-flex flex-wrap align-items-center gap-2 mb-1">
                       <h5 className="mb-0">{school.name}</h5>

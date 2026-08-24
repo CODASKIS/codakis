@@ -138,6 +138,26 @@
   },
   "pricing": {
     "title": "Choose the plan that fits your needs",
+    "pageTitle": "CODAKIS pricing",
+    "pageDescription": "Theory revision subscription for candidates and offers for partner driving schools.",
+    "pageEyebrow": "Transparent pricing",
+    "pageLead": "Two separate models: CODAKIS subscription for theory revision, and packages sold by approved driving schools.",
+    "candidateBadge": "Candidates",
+    "candidateTitle": "CODAKIS revision subscription",
+    "candidateLead": "Access all 10 CEMAC topics, courses, quizzes and mock exams after Mobile Money payment.",
+    "candidateFeature1": "Full theory courses and unlimited quizzes",
+    "candidateFeature2": "Timed mock exams",
+    "candidateFeature3": "Orange Money / MTN MoMo payment",
+    "candidateCta": "Create my candidate account",
+    "schoolBadge": "Driving schools",
+    "schoolTitle": "Packages & school enrollment",
+    "schoolLead": "Candidates pay your package via CODAKIS. The platform takes a {{rate}}% commission; the rest is paid out to you.",
+    "schoolFeature1": "Visibility in the CEMAC geolocated directory",
+    "schoolFeature2": "{{rate}}% CODAKIS commission — balance goes to your school",
+    "schoolFeature3": "Secure Mobile Money payment and QR receipt",
+    "schoolCta": "Register my driving school",
+    "commissionNote": "When a candidate enrolls at your school, CODAKIS deducts {{rate}}% of the package amount; the balance is paid out to you automatically.",
+    "browseSchools": "Browse driving schools directory",
     "audienceCandidates": "Candidates",
     "audienceSchools": "Driving schools",
     "monthly": "Monthly",
@@ -178,7 +198,38 @@
     "certified": "CODAKIS approved",
     "available": "Slots available",
     "viewProfile": "View full profile",
-    "new": "New"
+    "new": "New",
+    "from": "From",
+    "registerSchool": "Register my driving school",
+    "viewList": "List view",
+    "viewGrid": "Grid view",
+    "ratingAria": "Rating {{rating}} out of 5",
+    "cardFeatureSuccess": "Indicative pass rate: {{rate}}%",
+    "cardFeaturePayment": "Mobile Money payment — CODAKIS commission included",
+    "sort": {
+      "label": "Sort results",
+      "name": "Name",
+      "newest": "Newest",
+      "priceAsc": "Price: low to high",
+      "priceDesc": "Price: high to low"
+    },
+    "filters": {
+      "title": "Filter & refine",
+      "clearAll": "Clear all",
+      "keyword": "Keyword",
+      "keywordPlaceholder": "Name, district, address…",
+      "country": "Country",
+      "allCountries": "All CEMAC countries",
+      "city": "City / location",
+      "allCities": "All cities",
+      "price": "Package price (FCFA)",
+      "priceMin": "Min",
+      "priceMax": "Max",
+      "apply": "Apply filters",
+      "registerTitle": "Are you a driving school?",
+      "registerLead": "Join the CODAKIS directory, sell your packages and receive payouts after platform commission.",
+      "registerCta": "Register my school"
+    }
   },
   "schoolDetail": {
     "breadcrumbHome": "Home",
@@ -266,7 +317,9 @@
       "ussdTitle": "Confirm on your phone",
       "success": "Payment confirmed — your plan is active.",
       "error": "Payment could not be confirmed. Try again or check your balance.",
-      "secure": "Secure CODAKIS payment — QR receipt after confirmation"
+      "secure": "Secure CODAKIS payment — QR receipt after confirmation",
+      "schoolReceives": "School payout",
+      "commissionNote": "CODAKIS deducts a {{rate}}% commission on this payment"
     },
     "viewContent": "View package details",
     "detail": {
@@ -521,6 +574,8 @@
     ]
   },
   "dashboard": {
+    "sidebarCollapse": "Collapse menu",
+    "sidebarExpand": "Expand menu",
     "nav": {
       "aria": "Workspace navigation",
       "home": "Dashboard",
@@ -574,6 +629,8 @@
       "pack": "Package",
       "enrolledSince": "Enrolled since {{date}}",
       "subscriptionSection": "CODAKIS subscription",
+      "subscriptionCheckoutTitle": "Pay for CODAKIS access",
+      "subscriptionPlan": "{{plan}} plan",
       "premiumActive": "Premium active — all topics and unlimited mock exams.",
       "premiumHint": "Upgrade to Premium to unlock all 10 CEMAC topics and unlimited mock exams.",
       "consortSummary": "Complete your licence administrative file.",
@@ -804,10 +861,13 @@
     "consort": {
       "pageTitle": "My Consort file",
       "pageLead": "Track and complete the 6 mandatory administrative documents for your driving licence.",
+      "piecesNav": "File documents",
       "tableTitle": "Consort document tracker",
       "colPiece": "Document",
       "colDate": "Date",
       "progressLabel": "File progress",
+      "validatedShort": "Validated",
+      "pendingShort": "Pending",
       "progressHint": "A complete file speeds up your prefecture registration.",
       "progressHintDynamic": "{{validated}} validated, {{pending}} in review and {{missing}} missing out of 6.",
       "footerText": "Need help? Your partner driving school can validate each document with you.",
@@ -1050,6 +1110,7 @@
       "filterAllStatus": "All statuses",
       "filterAllPurpose": "All types",
       "refresh": "Refresh",
+      "schoolPayout": "School payout",
       "stats": {
         "volume": "Collected volume",
         "completed": "Confirmed payments",
@@ -1071,6 +1132,7 @@
         "context": "Subject",
         "school": "Driving school",
         "amount": "Amount",
+        "commission": "CODAKIS commission",
         "channel": "Channel",
         "status": "Status",
         "date": "Date"
@@ -1150,8 +1212,10 @@
       "edit": "Edit",
       "delete": "Delete",
       "tabs": {
+        "themes": "Themes",
         "lecons": "Lessons",
         "questions": "Questions",
+        "parcours": "Course path",
         "quiz": "Quizzes",
         "examens": "Mock exams"
       },
@@ -1198,7 +1262,21 @@
       "deleteLeconTitle": "Delete this lesson?",
       "deleteLeconConfirm": "This action cannot be undone.",
       "deleteQuestionTitle": "Delete this question?",
-      "deleteQuestionConfirm": "The question will be removed from quizzes and exams that use it."
+      "deleteQuestionConfirm": "The question will be removed from quizzes and exams that use it.",
+      "coursePathTitle": "Module path (lessons + quizzes)",
+      "coursePathTheme": "Module",
+      "coursePathHint": "Order shown to candidates — the quiz only appears when they open that section.",
+      "coursePathEmpty": "No sections in this module yet. Add a lesson or quiz.",
+      "addLeconSection": "Add lesson",
+      "addQuizSection": "Add quiz to path",
+      "stepLecon": "Lesson",
+      "stepQuiz": "Quiz",
+      "inCourse": "In course",
+      "inCourseSection": "Course path section",
+      "quizActive": "Quiz active",
+      "courseStepOrderHint": "Position in the path (lower = earlier).",
+      "yes": "Yes",
+      "no": "No"
     }
   },
   "gerant": {
@@ -1330,6 +1408,33 @@
       "placesLeft": "slot(s) left"
     }
   },
+  "coursePlayer": {
+    "courseTitle": "CEMAC theory revision",
+    "exitModule": "Exit module",
+    "openNav": "Open navigation",
+    "closeNav": "Close navigation",
+    "moduleNav": "Course navigation",
+    "percentDone": "{{percent}}% complete",
+    "themeQuiz": "Topic quiz",
+    "next": "Next",
+    "finish": "Finish course",
+    "advancing": "Saving…",
+    "pdfTitle": "PDF documents",
+    "quizLabel": "Question 01/01",
+    "quizValidate": "Validate",
+    "quizValidating": "Checking…",
+    "quizCorrect": "Correct!",
+    "quizWrong": "Incorrect answer.",
+    "quizRequired": "Validate the question above to continue.",
+    "stepPosition": "Step {{current}} / {{total}}",
+    "listen": "Listen",
+    "listenPause": "Pause",
+    "listenLoading": "Generating audio…",
+    "listenUnavailable": "Audio playback is unavailable right now.",
+    "quizAlreadyPassed": "Quiz passed — you can continue the course.",
+    "quizRetry": "Retry quiz",
+    "speechAnswer": "Answer {{label}}: {{text}}"
+  },
   "candidat": {
     "seances": {
       "title": "My driving sessions",
@@ -1357,6 +1462,13 @@
       "curriculum": "Training programme",
       "allThemes": "Course themes",
       "openThemeHint": "Open a theme to browse its lessons.",
+      "openModuleHint": "Pick a module to access its lessons.",
+      "openModule": "Open module",
+      "startModule": "Start module",
+      "moduleLead": "Work through this module's lessons one by one.",
+      "themeNotFound": "Module not found.",
+      "backCourses": "Back to courses",
+      "noQuizForModule": "No quiz available for this module.",
       "themeLabel": "Theme {{number}}",
       "lessonCount_one": "{{count}} lesson",
       "lessonCount_other": "{{count}} lessons",
@@ -1388,7 +1500,9 @@
       "autoSubmitting": "Time's up — submitting your answers automatically…",
       "results": "Results",
       "passed": "Passed",
-      "failed": "Failed"
+      "failed": "Failed",
+      "platformPaywallTitle": "CODAKIS subscription required",
+      "platformPaywallLead": "Pay for platform access (courses, quizzes and mock exams) via Orange Money or MTN MoMo. Driving school enrollment is a separate payment with CODAKIS commission included."
     }
   },
   "moniteur": {

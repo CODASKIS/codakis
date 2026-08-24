@@ -32,7 +32,7 @@ export default function Navigation() {
   navClass = [...navClass, 'pc-sidebar'];
   if (windowSize.width <= 1024 && collapseMenu) {
     navClass = [...navClass, 'mob-sidebar-active'];
-  } else if (collapseMenu) {
+  } else if (collapseMenu || collapseLayout) {
     navClass = [...navClass, 'navbar-collapsed'];
   }
 

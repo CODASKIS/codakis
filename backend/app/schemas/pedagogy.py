@@ -161,6 +161,8 @@ class QuizAdmin(BaseModel):
     question_count: int
     duree_minutes: int
     est_actif: bool
+    sort_order: int
+    in_course_path: bool
     linked_count: int = 0
     question_ids: list[UUID] = Field(default_factory=list)
     created_at: datetime
@@ -174,6 +176,8 @@ class QuizCreateRequest(BaseModel):
     question_count: int = Field(default=10, ge=1, le=40)
     duree_minutes: int = Field(default=10, ge=1, le=120)
     est_actif: bool = True
+    sort_order: int = Field(default=100, ge=0)
+    in_course_path: bool = True
     question_ids: list[UUID] = Field(default_factory=list)
 
 
@@ -184,6 +188,8 @@ class QuizUpdateRequest(BaseModel):
     question_count: int | None = Field(default=None, ge=1, le=40)
     duree_minutes: int | None = Field(default=None, ge=1, le=120)
     est_actif: bool | None = None
+    sort_order: int | None = Field(default=None, ge=0)
+    in_course_path: bool | None = None
     question_ids: list[UUID] | None = None
 
 
@@ -271,7 +277,7 @@ class SubmitQuizRequest(BaseModel):
 class SubmitResultDetail(BaseModel):
     question_id: UUID
     reponse_id: UUID | None
-    correct_reponse_id: UUID
+    correct_reponse_id: UUID | None
     est_correcte: bool
     explanation: str | None = None
 
@@ -290,3 +296,44 @@ class SubmitExamenResult(BaseModel):
     nb_total: int
     reussi: bool
     details: list[SubmitResultDetail]
+
+
+class CandidatProgressResponse(BaseModel):
+    completed_lecon_ids: list[str]
+    passed_quiz_ids: list[str]
+    passed_examen_ids: list[str]
+    total_lecons: int
+    completed_count: int
+    percent: int
+
+
+class CoursePathStep(BaseModel):
+    type: str
+    id: str
+    ref: str
+    title: str
+    sort_order: int
+    status: str | None = None
+
+
+class CoursePathResponse(BaseModel):
+    theme_id: str
+    steps: list[CoursePathStep]
+    completed_lecon_ids: list[str] = Field(default_factory=list)
+    passed_quiz_ids: list[str] = Field(default_factory=list)
+
+
+class TtsRequest(BaseModel):
+    text: str
+    language: str | None = None
+
+
+class CheckpointValidateRequest(BaseModel):
+    question_id: UUID
+    reponse_id: UUID
+
+
+class CheckpointValidateResponse(BaseModel):
+    est_correcte: bool
+    correct_reponse_id: str | None = None
+    explanation: str | None = None

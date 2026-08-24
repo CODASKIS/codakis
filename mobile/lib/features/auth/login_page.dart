@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../core/app_theme.dart';
 import '../../core/api_client.dart';
+import '../../widgets/codakis_logo.dart';
+import '../../widgets/codakis_primary_button.dart';
 import 'auth_service.dart';
 import '../home/home_page.dart';
 
@@ -54,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -65,17 +69,16 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const Center(child: CodakisLogo(height: 56)),
+                    const SizedBox(height: 12),
                     Text(
-                      'CODAKIS',
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: const Color(0xFF0B6E4F),
-                          ),
+                      'Application candidat',
+                      style: Theme.of(context).textTheme.titleMedium,
                       textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
-                      'Application candidat — code de la route',
+                      'Code de la route · Cameroun / CEMAC',
                       style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
@@ -85,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                       keyboardType: TextInputType.emailAddress,
                       decoration: const InputDecoration(
                         labelText: 'E-mail',
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.mail_outline, size: 20),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
@@ -100,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                       obscureText: true,
                       decoration: const InputDecoration(
                         labelText: 'Mot de passe',
-                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock_outline, size: 20),
                       ),
                       validator: (value) {
                         if (value == null || value.length < 8) {
@@ -111,15 +114,29 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 16),
-                      Text(_error!, style: const TextStyle(color: Colors.red)),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: CodakisColors.accentRed.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(CodakisRadii.field),
+                          border: Border.all(
+                            color: CodakisColors.accentRed.withValues(alpha: 0.25),
+                          ),
+                        ),
+                        child: Text(
+                          _error!,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: CodakisColors.accentRed,
+                              ),
+                        ),
+                      ),
                     ],
                     const SizedBox(height: 24),
-                    FilledButton(
+                    CodakisPrimaryButton(
+                      label: _loading ? 'Connexion…' : 'Se connecter',
+                      loading: _loading,
+                      expand: true,
                       onPressed: _loading ? null : _submit,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(_loading ? 'Connexion…' : 'Se connecter'),
-                      ),
                     ),
                   ],
                 ),

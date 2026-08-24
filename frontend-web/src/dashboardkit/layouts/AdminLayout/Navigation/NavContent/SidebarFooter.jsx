@@ -18,32 +18,44 @@ export function SidebarAccountFoot() {
   const showOffer = canUpgradeToPremium();
   const showPlan = session.role === 'candidat';
   const avatarSrc = getUserAvatarUrl(session.name, 32, session.avatarUrl);
+  const planLabel = isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree');
 
   return (
     <div className="codakis-sidebar-account">
-      <Link to={profilePath} className="codakis-sidebar-account__profile">
+      <Link
+        to={profilePath}
+        className="codakis-sidebar-account__profile"
+        title={session.name}
+        aria-label={session.name}
+      >
         <span className="codakis-sidebar-account__avatar" aria-hidden>
           <img src={avatarSrc} alt="" width={32} height={32} />
         </span>
         <span className="codakis-sidebar-account__meta">
           <strong className="codakis-sidebar-account__name">{session.name}</strong>
           {showPlan ? (
-            <span className="codakis-sidebar-account__plan">
-              {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
-            </span>
+            <span className="codakis-sidebar-account__plan">{planLabel}</span>
           ) : null}
         </span>
       </Link>
 
       {showOffer ? (
-        <Link to={UPGRADE_HREF} className="codakis-sidebar-account__offer">
+        <Link
+          to={UPGRADE_HREF}
+          className="codakis-sidebar-account__offer"
+          title={t('dashboard.userMenu.claimOffer')}
+        >
           <FeatherIcon icon="gift" size={16} />
           <span>{t('dashboard.userMenu.claimOffer')}</span>
         </Link>
       ) : null}
 
       {!showOffer && isPremium && session.role === 'candidat' ? (
-        <Link to={UPGRADE_HREF} className="codakis-sidebar-account__offer codakis-sidebar-account__offer--muted">
+        <Link
+          to={UPGRADE_HREF}
+          className="codakis-sidebar-account__offer codakis-sidebar-account__offer--muted"
+          title={t('dashboard.userMenu.managePlan')}
+        >
           <FeatherIcon icon="star" size={16} />
           <span>{t('dashboard.userMenu.managePlan')}</span>
         </Link>

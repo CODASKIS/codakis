@@ -174,6 +174,7 @@ export default function AdminPaymentsPage() {
                   <th>{t("admin.payments.columns.payer")}</th>
                   <th>{t("admin.payments.columns.context")}</th>
                   <th>{t("admin.payments.columns.amount")}</th>
+                  <th>{t("admin.payments.columns.commission")}</th>
                   <th>{t("admin.payments.columns.channel")}</th>
                   <th>{t("admin.payments.columns.status")}</th>
                   <th>{t("admin.payments.columns.date")}</th>
@@ -182,7 +183,7 @@ export default function AdminPaymentsPage() {
               <tbody>
                 {pagination.paginatedItems.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-muted text-center py-4">
+                    <td colSpan={8} className="text-muted text-center py-4">
                       {t("admin.payments.empty")}
                     </td>
                   </tr>
@@ -205,7 +206,26 @@ export default function AdminPaymentsPage() {
                           {t(`admin.payments.purpose.${item.purpose}`, { defaultValue: item.purpose })}
                         </Badge>
                       </td>
-                      <td>{formatFcfa(item.amount_fcfa, locale)} FCFA</td>
+                      <td>
+                        <div>{formatFcfa(item.amount_fcfa, locale)} FCFA</div>
+                        {item.school_payout_fcfa != null ? (
+                          <div className="small text-muted">
+                            {t("admin.payments.schoolPayout")} : {formatFcfa(item.school_payout_fcfa, locale)}
+                          </div>
+                        ) : null}
+                      </td>
+                      <td>
+                        {item.commission_fcfa != null ? (
+                          <>
+                            {formatFcfa(item.commission_fcfa, locale)} FCFA
+                            {item.commission_rate_pct != null ? (
+                              <div className="small text-muted">{item.commission_rate_pct} %</div>
+                            ) : null}
+                          </>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
                       <td>{item.channel}</td>
                       <td>
                         <Badge bg={STATUS_BADGE[item.status] ?? "secondary"}>

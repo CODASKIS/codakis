@@ -24,6 +24,7 @@ from app.db.models import (
     QuizQuestion,
     Reponse,
     RoleUtilisateur,
+    SeancePratique,
     StatutArticleBlog,
     Theme,
     Utilisateur,
@@ -60,7 +61,7 @@ DEMO_SCHOOLS: list[dict] = [
         ),
         "access_info": "Face à la station Total Bonamoussadi, 2e entrée à gauche.",
         "site_web": "https://volantvert.demo.codakis.cm",
-        "logo_url": "https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=200&q=80",
+        "logo_url": "/images/schools/volant-vert.svg",
     },
     {
         "gerant_email": "gerant2@demo.codakis.cm",
@@ -81,7 +82,7 @@ DEMO_SCHOOLS: list[dict] = [
         ),
         "access_info": "Derrière le rond-point Bastos, immeuble bleu RDC.",
         "site_web": "https://routepro.demo.codakis.cm",
-        "logo_url": "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=200&q=80",
+        "logo_url": "/images/schools/route-pro.svg",
     },
     {
         "gerant_email": "gerant3@demo.codakis.cm",
@@ -102,7 +103,7 @@ DEMO_SCHOOLS: list[dict] = [
         ),
         "access_info": "En face du supermarché Akwa, étage 1.",
         "site_web": None,
-        "logo_url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=200&q=80",
+        "logo_url": "/images/schools/permis-plus.svg",
     },
 ]
 
@@ -131,8 +132,20 @@ DEMO_MONITEURS: list[dict] = [
 ]
 
 DEMO_CANDIDATS: list[dict] = [
-    {"email": "candidat@demo.codakis.cm", "prenom": "Luc", "nom": "Ngono", "premium": False},
-    {"email": "premium@demo.codakis.cm", "prenom": "Sarah", "nom": "Manga", "premium": True},
+    {
+        "email": "candidat@demo.codakis.cm",
+        "prenom": "Luc",
+        "nom": "Ngono",
+        "subscription_plan": "pro",
+        "school_enrollment": False,
+    },
+    {
+        "email": "premium@demo.codakis.cm",
+        "prenom": "Sarah",
+        "nom": "Manga",
+        "subscription_plan": "premium",
+        "school_enrollment": True,
+    },
 ]
 
 DEMO_QUESTIONS: list[dict] = [
@@ -256,6 +269,7 @@ def _seed_demo_schools(db: Session, admin: Utilisateur) -> dict[str, AutoEcole]:
     for item in DEMO_SCHOOLS:
         existing = db.query(AutoEcole).filter(AutoEcole.numero_agrement == item["numero_agrement"]).first()
         if existing:
+            existing.logo_url = item["logo_url"]
             schools[item["numero_agrement"]] = existing
             continue
         ville = get_or_create_ville(db, "CM", item["city"])
@@ -323,6 +337,48 @@ def _seed_demo_moniteurs(db: Session, schools: dict[str, AutoEcole]) -> None:
     db.commit()
 
 
+def _ensure_demo_subscription(db: Session, user: Utilisateur, plan_id: str) -> None:
+    existing = (
+        db.query(Paiement)
+        .filter(
+            Paiement.utilisateur_id == user.id,
+            Paiement.purpose == "subscription",
+            Paiement.status == "completed",
+        )
+        .first()
+    )
+    amount = 15000 if plan_id == "premium" else 5000
+    if existing:
+        existing.plan_id = plan_id
+        existing.amount_fcfa = amount
+        existing.status = "completed"
+        existing.completed_at = existing.completed_at or datetime.now(UTC)
+        existing.message = f"Abonnement {plan_id} de démonstration (accès plateforme CODAKIS)"
+        return
+    db.add(
+        Paiement(
+            reference=f"DEMO-SUB-{user.id.hex[:8]}",
+            utilisateur_id=user.id,
+            purpose="subscription",
+            plan_id=plan_id,
+            amount_fcfa=amount,
+            channel="demo",
+            phone="+237600000000",
+            status="completed",
+            completed_at=datetime.now(UTC),
+            message=f"Abonnement {plan_id} de démonstration (accès plateforme CODAKIS)",
+        )
+    )
+
+
+def _clear_candidat_enrollments(db: Session, candidat: Utilisateur) -> None:
+    inscriptions = db.query(Inscription).filter(Inscription.candidat_id == candidat.id).all()
+    for inscription in inscriptions:
+        db.query(SeancePratique).filter(SeancePratique.inscription_id == inscription.id).delete()
+        db.delete(inscription)
+    db.flush()
+
+
 def _seed_demo_candidats(db: Session) -> None:
     for item in DEMO_CANDIDATS:
         user = _get_or_create_user(
@@ -332,33 +388,9 @@ def _seed_demo_candidats(db: Session) -> None:
             nom=item["nom"],
             role=RoleUtilisateur.candidat,
         )
-        if not item["premium"]:
-            continue
-        existing = (
-            db.query(Paiement)
-            .filter(
-                Paiement.utilisateur_id == user.id,
-                Paiement.purpose == "subscription",
-                Paiement.status == "completed",
-            )
-            .first()
-        )
-        if existing:
-            continue
-        db.add(
-            Paiement(
-                reference=f"DEMO-PREMIUM-{user.id.hex[:8]}",
-                utilisateur_id=user.id,
-                purpose="subscription",
-                plan_id="premium",
-                amount_fcfa=15000,
-                channel="demo",
-                phone="+237600000000",
-                status="completed",
-                completed_at=datetime.now(UTC),
-                message="Abonnement premium de démonstration",
-            )
-        )
+        _ensure_demo_subscription(db, user, item["subscription_plan"])
+        if not item["school_enrollment"]:
+            _clear_candidat_enrollments(db, user)
     db.commit()
 
 
@@ -394,15 +426,20 @@ def _seed_demo_questions(db: Session) -> list[Question]:
     return created
 
 
+DEMO_QUIZ_THEME_CODES = ("signalisation", "priorites", "vitesse")
+
+
 def _seed_demo_quizzes_and_exams(db: Session, questions: list[Question]) -> None:
-    if db.query(Quiz).count() > 0:
-        return
-    theme_codes = ("signalisation", "priorites", "vitesse")
-    for code in theme_codes:
-        theme = db.query(Theme).filter(Theme.code == code).first()
-        if theme is None:
+    themes = db.query(Theme).filter(Theme.est_actif.is_(True)).order_by(Theme.sort_order.asc()).all()
+    for theme in themes:
+        if theme.code not in DEMO_QUIZ_THEME_CODES:
+            continue
+        existing = db.query(Quiz).filter(Quiz.theme_id == theme.id).first()
+        if existing is not None:
             continue
         theme_questions = [q for q in questions if q.theme_id == theme.id][:3]
+        if not theme_questions:
+            theme_questions = questions[:3]
         if not theme_questions:
             continue
         quiz = Quiz(
@@ -412,11 +449,17 @@ def _seed_demo_quizzes_and_exams(db: Session, questions: list[Question]) -> None
             question_count=len(theme_questions),
             duree_minutes=max(5, len(theme_questions) * 2),
             est_actif=True,
+            sort_order=100,
+            in_course_path=True,
         )
         db.add(quiz)
         db.flush()
         for index, question in enumerate(theme_questions):
             db.add(QuizQuestion(quiz_id=quiz.id, question_id=question.id, sort_order=index))
+
+    if db.query(Examen).count() > 0:
+        db.commit()
+        return
 
     exam = Examen(
         title="Examen blanc CEMAC — démo",
@@ -430,6 +473,71 @@ def _seed_demo_quizzes_and_exams(db: Session, questions: list[Question]) -> None
     db.flush()
     for index, question in enumerate(questions[:6]):
         db.add(ExamenQuestion(examen_id=exam.id, question_id=question.id, sort_order=index))
+    db.commit()
+
+
+def _expand_demo_lessons(db: Session) -> None:
+    """Ajoute des leçons segmentées et documents PDF si un thème n'en a qu'une."""
+    demo_pdf = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
+    now = datetime.now(UTC)
+    themes = db.query(Theme).filter(Theme.est_actif.is_(True)).order_by(Theme.sort_order.asc()).all()
+    extra_parts = (
+        ("approfondissement", "Approfondissement", "Cas pratiques et situations d'examen."),
+        ("synthese", "Synthèse", "Récapitulatif et fiche mémo."),
+    )
+    for theme in themes:
+        lecon_count = (
+            db.query(Lecon)
+            .filter(Lecon.theme_id == theme.id, Lecon.status == StatutArticleBlog.published.value)
+            .count()
+        )
+        if lecon_count >= 3:
+            continue
+        for index, (suffix, part_title, part_excerpt) in enumerate(extra_parts, start=2):
+            slug = f"{theme.code}-{suffix}"
+            if db.query(Lecon).filter(Lecon.slug == slug).first() is not None:
+                continue
+            body = (
+                f"<p>Leçon <strong>{part_title}</strong> — thème {theme.title_fr}.</p>"
+                "<h2>Contenu</h2>"
+                f"<p>{part_excerpt} Relisez puis validez la question de contrôle.</p>"
+            )
+            if suffix == "synthese":
+                body += (
+                    "<h2>Document</h2>"
+                    f'<p><a href="{demo_pdf}" target="_blank" rel="noopener">'
+                    f"Fiche PDF — {theme.title_fr}</a></p>"
+                )
+            db.add(
+                Lecon(
+                    theme_id=theme.id,
+                    slug=slug,
+                    title=f"{part_title} — {theme.title_fr}",
+                    excerpt=part_excerpt,
+                    body=body,
+                    sort_order=index,
+                    status=StatutArticleBlog.published.value,
+                    published_at=now,
+                )
+            )
+    db.commit()
+
+
+def _ensure_theme_quizzes(db: Session) -> None:
+    questions = db.query(Question).filter(Question.est_actif.is_(True)).all()
+    if not questions:
+        return
+    _seed_demo_quizzes_and_exams(db, questions)
+    _normalize_demo_quiz_course_flags(db)
+
+
+def _normalize_demo_quiz_course_flags(db: Session) -> None:
+    """Retire du parcours cours les quiz des modules sans quiz intégré."""
+    for theme in db.query(Theme).filter(Theme.est_actif.is_(True)).all():
+        if theme.code in DEMO_QUIZ_THEME_CODES:
+            continue
+        for quiz in db.query(Quiz).filter(Quiz.theme_id == theme.id).all():
+            quiz.in_course_path = False
     db.commit()
 
 
@@ -464,10 +572,14 @@ def _enrich_demo_lessons(db: Session) -> None:
 
 
 def _seed_demo_enrollment(db: Session, schools: dict[str, AutoEcole]) -> None:
-    """Inscrit le candidat démo à Volant Vert pour tester le dashboard."""
-    candidat = db.query(Utilisateur).filter(Utilisateur.email == "candidat@demo.codakis.cm").first()
+    """Inscrit le candidat premium démo à Volant Vert (forfait auto-école séparé de l'abonnement plateforme)."""
+    candidat = db.query(Utilisateur).filter(Utilisateur.email == "premium@demo.codakis.cm").first()
+    free_candidat = db.query(Utilisateur).filter(Utilisateur.email == "candidat@demo.codakis.cm").first()
     school = schools.get("DEMO-CM-001")
+    if free_candidat:
+        _clear_candidat_enrollments(db, free_candidat)
     if not candidat or not school:
+        db.commit()
         return
     existing = (
         db.query(Inscription)
@@ -475,6 +587,7 @@ def _seed_demo_enrollment(db: Session, schools: dict[str, AutoEcole]) -> None:
         .first()
     )
     if existing:
+        db.commit()
         return
     forfait = (
         db.query(Forfait)
@@ -483,6 +596,7 @@ def _seed_demo_enrollment(db: Session, schools: dict[str, AutoEcole]) -> None:
         .first()
     )
     if not forfait:
+        db.commit()
         return
     create_inscription(
         db,
@@ -491,7 +605,7 @@ def _seed_demo_enrollment(db: Session, schools: dict[str, AutoEcole]) -> None:
         forfait=forfait,
         forfait_type=forfait.type,
         forfait_label=forfait.label_fr,
-        payment_ref="DEMO-ENROLL-001",
+        payment_ref="DEMO-ENROLL-PREMIUM-001",
     )
 
 
@@ -501,11 +615,14 @@ def seed_demo_data(db: Session, admin: Utilisateur | None) -> None:
         questions = db.query(Question).limit(20).all()
         if questions and db.query(Quiz).count() == 0:
             _seed_demo_quizzes_and_exams(db, questions)
+        _ensure_theme_quizzes(db)
+        _expand_demo_lessons(db)
         _enrich_demo_lessons(db)
         demo_schools = {
             s.numero_agrement: s
             for s in db.query(AutoEcole).filter(AutoEcole.numero_agrement.like("DEMO%")).all()
         }
+        _seed_demo_candidats(db)
         _seed_demo_enrollment(db, demo_schools)
         return
 
@@ -520,6 +637,7 @@ def seed_demo_data(db: Session, admin: Utilisateur | None) -> None:
     _seed_demo_candidats(db)
     questions = _seed_demo_questions(db)
     _seed_demo_quizzes_and_exams(db, questions)
+    _expand_demo_lessons(db)
     _enrich_demo_lessons(db)
     _seed_demo_enrollment(db, schools)
     logger.info(

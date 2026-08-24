@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Auto-École Permis Plus">
+  <rect width="128" height="128" rx="24" fill="#d97706"/>
+  <rect x="28" y="34" width="72" height="48" rx="10" fill="#fff"/>
+  <rect x="36" y="44" width="24" height="18" rx="4" fill="#fed7aa"/>
+  <rect x="68" y="44" width="24" height="6" rx="3" fill="#fdba74"/>
+  <rect x="68" y="56" width="18" height="6" rx="3" fill="#fdba74"/>
+  <circle cx="64" cy="94" r="12" fill="#fff"/>
+  <path d="M58 94l4 4 8-8" fill="none" stroke="#d97706" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="64" y="118" text-anchor="middle" fill="#ffedd5" font-family="Arial,sans-serif" font-size="11" font-weight="700">PERMIS PLUS</text>
+</svg>

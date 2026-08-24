@@ -29,6 +29,8 @@ export default function NavItem({ item }) {
   const windowSize = useWindowSize();
   const configContext = useContext(ConfigContext);
   const { dispatch } = configContext;
+  const { collapseLayout } = configContext.state;
+  const collapsedDesktop = collapseLayout && windowSize.width >= 992;
 
   let itemTitle = item.title;
   if (item.icon) {
@@ -65,7 +67,11 @@ export default function NavItem({ item }) {
     );
   } else {
     subContent = (
-      <NavLink to={item.url} className={navLinkClass.join(' ')}>
+      <NavLink
+        to={item.url}
+        className={navLinkClass.join(' ')}
+        aria-label={collapsedDesktop ? item.title : undefined}
+      >
         <NavIcon items={item} />
         {itemTitle}
       </NavLink>

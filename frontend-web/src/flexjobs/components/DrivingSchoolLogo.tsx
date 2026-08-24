@@ -1,4 +1,5 @@
-import { DEFAULT_DRIVING_SCHOOL_LOGO } from "../../constants/assets";
+import { useEffect, useState } from "react";
+import { DEFAULT_DRIVING_SCHOOL_LOGO, resolveSchoolLogoUrl } from "../../constants/assets";
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
 
 type DrivingSchoolLogoProps = {
@@ -14,13 +15,28 @@ const SIZE_CLASS = {
 } as const;
 
 export default function DrivingSchoolLogo({ school, size = "md", className }: DrivingSchoolLogoProps) {
+  const preferredSrc = resolveSchoolLogoUrl(school.logoUrl);
+  const [logoSrc, setLogoSrc] = useState(preferredSrc);
+
+  useEffect(() => {
+    setLogoSrc(preferredSrc);
+  }, [preferredSrc, school.id]);
   const sizeClass = SIZE_CLASS[size];
   const rootClass = ["fj-school-logo", sizeClass, className].filter(Boolean).join(" ");
-  const logoSrc = school.logoUrl ?? DEFAULT_DRIVING_SCHOOL_LOGO;
 
   return (
     <div className={rootClass}>
-      <img src={logoSrc} alt="" className="fj-school-logo__img" loading="lazy" />
+      <img
+        src={logoSrc}
+        alt=""
+        className="fj-school-logo__img"
+        loading="lazy"
+        onError={() => {
+          if (logoSrc !== DEFAULT_DRIVING_SCHOOL_LOGO) {
+            setLogoSrc(DEFAULT_DRIVING_SCHOOL_LOGO);
+          }
+        }}
+      />
     </div>
   );
 }

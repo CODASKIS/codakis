@@ -1,12 +1,19 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import Response
 from sqlalchemy.orm import Session, joinedload
 
 from app.core.deps import AdminUser, require_roles
 from app.db.models import Examen, Lecon, Question, Quiz, RoleUtilisateur, StatutArticleBlog, Theme, Utilisateur
 from app.db.session import get_db
 from app.schemas.pedagogy import (
+    CandidatProgressResponse,
+    CheckpointValidateRequest,
+    CheckpointValidateResponse,
+    CoursePathResponse,
+    QuestionPublic,
+    TtsRequest,
     ExamenAdmin,
     ExamenCreateRequest,
     ExamenPublic,
@@ -39,11 +46,18 @@ from app.services.pedagogy import (
     create_theme,
     delete_theme,
     examen_to_admin,
+    get_candidat_progress,
     get_examen_questions,
     get_quiz_questions,
+    get_theme_checkpoint,
+    get_theme_course_path,
+    get_theme_course_path_admin,
     has_premium_access,
+    has_platform_access,
+    ensure_platform_access,
     lecon_to_admin,
     lecon_to_public,
+    mark_lecon_complete,
     question_to_admin,
     question_to_public,
     quiz_to_admin,
@@ -55,7 +69,9 @@ from app.services.pedagogy import (
     update_question,
     update_quiz,
     update_theme,
+    validate_checkpoint_answer,
 )
+from app.services.tts import TtsError, synthesize_speech
 
 admin_router = APIRouter(prefix="/admin/pedagogy", tags=["admin-pedagogy"])
 candidat_router = APIRouter(prefix="/candidat/pedagogy", tags=["candidat-pedagogy"])
@@ -101,6 +117,14 @@ def admin_delete_theme(theme_id: uuid.UUID, _: AdminUser, db: Session = Depends(
         delete_theme(db, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@admin_router.get("/themes/{theme_id}/path", response_model=CoursePathResponse)
+def admin_theme_course_path(theme_id: uuid.UUID, _: AdminUser, db: Session = Depends(get_db)):
+    theme = db.get(Theme, theme_id)
+    if theme is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
+    return get_theme_course_path_admin(db, theme_id)
 
 
 # --- Admin leçons ---
@@ -302,14 +326,107 @@ def admin_delete_examen(examen_id: uuid.UUID, _: AdminUser, db: Session = Depend
 # --- Candidat ---
 
 
+@candidat_router.get("/progress", response_model=CandidatProgressResponse)
+def candidat_get_progress(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    return get_candidat_progress(db, candidat)
+
+
+@candidat_router.post("/lecons/{lecon_id}/complete", response_model=CandidatProgressResponse)
+def candidat_complete_lecon(
+    lecon_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    lecon = db.get(Lecon, lecon_id)
+    if lecon is None or lecon.status != StatutArticleBlog.published.value:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leçon introuvable")
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    try:
+        return mark_lecon_complete(db, candidat, lecon)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@candidat_router.get("/themes/{theme_id}/path", response_model=CoursePathResponse)
+def candidat_theme_course_path(
+    theme_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    theme = db.get(Theme, theme_id)
+    if theme is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    return get_theme_course_path(db, theme_id, candidat)
+
+
+@candidat_router.get("/themes/{theme_id}/checkpoint", response_model=QuestionPublic | None)
+def candidat_theme_checkpoint(
+    theme_id: uuid.UUID,
+    lecon_id: uuid.UUID | None = Query(default=None),
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    lecon = None
+    if lecon_id is not None:
+        lecon = db.get(Lecon, lecon_id)
+        if lecon is None or lecon.theme_id != theme_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leçon introuvable")
+    return get_theme_checkpoint(db, theme_id, lecon)
+
+
+@candidat_router.post("/tts")
+def candidat_text_to_speech(
+    payload: TtsRequest,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    try:
+        language = payload.language or candidat.langue or "fr"
+        audio = synthesize_speech(payload.text, language)
+    except TtsError as exc:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
+    return Response(content=audio, media_type="audio/mpeg")
+
+
+@candidat_router.post("/checkpoint/validate", response_model=CheckpointValidateResponse)
+def candidat_validate_checkpoint(
+    payload: CheckpointValidateRequest,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    try:
+        return validate_checkpoint_answer(db, payload.question_id, payload.reponse_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
 @candidat_router.get("/themes", response_model=list[ThemePublic])
 def candidat_list_themes(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     themes = db.query(Theme).filter(Theme.est_actif.is_(True)).order_by(Theme.sort_order.asc()).all()
-    premium = has_premium_access(db, candidat)
+    platform = has_platform_access(db, candidat)
     result = []
     for theme in themes:
         payload = theme_to_public(db, theme)
-        payload["locked"] = theme.is_premium and not premium
+        payload["locked"] = not platform
         result.append(payload)
     return result
 
@@ -329,7 +446,7 @@ def candidat_list_lecons(
         .order_by(Lecon.sort_order.asc())
         .all()
     )
-    locked = theme.is_premium and not has_premium_access(db, candidat)
+    locked = not has_platform_access(db, candidat)
     result = []
     for lecon in lecons:
         payload = lecon_to_public(lecon, theme)
@@ -353,16 +470,20 @@ def candidat_get_lecon(
     theme = db.get(Theme, lecon.theme_id)
     if theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
-    if theme.is_premium and not has_premium_access(db, candidat):
+    if not has_platform_access(db, candidat):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Cette leçon fait partie d'un thème Premium",
+            detail="Abonnement CODAKIS requis pour accéder aux cours",
         )
     return lecon_to_public(lecon, theme)
 
 
 @candidat_router.get("/quiz", response_model=list[QuizPublic])
-def candidat_list_quiz(_: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_list_quiz(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     quiz_list = db.query(Quiz).filter(Quiz.est_actif.is_(True)).order_by(Quiz.title.asc()).all()
     result = []
     for quiz in quiz_list:
@@ -384,7 +505,15 @@ def candidat_list_quiz(_: Utilisateur = Depends(CandidatUser), db: Session = Dep
 
 
 @candidat_router.get("/quiz/{quiz_id}", response_model=QuizTakePublic)
-def candidat_get_quiz(quiz_id: uuid.UUID, _: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_get_quiz(
+    quiz_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     quiz = db.get(Quiz, quiz_id)
     if quiz is None or not quiz.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz introuvable")
@@ -410,13 +539,21 @@ def candidat_submit_quiz(
     if quiz is None or not quiz.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz introuvable")
     try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    try:
         return submit_quiz(db, candidat, quiz, payload.answers)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
 @candidat_router.get("/examens", response_model=list[ExamenPublic])
-def candidat_list_examens(_: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_list_examens(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     examens = db.query(Examen).filter(Examen.est_actif.is_(True)).order_by(Examen.title.asc()).all()
     result = []
     for examen in examens:
@@ -436,7 +573,15 @@ def candidat_list_examens(_: Utilisateur = Depends(CandidatUser), db: Session = 
 
 
 @candidat_router.get("/examens/{examen_id}", response_model=ExamenTakePublic)
-def candidat_get_examen(examen_id: uuid.UUID, _: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_get_examen(
+    examen_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     examen = db.get(Examen, examen_id)
     if examen is None or not examen.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Examen introuvable")
@@ -460,6 +605,10 @@ def candidat_submit_examen(
     examen = db.get(Examen, examen_id)
     if examen is None or not examen.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Examen introuvable")
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     try:
         return submit_examen(db, candidat, examen, payload.answers, payload.duree_sec)
     except ValueError as exc:
