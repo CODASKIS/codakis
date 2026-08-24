@@ -509,6 +509,7 @@ def list_public_schools(db: Session, *, query: str | None = None, city: str | No
             db.query(Forfait.prix)
             .filter(Forfait.auto_ecole_id == school.id, Forfait.est_actif.is_(True))
             .order_by(Forfait.prix.asc())
+            .limit(1)
             .scalar()
         )
         results.append(

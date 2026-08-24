@@ -295,6 +295,7 @@ class Quiz(Base):
     title: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     question_count: Mapped[int] = mapped_column(nullable=False, default=10)
+    duree_minutes: Mapped[int] = mapped_column(nullable=False, default=10)
     est_actif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

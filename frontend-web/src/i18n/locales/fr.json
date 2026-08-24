@@ -700,7 +700,18 @@
       "notEnrolled": "Aucun forfait acheté",
       "noneTitle": "Aucune auto-école rattachée",
       "noneLead": "Votre auto-école est définie lors de l'achat d'un forfait sur la vitrine CODAKIS (Mobile Money). Parcourez les offres, choisissez un forfait — l'établissement partenaire est alors associé à votre compte avec reçu et QR code d'enrôlement.",
-      "browseForfaits": "Parcourir les forfaits",
+      "noneLeadDashboard": "Parcourez les auto-écoles agréées, comparez les forfaits et inscrivez-vous directement depuis votre espace candidat (paiement Mobile Money).",
+      "browseForfaits": "Parcourir les auto-écoles",
+      "schoolsTitle": "Choisir une auto-école",
+      "schoolsLead": "Comparez les établissements agréés CODAKIS et sélectionnez le forfait qui correspond à votre parcours.",
+      "searchSchool": "Rechercher une auto-école…",
+      "searchCity": "Ville ou quartier…",
+      "selectForfait": "Voir les forfaits",
+      "choosePackTitle": "Forfaits disponibles",
+      "choosePackLead": "Sélectionnez un forfait et payez par Mobile Money pour vous inscrire à cette auto-école.",
+      "backToMySchool": "Retour à mon auto-école",
+      "fromPrice": "À partir de {{price}}",
+      "drivingHoursRemaining": "{{remaining}} h restantes sur {{total}} h de conduite",
       "learnMore": "Comprendre le parcours",
       "statusNone": "Sans forfait",
       "statusConfirmed": "Paiement confirmé",
@@ -922,7 +933,8 @@
       "actionsTitle": "Actions rapides",
       "actionCourses": "Reprendre les cours",
       "actionExam": "Lancer un examen blanc",
-      "actionConsort": "Voir mon dossier Consort"
+      "actionConsort": "Voir mon dossier Consort",
+      "actionSeances": "Voir mes séances"
     },
     "moniteur": {
       "metaTitle": "Espace moniteur | CODAKIS",
@@ -1056,6 +1068,7 @@
       "columns": {
         "reference": "Référence",
         "payer": "Payeur",
+        "context": "Objet",
         "school": "Auto-école",
         "amount": "Montant",
         "channel": "Canal",
@@ -1377,6 +1390,8 @@
       "next": "Suivant",
       "submit": "Valider",
       "submitting": "Correction…",
+      "timeUp": "Temps écoulé",
+      "autoSubmitting": "Temps écoulé — envoi automatique de vos réponses…",
       "results": "Résultats",
       "passed": "Réussi",
       "failed": "Échoué"

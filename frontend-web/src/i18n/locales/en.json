@@ -700,7 +700,18 @@
       "notEnrolled": "No package purchased",
       "noneTitle": "No driving school linked yet",
       "noneLead": "Your driving school is assigned when you purchase a package on the CODAKIS catalogue (Mobile Money). Browse offers, pick a package — the partner school is then linked to your account with receipt and enrolment QR code.",
-      "browseForfaits": "Browse packages",
+      "noneLeadDashboard": "Browse approved driving schools, compare packages and enroll directly from your candidate dashboard (Mobile Money payment).",
+      "browseForfaits": "Browse driving schools",
+      "schoolsTitle": "Choose a driving school",
+      "schoolsLead": "Compare CODAKIS-approved schools and select the package that fits your journey.",
+      "searchSchool": "Search for a driving school…",
+      "searchCity": "City or district…",
+      "selectForfait": "View packages",
+      "choosePackTitle": "Available packages",
+      "choosePackLead": "Select a package and pay with Mobile Money to enroll at this driving school.",
+      "backToMySchool": "Back to my driving school",
+      "fromPrice": "From {{price}}",
+      "drivingHoursRemaining": "{{remaining}} h left out of {{total}} h driving",
       "learnMore": "Understand the journey",
       "statusNone": "No package",
       "statusConfirmed": "Payment confirmed",
@@ -922,7 +933,8 @@
       "actionsTitle": "Quick actions",
       "actionCourses": "Resume courses",
       "actionExam": "Start a mock exam",
-      "actionConsort": "View my Consort file"
+      "actionConsort": "View my Consort file",
+      "actionSeances": "View my sessions"
     },
     "moniteur": {
       "metaTitle": "Instructor workspace | CODAKIS",
@@ -1056,6 +1068,7 @@
       "columns": {
         "reference": "Reference",
         "payer": "Payer",
+        "context": "Subject",
         "school": "Driving school",
         "amount": "Amount",
         "channel": "Channel",
@@ -1371,6 +1384,8 @@
       "next": "Next",
       "submit": "Submit",
       "submitting": "Grading…",
+      "timeUp": "Time's up",
+      "autoSubmitting": "Time's up — submitting your answers automatically…",
       "results": "Results",
       "passed": "Passed",
       "failed": "Failed"

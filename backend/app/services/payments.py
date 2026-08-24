@@ -13,6 +13,14 @@ CHANNEL_LABELS = {
     "orange": "Orange Money",
     "mtn": "MTN MoMo",
     "moov": "Moov Money",
+    "demo": "Démo",
+}
+
+PLAN_LABELS = {
+    "essentiel": "Gratuit",
+    "pro": "Abonnement Pro",
+    "premium": "Abonnement Premium",
+    "entreprise": "Abonnement Entreprise",
 }
 
 USSD_HINTS = {
@@ -225,14 +233,35 @@ def list_user_invoices(db: Session, user: Utilisateur) -> list[dict]:
     ]
 
 
+def _payment_context_label(
+    row: Paiement,
+    *,
+    school: AutoEcole | None,
+    forfait: Forfait | None,
+) -> str:
+    if row.purpose == "enrollment":
+        if school and forfait:
+            return f"{school.raison_sociale} — {forfait.label_fr}"
+        if school:
+            return school.raison_sociale
+    if row.purpose == "subscription":
+        if row.plan_id:
+            return PLAN_LABELS.get(row.plan_id, f"Abonnement {row.plan_id}")
+    if row.message:
+        return row.message
+    return "—"
+
+
 def _payment_to_admin_item(db: Session, row: Paiement) -> dict:
     user = db.get(Utilisateur, row.utilisateur_id)
     school = db.get(AutoEcole, row.auto_ecole_id) if row.auto_ecole_id else None
+    forfait = db.get(Forfait, row.forfait_id) if row.forfait_id else None
     payer_name = f"{user.prenom} {user.nom}".strip() if user else None
     return {
         "reference": row.reference,
         "status": row.status,
         "purpose": row.purpose,
+        "plan_id": row.plan_id,
         "amount_fcfa": row.amount_fcfa,
         "channel": CHANNEL_LABELS.get(row.channel, row.channel),
         "phone": row.phone,
@@ -241,6 +270,8 @@ def _payment_to_admin_item(db: Session, row: Paiement) -> dict:
         "payer_name": payer_name or None,
         "payer_email": user.email if user else None,
         "school_name": school.raison_sociale if school else None,
+        "forfait_label": forfait.label_fr if forfait else None,
+        "context_label": _payment_context_label(row, school=school, forfait=forfait),
         "created_at": row.created_at,
         "completed_at": row.completed_at,
         "inscription_id": row.inscription_id,

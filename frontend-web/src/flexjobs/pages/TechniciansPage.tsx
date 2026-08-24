@@ -3,7 +3,6 @@ import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { resolveSearchQueryLabel, normalizeThemeCode } from "../../i18n/themeLabels";
-import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
 import {
   fetchPublicSchools,
   filterPublicSchools,
@@ -23,7 +22,8 @@ export default function TechniciansPage() {
   const { t } = useTranslation();
   const subNavItems = useSecondaryNavItems();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [schools, setSchools] = useState<DrivingSchool[]>(MOCK_DRIVING_SCHOOLS);
+  const [schools, setSchools] = useState<DrivingSchool[]>([]);
+  const [loadError, setLoadError] = useState("");
   const query = searchParams.get("q") ?? "";
   const city = searchParams.get("ville") ?? "";
   const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
@@ -31,25 +31,16 @@ export default function TechniciansPage() {
   useEffect(() => {
     void fetchPublicSchools()
       .then((items) => {
-        if (items.length > 0) {
-          setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)));
-        }
+        setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)));
+        setLoadError("");
       })
       .catch(() => {
-        setSchools(MOCK_DRIVING_SCHOOLS);
+        setSchools([]);
+        setLoadError(t("schools.error"));
       });
-  }, []);
+  }, [t]);
 
   const results = useMemo(() => {
-    if (schools === MOCK_DRIVING_SCHOOLS) {
-      const q = query.trim().toLowerCase();
-      const c = city.trim().toLowerCase();
-      return schools.filter((item) => {
-        if (c && !item.city.toLowerCase().includes(c)) return false;
-        if (!q) return true;
-        return `${item.name} ${item.city} ${item.address}`.toLowerCase().includes(q);
-      });
-    }
     const apiItems = schools.map((s) => ({
       id: s.id,
       name: s.name,
@@ -118,15 +109,17 @@ export default function TechniciansPage() {
         <h1 className="fj-page-title">{heading}</h1>
         <p className="fj-page-lead">{t("schools.lead")}</p>
 
-        {paginatedResults.length === 0 ? (
+        {loadError ? <p className="fj-tech-empty">{loadError}</p> : null}
+
+        {!loadError && paginatedResults.length === 0 ? (
           <p className="fj-tech-empty">{t("schools.empty")}</p>
-        ) : (
+        ) : !loadError ? (
           <div className="fj-job-list">
             {paginatedResults.map((school) => (
               <DrivingSchoolCard key={school.id} school={school} />
             ))}
           </div>
-        )}
+        ) : null}
 
         <Pagination page={currentPage} pageSize={PAGE_SIZE} total={results.length} onPageChange={handlePageChange} />
 

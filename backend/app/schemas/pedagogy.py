@@ -159,6 +159,7 @@ class QuizAdmin(BaseModel):
     title: str
     description: str | None = None
     question_count: int
+    duree_minutes: int
     est_actif: bool
     linked_count: int = 0
     question_ids: list[UUID] = Field(default_factory=list)
@@ -171,6 +172,7 @@ class QuizCreateRequest(BaseModel):
     title: str = Field(min_length=2)
     description: str | None = None
     question_count: int = Field(default=10, ge=1, le=40)
+    duree_minutes: int = Field(default=10, ge=1, le=120)
     est_actif: bool = True
     question_ids: list[UUID] = Field(default_factory=list)
 
@@ -180,6 +182,7 @@ class QuizUpdateRequest(BaseModel):
     title: str | None = Field(default=None, min_length=2)
     description: str | None = None
     question_count: int | None = Field(default=None, ge=1, le=40)
+    duree_minutes: int | None = Field(default=None, ge=1, le=120)
     est_actif: bool | None = None
     question_ids: list[UUID] | None = None
 
@@ -191,6 +194,7 @@ class QuizPublic(BaseModel):
     title: str
     description: str | None = None
     question_count: int
+    duree_minutes: int
     linked_count: int
 
 
@@ -242,6 +246,7 @@ class QuizTakePublic(BaseModel):
     id: UUID
     title: str
     theme_code: str
+    duree_minutes: int
     questions: list[QuestionPublic]
 
 

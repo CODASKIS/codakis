@@ -12,6 +12,7 @@ import {
   resetPassword,
   userToSession,
 } from "../lib/authApi";
+import { syncCandidateEnrollmentFromApi } from "./candidateEnrollment";
 
 export { resolveAuthRedirect } from "./purchaseIntent";
 
@@ -39,8 +40,12 @@ export function clearSession(): void {
 export async function hydrateSessionFromApi(): Promise<AuthSession | null> {
   try {
     const user = await fetchMe();
-    const session = userToSession(user);
+    let session = userToSession(user);
     setSession(session);
+    if (session.role === "candidat") {
+      await syncCandidateEnrollmentFromApi();
+      session = getSession() ?? session;
+    }
     return session;
   } catch {
     clearSession();
@@ -50,8 +55,12 @@ export async function hydrateSessionFromApi(): Promise<AuthSession | null> {
 
 export async function loginWithCredentials(email: string, password: string): Promise<AuthSession> {
   const { user } = await apiLogin(email, password);
-  const session = userToSession(user);
+  let session = userToSession(user);
   setSession(session);
+  if (session.role === "candidat") {
+    await syncCandidateEnrollmentFromApi();
+    session = getSession() ?? session;
+  }
   return session;
 }
 

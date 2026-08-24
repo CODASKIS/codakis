@@ -51,12 +51,13 @@ export default function CandidatExamsPage() {
         <Tab.Content>
           <Tab.Pane eventKey="quiz">
             <Table hover className="align-middle">
-              <thead><tr><th>{t("admin.pedagogy.colTitle")}</th><th>{t("admin.pedagogy.colTheme")}</th><th>{t("admin.pedagogy.colLinked")}</th><th /></tr></thead>
+              <thead><tr><th>{t("admin.pedagogy.colTitle")}</th><th>{t("admin.pedagogy.colTheme")}</th><th>{t("admin.pedagogy.colDuration")}</th><th>{t("admin.pedagogy.colLinked")}</th><th /></tr></thead>
               <tbody>
                 {quizList.map((quiz) => (
                   <tr key={quiz.id}>
                     <td>{quiz.title}</td>
                     <td>{quiz.theme_code}</td>
+                    <td>{quiz.duree_minutes} min</td>
                     <td>{quiz.linked_count}</td>
                     <td className="text-end">
                       {quiz.linked_count > 0 ? (

@@ -5,7 +5,6 @@ import Loader from "../../components/common/Loader";
 import BlogRecentCard from "./BlogRecentCard";
 import Container from "./Container";
 import { useBlogPosts } from "../hooks/useCmsData";
-import { MOCK_BLOG_POSTS } from "../../data/mockCmsContent";
 
 function sortPostsNewest<T extends { published_at?: string | null }>(posts: T[]): T[] {
   return [...posts].sort((a, b) => {
@@ -17,7 +16,7 @@ function sortPostsNewest<T extends { published_at?: string | null }>(posts: T[])
 
 export default function HomeRecentBlogSection() {
   const { t } = useTranslation();
-  const { data: posts, loading, error } = useBlogPosts(MOCK_BLOG_POSTS);
+  const { data: posts, loading, error } = useBlogPosts([]);
   const recentPosts = sortPostsNewest(posts).slice(0, 4);
 
   if (!loading && recentPosts.length === 0) {

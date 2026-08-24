@@ -80,6 +80,8 @@ export default function AdminPaymentsPage() {
         item.payer_name,
         item.payer_email,
         item.school_name,
+        item.context_label,
+        item.forfait_label,
         item.message,
         item.receipt_number,
         item.phone,
@@ -170,7 +172,7 @@ export default function AdminPaymentsPage() {
                 <tr>
                   <th>{t("admin.payments.columns.reference")}</th>
                   <th>{t("admin.payments.columns.payer")}</th>
-                  <th>{t("admin.payments.columns.school")}</th>
+                  <th>{t("admin.payments.columns.context")}</th>
                   <th>{t("admin.payments.columns.amount")}</th>
                   <th>{t("admin.payments.columns.channel")}</th>
                   <th>{t("admin.payments.columns.status")}</th>
@@ -197,7 +199,12 @@ export default function AdminPaymentsPage() {
                         <div>{item.payer_name ?? "—"}</div>
                         <div className="small text-muted">{item.payer_email ?? item.phone}</div>
                       </td>
-                      <td>{item.school_name ?? "—"}</td>
+                      <td>
+                        <div>{item.context_label}</div>
+                        <Badge bg="light" text="dark" className="mt-1">
+                          {t(`admin.payments.purpose.${item.purpose}`, { defaultValue: item.purpose })}
+                        </Badge>
+                      </td>
                       <td>{formatFcfa(item.amount_fcfa, locale)} FCFA</td>
                       <td>{item.channel}</td>
                       <td>

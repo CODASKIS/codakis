@@ -78,6 +78,7 @@ class AdminPaymentItem(BaseModel):
     reference: str
     status: str
     purpose: str
+    plan_id: str | None = None
     amount_fcfa: int
     channel: str
     phone: str
@@ -86,6 +87,8 @@ class AdminPaymentItem(BaseModel):
     payer_name: str | None = None
     payer_email: str | None = None
     school_name: str | None = None
+    forfait_label: str | None = None
+    context_label: str
     created_at: datetime
     completed_at: datetime | None = None
     inscription_id: UUID | None = None

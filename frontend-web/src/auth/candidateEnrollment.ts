@@ -1,31 +1,74 @@
-import type { SchoolForfaitType } from "../data/mockDrivingSchools";
-import { MOCK_DRIVING_SCHOOLS } from "../data/mockDrivingSchools";
-import type { AuthSession, CandidateEnrollment, EnrollmentStatus } from "./types";
+import type { CandidatInscription } from "../lib/enrollmentsApi";
+import { fetchCandidatInscriptions } from "../lib/enrollmentsApi";
+import { fetchPublicSchool } from "../lib/publicSchoolsApi";
+import type { CandidateEnrollment } from "./types";
 import { getSession, setSession } from "./authStore";
 
-type ForfaitLang = "fr" | "en";
+function mapInscriptionToEnrollment(item: CandidatInscription, schoolCity?: string): CandidateEnrollment {
+  const status =
+    item.statut === "confirmee" ? "confirmed" : item.statut === "en_attente" ? "pending" : "none";
+  return {
+    schoolId: item.auto_ecole_id,
+    schoolName: item.school_name,
+    schoolCity,
+    forfaitId: item.forfait_id ?? "",
+    forfaitLabel: item.forfait_label,
+    status,
+    enrolledAt: item.enrolled_at?.slice(0, 10),
+    paymentRef: item.payment_ref ?? undefined,
+  };
+}
 
-function findSchool(schoolId: string) {
-  return MOCK_DRIVING_SCHOOLS.find((s) => s.id === schoolId) ?? null;
+/** Charge l'inscription active depuis l'API et met à jour la session locale. */
+export async function syncCandidateEnrollmentFromApi(): Promise<CandidateEnrollment | null> {
+  const session = getSession();
+  if (!session || session.role !== "candidat") return null;
+
+  try {
+    const inscriptions = await fetchCandidatInscriptions();
+    const active =
+      inscriptions.find((item) => item.statut === "confirmee") ??
+      inscriptions.find((item) => item.statut === "en_attente");
+
+    if (!active) {
+      const next = { ...session, enrollment: undefined };
+      setSession(next);
+      return null;
+    }
+
+    let schoolCity: string | undefined;
+    try {
+      const school = await fetchPublicSchool(active.auto_ecole_id);
+      schoolCity = school.city || undefined;
+    } catch {
+      schoolCity = undefined;
+    }
+
+    const enrollment = mapInscriptionToEnrollment(active, schoolCity);
+    const next = { ...session, enrollment };
+    setSession(next);
+    return enrollment;
+  } catch {
+    return session.enrollment ?? null;
+  }
 }
 
 /**
- * CDC CU-03 — démarre un achat forfait (statut pending) avant confirmation Mobile Money.
+ * @deprecated Préférer syncCandidateEnrollmentFromApi — conservé pour le flux paiement immédiat.
  */
 export function initiateForfaitPurchase(
   schoolId: string,
   forfaitId: string,
-  _lang: ForfaitLang = "fr",
+  _lang: "fr" | "en" = "fr",
   schoolMeta?: { name: string; city?: string; forfaitLabel?: string },
-): AuthSession | null {
+): import("./types").AuthSession | null {
   const session = getSession();
   if (!session || session.role !== "candidat") return null;
 
-  const school = findSchool(schoolId);
   const enrollment: CandidateEnrollment = {
     schoolId,
-    schoolName: schoolMeta?.name ?? school?.name ?? "Auto-école",
-    schoolCity: schoolMeta?.city ?? school?.city,
+    schoolName: schoolMeta?.name ?? "Auto-école",
+    schoolCity: schoolMeta?.city,
     forfaitId,
     forfaitLabel: schoolMeta?.forfaitLabel ?? forfaitId,
     status: "pending",
@@ -43,20 +86,22 @@ export type ConfirmForfaitPurchaseParams = {
   forfaitId: string;
   forfaitLabel: string;
   paymentRef: string;
-  lang?: ForfaitLang;
-  packType?: SchoolForfaitType;
+  lang?: "fr" | "en";
 };
 
-/**
- * CDC CU-03 / Algo 11 — l'auto-école est rattachée au candidat
- * uniquement après achat d'un forfait (Mobile Money confirmé), pas en amont.
- * L'inscription API est créée côté backend lors de la confirmation du paiement.
- */
+/** Après paiement Mobile Money : synchronise l'inscription depuis le backend. */
 export async function confirmForfaitPurchase(
   params: ConfirmForfaitPurchaseParams,
-): Promise<AuthSession | null> {
+): Promise<import("./types").AuthSession | null> {
   const session = getSession();
   if (!session || session.role !== "candidat") return null;
+
+  await syncCandidateEnrollmentFromApi();
+
+  const updated = getSession();
+  if (updated?.enrollment?.status === "confirmed") {
+    return updated;
+  }
 
   const enrollment: CandidateEnrollment = {
     schoolId: params.schoolId,
@@ -68,7 +113,6 @@ export async function confirmForfaitPurchase(
     enrolledAt: new Date().toISOString().slice(0, 10),
     paymentRef: params.paymentRef,
   };
-
   const next = { ...session, enrollment };
   setSession(next);
   return next;
@@ -91,13 +135,7 @@ export function hasPendingForfaitPayment(): boolean {
   return session?.role === "candidat" && session.enrollment?.status === "pending";
 }
 
-export function getEnrolledSchool() {
-  const enrollment = getCandidateEnrollment();
-  if (!enrollment?.schoolId) return null;
-  return findSchool(enrollment.schoolId);
-}
-
-export function getEnrollmentStatusLabelKey(status?: EnrollmentStatus): string {
+export function getEnrollmentStatusLabelKey(status?: import("./types").EnrollmentStatus): string {
   switch (status) {
     case "confirmed":
       return "dashboard.enrollment.statusConfirmed";

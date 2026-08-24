@@ -59,6 +59,7 @@ export type PedagogyQuiz = {
   title: string;
   description: string | null;
   question_count: number;
+  duree_minutes: number;
   est_actif: boolean;
   linked_count: number;
   question_ids?: string[];
@@ -243,14 +244,18 @@ export async function fetchCandidatQuizList(): Promise<PedagogyQuiz[]> {
   return authFetch<PedagogyQuiz[]>("/api/v1/candidat/pedagogy/quiz");
 }
 
-export async function fetchCandidatQuizTake(id: string): Promise<{ id: string; title: string; theme_code: string; questions: TakeQuestion[] }> {
+export async function fetchCandidatQuizTake(id: string): Promise<{ id: string; title: string; theme_code: string; duree_minutes: number; questions: TakeQuestion[] }> {
   return authFetch(`/api/v1/candidat/pedagogy/quiz/${id}`);
 }
 
-export async function submitCandidatQuiz(id: string, answers: { question_id: string; reponse_id: string }[]): Promise<SubmitQuizResult> {
+export async function submitCandidatQuiz(
+  id: string,
+  answers: { question_id: string; reponse_id: string }[],
+  duree_sec?: number,
+): Promise<SubmitQuizResult> {
   return authFetch<SubmitQuizResult>(`/api/v1/candidat/pedagogy/quiz/${id}/submit`, {
     method: "POST",
-    body: JSON.stringify({ answers }),
+    body: JSON.stringify({ answers, duree_sec }),
   });
 }
 

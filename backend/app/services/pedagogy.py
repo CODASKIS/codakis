@@ -402,6 +402,7 @@ def create_quiz(db: Session, data) -> Quiz:
         title=data.title.strip(),
         description=(data.description or "").strip() or None,
         question_count=data.question_count,
+        duree_minutes=data.duree_minutes,
         est_actif=data.est_actif,
     )
     db.add(quiz)
@@ -424,6 +425,8 @@ def update_quiz(db: Session, quiz: Quiz, data) -> Quiz:
         quiz.description = data.description.strip() or None
     if data.question_count is not None:
         quiz.question_count = data.question_count
+    if data.duree_minutes is not None:
+        quiz.duree_minutes = data.duree_minutes
     if data.est_actif is not None:
         quiz.est_actif = data.est_actif
     if data.question_ids is not None:
@@ -449,6 +452,7 @@ def quiz_to_admin(db: Session, quiz: Quiz) -> dict:
         "title": quiz.title,
         "description": quiz.description,
         "question_count": quiz.question_count,
+        "duree_minutes": quiz.duree_minutes,
         "est_actif": quiz.est_actif,
         "linked_count": len(question_ids),
         "question_ids": question_ids,

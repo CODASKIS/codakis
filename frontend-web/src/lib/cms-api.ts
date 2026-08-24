@@ -1,11 +1,4 @@
 import { apiFetch } from "./api";
-import { DEFAULT_COVER_IMAGE } from "../flexjobs/assets/online-images";
-import {
-  MOCK_BLOG_DETAILS,
-  MOCK_BLOG_POSTS,
-  MOCK_DOMAINS,
-  MOCK_VITRINE_PLANS,
-} from "../data/mockCmsContent";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "";
 
@@ -46,7 +39,7 @@ export type VitrinePlanItem = {
 
 export function resolveCmsMediaUrl(url?: string | null): string {
   const value = url?.trim();
-  if (!value) return DEFAULT_COVER_IMAGE;
+  if (!value) return "/images/blog/default-cover.jpg";
   if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/images/")) {
     return value;
   }
@@ -56,51 +49,26 @@ export function resolveCmsMediaUrl(url?: string | null): string {
   if (value.startsWith("/api/")) {
     return `${API_URL}${value}`;
   }
-  if (!API_URL) return DEFAULT_COVER_IMAGE;
+  if (!API_URL) return "/images/blog/default-cover.jpg";
   return `${API_URL}/api/v1/public/media/${value.replace(/^\//, "")}`;
 }
 
-async function fetchWithFallback<T>(path: string, fallback: T): Promise<T> {
-  try {
-    const data = await apiFetch<T>(path);
-    if (Array.isArray(data) && data.length === 0) return fallback;
-    return data;
-  } catch {
-    return fallback;
-  }
-}
-
 export async function fetchPublicDomains(): Promise<PublicDomainItem[]> {
-  return fetchWithFallback("/api/v1/public/domains", MOCK_DOMAINS);
+  return apiFetch<PublicDomainItem[]>("/api/v1/public/domains");
 }
 
 export async function fetchBlogPosts(): Promise<BlogPostListItem[]> {
-  return fetchWithFallback("/api/v1/public/blog", MOCK_BLOG_POSTS);
+  return apiFetch<BlogPostListItem[]>("/api/v1/public/blog");
 }
 
 export async function fetchBlogPost(slug: string): Promise<BlogPostDetail> {
-  try {
-    return await apiFetch<BlogPostDetail>(`/api/v1/public/blog/${encodeURIComponent(slug)}`);
-  } catch {
-    const mock = MOCK_BLOG_DETAILS[slug];
-    if (mock) return mock;
-    throw new Error("Article introuvable");
-  }
+  return apiFetch<BlogPostDetail>(`/api/v1/public/blog/${encodeURIComponent(slug)}`);
 }
 
 export async function fetchVitrinePlans(): Promise<VitrinePlanItem[]> {
-  const plans = await fetchWithFallback("/api/v1/public/vitrine/plans", MOCK_VITRINE_PLANS);
-  const normalized = plans.map((plan) => ({
+  const plans = await apiFetch<VitrinePlanItem[]>("/api/v1/public/vitrine/plans");
+  return plans.map((plan) => ({
     ...plan,
     sticker: plan.sticker.trim(),
   }));
-
-  const hasCandidate = normalized.some((plan) => plan.sticker === "Candidat" || /client|particulier/i.test(plan.sticker));
-  const hasSchool = normalized.some((plan) => /auto|école|ecole|technicien/i.test(plan.sticker));
-
-  if (!hasCandidate && !hasSchool) {
-    return MOCK_VITRINE_PLANS;
-  }
-
-  return normalized;
 }

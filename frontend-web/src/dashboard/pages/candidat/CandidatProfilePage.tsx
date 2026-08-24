@@ -231,7 +231,7 @@ export default function CandidatProfilePage() {
           ) : (
             <>
               <p className="text-muted">{t("dashboard.enrollment.noneLead")}</p>
-              <Link to="/auto-ecoles" className="btn btn-primary btn-sm me-2">
+              <Link to="/espace/candidat/auto-ecoles" className="btn btn-primary btn-sm me-2">
                 {t("dashboard.enrollment.browseForfaits")}
               </Link>
               <Link to="/espace/candidat/auto-ecole" className="btn btn-outline-secondary btn-sm">

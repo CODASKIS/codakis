@@ -35,6 +35,8 @@ import CandidatLessonPage from "../dashboard/pages/candidat/CandidatLessonPage";
 import CandidatExamsPage from "../dashboard/pages/candidat/CandidatExamsPage";
 import CandidatTakeAssessmentPage from "../dashboard/pages/candidat/CandidatTakeAssessmentPage";
 import CandidatSchoolPage from "../dashboard/pages/candidat/CandidatSchoolPage";
+import CandidatSchoolsBrowsePage from "../dashboard/pages/candidat/CandidatSchoolsBrowsePage";
+import CandidatSchoolSelectPage from "../dashboard/pages/candidat/CandidatSchoolSelectPage";
 import CandidatSeancesPage from "../dashboard/pages/candidat/CandidatSeancesPage";
 import MoniteurPlanningPage from "../dashboard/pages/moniteur/MoniteurPlanningPage";
 import MoniteurElevesPage from "../dashboard/pages/moniteur/MoniteurElevesPage";
@@ -114,6 +116,8 @@ export function CandidatRoutes() {
         { path: "seances", element: <CandidatSeancesPage /> },
         { path: "consort", element: <CandidatConsortPage /> },
         { path: "auto-ecole", element: <CandidatSchoolPage /> },
+        { path: "auto-ecoles", element: <CandidatSchoolsBrowsePage /> },
+        { path: "auto-ecoles/:id", element: <CandidatSchoolSelectPage /> },
         { path: "profil", element: <CandidatProfilePage /> },
       ],
     },

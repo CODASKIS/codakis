@@ -3,7 +3,7 @@ import { Car, Clock, MapPin, Phone, TriangleAlert } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
-import { buildSchoolMapEmbedUrl, MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
+import { buildSchoolMapEmbedUrl } from "../../data/mockDrivingSchools";
 import { fetchPublicSchool, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
 import Container from "../components/Container";
@@ -31,7 +31,7 @@ export default function DrivingSchoolDetailPage() {
     setLoading(true);
     void fetchPublicSchool(id)
       .then((detail) => setSchool(mapPublicSchoolToDrivingSchool(detail, detail.forfaits)))
-      .catch(() => setSchool(MOCK_DRIVING_SCHOOLS.find((item) => item.id === id) ?? null))
+      .catch(() => setSchool(null))
       .finally(() => setLoading(false));
   }, [id]);
 

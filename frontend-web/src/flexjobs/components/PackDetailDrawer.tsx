@@ -98,8 +98,6 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
       forfaitId: forfait.id,
       forfaitLabel: forfait.label[lang],
       paymentRef,
-      lang,
-      packType: type,
     }).then(() => {
       setPaying(false);
       onClose();

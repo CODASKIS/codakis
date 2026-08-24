@@ -218,7 +218,7 @@ export default function CandidatConsortPage() {
             <Link to="/themes" className="btn btn-primary btn-sm me-2">
               {t("dashboard.candidat.actionCourses")}
             </Link>
-            <Link to="/auto-ecoles" className="btn btn-outline-dark btn-sm">
+            <Link to="/espace/candidat/auto-ecoles" className="btn btn-outline-dark btn-sm">
               {t("schools.heading")}
             </Link>
           </div>
@@ -271,7 +271,7 @@ export default function CandidatConsortPage() {
             <Card.Body>
               <h6 className="mb-2">{t("dashboard.consort.noSchoolTitle")}</h6>
               <p className="text-muted small mb-3">{t("dashboard.consort.noSchoolHint")}</p>
-              <Link to="/auto-ecoles" className="btn btn-primary btn-sm">
+              <Link to="/espace/candidat/auto-ecoles" className="btn btn-primary btn-sm">
                 {t("dashboard.enrollment.browseForfaits")}
               </Link>
             </Card.Body>

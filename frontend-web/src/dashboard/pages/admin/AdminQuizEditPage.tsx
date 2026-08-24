@@ -26,7 +26,7 @@ export default function AdminQuizEditPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [form, setForm] = useState({ theme_id: "", title: "", description: "", question_count: 10, est_actif: true, question_ids: [] as string[] });
+  const [form, setForm] = useState({ theme_id: "", title: "", description: "", question_count: 10, duree_minutes: 10, est_actif: true, question_ids: [] as string[] });
 
   const load = useCallback(async () => {
     try {
@@ -40,6 +40,7 @@ export default function AdminQuizEditPage() {
           title: quiz.title,
           description: quiz.description ?? "",
           question_count: quiz.question_count,
+          duree_minutes: quiz.duree_minutes,
           est_actif: quiz.est_actif,
           question_ids: quiz.question_ids ?? [],
         });
@@ -98,6 +99,7 @@ export default function AdminQuizEditPage() {
         <Row className="g-3">
           <Col md={6}><Form.Group><Form.Label>{t("admin.pedagogy.colTheme")}</Form.Label><Form.Select required value={form.theme_id} onChange={(e) => setForm((c) => ({ ...c, theme_id: e.target.value, question_ids: [] }))}>{themes.map((theme) => <option key={theme.id} value={theme.id}>{theme.title_fr}</option>)}</Form.Select></Form.Group></Col>
           <Col md={6}><Form.Group><Form.Label>{t("admin.pedagogy.colTitle")}</Form.Label><Form.Control required value={form.title} onChange={(e) => setForm((c) => ({ ...c, title: e.target.value }))} /></Form.Group></Col>
+          <Col md={3}><Form.Group><Form.Label>{t("admin.pedagogy.colDuration")}</Form.Label><Form.Control type="number" min={1} max={120} value={form.duree_minutes} onChange={(e) => setForm((c) => ({ ...c, duree_minutes: Number(e.target.value) }))} /></Form.Group></Col>
           <Col md={12}><Form.Group><Form.Label>{t("admin.pedagogy.description")}</Form.Label><Form.Control as="textarea" rows={2} value={form.description} onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} /></Form.Group></Col>
           <Col md={12}>
             <Form.Label>{t("admin.pedagogy.selectQuestions")} ({form.question_ids.length})</Form.Label>

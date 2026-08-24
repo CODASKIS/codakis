@@ -9,7 +9,6 @@ import Container from "../components/Container";
 import SubNav from "../components/SubNav";
 import { useBlogPosts } from "../hooks/useCmsData";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
-import { MOCK_BLOG_POSTS } from "../../data/mockCmsContent";
 import type { BlogPostListItem } from "../../lib/cms-api";
 
 function sortPostsNewest(posts: BlogPostListItem[]): BlogPostListItem[] {
@@ -23,7 +22,7 @@ function sortPostsNewest(posts: BlogPostListItem[]): BlogPostListItem[] {
 export default function BlogPage() {
   const { t } = useTranslation();
   const subNavItems = useSecondaryNavItems();
-  const { data: posts, loading, error } = useBlogPosts(MOCK_BLOG_POSTS);
+  const { data: posts, loading, error } = useBlogPosts([]);
   const [searchParams] = useSearchParams();
   const [query, setQuery] = useState("");
 

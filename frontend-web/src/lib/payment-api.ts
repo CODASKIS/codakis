@@ -204,6 +204,7 @@ export type AdminPaymentItem = {
   reference: string;
   status: string;
   purpose: string;
+  plan_id: string | null;
   amount_fcfa: number;
   channel: string;
   phone: string;
@@ -212,6 +213,8 @@ export type AdminPaymentItem = {
   payer_name: string | null;
   payer_email: string | null;
   school_name: string | null;
+  forfait_label: string | null;
+  context_label: string;
   created_at: string;
   completed_at: string | null;
   inscription_id: string | null;

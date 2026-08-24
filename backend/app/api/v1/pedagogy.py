@@ -376,6 +376,7 @@ def candidat_list_quiz(_: Utilisateur = Depends(CandidatUser), db: Session = Dep
                 "title": quiz.title,
                 "description": quiz.description,
                 "question_count": quiz.question_count,
+                "duree_minutes": quiz.duree_minutes,
                 "linked_count": linked_count,
             }
         )
@@ -393,6 +394,7 @@ def candidat_get_quiz(quiz_id: uuid.UUID, _: Utilisateur = Depends(CandidatUser)
         "id": quiz.id,
         "title": quiz.title,
         "theme_code": theme.code if theme else "",
+        "duree_minutes": quiz.duree_minutes,
         "questions": [question_to_public(question) for question in questions],
     }
 

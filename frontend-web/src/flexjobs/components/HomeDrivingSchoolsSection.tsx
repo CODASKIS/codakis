@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import {
   formatDrivingSchoolListLabel,
   groupDrivingSchoolsByCity,
-  MOCK_DRIVING_SCHOOLS,
 } from "../../data/mockDrivingSchools";
 import { fetchPublicSchools, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
@@ -13,14 +12,12 @@ import Container from "./Container";
 
 export default function HomeDrivingSchoolsSection() {
   const { t } = useTranslation();
-  const [schools, setSchools] = useState<DrivingSchool[]>(MOCK_DRIVING_SCHOOLS);
+  const [schools, setSchools] = useState<DrivingSchool[]>([]);
 
   useEffect(() => {
     void fetchPublicSchools()
-      .then((items) => {
-        if (items.length > 0) setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)));
-      })
-      .catch(() => setSchools(MOCK_DRIVING_SCHOOLS));
+      .then((items) => setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item))))
+      .catch(() => setSchools([]));
   }, []);
 
   const cityGroups = useMemo(() => groupDrivingSchoolsByCity(schools), [schools]);

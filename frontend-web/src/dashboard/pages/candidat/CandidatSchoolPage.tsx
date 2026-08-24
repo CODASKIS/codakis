@@ -2,17 +2,26 @@ import { Row, Col, Card, Badge } from "react-bootstrap";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
-import { getCandidateEnrollment, getEnrolledSchool, isCandidateEnrolled } from "../../../auth/candidateEnrollment";
+import Loader from "../../../components/common/Loader";
 import { formatForfaitPrice } from "../../../data/mockDrivingSchools";
+import { useCandidateEnrollment } from "../../hooks/useCandidateEnrollment";
 
 export default function CandidatSchoolPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.startsWith("en") ? "en" : "fr";
-  const enrollment = getCandidateEnrollment();
-  const school = getEnrolledSchool();
-  const enrolled = isCandidateEnrolled();
+  const { inscription, school, loading, error, enrolled } = useCandidateEnrollment();
 
-  if (!enrolled || !school || !enrollment) {
+  if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <MainCard title={t("dashboard.nav.mySchool")} isOption={false} cardClass="" optionClass="" CardBodyClass="">
+        <p className="text-danger mb-0">{error}</p>
+      </MainCard>
+    );
+  }
+
+  if (!enrolled || !school || !inscription) {
     return (
       <Row>
         <Col sm={12}>
@@ -21,9 +30,9 @@ export default function CandidatSchoolPage() {
               <i className="material-icons-two-tone codakis-enrollment-empty__icon">domain</i>
               <h5 className="mt-3">{t("dashboard.enrollment.noneTitle")}</h5>
               <p className="text-muted mx-auto mb-4" style={{ maxWidth: "42rem" }}>
-                {t("dashboard.enrollment.noneLead")}
+                {t("dashboard.enrollment.noneLeadDashboard")}
               </p>
-              <Link to="/auto-ecoles" className="btn btn-primary">
+              <Link to="/espace/candidat/auto-ecoles" className="btn btn-primary">
                 {t("dashboard.enrollment.browseForfaits")}
               </Link>
             </div>
@@ -37,7 +46,7 @@ export default function CandidatSchoolPage() {
     ...school.forfaits.codeSeul,
     ...school.forfaits.conduiteSeule,
     ...school.forfaits.complet,
-  ].find((f) => f.id === enrollment.forfaitId);
+  ].find((f) => f.id === inscription.forfait_id);
 
   return (
     <Row>
@@ -51,7 +60,7 @@ export default function CandidatSchoolPage() {
               </p>
               <Badge bg="success">{t("dashboard.enrollment.statusConfirmed")}</Badge>
             </div>
-            <Link to={`/auto-ecoles/${school.id}`} className="btn btn-outline-primary btn-sm">
+            <Link to={`/espace/candidat/auto-ecoles/${school.id}`} className="btn btn-outline-primary btn-sm">
               {t("schools.viewProfile")}
             </Link>
           </div>
@@ -61,7 +70,7 @@ export default function CandidatSchoolPage() {
               <Card className="h-100 border">
                 <Card.Body>
                   <p className="text-muted small mb-1">{t("dashboard.profile.pack")}</p>
-                  <p className="fw-semibold mb-1">{enrollment.forfaitLabel ?? "—"}</p>
+                  <p className="fw-semibold mb-1">{inscription.forfait_label ?? "—"}</p>
                   {forfait ? (
                     <p className="text-primary mb-0">{formatForfaitPrice(forfait.price, lang)}</p>
                   ) : null}
@@ -72,11 +81,20 @@ export default function CandidatSchoolPage() {
               <Card className="h-100 border">
                 <Card.Body>
                   <p className="text-muted small mb-1">{t("dashboard.enrollment.enrolledOn")}</p>
-                  <p className="fw-semibold mb-1">{enrollment.enrolledAt ?? "—"}</p>
-                  <p className="text-muted small mb-0">{t("dashboard.enrollment.receiptHint")}</p>
-                  {enrollment.paymentRef ? (
+                  <p className="fw-semibold mb-1">{inscription.enrolled_at?.slice(0, 10) ?? "—"}</p>
+                  {inscription.heures_conduite_total > 0 ? (
+                    <p className="text-muted small mb-0">
+                      {t("dashboard.enrollment.drivingHoursRemaining", {
+                        remaining: inscription.heures_conduite_restantes,
+                        total: inscription.heures_conduite_total,
+                      })}
+                    </p>
+                  ) : (
+                    <p className="text-muted small mb-0">{t("dashboard.enrollment.receiptHint")}</p>
+                  )}
+                  {inscription.payment_ref ? (
                     <p className="text-muted small mb-0 mt-1">
-                      {t("dashboard.enrollment.paymentRef", { ref: enrollment.paymentRef })}
+                      {t("dashboard.enrollment.paymentRef", { ref: inscription.payment_ref })}
                     </p>
                   ) : null}
                 </Card.Body>
@@ -98,19 +116,15 @@ export default function CandidatSchoolPage() {
       </Col>
 
       <Col lg={4}>
-        <Card className="mb-4 bg-primary text-white">
-          <Card.Body>
-            <h6 className="text-white">{t("dashboard.enrollment.statsTitle")}</h6>
-            <p className="display-6 fw-bold mb-0">{school.successRate} %</p>
-            <p className="small mb-0 opacity-75">{t("dashboard.enrollment.successRate")}</p>
-          </Card.Body>
-        </Card>
-        <Card>
+        <Card className="mb-4">
           <Card.Body>
             <h6>{t("dashboard.enrollment.actions")}</h6>
             <div className="d-grid gap-2">
               <Link to="/espace/candidat/consort" className="btn btn-outline-dark btn-sm">
                 {t("dashboard.candidat.actionConsort")}
+              </Link>
+              <Link to="/espace/candidat/seances" className="btn btn-outline-dark btn-sm">
+                {t("dashboard.candidat.actionSeances")}
               </Link>
               <Link to="/espace/candidat/examens" className="btn btn-outline-dark btn-sm">
                 {t("dashboard.candidat.actionExam")}
