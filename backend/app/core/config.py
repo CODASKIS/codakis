@@ -59,11 +59,11 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("ELEVENLABS_VOICE_ID"),
     )
     elevenlabs_voice_id_fr: str = Field(
-        default="XB0fDUnXU5powFXDhCwa",
+        default="EXAVITQu4vr4xnSDxMaL",
         validation_alias=AliasChoices("ELEVENLABS_VOICE_ID_FR"),
     )
     elevenlabs_voice_id_en: str = Field(
-        default="JBFqnCBsd6RMkjVDRZzb",
+        default="pNInz6obpgDQGcFmaJgB",
         validation_alias=AliasChoices("ELEVENLABS_VOICE_ID_EN"),
     )
     elevenlabs_model_id: str = Field(

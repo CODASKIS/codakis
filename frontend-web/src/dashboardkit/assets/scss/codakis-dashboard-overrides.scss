@@ -96,6 +96,27 @@ body.dashboardkit-active {
     transition: left 0.32s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
+  // Fil d'Ariane dans le flux (évite le double décalage fixed + padding sur desktop)
+  .pc-container .pcoded-content {
+    padding: 1.25rem 3rem 3rem;
+  }
+
+  .page-header {
+    position: relative;
+    left: 0;
+    top: 0;
+    padding: 0;
+    margin: 0 0 1.25rem;
+    min-height: 0;
+    box-shadow: none;
+    background: transparent;
+    z-index: 1;
+  }
+
+  &.minimenu .page-header {
+    left: 0;
+  }
+
   .pc-sidebar .m-header {
     background: var(--codakis-black-deep);
 

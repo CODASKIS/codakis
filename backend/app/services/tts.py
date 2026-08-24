@@ -4,7 +4,9 @@ from app.core.config import settings
 
 
 class TtsError(Exception):
-    pass
+    def __init__(self, message: str, status_code: int | None = None) -> None:
+        super().__init__(message)
+        self.status_code = status_code
 
 
 def normalize_language(language: str | None) -> str:
@@ -23,6 +25,51 @@ def resolve_voice_id(language: str | None) -> str:
     return voice or "pNInz6obpgDQGcFmaJgB"
 
 
+def resolve_voice_candidates(language: str | None) -> list[str]:
+    fallback = settings.elevenlabs_voice_id.strip() or "pNInz6obpgDQGcFmaJgB"
+    voices: list[str] = []
+    for voice_id in (resolve_voice_id(language), fallback, "pNInz6obpgDQGcFmaJgB", "EXAVITQu4vr4xnSDxMaL"):
+        cleaned = voice_id.strip()
+        if cleaned and cleaned not in voices:
+            voices.append(cleaned)
+    return voices
+
+
+def _extract_error_message(response: httpx.Response) -> str:
+    try:
+        payload = response.json()
+        detail = payload.get("detail")
+        if isinstance(detail, dict):
+            return str(detail.get("message") or detail.get("code") or response.text)
+        if isinstance(detail, str):
+            return detail
+    except ValueError:
+        pass
+    return response.text[:240] or "Impossible de générer l'audio"
+
+
+def _request_tts(text: str, voice_id: str) -> bytes:
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "Accept": "audio/mpeg",
+        "Content-Type": "application/json",
+        "xi-api-key": settings.elevenlabs_api_key.strip(),
+    }
+    payload = {
+        "text": text,
+        "model_id": settings.elevenlabs_model_id,
+        "voice_settings": {"stability": 0.45, "similarity_boost": 0.75},
+    }
+
+    with httpx.Client(timeout=60.0) as client:
+        response = client.post(url, headers=headers, json=payload)
+
+    if response.status_code >= 400:
+        raise TtsError(_extract_error_message(response), status_code=response.status_code)
+
+    return response.content
+
+
 def synthesize_speech(text: str, language: str | None = "fr") -> bytes:
     cleaned = (text or "").strip()
     if not cleaned:
@@ -34,26 +81,18 @@ def synthesize_speech(text: str, language: str | None = "fr") -> bytes:
     if not api_key:
         raise TtsError("Synthèse vocale non configurée (ELEVENLABS_API_KEY manquante)")
 
-    voice_id = resolve_voice_id(language)
-    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
-    headers = {
-        "Accept": "audio/mpeg",
-        "Content-Type": "application/json",
-        "xi-api-key": api_key,
-    }
-    payload = {
-        "text": cleaned,
-        "model_id": settings.elevenlabs_model_id,
-        "voice_settings": {"stability": 0.45, "similarity_boost": 0.75},
-    }
+    last_error: TtsError | None = None
+    for voice_id in resolve_voice_candidates(language):
+        try:
+            return _request_tts(cleaned, voice_id)
+        except httpx.HTTPError as exc:
+            raise TtsError("Service de synthèse vocale indisponible") from exc
+        except TtsError as exc:
+            last_error = exc
+            if exc.status_code in {402, 403, 404}:
+                continue
+            raise
 
-    try:
-        with httpx.Client(timeout=60.0) as client:
-            response = client.post(url, headers=headers, json=payload)
-    except httpx.HTTPError as exc:
-        raise TtsError("Service de synthèse vocale indisponible") from exc
-
-    if response.status_code >= 400:
-        raise TtsError("Impossible de générer l'audio")
-
-    return response.content
+    if last_error is not None:
+        raise last_error
+    raise TtsError("Impossible de générer l'audio")
