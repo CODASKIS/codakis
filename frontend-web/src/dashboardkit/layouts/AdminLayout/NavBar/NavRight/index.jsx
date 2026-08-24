@@ -107,9 +107,9 @@ export default function NavRight() {
                       {isPremium ? t('dashboard.userMenu.planPremium') : t('dashboard.userMenu.planFree')}
                     </span>
                   ) : null}
-                  {session?.role === 'candidat' ? (
-                    <span className={`codakis-user-menu__school${enrolled ? ' is-enrolled' : ''}`}>
-                      {enrolled ? enrollment?.schoolName : t('dashboard.enrollment.notEnrolled')}
+                  {session?.role === 'candidat' && enrolled && enrollment?.schoolName ? (
+                    <span className="codakis-user-menu__school is-enrolled">
+                      {enrollment.schoolName}
                     </span>
                   ) : null}
                 </div>

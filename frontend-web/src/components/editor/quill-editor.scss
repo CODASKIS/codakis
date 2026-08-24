@@ -1,8 +1,27 @@
 .codakis-quill-editor {
   .ql-toolbar.ql-snow {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     border-radius: 6px 6px 0 0;
     border-color: #e5e5e5;
     background: #fafafa;
+  }
+
+  .ql-toolbar.ql-snow .ql-formats {
+    margin-right: 10px;
+  }
+
+  .ql-toolbar.ql-snow button:hover .ql-stroke,
+  .ql-toolbar.ql-snow button.ql-active .ql-stroke,
+  .ql-toolbar.ql-snow .ql-picker-label:hover {
+    stroke: var(--codakis-green, #1db96a);
+    color: var(--codakis-green, #1db96a);
+  }
+
+  .ql-toolbar.ql-snow button:hover .ql-fill,
+  .ql-toolbar.ql-snow button.ql-active .ql-fill {
+    fill: var(--codakis-green, #1db96a);
   }
 
   .ql-container.ql-snow {
@@ -15,6 +34,48 @@
   .ql-editor {
     min-height: 240px;
     line-height: 1.6;
+  }
+
+  .ql-editor h1 {
+    font-size: 24px;
+  }
+
+  .ql-editor h2 {
+    font-size: 20px;
+  }
+
+  .ql-editor h3 {
+    font-size: 17px;
+  }
+
+  .ql-editor img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+
+  .ql-editor iframe.ql-video,
+  .ql-editor video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    margin: 12px 0;
+    border: 1px solid #e5e5e5;
+    border-radius: 6px;
+    background: #000;
+  }
+
+  .ql-editor blockquote {
+    border-left: 3px solid var(--codakis-green, #1db96a);
+    padding-left: 12px;
+    color: #4a5560;
+  }
+
+  .ql-editor pre.ql-syntax {
+    border-radius: 6px;
+    background: #1d2630;
+    color: #f4f6f8;
   }
 }
 
@@ -45,5 +106,23 @@
 
   a {
     color: var(--codakis-green, #1db96a);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+  }
+
+  iframe,
+  video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    margin: 1rem 0;
+    border: 0;
+    border-radius: 0.5rem;
+    background: #000;
   }
 }

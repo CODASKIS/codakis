@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import CmsCoverImage from "../../../components/common/CmsCoverImage";
+import MediaVideo from "../../../components/common/MediaVideo";
 import {
   AuthApiError,
   fetchCandidatExamenTake,
@@ -115,6 +116,7 @@ export default function CandidatTakeAssessmentPage({ mode }: TakePageProps) {
           {question.image_url ? (
             <CmsCoverImage url={question.image_url} alt="" className="rounded mb-3 w-100" style={{ maxHeight: 280, objectFit: "contain" }} />
           ) : null}
+          <MediaVideo url={question.video_url} title={question.prompt} className="mb-3" />
           {question.reponses.map((reponse) => (
             <Form.Check
               key={reponse.id}

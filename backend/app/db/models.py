@@ -262,6 +262,7 @@ class Question(Base):
     theme_id: Mapped[uuid.UUID | None] = mapped_column(Uuid(as_uuid=True), ForeignKey("themes.id"), nullable=True)
     prompt: Mapped[str] = mapped_column(Text, nullable=False)
     image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    video_url: Mapped[str | None] = mapped_column(Text, nullable=True)
     explanation: Mapped[str | None] = mapped_column(Text, nullable=True)
     difficulty: Mapped[int] = mapped_column(nullable=False, default=1)
     est_actif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)

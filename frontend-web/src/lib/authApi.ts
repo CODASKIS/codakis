@@ -15,6 +15,7 @@ export type ApiUser = {
   school_validated?: boolean | null;
   school_id?: string | null;
   school_name?: string | null;
+  plan?: "free" | "premium" | null;
   has_password?: boolean;
   created_at?: string | null;
   updated_at?: string | null;
@@ -541,7 +542,7 @@ export function userToSession(user: ApiUser): import("../auth/types").AuthSessio
     phone: user.phone ?? undefined,
     city: user.city ?? undefined,
     avatarUrl: user.avatar_url ?? undefined,
-    plan: user.role === "candidat" ? "free" : undefined,
+    plan: user.role === "candidat" ? (user.plan ?? "free") : undefined,
   };
 
   if (user.role === "gerant" && user.school_name) {

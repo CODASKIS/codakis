@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS questions (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE questions ADD COLUMN IF NOT EXISTS video_url TEXT;
+
 CREATE TABLE IF NOT EXISTS reponses (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     question_id UUID NOT NULL REFERENCES questions(id) ON DELETE CASCADE,

@@ -13,6 +13,7 @@ class ThemePublic(BaseModel):
     is_premium: bool
     lecon_count: int = 0
     quiz_count: int = 0
+    locked: bool = False
 
 
 class ThemeCreateRequest(BaseModel):
@@ -81,6 +82,7 @@ class LeconPublic(BaseModel):
     cover_image_url: str | None = None
     sort_order: int
     published_at: datetime | None = None
+    locked: bool = False
 
 
 class ReponseInput(BaseModel):
@@ -111,6 +113,7 @@ class QuestionAdmin(BaseModel):
     theme_code: str | None = None
     prompt: str
     image_url: str | None = None
+    video_url: str | None = None
     explanation: str | None = None
     difficulty: int
     est_actif: bool
@@ -123,6 +126,7 @@ class QuestionCreateRequest(BaseModel):
     theme_id: UUID | None = None
     prompt: str = Field(min_length=5)
     image_url: str | None = None
+    video_url: str | None = None
     explanation: str | None = None
     difficulty: int = Field(default=1, ge=1, le=3)
     est_actif: bool = True
@@ -133,6 +137,7 @@ class QuestionUpdateRequest(BaseModel):
     theme_id: UUID | None = None
     prompt: str | None = Field(default=None, min_length=5)
     image_url: str | None = None
+    video_url: str | None = None
     explanation: str | None = None
     difficulty: int | None = Field(default=None, ge=1, le=3)
     est_actif: bool | None = None
@@ -143,6 +148,7 @@ class QuestionPublic(BaseModel):
     id: UUID
     prompt: str
     image_url: str | None = None
+    video_url: str | None = None
     reponses: list[ReponsePublic]
 
 

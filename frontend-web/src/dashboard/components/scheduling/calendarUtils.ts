@@ -153,3 +153,30 @@ export function isEventDraggable(event: CalendarEvent): boolean {
   }
   return event.status === "planifiee" || event.status === "confirmee";
 }
+
+export function fcStatusClass(kind: CalendarEventKind, status: string): string {
+  const base = eventStatusClass(kind, status).replace("is-", "");
+  return `fc-codakis-event--${base}`;
+}
+
+export type FullCalendarEventInput = {
+  id: string;
+  title: string;
+  start: string;
+  end: string;
+  editable?: boolean;
+  classNames?: string[];
+  extendedProps: { calendarEvent: CalendarEvent };
+};
+
+export function toFullCalendarEvents(events: CalendarEvent[], draggable: boolean): FullCalendarEventInput[] {
+  return events.map((event) => ({
+    id: event.id,
+    title: event.subtitle ? `${event.title} · ${event.subtitle}` : event.title,
+    start: event.starts_at,
+    end: event.ends_at,
+    editable: draggable && isEventDraggable(event),
+    classNames: ["fc-codakis-event", fcStatusClass(event.kind, event.status)],
+    extendedProps: { calendarEvent: event },
+  }));
+}

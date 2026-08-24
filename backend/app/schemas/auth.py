@@ -25,6 +25,7 @@ class UserPublic(BaseModel):
     school_validated: bool | None = None
     school_id: UUID | None = None
     school_name: str | None = None
+    plan: str | None = None
     has_password: bool = False
     created_at: datetime | None = None
     updated_at: datetime | None = None

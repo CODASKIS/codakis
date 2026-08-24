@@ -6,6 +6,7 @@ import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import CmsCoverImage from "../../../components/common/CmsCoverImage";
 import ConfirmModal from "../../../components/common/ConfirmModal";
+import MediaVideo from "../../../components/common/MediaVideo";
 import { uploadCmsImage } from "../../../lib/cms-admin-api";
 import {
   AuthApiError,
@@ -37,6 +38,7 @@ export default function AdminQuestionEditPage() {
   const [themeId, setThemeId] = useState("");
   const [explanation, setExplanation] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
   const [answers, setAnswers] = useState<AnswerForm[]>(
     DEFAULT_LABELS.map((label) => ({ label, texte: "", est_correcte: label === "A" })),
@@ -52,6 +54,7 @@ export default function AdminQuestionEditPage() {
         setThemeId(question.theme_id ?? "");
         setExplanation(question.explanation ?? "");
         setImageUrl(question.image_url ?? "");
+        setVideoUrl(question.video_url ?? "");
         setAnswers(
           question.reponses.map((item) => ({
             label: item.label,
@@ -87,6 +90,7 @@ export default function AdminQuestionEditPage() {
       prompt: prompt.trim(),
       explanation: explanation.trim() || null,
       image_url: imageUrl.trim() || null,
+      video_url: videoUrl.trim() || null,
       reponses: answers.map((item, index) => ({
         label: item.label,
         texte: item.texte.trim(),
@@ -148,6 +152,19 @@ export default function AdminQuestionEditPage() {
                   .catch(() => setError(t("admin.pedagogy.uploadError")))
                   .finally(() => setUploadingImage(false));
               }} />
+            </Form.Group>
+          </Col>
+          <Col md={12}>
+            <Form.Group>
+              <Form.Label>{t("admin.pedagogy.video")}</Form.Label>
+              <Form.Control
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+              />
+              <Form.Text className="text-muted">{t("admin.pedagogy.videoHint")}</Form.Text>
+              {videoUrl.trim() ? <MediaVideo url={videoUrl} title={prompt} className="mt-2" /> : null}
             </Form.Group>
           </Col>
           <Col md={12}>

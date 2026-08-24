@@ -11,6 +11,11 @@
     "dev:mobile": "npm run build && vite preview --host --port 4173"
   },
   "dependencies": {
+    "@fullcalendar/core": "^7.0.2",
+    "@fullcalendar/daygrid": "^6.1.21",
+    "@fullcalendar/interaction": "^6.1.21",
+    "@fullcalendar/react": "^7.0.2",
+    "@fullcalendar/timegrid": "^6.1.21",
     "@react-oauth/google": "^0.13.5",
     "@tanem/react-nprogress": "^5.0.63",
     "apexcharts": "^4.7.0",
@@ -32,7 +37,8 @@
     "react-router": "^7.1.5",
     "sass": "^1.77.6",
     "simplebar-react": "^3.3.2",
-    "tailwind-merge": "^3.0.1"
+    "tailwind-merge": "^3.0.1",
+    "temporal-polyfill": "^1.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

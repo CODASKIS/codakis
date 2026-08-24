@@ -2,20 +2,31 @@ import { useEffect, useRef } from "react";
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 import "./quill-editor.scss";
+import { uploadCmsImage } from "../../lib/cms-admin-api";
+import { resolveCmsMediaUrl } from "../../lib/cms-api";
+import { toVideoEmbedUrl } from "../../lib/video-embed";
 
 type QuillEditorProps = {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
   minHeight?: number;
+  videoPrompt?: string;
 };
 
 function isEmptyHtml(html: string): boolean {
+  if (/<(img|iframe|video|table)\b/i.test(html)) return false;
   const stripped = html.replace(/<[^>]*>/g, "").trim();
   return stripped.length === 0;
 }
 
-export default function QuillEditor({ value, onChange, placeholder, minHeight = 280 }: QuillEditorProps) {
+export default function QuillEditor({
+  value,
+  onChange,
+  placeholder,
+  minHeight = 280,
+  videoPrompt = "Lien de la vidéo (YouTube, Vimeo ou fichier MP4)",
+}: QuillEditorProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const quillRef = useRef<Quill | null>(null);
   const onChangeRef = useRef(onChange);
@@ -37,14 +48,50 @@ export default function QuillEditor({ value, onChange, placeholder, minHeight = 
       theme: "snow",
       placeholder,
       modules: {
-        toolbar: [
-          [{ header: [1, 2, 3, false] }],
-          ["bold", "italic", "underline", "strike"],
-          [{ list: "ordered" }, { list: "bullet" }],
-          ["blockquote", "link"],
-          [{ align: [] }],
-          ["clean"],
-        ],
+        toolbar: {
+          container: [
+            [{ header: [1, 2, 3, 4, false] }],
+            ["bold", "italic", "underline", "strike"],
+            [{ color: [] }, { background: [] }],
+            [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
+            [{ indent: "-1" }, { indent: "+1" }, { align: [] }],
+            ["blockquote", "code-block"],
+            ["link", "image", "video"],
+            ["clean"],
+          ],
+          handlers: {
+            image() {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = "image/*";
+              input.onchange = () => {
+                const file = input.files?.[0];
+                if (!file) return;
+                const range = quill.getSelection(true);
+                // Placeholder pendant l'upload pour que l'auteur voie la progression.
+                quill.insertText(range.index, "…", "user");
+                void uploadCmsImage(file)
+                  .then((result) => {
+                    quill.deleteText(range.index, 1, "user");
+                    quill.insertEmbed(range.index, "image", resolveCmsMediaUrl(result.key), "user");
+                    quill.setSelection(range.index + 1, 0, "user");
+                  })
+                  .catch(() => {
+                    quill.deleteText(range.index, 1, "user");
+                  });
+              };
+              input.click();
+            },
+            video() {
+              const input = window.prompt(videoPrompt, "https://");
+              const url = input?.trim();
+              if (!url || url === "https://") return;
+              const range = quill.getSelection(true);
+              quill.insertEmbed(range.index, "video", toVideoEmbedUrl(url) ?? url, "user");
+              quill.setSelection(range.index + 1, 0, "user");
+            },
+          },
+        },
       },
     });
 
@@ -66,7 +113,7 @@ export default function QuillEditor({ value, onChange, placeholder, minHeight = 
       quillRef.current = null;
       wrapper.replaceChildren();
     };
-  }, [placeholder]);
+  }, [placeholder, videoPrompt]);
 
   useEffect(() => {
     const quill = quillRef.current;

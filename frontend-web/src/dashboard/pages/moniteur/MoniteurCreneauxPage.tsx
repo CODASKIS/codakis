@@ -1,4 +1,3 @@
-import { Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -6,7 +5,6 @@ import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import EventDetailPanel from "../../components/scheduling/EventDetailPanel";
 import ScheduleLegend from "../../components/scheduling/ScheduleLegend";
-import ScheduleToolbar from "../../components/scheduling/ScheduleToolbar";
 import WeekCalendar from "../../components/scheduling/WeekCalendar";
 import {
   creneauToCalendarEvent,
@@ -57,7 +55,7 @@ export default function MoniteurCreneauxPage() {
     } finally {
       setLoading(false);
     }
-  }, [t, weekParam]);
+  }, [weekParam]);
 
   useEffect(() => {
     void load();
@@ -151,27 +149,22 @@ export default function MoniteurCreneauxPage() {
           {error ? <Alert variant="danger">{error}</Alert> : null}
           {success ? <Alert variant="success" onClose={() => setSuccess("")} dismissible>{success}</Alert> : null}
 
-          <ScheduleToolbar
-            weekStart={weekStart}
-            onChange={setWeekStart}
-            action={
-              <Button variant="primary" size="sm" onClick={() => openCreateModal()}>
-                <Plus size={18} strokeWidth={2} className="me-1" aria-hidden />
-                {t("moniteur.creneaux.addCta")}
-              </Button>
-            }
-          />
-
           <div className="codakis-schedule-layout">
             <div>
               <WeekCalendar
                 weekStart={weekStart}
+                onWeekChange={setWeekStart}
                 events={calendarEvents}
                 selectedEventId={selected?.id}
                 loading={loading}
                 emptyLabel={t("moniteur.creneaux.empty")}
                 interactiveSlots
                 draggableEvents
+                toolbarAction={
+                  <Button variant="primary" size="sm" onClick={() => openCreateModal()}>
+                    {t("moniteur.creneaux.addCta")}
+                  </Button>
+                }
                 onEventClick={setSelected}
                 onSlotClick={(day, hour) => openCreateModal(day, hour)}
                 onEventMove={handleMoveEvent}

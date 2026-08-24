@@ -41,6 +41,7 @@ from app.services.pedagogy import (
     examen_to_admin,
     get_examen_questions,
     get_quiz_questions,
+    has_premium_access,
     lecon_to_admin,
     lecon_to_public,
     question_to_admin,
@@ -302,13 +303,23 @@ def admin_delete_examen(examen_id: uuid.UUID, _: AdminUser, db: Session = Depend
 
 
 @candidat_router.get("/themes", response_model=list[ThemePublic])
-def candidat_list_themes(_: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_list_themes(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     themes = db.query(Theme).filter(Theme.est_actif.is_(True)).order_by(Theme.sort_order.asc()).all()
-    return [theme_to_public(db, theme) for theme in themes]
+    premium = has_premium_access(db, candidat)
+    result = []
+    for theme in themes:
+        payload = theme_to_public(db, theme)
+        payload["locked"] = theme.is_premium and not premium
+        result.append(payload)
+    return result
 
 
 @candidat_router.get("/themes/{theme_id}/lecons", response_model=list[LeconPublic])
-def candidat_list_lecons(theme_id: uuid.UUID, _: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_list_lecons(
+    theme_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
     theme = db.get(Theme, theme_id)
     if theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
@@ -318,17 +329,35 @@ def candidat_list_lecons(theme_id: uuid.UUID, _: Utilisateur = Depends(CandidatU
         .order_by(Lecon.sort_order.asc())
         .all()
     )
-    return [lecon_to_public(lecon, theme) for lecon in lecons]
+    locked = theme.is_premium and not has_premium_access(db, candidat)
+    result = []
+    for lecon in lecons:
+        payload = lecon_to_public(lecon, theme)
+        payload["locked"] = locked
+        if locked:
+            # Les titres restent visibles pour donner envie, jamais le contenu.
+            payload["body"] = ""
+        result.append(payload)
+    return result
 
 
 @candidat_router.get("/lecons/{lecon_id}", response_model=LeconPublic)
-def candidat_get_lecon(lecon_id: uuid.UUID, _: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+def candidat_get_lecon(
+    lecon_id: uuid.UUID,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
     lecon = db.get(Lecon, lecon_id)
     if lecon is None or lecon.status != StatutArticleBlog.published.value:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leçon introuvable")
     theme = db.get(Theme, lecon.theme_id)
     if theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
+    if theme.is_premium and not has_premium_access(db, candidat):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Cette leçon fait partie d'un thème Premium",
+        )
     return lecon_to_public(lecon, theme)
 
 

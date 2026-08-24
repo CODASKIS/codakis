@@ -9,6 +9,7 @@ export type PedagogyTheme = {
   is_premium: boolean;
   lecon_count: number;
   quiz_count: number;
+  locked?: boolean;
 };
 
 export type PedagogyLecon = {
@@ -25,6 +26,7 @@ export type PedagogyLecon = {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  locked?: boolean;
 };
 
 export type PedagogyReponse = {
@@ -41,6 +43,7 @@ export type PedagogyQuestion = {
   theme_code: string | null;
   prompt: string;
   image_url: string | null;
+  video_url: string | null;
   explanation: string | null;
   difficulty: number;
   est_actif: boolean;
@@ -81,6 +84,7 @@ export type TakeQuestion = {
   id: string;
   prompt: string;
   image_url: string | null;
+  video_url: string | null;
   reponses: { id: string; label: string; texte: string }[];
 };
 

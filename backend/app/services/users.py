@@ -22,6 +22,7 @@ from app.db.models import (
 from app.schemas.auth import UserPublic
 from app.services.consort import init_candidat_dossier as init_dossier_consort
 from app.services.email import generate_temp_password, send_moniteur_invite_email, send_welcome_email
+from app.services.pedagogy import has_premium_access
 
 
 ROLE_TO_FRONT: dict[str, str] = {
@@ -103,6 +104,10 @@ def user_to_public(db: Session, user: Utilisateur) -> UserPublic:
         ville = db.get(Ville, user.ville_id)
         city = ville.nom if ville else None
 
+    plan = None
+    if user.role == RoleUtilisateur.candidat.value:
+        plan = "premium" if has_premium_access(db, user) else "free"
+
     return UserPublic(
         id=user.id,
         email=user.email,
@@ -118,6 +123,7 @@ def user_to_public(db: Session, user: Utilisateur) -> UserPublic:
         school_validated=school_validated,
         school_id=school_id,
         school_name=school_name,
+        plan=plan,
         has_password=bool(user.mot_de_passe_hash),
         created_at=user.created_at,
         updated_at=user.updated_at,

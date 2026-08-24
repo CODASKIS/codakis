@@ -2093,4 +2093,839 @@ body.dashboardkit-active {
       font-size: 1.15rem;
     }
   }
+
+  // Parcours de cours candidat — présentation structurée type plateforme e-learning
+  .codakis-courses {
+    overflow: hidden;
+
+    > .card-header {
+      padding: 1.8rem 2.4rem;
+
+      h5 {
+        font-size: 1.8rem;
+        font-weight: 700;
+      }
+    }
+
+    > .card-body {
+      padding: 2.4rem;
+    }
+  }
+
+  .codakis-courses__hero {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.8rem;
+    margin-bottom: 2.8rem;
+    padding: 2.2rem 2.4rem;
+    border: 1px solid rgba(29, 38, 48, 0.09);
+    border-radius: 0.75rem;
+    background: #f8fafb;
+  }
+
+  .codakis-courses__hero-icon {
+    display: grid;
+    width: 5.2rem;
+    height: 5.2rem;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 0.75rem;
+    color: var(--codakis-green-dark);
+    background: rgba(29, 185, 106, 0.12);
+  }
+
+  .codakis-courses__hero-copy {
+    min-width: 0;
+
+    h2 {
+      margin: 0.2rem 0 0.6rem;
+      color: var(--codakis-black);
+      font-size: 2.2rem;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    p {
+      max-width: 62rem;
+      margin: 0;
+      color: #667085;
+      font-size: 1.35rem;
+      line-height: 1.6;
+    }
+  }
+
+  .codakis-courses__eyebrow {
+    color: var(--codakis-green-dark);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .codakis-courses__stats {
+    display: flex;
+    gap: 0.9rem;
+
+    > div {
+      display: grid;
+      grid-template-columns: auto auto;
+      align-items: center;
+      gap: 0.1rem 0.8rem;
+      min-width: 9.5rem;
+      padding: 1.1rem 1.4rem;
+      border: 1px solid rgba(29, 38, 48, 0.09);
+      border-radius: 0.5rem;
+      background: #fff;
+
+      svg {
+        grid-row: 1 / 3;
+        color: var(--codakis-green);
+      }
+
+      strong {
+        color: var(--codakis-black);
+        font-size: 1.8rem;
+        line-height: 1;
+      }
+
+      span {
+        color: #84909c;
+        font-size: 1.1rem;
+      }
+    }
+  }
+
+  .codakis-courses__section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+
+    > div > span {
+      color: var(--codakis-green-dark);
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      margin: 0.25rem 0 0;
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    p {
+      margin: 0;
+      color: #667085;
+      font-size: 1.3rem;
+    }
+  }
+
+  .codakis-courses__outline {
+    display: grid;
+    gap: 1rem;
+
+    .accordion-item {
+      overflow: hidden;
+      border: 1px solid rgba(29, 38, 48, 0.09);
+      border-radius: 0.75rem;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+    }
+
+    .accordion-button {
+      display: flex;
+      gap: 1.3rem;
+      padding: 1.6rem 1.8rem;
+      color: var(--codakis-black);
+      background: #fff;
+      box-shadow: none;
+
+      &::after {
+        width: 1.6rem;
+        height: 1.6rem;
+        margin-left: 1.2rem;
+        background-size: 1.6rem;
+      }
+
+      &:not(.collapsed) {
+        border-bottom: 1px solid rgba(29, 38, 48, 0.08);
+        color: var(--codakis-black);
+        background: #f8fafb;
+      }
+
+      &:focus-visible {
+        outline: 0.2rem solid rgba(29, 185, 106, 0.45);
+        outline-offset: -0.2rem;
+      }
+    }
+
+    .accordion-body {
+      padding: 0;
+    }
+  }
+
+  .codakis-courses__module-number {
+    display: grid;
+    width: 3.8rem;
+    height: 3.8rem;
+    place-items: center;
+    flex: 0 0 auto;
+    border-radius: 0.5rem;
+    color: var(--codakis-green-dark);
+    background: rgba(29, 185, 106, 0.12);
+    font-size: 1.3rem;
+    font-weight: 800;
+  }
+
+  .codakis-courses__module-title {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.2rem;
+
+    small {
+      color: #84909c;
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    strong {
+      overflow: hidden;
+      color: var(--codakis-black);
+      font-size: 1.55rem;
+      line-height: 1.35;
+      font-weight: 750;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .codakis-courses__module-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: #667085;
+    font-size: 1.2rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .codakis-courses__premium {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    color: #8a4b08;
+    background: #fff2c7 !important;
+    font-size: 1.05rem;
+  }
+
+  .codakis-courses__lesson-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li + li {
+      border-top: 1px solid rgba(29, 38, 48, 0.07);
+    }
+  }
+
+  .codakis-courses__lesson {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1.3rem;
+    padding: 1.5rem 1.8rem 1.5rem 6.9rem;
+    color: inherit;
+    text-decoration: none;
+    transition: background 160ms ease;
+
+    &:hover {
+      color: inherit;
+      background: #f8fafb;
+
+      .codakis-courses__lesson-step {
+        border-color: var(--codakis-green);
+        color: #fff;
+        background: var(--codakis-green);
+      }
+
+      .codakis-courses__lesson-action {
+        color: var(--codakis-green-dark);
+      }
+    }
+
+    &:focus-visible {
+      outline: 0.2rem solid rgba(29, 185, 106, 0.5);
+      outline-offset: -0.2rem;
+    }
+  }
+
+  .codakis-courses__lesson-step {
+    display: grid;
+    width: 3.2rem;
+    height: 3.2rem;
+    place-items: center;
+    border: 1px solid rgba(29, 185, 106, 0.4);
+    border-radius: 50%;
+    color: var(--codakis-green-dark);
+    background: #fff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+  }
+
+  .codakis-courses__lesson-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.15rem;
+
+    strong {
+      color: var(--codakis-black);
+      font-size: 1.4rem;
+      line-height: 1.4;
+      font-weight: 700;
+    }
+
+    > span {
+      display: -webkit-box;
+      overflow: hidden;
+      color: #667085;
+      font-size: 1.2rem;
+      line-height: 1.45;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  .codakis-courses__lesson-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #667085;
+    font-size: 1.2rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .codakis-courses__empty {
+    margin: 0;
+    padding: 1.8rem 1.8rem 1.8rem 6.9rem;
+    color: #667085;
+    font-size: 1.3rem;
+  }
+
+  .codakis-courses__lesson.is-locked {
+    color: #8a95a1;
+    cursor: not-allowed;
+
+    .codakis-courses__lesson-step {
+      border-color: rgba(29, 38, 48, 0.15);
+      color: #8a95a1;
+      background: #f2f4f6;
+    }
+
+    .codakis-courses__lesson-copy strong {
+      color: #667085;
+    }
+  }
+
+  .codakis-courses__paywall {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.6rem 1.8rem;
+    border-top: 1px solid rgba(29, 38, 48, 0.07);
+    background: #fffdf5;
+
+    > svg {
+      flex: 0 0 auto;
+      color: #b4770c;
+    }
+
+    strong {
+      display: block;
+      color: var(--codakis-black);
+      font-size: 1.35rem;
+    }
+
+    p {
+      max-width: 52ch;
+      margin: 0.2rem 0 0;
+      color: #667085;
+      font-size: 1.2rem;
+      line-height: 1.5;
+    }
+
+    > div {
+      flex: 1;
+    }
+
+    .btn {
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 767px) {
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+  }
+
+  .codakis-lesson__locked {
+    padding: 1rem 0 0.5rem;
+    text-align: center;
+
+    h2 {
+      margin: 1.4rem 0 0.6rem;
+      color: var(--codakis-black);
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    p {
+      max-width: 52ch;
+      margin: 0 auto;
+      color: #667085;
+      font-size: 1.35rem;
+      line-height: 1.6;
+    }
+  }
+
+  .codakis-lesson__locked-icon {
+    display: inline-grid;
+    width: 6rem;
+    height: 6rem;
+    place-items: center;
+    border-radius: 50%;
+    color: #b4770c;
+    background: #fff5d9;
+  }
+
+  .codakis-lesson__locked-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-top: 2rem;
+  }
+
+  // Lecture d'une leçon — confort de lecture + sommaire du thème
+  .codakis-lesson__main > .card-body {
+    padding: 2.4rem;
+  }
+
+  .codakis-lesson__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-bottom: 1.8rem;
+    color: #667085;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--codakis-green-dark);
+    }
+  }
+
+  .codakis-lesson__header {
+    padding-bottom: 1.8rem;
+    border-bottom: 1px solid rgba(29, 38, 48, 0.09);
+    margin-bottom: 2.2rem;
+
+    h1 {
+      margin: 0.4rem 0 0;
+      color: var(--codakis-black);
+      font-size: 2.6rem;
+      line-height: 1.25;
+      font-weight: 800;
+    }
+
+    p {
+      max-width: 68ch;
+      margin: 1rem 0 0;
+      color: #667085;
+      font-size: 1.45rem;
+      line-height: 1.65;
+    }
+  }
+
+  .codakis-lesson__eyebrow {
+    color: var(--codakis-green-dark);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .codakis-lesson__cover {
+    width: 100%;
+    max-height: 32rem;
+    margin-bottom: 2.4rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+  }
+
+  .codakis-lesson-body {
+    max-width: 72ch;
+    color: #3e3d3f;
+    font-size: 1.5rem;
+    line-height: 1.75;
+
+    > *:first-child {
+      margin-top: 0;
+    }
+
+    h2 {
+      margin: 3rem 0 1rem;
+      color: var(--codakis-black);
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    h3 {
+      margin: 2.4rem 0 0.8rem;
+      color: var(--codakis-black);
+      font-size: 1.7rem;
+      font-weight: 750;
+    }
+
+    h4 {
+      margin: 2rem 0 0.7rem;
+      font-size: 1.55rem;
+      font-weight: 700;
+    }
+
+    p,
+    ul,
+    ol {
+      margin-bottom: 1.6rem;
+    }
+
+    li + li {
+      margin-top: 0.5rem;
+    }
+
+    a {
+      color: var(--codakis-green-dark);
+      text-decoration: underline;
+      text-underline-offset: 0.2rem;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      margin: 2rem 0;
+      border-radius: 0.75rem;
+    }
+
+    iframe,
+    video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      margin: 2rem 0;
+      border: 1px solid rgba(29, 38, 48, 0.09);
+      border-radius: 0.75rem;
+      background: #000;
+    }
+
+    blockquote {
+      margin: 2rem 0;
+      padding: 1.4rem 1.8rem;
+      border-left: 0.3rem solid var(--codakis-green);
+      border-radius: 0 0.5rem 0.5rem 0;
+      color: #4a5560;
+      background: #f8fafb;
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    table {
+      width: 100%;
+      margin: 2rem 0;
+      border-collapse: collapse;
+      font-size: 1.35rem;
+
+      th,
+      td {
+        padding: 0.9rem 1.1rem;
+        border: 1px solid rgba(29, 38, 48, 0.11);
+        text-align: left;
+      }
+
+      th {
+        color: var(--codakis-black);
+        background: #f8fafb;
+        font-weight: 700;
+      }
+    }
+
+    code {
+      padding: 0.15rem 0.45rem;
+      border-radius: 0.3rem;
+      background: rgba(29, 38, 48, 0.06);
+      font-size: 1.3rem;
+    }
+  }
+
+  .codakis-video {
+    position: relative;
+    width: 100%;
+    max-width: 72ch;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border: 1px solid rgba(29, 38, 48, 0.09);
+    border-radius: 0.75rem;
+    background: #000;
+
+    iframe,
+    video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  }
+
+  .codakis-lesson__nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(29, 38, 48, 0.09);
+  }
+
+  .codakis-lesson__nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.4rem 1.6rem;
+    border: 1px solid rgba(29, 38, 48, 0.09);
+    border-radius: 0.75rem;
+    color: inherit;
+    background: #fff;
+    text-decoration: none;
+    transition: border-color 160ms ease, background 160ms ease;
+
+    &:hover {
+      border-color: rgba(29, 185, 106, 0.45);
+      color: inherit;
+      background: #f8fafb;
+    }
+
+    &.is-next {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    svg {
+      flex: 0 0 auto;
+      color: var(--codakis-green-dark);
+    }
+
+    > span {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+
+    small {
+      color: #84909c;
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    strong {
+      overflow: hidden;
+      color: var(--codakis-black);
+      font-size: 1.35rem;
+      line-height: 1.4;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .codakis-lesson__aside {
+    position: sticky;
+    top: 8.5rem;
+
+    > .card-body {
+      padding: 1.8rem;
+    }
+  }
+
+  .codakis-lesson__aside-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    color: #667085;
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    svg {
+      color: var(--codakis-green);
+    }
+  }
+
+  .codakis-lesson__outline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .codakis-lesson__outline-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    border-radius: 0.5rem;
+    color: #4a5560;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    text-decoration: none;
+    transition: background 160ms ease, color 160ms ease;
+
+    &:hover {
+      color: var(--codakis-black);
+      background: #f8fafb;
+    }
+
+    &.is-current {
+      color: var(--codakis-black);
+      background: rgba(29, 185, 106, 0.1);
+      font-weight: 700;
+
+      .codakis-lesson__outline-step {
+        border-color: var(--codakis-green);
+        color: #fff;
+        background: var(--codakis-green);
+      }
+    }
+  }
+
+  .codakis-lesson__outline-step {
+    display: grid;
+    width: 2.6rem;
+    height: 2.6rem;
+    place-items: center;
+    flex: 0 0 auto;
+    border: 1px solid rgba(29, 185, 106, 0.4);
+    border-radius: 50%;
+    color: var(--codakis-green-dark);
+    background: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  @media (max-width: 991px) {
+    .codakis-lesson__aside {
+      position: static;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .codakis-lesson__main > .card-body {
+      padding: 1.5rem;
+    }
+
+    .codakis-lesson__header h1 {
+      font-size: 2.1rem;
+    }
+
+    .codakis-lesson-body {
+      font-size: 1.4rem;
+    }
+
+    .codakis-lesson__nav {
+      grid-template-columns: 1fr;
+    }
+
+    .codakis-lesson__nav-link.is-next {
+      justify-content: flex-start;
+      text-align: left;
+      flex-direction: row-reverse;
+    }
+  }
+
+  @media (max-width: 991px) {
+    .codakis-courses__hero {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .codakis-courses__stats {
+      grid-column: 1 / -1;
+      padding-left: 7rem;
+    }
+  }
+
+  @media (max-width: 575px) {
+    .codakis-courses > .card-body {
+      padding: 1.5rem;
+    }
+
+    .codakis-courses__hero {
+      grid-template-columns: 1fr;
+      padding: 2rem;
+    }
+
+    .codakis-courses__hero-icon {
+      width: 4.8rem;
+      height: 4.8rem;
+    }
+
+    .codakis-courses__stats {
+      grid-column: auto;
+      padding-left: 0;
+
+      > div {
+        min-width: 0;
+        flex: 1;
+      }
+    }
+
+    .codakis-courses__section-heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .codakis-courses__outline .accordion-button {
+      gap: 1rem;
+      padding: 1.4rem;
+    }
+
+    .codakis-courses__module-meta {
+      display: none;
+    }
+
+    .codakis-courses__lesson {
+      grid-template-columns: auto minmax(0, 1fr);
+      padding: 1.5rem;
+    }
+
+    .codakis-courses__lesson-action {
+      display: none;
+    }
+
+    .codakis-courses__empty {
+      padding: 1.8rem;
+    }
+  }
 }

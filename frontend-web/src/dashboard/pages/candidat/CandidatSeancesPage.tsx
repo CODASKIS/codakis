@@ -5,7 +5,6 @@ import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import EventDetailPanel from "../../components/scheduling/EventDetailPanel";
 import ScheduleLegend from "../../components/scheduling/ScheduleLegend";
-import ScheduleToolbar from "../../components/scheduling/ScheduleToolbar";
 import WeekCalendar from "../../components/scheduling/WeekCalendar";
 import {
   seanceToCalendarEvent,
@@ -92,12 +91,11 @@ export default function CandidatSeancesPage() {
                 <Alert variant="light" className="border mb-3">{t("candidat.seances.noUpcoming")}</Alert>
               ) : null}
 
-              <ScheduleToolbar weekStart={weekStart} onChange={setWeekStart} />
-
               <div className="codakis-schedule-layout">
                 <div>
                   <WeekCalendar
                     weekStart={weekStart}
+                    onWeekChange={setWeekStart}
                     events={weekEvents}
                     selectedEventId={selected?.id}
                     emptyLabel={t("candidat.seances.emptyWeek")}

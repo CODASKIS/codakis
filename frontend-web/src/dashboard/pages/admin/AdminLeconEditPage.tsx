@@ -181,7 +181,13 @@ export default function AdminLeconEditPage() {
           </Col>
           <Col md={12}>
             <Form.Label>{t("admin.pedagogy.body")}</Form.Label>
-            <QuillEditor value={form.body} onChange={(body) => setForm((c) => ({ ...c, body }))} />
+            <QuillEditor
+              value={form.body}
+              onChange={(body) => setForm((c) => ({ ...c, body }))}
+              minHeight={460}
+              placeholder={t("admin.pedagogy.bodyPlaceholder")}
+            />
+            <Form.Text className="text-muted">{t("admin.pedagogy.bodyHint")}</Form.Text>
           </Col>
         </Row>
         <div className="d-flex gap-2 mt-4">

@@ -7,6 +7,7 @@ from app.db.models import (
     Examen,
     ExamenQuestion,
     Lecon,
+    Paiement,
     Question,
     Quiz,
     QuizQuestion,
@@ -100,6 +101,20 @@ def _validate_reponses(reponses: list) -> None:
     correct = sum(1 for item in reponses if item.est_correcte)
     if correct != 1:
         raise ValueError("Exactement une réponse doit être marquée comme correcte")
+
+
+def has_premium_access(db: Session, user: Utilisateur) -> bool:
+    """Un abonnement Premium payé et confirmé ouvre les thèmes premium."""
+    return (
+        db.query(Paiement)
+        .filter(
+            Paiement.utilisateur_id == user.id,
+            Paiement.purpose == "subscription",
+            Paiement.status == "completed",
+        )
+        .first()
+        is not None
+    )
 
 
 def theme_to_public(db: Session, theme: Theme) -> dict:
@@ -207,6 +222,7 @@ def question_to_admin(db: Session, question: Question) -> dict:
         "theme_code": theme.code if theme else None,
         "prompt": question.prompt,
         "image_url": question.image_url,
+        "video_url": question.video_url,
         "explanation": question.explanation,
         "difficulty": question.difficulty,
         "est_actif": question.est_actif,
@@ -231,6 +247,7 @@ def question_to_public(question: Question) -> dict:
         "id": question.id,
         "prompt": question.prompt,
         "image_url": question.image_url,
+        "video_url": question.video_url,
         "reponses": [{"id": item.id, "label": item.label, "texte": item.texte} for item in reponses],
     }
 
@@ -323,6 +340,7 @@ def create_question(db: Session, data) -> Question:
         theme_id=data.theme_id,
         prompt=data.prompt.strip(),
         image_url=(data.image_url or "").strip() or None,
+        video_url=(data.video_url or "").strip() or None,
         explanation=(data.explanation or "").strip() or None,
         difficulty=data.difficulty,
         est_actif=data.est_actif,
@@ -353,6 +371,8 @@ def update_question(db: Session, question: Question, data) -> Question:
         question.prompt = data.prompt.strip()
     if data.image_url is not None:
         question.image_url = data.image_url.strip() or None
+    if data.video_url is not None:
+        question.video_url = data.video_url.strip() or None
     if data.explanation is not None:
         question.explanation = data.explanation.strip() or None
     if data.difficulty is not None:

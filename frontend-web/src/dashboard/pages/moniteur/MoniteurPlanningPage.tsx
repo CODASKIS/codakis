@@ -5,7 +5,6 @@ import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import EventDetailPanel from "../../components/scheduling/EventDetailPanel";
 import ScheduleLegend from "../../components/scheduling/ScheduleLegend";
-import ScheduleToolbar from "../../components/scheduling/ScheduleToolbar";
 import WeekCalendar from "../../components/scheduling/WeekCalendar";
 import {
   creneauToCalendarEvent,
@@ -39,7 +38,7 @@ export default function MoniteurPlanningPage() {
     } finally {
       setLoading(false);
     }
-  }, [t, weekParam]);
+  }, [weekParam]);
 
   useEffect(() => {
     void load();
@@ -121,12 +120,11 @@ export default function MoniteurPlanningPage() {
           {error ? <Alert variant="danger">{error}</Alert> : null}
           {success ? <Alert variant="success" onClose={() => setSuccess("")} dismissible>{success}</Alert> : null}
 
-          <ScheduleToolbar weekStart={weekStart} onChange={setWeekStart} />
-
           <div className="codakis-schedule-layout">
             <div>
               <WeekCalendar
                 weekStart={weekStart}
+                onWeekChange={setWeekStart}
                 events={calendarEvents}
                 selectedEventId={selected?.id}
                 loading={loading}
