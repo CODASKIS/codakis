@@ -81,7 +81,7 @@ export default function DrivingSchoolSearchFilters({
           <option value="">{t("schools.filters.allCountries")}</option>
           {CEMAC_COUNTRIES.map((country) => (
             <option key={country.code} value={country.code.toUpperCase()}>
-              {t(`home.countries.${country.nameKey}`)}
+              {t(`coverage.countries.${country.nameKey}`)}
             </option>
           ))}
         </select>

@@ -24,6 +24,7 @@ type ProfileForm = {
   last_name: string;
   phone: string;
   city: string;
+  langue: string;
 };
 
 function toForm(user: ApiUser): ProfileForm {
@@ -32,11 +33,12 @@ function toForm(user: ApiUser): ProfileForm {
     last_name: user.last_name,
     phone: user.phone ?? "",
     city: user.city ?? "",
+    langue: user.langue?.startsWith("en") ? "en" : "fr",
   };
 }
 
 export default function CandidatProfilePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const session = getSession();
   const enrollment = getCandidateEnrollment();
   const enrolled = isCandidateEnrolled();
@@ -48,7 +50,7 @@ export default function CandidatProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState<ProfileForm>({ first_name: "", last_name: "", phone: "", city: "" });
+  const [form, setForm] = useState<ProfileForm>({ first_name: "", last_name: "", phone: "", city: "", langue: "fr" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -83,10 +85,12 @@ export default function CandidatProfilePage() {
         last_name: form.last_name.trim(),
         phone: form.phone.trim() || undefined,
         city: form.city.trim() || undefined,
+        langue: form.langue,
       });
       setUser(updated);
       setForm(toForm(updated));
       setSession(userToSession(updated));
+      await i18n.changeLanguage(form.langue.startsWith("en") ? "en" : "fr");
       setEditing(false);
       setSuccess(t("dashboard.profile.saveSuccess"));
     } catch (err) {
@@ -174,6 +178,18 @@ export default function CandidatProfilePage() {
                   />
                 </Form.Group>
               </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>{t("dashboard.profile.language")}</Form.Label>
+                  <Form.Select
+                    value={form.langue}
+                    onChange={(event) => setForm((current) => ({ ...current, langue: event.target.value }))}
+                  >
+                    <option value="fr">Français</option>
+                    <option value="en">English</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
               <Col md={12}>
                 <Form.Group>
                   <Form.Label>{t("dashboard.profile.email")}</Form.Label>
@@ -198,6 +214,12 @@ export default function CandidatProfilePage() {
               <Col md={6}>
                 <p className="text-muted small mb-1">{t("dashboard.profile.city")}</p>
                 <p className="fw-semibold mb-0">{user?.city ?? t("dashboard.profile.notProvided")}</p>
+              </Col>
+              <Col md={6}>
+                <p className="text-muted small mb-1">{t("dashboard.profile.language")}</p>
+                <p className="fw-semibold mb-0">
+                  {user?.langue?.startsWith("en") ? "English" : "Français"}
+                </p>
               </Col>
             </Row>
           )}
