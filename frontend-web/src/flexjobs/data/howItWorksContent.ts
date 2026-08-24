@@ -80,7 +80,7 @@ export const HOW_IT_WORKS_CLIENT_FAQ: HowItWorksFaqItem[] = [
     answer:
       "Oui. Vous pouvez créer un compte, accéder aux cours de base et passer des quiz gratuitement. Les forfaits conduite et complets sont proposés par les auto-écoles partenaires.",
     linkLabel: "Voir les tarifs",
-    linkHref: "/themes#abonnement",
+    linkHref: "/tarifs#abonnement",
   },
   {
     question: "Puis-je réviser le code sans m'inscrire à une auto-école ?",

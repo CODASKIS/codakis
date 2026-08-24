@@ -256,17 +256,49 @@ body.dashboardkit-active {
       padding: 0.65rem 0.5rem 0.85rem;
       overflow: hidden;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .codakis-sidebar-account {
+      align-items: center;
+      width: 100%;
     }
 
     .codakis-sidebar-account__profile,
     .codakis-sidebar-account__offer {
-      width: 100% !important;
-      max-width: 100% !important;
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      border-radius: 50% !important;
+      justify-content: center;
+      align-items: center;
       overflow: hidden;
 
       &:hover {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 40px !important;
+        min-width: 40px !important;
+        max-width: 40px !important;
+        background: rgba(29, 185, 106, 0.18);
+        transform: none;
+      }
+    }
+
+    .codakis-sidebar-account__offer {
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      max-width: 36px !important;
+
+      &:hover {
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        transform: scale(1.04);
       }
     }
   }
@@ -292,20 +324,27 @@ body.dashboardkit-active {
 
     .codakis-sidebar-account__profile {
       justify-content: center;
-      padding: 0.45rem 0;
-      border-radius: 8px;
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      padding: 0 !important;
+      margin: 0 auto;
+      border-radius: 50% !important;
 
       &:hover {
-        background: rgba(29, 185, 106, 0.14);
+        background: rgba(29, 185, 106, 0.18);
       }
     }
 
     .codakis-sidebar-account__offer {
-      width: 36px;
-      height: 36px;
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      max-width: 36px !important;
       padding: 0;
       margin: 0 auto;
-      border-radius: 50%;
+      border-radius: 50% !important;
       justify-content: center;
 
       span {
@@ -313,7 +352,10 @@ body.dashboardkit-active {
       }
 
       &:hover {
-        transform: scale(1.06);
+        width: 36px !important;
+        min-width: 36px !important;
+        max-width: 36px !important;
+        transform: scale(1.04);
       }
     }
   }
@@ -1076,15 +1118,23 @@ body.dashboardkit-active {
 
     .codakis-sidebar-account__profile {
       justify-content: center;
-      padding: 0.35rem 0;
+      width: 40px !important;
+      height: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      padding: 0 !important;
+      margin: 0 auto;
+      border-radius: 50% !important;
     }
 
     .codakis-sidebar-account__offer {
-      width: 36px;
-      height: 36px;
+      width: 36px !important;
+      height: 36px !important;
+      min-width: 36px !important;
+      max-width: 36px !important;
       padding: 0;
       margin: 0 auto;
-      border-radius: 50%;
+      border-radius: 50% !important;
       justify-content: center;
 
       span {
@@ -3208,6 +3258,7 @@ body.dashboardkit-active {
 
     .codakis-player {
       margin: 0;
+      padding-left: 1rem;
       min-height: calc(100vh - #{$header-height});
     }
 
@@ -4773,7 +4824,52 @@ body.dashboardkit-active.minimenu .pc-sidebar {
   .codakis-sidebar-account__profile,
   .codakis-sidebar-account__offer {
     overflow: hidden !important;
-    max-width: 100% !important;
+  }
+
+  .codakis-sidebar-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .codakis-sidebar-account {
+    align-items: center;
+    width: 100%;
+  }
+
+  .codakis-sidebar-account__profile,
+  .codakis-sidebar-account__offer {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    border-radius: 50% !important;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+      width: 40px !important;
+      min-width: 40px !important;
+      max-width: 40px !important;
+      background: rgba(29, 185, 106, 0.18);
+      transform: none;
+    }
+  }
+
+  .codakis-sidebar-account__offer {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+
+    &:hover {
+      width: 36px !important;
+      min-width: 36px !important;
+      max-width: 36px !important;
+      transform: scale(1.04);
+    }
   }
 
   .codakis-sidebar-account__meta,

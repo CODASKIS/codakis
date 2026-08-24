@@ -20,7 +20,7 @@ import { getCandidateEnrollment, isCandidateEnrolled } from '@/auth/candidateEnr
 import { getProfilePath, getSettingsPath, ROLE_CONFIG } from '@/auth/roles';
 import { getUserAvatarUrl } from '@/lib/uiAvatars';
 
-const UPGRADE_HREF = '/themes#abonnement';
+const UPGRADE_HREF = '/tarifs#abonnement';
 
 function MenuLink({ to, icon, materialIcon, children, onClick, muted }) {
   return (

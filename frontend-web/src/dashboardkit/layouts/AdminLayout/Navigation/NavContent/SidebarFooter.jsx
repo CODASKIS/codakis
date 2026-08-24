@@ -5,7 +5,7 @@ import { canUpgradeToPremium, getSession, isPremiumUser } from '@/auth/authStore
 import { getProfilePath } from '@/auth/roles';
 import { getUserAvatarUrl } from '@/lib/uiAvatars';
 
-const UPGRADE_HREF = '/themes#abonnement';
+const UPGRADE_HREF = '/tarifs#abonnement';
 
 export function SidebarAccountFoot() {
   const { t } = useTranslation();

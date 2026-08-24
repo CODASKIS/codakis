@@ -39,13 +39,13 @@ export default function Pagination({
   className,
 }: PaginationProps) {
   const { t } = useTranslation();
+  if (total <= 0) return null;
+
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
-
-  if (totalPages <= 1) return null;
-
   const firstItem = (page - 1) * pageSize + 1;
   const lastItem = Math.min(page * pageSize, total);
   const pages = getPageNumbers(page, totalPages);
+  const showControls = totalPages > 1;
 
   return (
     <nav
@@ -56,6 +56,7 @@ export default function Pagination({
         {t("pagination.summary", { from: firstItem, to: lastItem, total })}
       </p>
 
+      {showControls ? (
       <div className="fj-pagination__controls">
         <button
           type="button"
@@ -98,6 +99,7 @@ export default function Pagination({
           <ChevronRight size={18} strokeWidth={2} aria-hidden="true" />
         </button>
       </div>
+      ) : null}
     </nav>
   );
 }

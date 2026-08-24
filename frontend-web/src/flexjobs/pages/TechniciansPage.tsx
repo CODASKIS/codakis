@@ -20,7 +20,8 @@ import Pagination from "../components/Pagination";
 import SubNav from "../components/SubNav";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE_GRID = 6;
+const PAGE_SIZE_LIST = 10;
 
 type ViewMode = "list" | "grid";
 type SortKey = "name" | "price_asc" | "price_desc" | "newest";
@@ -64,6 +65,7 @@ export default function TechniciansPage() {
   const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
   const viewMode: ViewMode = searchParams.get("view") === "grid" ? "grid" : "list";
   const sort = (appliedFilters.sort || "name") as SortKey;
+  const pageSize = viewMode === "grid" ? PAGE_SIZE_GRID : PAGE_SIZE_LIST;
 
   useEffect(() => {
     setDraftFilters(appliedFilters);
@@ -107,7 +109,7 @@ export default function TechniciansPage() {
     void loadSchools();
   }, [loadSchools]);
 
-  const totalPages = Math.max(1, Math.ceil(schools.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(schools.length / pageSize));
   const currentPage = Math.min(page, totalPages);
 
   useEffect(() => {
@@ -118,9 +120,9 @@ export default function TechniciansPage() {
   }, [appliedFilters, currentPage, page, setSearchParams, viewMode]);
 
   const paginatedResults = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-    return schools.slice(start, start + PAGE_SIZE);
-  }, [currentPage, schools]);
+    const start = (currentPage - 1) * pageSize;
+    return schools.slice(start, start + pageSize);
+  }, [currentPage, pageSize, schools]);
 
   const handlePageChange = (nextPage: number) => {
     setSearchParams(filtersToParams(appliedFilters, nextPage, viewMode));
@@ -254,12 +256,14 @@ export default function TechniciansPage() {
               </div>
             ) : null}
 
-            <Pagination
-              page={currentPage}
-              pageSize={PAGE_SIZE}
-              total={schools.length}
-              onPageChange={handlePageChange}
-            />
+            {!loading && !loadError && schools.length > 0 ? (
+              <Pagination
+                page={currentPage}
+                pageSize={pageSize}
+                total={schools.length}
+                onPageChange={handlePageChange}
+              />
+            ) : null}
           </div>
         </div>
       </Container>

@@ -165,7 +165,7 @@ export default function AboutPage() {
                     <strong>{t("about.originHowItWorks")}</strong>
                   </Link>{" "}
                   {t("about.originMiddle")}{" "}
-                  <Link to="/themes#abonnement">
+                  <Link to="/tarifs#abonnement">
                     <strong>{t("about.originPricing")}</strong>
                   </Link>
                   {t("about.originAfter")}

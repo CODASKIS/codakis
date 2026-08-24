@@ -1436,7 +1436,7 @@
   }
 }
 
-/* Forfaits permis auto-école — réutilise fj-pricing-dark (page /themes#abonnement pour abonnement CODAKIS) */
+/* Forfaits permis auto-école — réutilise fj-pricing-dark (abonnement CODAKIS sur /tarifs#abonnement) */
 .fj-pricing-plan__badge {
   display: inline-flex;
   align-items: center;
@@ -2193,6 +2193,12 @@
 
 .fj-marketplace-card__cta {
   margin-top: 0.4rem;
+}
+
+.fj-marketplace-main .fj-pagination {
+  margin-top: 2rem;
+  padding-top: 1.6rem;
+  border-top: 0.1rem solid #e5e7eb;
 }
 
 .fj-mm-checkout__split {
