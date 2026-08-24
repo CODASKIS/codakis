@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/app_theme.dart';
-import '../../widgets/codakis_feature_card.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_defaults.dart';
+import '../../core/locale_scope.dart';
+import '../../widgets/codakis_courses_hero.dart';
+import '../../widgets/codakis_module_card.dart';
+import '../../widgets/codakis_primary_button.dart';
 import 'pedagogy_service.dart';
 
 class CoursesPage extends StatefulWidget {
-  const CoursesPage({super.key, required this.pedagogyService});
+  const CoursesPage({
+    super.key,
+    required this.pedagogyService,
+    required this.onThemeTap,
+    this.refreshToken = 0,
+  });
 
   final PedagogyService pedagogyService;
+  final void Function(CourseTheme theme, int index) onThemeTap;
+  final int refreshToken;
 
   @override
   State<CoursesPage> createState() => _CoursesPageState();
 }
 
-class _CoursesPageState extends State<CoursesPage> {
+class _CoursesPageState extends State<CoursesPage> with AutomaticKeepAliveClientMixin {
   late Future<List<CourseTheme>> _future;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -22,75 +38,164 @@ class _CoursesPageState extends State<CoursesPage> {
     _future = widget.pedagogyService.fetchThemes();
   }
 
+  @override
+  void didUpdateWidget(CoursesPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.refreshToken != widget.refreshToken) _reload();
+  }
+
   Future<void> _reload() async {
-    setState(() {
-      _future = widget.pedagogyService.fetchThemes();
-    });
+    setState(() => _future = widget.pedagogyService.fetchThemes());
     await _future;
+  }
+
+  String _themeTitle(CourseTheme theme, bool isEnglish) {
+    if (isEnglish && theme.titleEn.isNotEmpty) return theme.titleEn;
+    return theme.titleFr;
   }
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _reload,
-      color: CodakisColors.primary,
-      child: FutureBuilder<List<CourseTheme>>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
+    super.build(context);
+    final s = LocaleScope.stringsOf(context);
+    final isEnglish = LocaleScope.serviceOf(context).isEnglish;
+
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
+      appBar: AppBar(
+        title: Text(s.navCourses),
+        backgroundColor: Colors.white,
+        foregroundColor: AppColors.textDark,
+        elevation: 0.3,
+        actions: [
+          IconButton(onPressed: _reload, icon: const Icon(Icons.refresh)),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: _reload,
+        color: AppColors.primary,
+        child: FutureBuilder<List<CourseTheme>>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 120),
+                  Center(child: CircularProgressIndicator()),
+                ],
+              );
+            }
+
+            if (snapshot.hasError) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  CodakisMainCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(s.coursesLoadError, style: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 16)),
+                        const SizedBox(height: 8),
+                        Text('${snapshot.error}'),
+                        const SizedBox(height: 16),
+                        CodakisPrimaryButton(
+                          label: s.commonRetry,
+                          expand: true,
+                          variant: CodakisButtonVariant.site,
+                          onPressed: _reload,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
+            final themes = snapshot.data ?? [];
+            if (themes.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  CodakisMainCard(
+                    child: Column(
+                      children: [
+                        Text(s.coursesEmpty),
+                        const SizedBox(height: 16),
+                        CodakisPrimaryButton(
+                          label: s.commonRetry,
+                          expand: true,
+                          variant: CodakisButtonVariant.site,
+                          onPressed: _reload,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }
+
             return ListView(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               children: [
-                Text('Impossible de charger les cours.', style: Theme.of(context).textTheme.titleMedium),
-                const SizedBox(height: 8),
-                Text(snapshot.error.toString(), style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(height: 16),
-                FilledButton(onPressed: _reload, child: const Text('Réessayer')),
+                CodakisMainCard(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      CodakisCoursesHero(
+                        eyebrow: s.coursesLearningPath,
+                        title: s.coursesTitle,
+                        lead: s.coursesLead,
+                        moduleCount: themes.length,
+                        modulesLabel: s.coursesModules,
+                      ),
+                      const SizedBox(height: 24),
+                      CodakisCoursesSectionHeading(
+                        eyebrow: s.coursesCurriculum,
+                        title: s.coursesAllThemes,
+                        hint: s.coursesOpenModuleHint,
+                      ),
+                      const SizedBox(height: 16),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final cardWidth = constraints.maxWidth >= 620 ? (constraints.maxWidth - 12) / 2 : constraints.maxWidth;
+                          return Wrap(
+                            spacing: 12,
+                            runSpacing: 12,
+                            children: themes.asMap().entries.map((entry) {
+                              final theme = entry.value;
+                              final index = entry.key + 1;
+                              return SizedBox(
+                                width: cardWidth,
+                                child: CodakisModuleCard(
+                                  index: index,
+                                  themeLabel: s.themeLabel(index),
+                                  title: _themeTitle(theme, isEnglish),
+                                  lessonCountLabel: theme.locked
+                                      ? s.themeLocked(theme.leconCount)
+                                      : s.themeLessons(theme.leconCount),
+                                  openLabel: s.coursesOpenModule,
+                                  premiumLabel: s.coursesPremium,
+                                  isPremium: theme.isPremium,
+                                  locked: theme.locked,
+                                  onTap: () => widget.onThemeTap(theme, index),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ],
             );
-          }
-
-          final themes = snapshot.data ?? [];
-          if (themes.isEmpty) {
-            return ListView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(24),
-              children: [
-                Text('Aucun module disponible.', style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            );
-          }
-
-          return ListView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(20),
-            children: [
-              Text('Mes modules CEMAC', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                '${themes.length} thèmes — révision code de la route',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              ...themes.asMap().entries.map((entry) {
-                final theme = entry.value;
-                final index = entry.key + 1;
-                return CodakisFeatureCard(
-                  icon: theme.locked ? Icons.lock_outline : Icons.menu_book_outlined,
-                  title: '${index.toString().padLeft(2, '0')}. ${theme.titleFr}',
-                  subtitle: theme.locked
-                      ? 'Premium — ${theme.leconCount} leçons'
-                      : '${theme.leconCount} leçons',
-                  onTap: () {},
-                );
-              }),
-            ],
-          );
-        },
+          },
+        ),
       ),
     );
   }

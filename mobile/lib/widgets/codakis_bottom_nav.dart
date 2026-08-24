@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
+import '../core/locale_scope.dart';
 
 enum CodakisTab { home, courses, quizzes, school, profile }
 
@@ -16,6 +17,8 @@ class CodakisBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final s = LocaleScope.stringsOf(context);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -37,35 +40,35 @@ class CodakisBottomNav extends StatelessWidget {
               _NavItem(
                 icon: Icons.home_outlined,
                 activeIcon: Icons.home,
-                label: 'Accueil',
+                label: s.navHome,
                 selected: current == CodakisTab.home,
                 onTap: () => onChanged(CodakisTab.home),
               ),
               _NavItem(
                 icon: Icons.menu_book_outlined,
                 activeIcon: Icons.menu_book,
-                label: 'Cours',
+                label: s.navCourses,
                 selected: current == CodakisTab.courses,
                 onTap: () => onChanged(CodakisTab.courses),
               ),
               _NavItem(
                 icon: Icons.quiz_outlined,
                 activeIcon: Icons.quiz,
-                label: 'Quiz',
+                label: s.navQuizzes,
                 selected: current == CodakisTab.quizzes,
                 onTap: () => onChanged(CodakisTab.quizzes),
               ),
               _NavItem(
                 icon: Icons.directions_car_outlined,
                 activeIcon: Icons.directions_car,
-                label: 'Auto-école',
+                label: s.navSchool,
                 selected: current == CodakisTab.school,
                 onTap: () => onChanged(CodakisTab.school),
               ),
               _NavItem(
                 icon: Icons.person_outline,
                 activeIcon: Icons.person,
-                label: 'Profil',
+                label: s.navProfile,
                 selected: current == CodakisTab.profile,
                 onTap: () => onChanged(CodakisTab.profile),
               ),

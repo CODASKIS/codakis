@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/api_client.dart';
 import 'core/app_theme.dart';
+import 'core/locale_scope.dart';
+import 'core/locale_service.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/login_page.dart';
 import 'features/home/main_shell.dart';
 import 'features/onboarding/onboarding_page.dart';
+import 'core/webview_bootstrap.dart';
 import 'features/onboarding/onboarding_service.dart';
 
 void main() {
+  bootstrapWebView();
   runApp(const CodakisApp());
 }
 
@@ -25,6 +30,7 @@ class _CodakisAppState extends State<CodakisApp> {
   late final ApiClient _apiClient;
   late final AuthService _authService;
   late final OnboardingService _onboardingService;
+  late final LocaleService _localeService;
   _AppGate _gate = _AppGate.loading;
 
   @override
@@ -33,10 +39,12 @@ class _CodakisAppState extends State<CodakisApp> {
     _apiClient = ApiClient();
     _authService = AuthService(_apiClient);
     _onboardingService = OnboardingService();
+    _localeService = LocaleService();
     _bootstrap();
   }
 
   Future<void> _bootstrap() async {
+    await _localeService.load();
     final onboardingDone = await _onboardingService.isCompleted();
     final session = await _authService.restoreSession();
     if (!mounted) return;
@@ -59,18 +67,33 @@ class _CodakisAppState extends State<CodakisApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'CODAKIS',
-      debugShowCheckedModeBanner: false,
-      theme: buildCodakisTheme(),
-      home: switch (_gate) {
-        _AppGate.loading => const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          ),
-        _AppGate.onboarding => OnboardingPage(onFinished: _finishOnboarding),
-        _AppGate.login => LoginPage(authService: _authService),
-        _AppGate.home => MainShell(authService: _authService),
-      },
+    return LocaleScope(
+      localeService: _localeService,
+      child: ListenableBuilder(
+        listenable: _localeService,
+        builder: (context, _) {
+          return MaterialApp(
+            title: 'CODAKIS',
+            debugShowCheckedModeBanner: false,
+            locale: Locale(_localeService.locale),
+            supportedLocales: const [Locale('fr'), Locale('en')],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            theme: buildCodakisTheme(),
+            home: switch (_gate) {
+              _AppGate.loading => const Scaffold(
+                  body: Center(child: CircularProgressIndicator()),
+                ),
+              _AppGate.onboarding => OnboardingPage(onFinished: _finishOnboarding),
+              _AppGate.login => LoginPage(authService: _authService),
+              _AppGate.home => MainShell(authService: _authService),
+            },
+          );
+        },
+      ),
     );
   }
 }

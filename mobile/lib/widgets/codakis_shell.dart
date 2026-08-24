@@ -5,7 +5,13 @@ import 'codakis_logo.dart';
 
 export 'codakis_feature_card.dart';
 export 'codakis_logo.dart';
+export 'codakis_auth_shell.dart';
+export 'codakis_auth_form.dart';
+export 'codakis_otp_form.dart';
+export 'codakis_locale_switcher.dart';
+export 'codakis_outline_button.dart';
 export 'codakis_primary_button.dart';
+export 'codakis_text_field.dart';
 export 'codakis_bottom_nav.dart';
 
 class CodakisAppBar extends StatelessWidget implements PreferredSizeWidget {

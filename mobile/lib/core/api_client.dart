@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -16,6 +17,8 @@ class ApiException implements Exception {
 
 class ApiClient {
   ApiClient({http.Client? client}) : _client = client ?? http.Client();
+
+  static const _timeout = Duration(seconds: 20);
 
   final http.Client _client;
   String? _accessToken;
@@ -45,41 +48,91 @@ class ApiClient {
     Map<String, dynamic>? body,
     bool auth = false,
   }) async {
-    final response = await _client.post(
-      _uri(path),
-      headers: _headers(auth: auth),
-      body: jsonEncode(body ?? {}),
-    );
-    return _decode(response);
+    try {
+      final response = await _client
+          .post(
+            _uri(path),
+            headers: _headers(auth: auth),
+            body: jsonEncode(body ?? {}),
+          )
+          .timeout(_timeout);
+      return _decode(response);
+    } on TimeoutException {
+      throw ApiException(_connectionErrorMessage());
+    } on http.ClientException {
+      throw ApiException(_connectionErrorMessage());
+    }
   }
 
   Future<List<dynamic>> getList(String path, {bool auth = false}) async {
-    final response = await _client.get(
-      _uri(path),
-      headers: _headers(auth: auth),
-    );
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      if (response.body.isEmpty) return [];
-      final decoded = jsonDecode(response.body);
-      if (decoded is List) return decoded;
-      return [];
+    try {
+      final response = await _client
+          .get(
+            _uri(path),
+            headers: _headers(auth: auth),
+          )
+          .timeout(_timeout);
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        if (response.body.isEmpty) return [];
+        final decoded = jsonDecode(response.body);
+        if (decoded is List) return decoded;
+        return [];
+      }
+      Map<String, dynamic>? payload;
+      if (response.body.isNotEmpty) {
+        final decoded = jsonDecode(response.body);
+        if (decoded is Map<String, dynamic>) payload = decoded;
+      }
+      final detail = payload?['detail'];
+      final message = detail is String ? detail : 'Erreur API (${response.statusCode})';
+      throw ApiException(message, statusCode: response.statusCode);
+    } on TimeoutException {
+      throw ApiException(_connectionErrorMessage());
+    } on http.ClientException {
+      throw ApiException(_connectionErrorMessage());
     }
-    Map<String, dynamic>? payload;
-    if (response.body.isNotEmpty) {
-      final decoded = jsonDecode(response.body);
-      if (decoded is Map<String, dynamic>) payload = decoded;
-    }
-    final detail = payload?['detail'];
-    final message = detail is String ? detail : 'Erreur API (${response.statusCode})';
-    throw ApiException(message, statusCode: response.statusCode);
   }
 
   Future<Map<String, dynamic>> get(String path, {bool auth = false}) async {
-    final response = await _client.get(
-      _uri(path),
-      headers: _headers(auth: auth),
-    );
-    return _decode(response);
+    try {
+      final response = await _client
+          .get(
+            _uri(path),
+            headers: _headers(auth: auth),
+          )
+          .timeout(_timeout);
+      return _decode(response);
+    } on TimeoutException {
+      throw ApiException(_connectionErrorMessage());
+    } on http.ClientException {
+      throw ApiException(_connectionErrorMessage());
+    }
+  }
+
+  Future<Map<String, dynamic>> patch(
+    String path, {
+    Map<String, dynamic>? body,
+    bool auth = false,
+  }) async {
+    try {
+      final response = await _client
+          .patch(
+            _uri(path),
+            headers: _headers(auth: auth),
+            body: jsonEncode(body ?? {}),
+          )
+          .timeout(_timeout);
+      return _decode(response);
+    } on TimeoutException {
+      throw ApiException(_connectionErrorMessage());
+    } on http.ClientException {
+      throw ApiException(_connectionErrorMessage());
+    }
+  }
+
+  String _connectionErrorMessage() {
+    return 'Impossible de joindre le backend (${ApiConfig.baseUrl}). '
+        'Vérifiez que l\'API tourne sur le port 8000.';
   }
 
   Map<String, dynamic> _decode(http.Response response) {

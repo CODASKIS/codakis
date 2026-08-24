@@ -1,10 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/app_theme.dart';
-import '../../widgets/codakis_locale_switcher.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_defaults.dart';
+import '../../core/constants/app_icons.dart';
+import '../../core/locale_scope.dart';
+import '../../l10n/app_strings.dart';
+import '../../widgets/codakis_language_picker.dart';
 import '../../widgets/codakis_logo.dart';
 import '../../widgets/codakis_primary_button.dart';
-import 'onboarding_slide.dart';
+
+class OnboardingSlide {
+  const OnboardingSlide({
+    required this.title,
+    required this.description,
+    this.heroAsset,
+    this.useLogoHero = false,
+  });
+
+  final String title;
+  final String description;
+  final String? heroAsset;
+  final bool useLogoHero;
+}
+
+List<OnboardingSlide> onboardingSlidesFor(AppStrings s) => [
+      OnboardingSlide(
+        title: s.onboardingSlide1Title,
+        description: s.onboardingSlide1Desc,
+        useLogoHero: true,
+      ),
+      OnboardingSlide(
+        title: s.onboardingSlide2Title,
+        description: s.onboardingSlide2Desc,
+        heroAsset: 'assets/onboarding/illustration_step_2.png',
+      ),
+      OnboardingSlide(
+        title: s.onboardingSlide3Title,
+        description: s.onboardingSlide3Desc,
+        heroAsset: 'assets/onboarding/illustration_step_3.png',
+      ),
+    ];
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key, required this.onFinished});
@@ -18,7 +55,6 @@ class OnboardingPage extends StatefulWidget {
 class _OnboardingPageState extends State<OnboardingPage> {
   final _controller = PageController();
   int _index = 0;
-  String _locale = 'fr';
 
   @override
   void dispose() {
@@ -26,62 +62,107 @@ class _OnboardingPageState extends State<OnboardingPage> {
     super.dispose();
   }
 
-  void _next() {
-    if (_index >= onboardingSlides.length - 1) {
-      widget.onFinished();
+  Future<void> _finishWithLanguage() async {
+    final s = LocaleScope.stringsOf(context);
+    final localeService = LocaleScope.serviceOf(context);
+    await CodakisLanguagePickerSheet.show(
+      context,
+      options: codakisLanguageOptions(s),
+      initialCode: localeService.locale,
+      onSaved: localeService.setLocale,
+    );
+    if (!mounted) return;
+    widget.onFinished();
+  }
+
+  void _next(int lastIndex) {
+    if (_index >= lastIndex) {
+      _finishWithLanguage();
       return;
     }
-    _controller.nextPage(
-      duration: const Duration(milliseconds: 320),
-      curve: Curves.easeOutCubic,
-    );
+    _controller.nextPage(duration: AppDefaults.duration, curve: Curves.ease);
   }
 
   @override
   Widget build(BuildContext context) {
-    final isLast = _index == onboardingSlides.length - 1;
+    final s = LocaleScope.stringsOf(context);
+    final slides = onboardingSlidesFor(s);
+    final isLast = _index == slides.length - 1;
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 16, 0),
-              child: Row(
-                children: [
-                  TextButton(onPressed: widget.onFinished, child: const Text('Passer')),
-                  const Spacer(),
-                  CodakisLocaleSwitcher(
-                    locale: _locale,
-                    onChanged: (value) => setState(() => _locale = value),
-                  ),
-                ],
-              ),
+            Align(
+              alignment: Alignment.topRight,
+              child: TextButton(onPressed: _finishWithLanguage, child: Text(s.onboardingSkip)),
             ),
+            const Spacer(),
             Expanded(
+              flex: 8,
               child: PageView.builder(
                 controller: _controller,
-                itemCount: onboardingSlides.length,
-                onPageChanged: (value) => setState(() => _index = value),
-                itemBuilder: (context, index) => _SlideView(slide: onboardingSlides[index]),
+                itemCount: slides.length,
+                onPageChanged: (v) => setState(() => _index = v),
+                itemBuilder: (context, index) => _OnboardView(slide: slides[index]),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              child: Row(
-                children: [
-                  _PageDots(count: onboardingSlides.length, index: _index),
-                  const Spacer(),
-                  CodakisPrimaryButton(
-                    label: isLast ? 'Commencer' : 'Suivant',
-                    icon: Icons.arrow_forward,
-                    pill: true,
-                    onPressed: _next,
+            const Spacer(),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                TweenAnimationBuilder<double>(
+                  duration: AppDefaults.duration,
+                  tween: Tween<double>(
+                    begin: 0,
+                    end: (1 / slides.length) * (_index + 1),
                   ),
-                ],
+                  curve: Curves.easeInOutBack,
+                  builder: (context, value, _) => SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: CircularProgressIndicator(
+                      value: value,
+                      strokeWidth: 6,
+                      backgroundColor: AppColors.cardColor,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+                Material(
+                  color: AppColors.primary,
+                  shape: const CircleBorder(),
+                  elevation: 2,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: () => _next(slides.length - 1),
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          AppIcons.arrowForward,
+                          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppDefaults.padding),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppDefaults.padding),
+              child: CodakisPrimaryButton(
+                label: isLast ? s.onboardingStart : s.onboardingNext,
+                expand: true,
+                variant: CodakisButtonVariant.site,
+                size: CodakisButtonSize.lg,
+                onPressed: () => _next(slides.length - 1),
               ),
             ),
+            const SizedBox(height: AppDefaults.padding),
           ],
         ),
       ),
@@ -89,100 +170,43 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 }
 
-class _SlideView extends StatelessWidget {
-  const _SlideView({required this.slide});
+class _OnboardView extends StatelessWidget {
+  const _OnboardView({required this.slide});
 
   final OnboardingSlide slide;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Expanded(
-            flex: 5,
-            child: Center(
-              child: slide.useLogoHero
-                  ? const CodakisLogo(height: 72)
-                  : _IllustrationCard(asset: slide.heroAsset!),
-            ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.width * 0.75,
+          child: Padding(
+            padding: const EdgeInsets.all(AppDefaults.padding * 2),
+            child: slide.useLogoHero
+                ? Center(child: CodakisLogo(height: MediaQuery.sizeOf(context).width * 0.35))
+                : Image.asset(slide.heroAsset!, fit: BoxFit.contain),
           ),
-          Expanded(
-            flex: 4,
-            child: Column(
-              children: [
-                Text(
-                  slide.title,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  slide.description,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(AppDefaults.padding),
+          child: Column(
+            children: [
+              Text(
+                slide.title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(AppDefaults.padding),
+                child: Text(slide.description, textAlign: TextAlign.center),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IllustrationCard extends StatelessWidget {
-  const _IllustrationCard({required this.asset});
-
-  final String asset;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      constraints: const BoxConstraints(maxWidth: 340, maxHeight: 340),
-      decoration: BoxDecoration(
-        color: CodakisColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: CodakisColors.border.withValues(alpha: 0.35)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Image.asset(asset, fit: BoxFit.cover),
-    );
-  }
-}
-
-class _PageDots extends StatelessWidget {
-  const _PageDots({required this.count, required this.index});
-
-  final int count;
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(count, (i) {
-        final active = i == index;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: EdgeInsets.only(right: i == count - 1 ? 0 : 8),
-          width: active ? 10 : 8,
-          height: active ? 10 : 8,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: active ? CodakisColors.primary : CodakisColors.dotInactive,
-          ),
-        );
-      }),
+        ),
+      ],
     );
   }
 }

@@ -39,6 +39,7 @@ from app.schemas.pedagogy import (
     ThemeUpdateRequest,
 )
 from app.services.pedagogy import (
+    build_theme_public_payloads,
     create_examen,
     create_lecon,
     create_question,

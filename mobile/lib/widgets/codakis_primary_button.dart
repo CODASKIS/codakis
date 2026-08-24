@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
+import '../core/codakis_button_styles.dart';
 
 class CodakisPrimaryButton extends StatelessWidget {
   const CodakisPrimaryButton({
@@ -11,6 +12,8 @@ class CodakisPrimaryButton extends StatelessWidget {
     this.loading = false,
     this.pill = false,
     this.expand = false,
+    this.variant = CodakisButtonVariant.auth,
+    this.size = CodakisButtonSize.md,
   });
 
   final String label;
@@ -19,18 +22,20 @@ class CodakisPrimaryButton extends StatelessWidget {
   final bool loading;
   final bool pill;
   final bool expand;
+  final CodakisButtonVariant variant;
+  final CodakisButtonSize size;
 
   @override
   Widget build(BuildContext context) {
     final radius = pill ? CodakisRadii.pill : CodakisRadii.button;
     final child = loading
         ? const SizedBox(
-            width: 22,
-            height: 22,
+            width: 20,
+            height: 20,
             child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
           )
         : Row(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(label),
@@ -41,17 +46,15 @@ class CodakisPrimaryButton extends StatelessWidget {
             ],
           );
 
-    final button = FilledButton(
+    return FilledButton(
       onPressed: loading ? null : onPressed,
-      style: FilledButton.styleFrom(
-        minimumSize: Size(expand ? double.infinity : 0, 48),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
-        ),
+      style: CodakisButtonStyles.primary(
+        expand: expand,
+        radius: radius,
+        variant: variant,
+        size: size,
       ),
       child: child,
     );
-
-    return button;
   }
 }

@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 
 import '../../core/app_theme.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_defaults.dart';
+import '../../core/locale_scope.dart';
+import '../../data/cemac_countries.dart';
+import '../../widgets/codakis_form_feedback.dart';
 import '../../widgets/codakis_logo.dart';
 import '../../widgets/codakis_primary_button.dart';
+import '../../widgets/codakis_text_field.dart';
 import '../home/main_shell.dart';
 import 'auth_service.dart';
 import 'login_page.dart';
@@ -23,6 +29,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _loading = false;
+  bool _showPassword = false;
+  String _countryCode = 'CM';
   String? _error;
 
   @override
@@ -46,6 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
         password: _passwordController.text,
         fullName: _nameController.text,
         phone: _phoneController.text,
+        countryCode: _countryCode,
+        langue: LocaleScope.serviceOf(context).locale,
       );
       if (!mounted) return;
       Navigator.of(context).pushAndRemoveUntil(
@@ -53,7 +63,7 @@ class _RegisterPageState extends State<RegisterPage> {
         (_) => false,
       );
     } catch (err) {
-      setState(() => _error = err.toString());
+      setState(() => _error = '$err');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -61,69 +71,101 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final s = LocaleScope.stringsOf(context);
+    final isEnglish = LocaleScope.serviceOf(context).isEnglish;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.scaffoldWithBoxBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.scaffoldWithBoxBackground,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 420),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const Center(child: CodakisLogo(height: 56)),
-                    const SizedBox(height: 12),
-                    Text('Créer un compte', style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Nom complet'),
-                      validator: (v) => v == null || v.trim().length < 2 ? 'Nom requis' : null,
+            child: Column(
+              children: [
+                const CodakisLogo(height: 48),
+                const SizedBox(height: 8),
+                Text(s.registerTitle, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: AppDefaults.padding),
+                Container(
+                  margin: const EdgeInsets.all(AppDefaults.margin),
+                  padding: const EdgeInsets.all(AppDefaults.padding),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: AppDefaults.boxShadow,
+                    borderRadius: AppDefaults.borderRadius,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        CodakisTextField(
+                          label: s.fieldFullName,
+                          controller: _nameController,
+                          validator: (v) => v == null || v.trim().length < 2 ? s.validationNameRequired : null,
+                        ),
+                        const SizedBox(height: 12),
+                        CodakisTextField(
+                          label: s.fieldEmail,
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          validator: (v) => v == null || !v.contains('@') ? s.validationEmailInvalid : null,
+                        ),
+                        const SizedBox(height: 12),
+                        CodakisTextField(
+                          label: s.fieldPhone,
+                          controller: _phoneController,
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 12),
+                        CodakisTextField(
+                          label: s.fieldPassword,
+                          controller: _passwordController,
+                          obscureText: true,
+                          showObscureToggle: true,
+                          obscureVisible: _showPassword,
+                          onToggleObscure: () => setState(() => _showPassword = !_showPassword),
+                          validator: (v) => v == null || v.length < 8 ? s.validationPasswordMin : null,
+                        ),
+                        const SizedBox(height: 12),
+                        CodakisSelectField<String>(
+                          label: s.fieldCountry,
+                          value: _countryCode,
+                          items: cemacCountries
+                              .map((c) => DropdownMenuItem(value: c.code, child: Text(c.label(isEnglish))))
+                              .toList(),
+                          onChanged: (v) {
+                            if (v != null) setState(() => _countryCode = v);
+                          },
+                        ),
+                        if (_error != null) ...[
+                          const SizedBox(height: 12),
+                          CodakisFormFeedback.error(message: _error!),
+                        ],
+                        const SizedBox(height: AppDefaults.padding),
+                        CodakisPrimaryButton(
+                          label: _loading ? s.registerSubmitting : s.registerSubmit,
+                          expand: true,
+                          loading: _loading,
+                          variant: CodakisButtonVariant.auth,
+                          onPressed: _loading ? null : _submit,
+                        ),
+                        Center(
+                          child: TextButton(
+                            onPressed: () => Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(builder: (_) => LoginPage(authService: widget.authService)),
+                            ),
+                            child: Text('${s.registerHasAccount}${s.registerSignIn}'),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(labelText: 'E-mail'),
-                      validator: (v) => v == null || !v.contains('@') ? 'E-mail invalide' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(labelText: 'Téléphone (optionnel)'),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(labelText: 'Mot de passe'),
-                      validator: (v) => v == null || v.length < 8 ? '8 caractères minimum' : null,
-                    ),
-                    if (_error != null) ...[
-                      const SizedBox(height: 16),
-                      Text(_error!, style: TextStyle(color: CodakisColors.accentRed)),
-                    ],
-                    const SizedBox(height: 24),
-                    CodakisPrimaryButton(
-                      label: _loading ? 'Création…' : 'Créer mon compte',
-                      loading: _loading,
-                      expand: true,
-                      onPressed: _loading ? null : _submit,
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => LoginPage(authService: widget.authService)),
-                      ),
-                      child: const Text('Déjà inscrit ? Se connecter'),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ),

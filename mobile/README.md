@@ -22,7 +22,14 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ### 2. Émulateur Android (lancer **avant** `flutter run`)
 
-**Recommandé — Codakis Lite** (Pixel 5, API 34, ~1,5 Go RAM) :
+**Méthode recommandée — tout-en-un** (compile si besoin, démarre l’émulateur, installe et lance l’app) :
+
+```bash
+cd mobile
+./scripts/run-on-emulator.sh
+```
+
+**Manuel — Codakis Lite** (Pixel 5, API 34, ~1,5 Go RAM) :
 
 ```bash
 cd mobile
@@ -51,8 +58,15 @@ flutter devices
 ```bash
 cd mobile
 flutter pub get
+# Si l’APK est déjà compilé (via run-on-emulator.sh) :
+flutter run -d emulator-5554 \
+  --use-application-binary=build/app/outputs/flutter-apk/app-debug.apk \
+  --dart-define=API_BASE_URL=http://10.0.2.2:8000
+# Sinon compilation complète :
 flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:8000
 ```
+
+> **Important :** ne lancez pas `flutter run` pendant que Gradle compile **et** que l’émulateur démarre en même temps sur une machine avec peu de RAM — l’émulateur peut se fermer (`adb: device not found`). Préférez `./scripts/run-on-emulator.sh` ou compilez d’abord avec `flutter build apk --debug`.
 
 > **`10.0.2.2`** = adresse de votre PC vue depuis l'émulateur Android (équivalent de `localhost`).
 

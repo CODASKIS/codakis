@@ -1,12 +1,23 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
-import '../../config/api_config.dart';
-import '../../core/app_theme.dart';
-import '../../widgets/codakis_shell.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/constants/app_defaults.dart';
+import '../../widgets/codakis_app_drawer.dart';
+import '../../widgets/pg_bottom_nav.dart';
 import '../auth/auth_service.dart';
 import '../auth/login_page.dart';
+import '../consort/consort_page.dart';
+import '../consort/consort_service.dart';
 import '../courses/courses_page.dart';
 import '../courses/pedagogy_service.dart';
+import '../courses/theme_detail_page.dart';
+import '../profile/profile_page.dart';
+import '../profile/profile_service.dart';
+import '../quizzes/quizzes_page.dart';
+import '../school/school_page.dart';
+import '../school/school_service.dart';
+import 'home_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key, required this.authService});
@@ -17,14 +28,78 @@ class MainShell extends StatefulWidget {
   State<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
-  CodakisTab _tab = CodakisTab.home;
+class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentIndex = 0;
   late final PedagogyService _pedagogyService;
+  late final SchoolService _schoolService;
+  late final ConsortService _consortService;
+  late final ProfileService _profileService;
+  int _dataRefreshToken = 0;
+  CandidatProgress? _progress;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _pedagogyService = PedagogyService(widget.authService.api);
+    _schoolService = SchoolService(widget.authService.api);
+    _consortService = ConsortService(widget.authService.api);
+    _profileService = ProfileService(widget.authService.api);
+    _loadProgress();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _refreshData();
+  }
+
+  Future<void> _loadProgress() async {
+    try {
+      final progress = await _pedagogyService.fetchProgress();
+      if (mounted) setState(() => _progress = progress);
+    } catch (_) {}
+  }
+
+  void _refreshData() {
+    setState(() => _dataRefreshToken++);
+    _loadProgress();
+  }
+
+  void _onNavTap(int index) {
+    setState(() {
+      _currentIndex = index;
+      if (index == 0 || index == 1) _dataRefreshToken++;
+    });
+    _loadProgress();
+  }
+
+  void _openDrawer() => _scaffoldKey.currentState?.openDrawer();
+
+  void _openTheme(CourseTheme theme, int index) {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => ThemeDetailPage(
+              theme: theme,
+              pedagogyService: _pedagogyService,
+              themeIndex: index,
+            ),
+          ),
+        )
+        .then((_) => _loadProgress());
+  }
+
+  void _openConsort() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => ConsortPage(consortService: _consortService)),
+    );
   }
 
   Future<void> _logout() async {
@@ -37,157 +112,68 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      HomePage(
+        key: ValueKey('home-$_dataRefreshToken'),
+        pedagogyService: _pedagogyService,
+        progress: _progress,
+        onOpenDrawer: _openDrawer,
+        onOpenCourses: () => _onNavTap(1),
+        onOpenQuizzes: () => _onNavTap(2),
+        onThemeTap: _openTheme,
+      ),
+      CoursesPage(
+        pedagogyService: _pedagogyService,
+        refreshToken: _dataRefreshToken,
+        onThemeTap: _openTheme,
+      ),
+      QuizzesPage(pedagogyService: _pedagogyService),
+      SchoolPage(schoolService: _schoolService),
+      ProfilePage(
+        profileService: _profileService,
+        onLogout: _logout,
+        onOpenCourses: () => _onNavTap(1),
+        onOpenQuizzes: () => _onNavTap(2),
+        onOpenSchool: () => _onNavTap(3),
+        onOpenConsort: _openConsort,
+      ),
+    ];
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: CodakisAppBar(
-        actions: [
-          if (_tab == CodakisTab.profile)
-            IconButton(
-              tooltip: 'Déconnexion',
-              onPressed: _logout,
-              icon: const Icon(Icons.logout),
-            ),
-        ],
+      key: _scaffoldKey,
+      backgroundColor: AppColors.scaffoldBackground,
+      drawer: CodakisAppDrawer(
+        currentIndex: _currentIndex,
+        onNavigate: _onNavTap,
+        onOpenConsort: _openConsort,
+        onLogout: _logout,
       ),
-      body: IndexedStack(
-        index: _tab.index,
-        children: [
-          _HomeTab(
-            apiUrl: ApiConfig.baseUrl,
-            onOpenCourses: () => setState(() => _tab = CodakisTab.courses),
-            onOpenQuizzes: () => setState(() => _tab = CodakisTab.quizzes),
-          ),
-          CoursesPage(pedagogyService: _pedagogyService),
-          const _PlaceholderTab(
-            title: 'Quiz & examens',
-            subtitle: 'Entraînement chronométré — bientôt dans l’app mobile.',
-            icon: Icons.quiz_outlined,
-          ),
-          const _PlaceholderTab(
-            title: 'Mon auto-école',
-            subtitle: 'Forfait, séances et dossier Consort.',
-            icon: Icons.directions_car_outlined,
-          ),
-          _ProfileTab(onLogout: _logout),
-        ],
+      body: PageTransitionSwitcher(
+        transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
+          return SharedAxisTransition(
+            animation: primaryAnimation,
+            secondaryAnimation: secondaryAnimation,
+            transitionType: SharedAxisTransitionType.horizontal,
+            fillColor: AppColors.scaffoldBackground,
+            child: child,
+          );
+        },
+        duration: AppDefaults.duration,
+        child: KeyedSubtree(
+          key: ValueKey<int>(_currentIndex),
+          child: pages[_currentIndex],
+        ),
       ),
-      bottomNavigationBar: CodakisBottomNav(
-        current: _tab,
-        onChanged: (next) => setState(() => _tab = next),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _onNavTap(2),
+        backgroundColor: AppColors.primary,
+        elevation: 4,
+        child: const Icon(Icons.quiz_outlined, color: Colors.white, size: 28),
       ),
-    );
-  }
-}
-
-class _HomeTab extends StatelessWidget {
-  const _HomeTab({
-    required this.apiUrl,
-    required this.onOpenCourses,
-    required this.onOpenQuizzes,
-  });
-
-  final String apiUrl;
-  final VoidCallback onOpenCourses;
-  final VoidCallback onOpenQuizzes;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: CodakisColors.surfaceAlt,
-            borderRadius: BorderRadius.circular(CodakisRadii.card),
-            border: Border.all(color: CodakisColors.primary.withValues(alpha: 0.15)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Mon parcours permis', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 8),
-              Text(
-                'Révision CEMAC, quiz chronométrés et suivi auto-école sur CODAKIS.',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text('Accès rapide', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 12),
-        CodakisFeatureCard(
-          icon: Icons.menu_book_outlined,
-          title: 'Cours & thèmes',
-          subtitle: '10 modules CEMAC connectés au backend',
-          onTap: onOpenCourses,
-        ),
-        CodakisFeatureCard(
-          icon: Icons.quiz_outlined,
-          title: 'Quiz & examens blancs',
-          subtitle: 'Entraînement chronométré',
-          onTap: onOpenQuizzes,
-        ),
-        Text(
-          'API : $apiUrl',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 13),
-        ),
-      ],
-    );
-  }
-}
-
-class _ProfileTab extends StatelessWidget {
-  const _ProfileTab({required this.onLogout});
-
-  final VoidCallback onLogout;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text('Mon profil', style: Theme.of(context).textTheme.titleLarge),
-        const SizedBox(height: 8),
-        Text('Compte candidat CODAKIS', style: Theme.of(context).textTheme.bodyMedium),
-        const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(onPressed: onLogout, child: const Text('Se déconnecter')),
-        ),
-      ],
-    );
-  }
-}
-
-class _PlaceholderTab extends StatelessWidget {
-  const _PlaceholderTab({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  final String title;
-  final String subtitle;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: CodakisColors.primary),
-            const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text(subtitle, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.center),
-          ],
-        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: PgBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onNavTap: _onNavTap,
       ),
     );
   }
