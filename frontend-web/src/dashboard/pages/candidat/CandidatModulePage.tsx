@@ -37,12 +37,15 @@ export default function CandidatModulePage() {
     setLoading(true);
     setError("");
     try {
-      const themesData = await fetchCandidatThemes();
-      setThemes(themesData);
-      const [leconsData, path] = await Promise.all([
+      const themesPromise = themes.length > 0 ? Promise.resolve(themes) : fetchCandidatThemes();
+      const [themesData, leconsData, path] = await Promise.all([
+        themesPromise,
         fetchCandidatLecons(themeId),
         fetchCandidatCoursePath(themeId).catch(() => null),
       ]);
+      if (themes.length === 0) {
+        setThemes(themesData);
+      }
       setLecons(leconsData);
       setFirstStepRef(path?.steps[0]?.ref ?? leconsData[0]?.id ?? null);
     } catch (err) {
@@ -50,7 +53,7 @@ export default function CandidatModulePage() {
     } finally {
       setLoading(false);
     }
-  }, [themeId, t]);
+  }, [themeId, t, themes]);
 
   useEffect(() => {
     void load();

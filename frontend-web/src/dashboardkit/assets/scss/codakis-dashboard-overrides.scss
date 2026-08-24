@@ -3421,6 +3421,13 @@ body.dashboardkit-active {
     max-width: 920px;
   }
 
+  .codakis-player__content--loading {
+    display: grid;
+    place-items: center;
+    min-height: 320px;
+    max-width: none;
+  }
+
   .codakis-player__hero {
     position: relative;
     overflow: hidden;

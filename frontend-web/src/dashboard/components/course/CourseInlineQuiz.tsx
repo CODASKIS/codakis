@@ -88,8 +88,25 @@ export default function CourseInlineQuiz({ quizId, alreadyPassed = false, onPass
     void handleSubmit();
   }, [timer.isExpired, handleSubmit, submitting, result]);
 
+  const question = questions[current];
+  const progress = questions.length ? ((current + 1) / questions.length) * 100 : 0;
+  const speechText = useMemo(
+    () => (question ? buildAssessmentSpeechText(question, t) : title),
+    [question, t, title],
+  );
+
   if (loading) return <Loader variant="section" />;
 
+  if (!error && questions.length === 0 && !alreadyPassed && !result) {
+    return (
+      <section className="codakis-player-quiz">
+        <p className="codakis-player-quiz__feedback is-error">{t("candidat.pedagogy.loadError")}</p>
+        <button type="button" className="codakis-player-quiz__submit" onClick={() => void load()}>
+          {t("common.retry", { defaultValue: "Réessayer" })}
+        </button>
+      </section>
+    );
+  }
   if (alreadyPassed && !result) {
     return (
       <section className="codakis-player-quiz codakis-player-quiz--passed">
@@ -134,13 +151,6 @@ export default function CourseInlineQuiz({ quizId, alreadyPassed = false, onPass
       </section>
     );
   }
-
-  const question = questions[current];
-  const progress = questions.length ? ((current + 1) / questions.length) * 100 : 0;
-  const speechText = useMemo(
-    () => (question ? buildAssessmentSpeechText(question, t) : title),
-    [question, t, title],
-  );
 
   return (
     <section className="codakis-player-quiz codakis-player-quiz--full">

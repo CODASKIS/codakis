@@ -1,6 +1,7 @@
 import uuid
 from datetime import UTC, datetime
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from app.db.models import (
@@ -145,9 +146,13 @@ def ensure_platform_access(db: Session, user: Utilisateur) -> None:
         )
 
 
-def theme_to_public(db: Session, theme: Theme) -> dict:
-    lecon_count = db.query(Lecon).filter(Lecon.theme_id == theme.id).count()
-    quiz_count = db.query(Quiz).filter(Quiz.theme_id == theme.id, Quiz.est_actif.is_(True)).count()
+def theme_to_public(db: Session, theme: Theme, counts: dict | None = None) -> dict:
+    if counts is None:
+        lecon_count = db.query(Lecon).filter(Lecon.theme_id == theme.id).count()
+        quiz_count = db.query(Quiz).filter(Quiz.theme_id == theme.id, Quiz.est_actif.is_(True)).count()
+    else:
+        lecon_count = counts.get("lecon_count", 0)
+        quiz_count = counts.get("quiz_count", 0)
     return {
         "id": theme.id,
         "code": theme.code,
@@ -158,6 +163,36 @@ def theme_to_public(db: Session, theme: Theme) -> dict:
         "lecon_count": lecon_count,
         "quiz_count": quiz_count,
     }
+
+
+def build_theme_public_payloads(db: Session, themes: list[Theme]) -> list[dict]:
+    if not themes:
+        return []
+
+    theme_ids = [theme.id for theme in themes]
+    lecon_rows = (
+        db.query(Lecon.theme_id, func.count(Lecon.id))
+        .filter(Lecon.theme_id.in_(theme_ids))
+        .group_by(Lecon.theme_id)
+        .all()
+    )
+    quiz_rows = (
+        db.query(Quiz.theme_id, func.count(Quiz.id))
+        .filter(Quiz.theme_id.in_(theme_ids), Quiz.est_actif.is_(True))
+        .group_by(Quiz.theme_id)
+        .all()
+    )
+    lecon_counts = {theme_id: count for theme_id, count in lecon_rows}
+    quiz_counts = {theme_id: count for theme_id, count in quiz_rows}
+
+    payloads: list[dict] = []
+    for theme in themes:
+        counts = {
+            "lecon_count": int(lecon_counts.get(theme.id, 0)),
+            "quiz_count": int(quiz_counts.get(theme.id, 0)),
+        }
+        payloads.append(theme_to_public(db, theme, counts))
+    return payloads
 
 
 def create_theme(db: Session, data) -> Theme:

@@ -424,8 +424,7 @@ def candidat_list_themes(candidat: Utilisateur = Depends(CandidatUser), db: Sess
     themes = db.query(Theme).filter(Theme.est_actif.is_(True)).order_by(Theme.sort_order.asc()).all()
     platform = has_platform_access(db, candidat)
     result = []
-    for theme in themes:
-        payload = theme_to_public(db, theme)
+    for payload in build_theme_public_payloads(db, themes):
         payload["locked"] = not platform
         result.append(payload)
     return result

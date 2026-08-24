@@ -4,7 +4,7 @@ import 'core/api_client.dart';
 import 'core/app_theme.dart';
 import 'features/auth/auth_service.dart';
 import 'features/auth/login_page.dart';
-import 'features/home/home_page.dart';
+import 'features/home/main_shell.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'features/onboarding/onboarding_service.dart';
 
@@ -69,7 +69,7 @@ class _CodakisAppState extends State<CodakisApp> {
           ),
         _AppGate.onboarding => OnboardingPage(onFinished: _finishOnboarding),
         _AppGate.login => LoginPage(authService: _authService),
-        _AppGate.home => HomePage(authService: _authService),
+        _AppGate.home => MainShell(authService: _authService),
       },
     );
   }

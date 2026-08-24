@@ -11,9 +11,7 @@ import { fadeUpVariants, staggerContainer } from "../../../components/motion/mot
 import { isPremiumUser } from "../../../auth/authStore";
 import {
   AuthApiError,
-  fetchCandidatLecons,
   fetchCandidatThemes,
-  type PedagogyLecon,
   type PedagogyTheme,
 } from "../../../lib/pedagogyApi";
 
@@ -21,7 +19,6 @@ export default function CandidatCoursesPage() {
   const { t, i18n } = useTranslation();
   const isPremium = isPremiumUser();
   const [themes, setThemes] = useState<PedagogyTheme[]>([]);
-  const [leconsByTheme, setLeconsByTheme] = useState<Record<string, PedagogyLecon[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -31,10 +28,6 @@ export default function CandidatCoursesPage() {
     try {
       const themesData = await fetchCandidatThemes();
       setThemes(themesData);
-      const entries = await Promise.all(
-        themesData.map(async (theme) => [theme.id, await fetchCandidatLecons(theme.id)] as const),
-      );
-      setLeconsByTheme(Object.fromEntries(entries));
     } catch (err) {
       setError(err instanceof AuthApiError ? err.message : t("candidat.pedagogy.loadError"));
     } finally {
@@ -116,7 +109,7 @@ export default function CandidatCoursesPage() {
                     ) : null}
                     <span>
                       {t("candidat.pedagogy.lessonCount", {
-                        count: leconsByTheme[theme.id]?.length ?? 0,
+                        count: theme.lecon_count ?? 0,
                       })}
                     </span>
                   </span>

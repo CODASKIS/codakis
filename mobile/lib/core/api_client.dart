@@ -53,6 +53,27 @@ class ApiClient {
     return _decode(response);
   }
 
+  Future<List<dynamic>> getList(String path, {bool auth = false}) async {
+    final response = await _client.get(
+      _uri(path),
+      headers: _headers(auth: auth),
+    );
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      if (response.body.isEmpty) return [];
+      final decoded = jsonDecode(response.body);
+      if (decoded is List) return decoded;
+      return [];
+    }
+    Map<String, dynamic>? payload;
+    if (response.body.isNotEmpty) {
+      final decoded = jsonDecode(response.body);
+      if (decoded is Map<String, dynamic>) payload = decoded;
+    }
+    final detail = payload?['detail'];
+    final message = detail is String ? detail : 'Erreur API (${response.statusCode})';
+    throw ApiException(message, statusCode: response.statusCode);
+  }
+
   Future<Map<String, dynamic>> get(String path, {bool auth = false}) async {
     final response = await _client.get(
       _uri(path),

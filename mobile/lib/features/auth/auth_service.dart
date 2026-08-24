@@ -56,6 +56,60 @@ class AuthService {
     await prefs.remove(_refreshTokenKey);
   }
 
+  Future<AuthSession> registerCandidat({
+    required String email,
+    required String password,
+    required String fullName,
+    String? phone,
+    String countryCode = 'CM',
+    String langue = 'fr',
+  }) async {
+    final data = await _api.post(
+      '/auth/register/candidat',
+      body: {
+        'email': email.trim().toLowerCase(),
+        'password': password,
+        'full_name': fullName.trim(),
+        if (phone != null && phone.trim().isNotEmpty) 'phone': phone.trim(),
+        'country_code': countryCode,
+        'langue': langue,
+      },
+    );
+    final session = AuthSession(
+      accessToken: data['access_token'] as String,
+      refreshToken: data['refresh_token'] as String,
+    );
+    await _persist(session);
+    _api.setAccessToken(session.accessToken);
+    return session;
+  }
+
+  Future<String> forgotPassword(String email) async {
+    final data = await _api.post(
+      '/auth/forgot-password',
+      body: {'email': email.trim().toLowerCase()},
+    );
+    return data['message'] as String? ?? 'Code envoyé si le compte existe.';
+  }
+
+  Future<String> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    final data = await _api.post(
+      '/auth/reset-password',
+      body: {
+        'email': email.trim().toLowerCase(),
+        'otp': otp.trim(),
+        'new_password': newPassword,
+      },
+    );
+    return data['message'] as String? ?? 'Mot de passe mis à jour.';
+  }
+
+  ApiClient get api => _api;
+
   Future<void> _persist(AuthSession session) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_accessTokenKey, session.accessToken);

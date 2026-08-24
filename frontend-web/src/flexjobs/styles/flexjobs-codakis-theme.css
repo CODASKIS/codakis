@@ -6896,8 +6896,18 @@ img.fj-tech-avatar {
   margin-bottom: 0.8rem;
   font-size: 1.2rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   color: var(--fj-text-muted);
+  overflow: visible;
+  white-space: normal;
+}
+
+.fj-pricing-table__school-note {
+  margin: 0;
+  font-size: 1.3rem;
+  color: var(--fj-text-muted);
+  text-align: right;
 }
 
 .fj-pricing-dark__price-row {

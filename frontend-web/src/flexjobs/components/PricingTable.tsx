@@ -84,7 +84,7 @@ function PricingCard({
   const price = getVitrineDisplayPrice(plan, billing, planPricing);
   const features = getVitrinePlanFeatures(plan);
   const period = formatPeriodSuffix(price.suffix, price.isCustom);
-  const tierLabel = (plan.sticker || plan.title).toUpperCase();
+  const tierLabel = plan.sticker?.trim() || plan.title;
 
   return (
     <article className={`fj-pricing-dark__card${featured ? " is-featured" : ""}`}>
@@ -104,6 +104,7 @@ function PricingCard({
         {!price.isCustom && !period && price.suffix ? (
           <p className="fj-pricing-dark__price-note">{price.suffix}</p>
         ) : null}
+        {price.note ? <p className="fj-pricing-dark__price-note">{price.note}</p> : null}
         <p className="fj-pricing-dark__plan-name">{plan.title}</p>
       </div>
 
@@ -166,6 +167,7 @@ export default function PricingTable({
         </div>
 
         <div className="fj-pricing-table__billing">
+          {audience === "individual" ? (
           <div className="fj-pricing-table__billing-switch">
             <span className={billing === "monthly" ? "is-active" : undefined}>{t("pricing.monthly")}</span>
             <button
@@ -180,6 +182,9 @@ export default function PricingTable({
             </button>
             <span className={billing === "yearly" ? "is-active" : undefined}>{t("pricing.yearly")}</span>
           </div>
+          ) : (
+            <p className="fj-pricing-table__school-note">{t("pricing.schoolBillingNote")}</p>
+          )}
         </div>
       </div>
 

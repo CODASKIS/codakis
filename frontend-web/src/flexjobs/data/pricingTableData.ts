@@ -53,8 +53,38 @@ export function isCustomPriceLabel(label: string): boolean {
     lower.includes("devis") ||
     lower.includes("sur mesure") ||
     lower.includes("gratuit") ||
+    lower.includes("commission") ||
     !/\d/.test(label)
   );
+}
+
+const SCHOOL_PLAN_KEYS = new Set(["autoEcolePartenaire", "autoEcolePremium"]);
+
+export function isSchoolPlan(planKey: string): boolean {
+  return SCHOOL_PLAN_KEYS.has(planKey);
+}
+
+export function getSchoolPlanDisplayPrice(
+  plan: VitrinePlanItem,
+  planPricing?: PlanPricing | null,
+): { current: string; compare?: string; suffix: string; isCustom: boolean; note?: string } {
+  const rate = planPricing?.platform_commission_rate_pct ?? 10;
+
+  if (plan.plan_key === "autoEcolePartenaire") {
+    return {
+      current: "Gratuit",
+      suffix: "",
+      isCustom: true,
+      note: `${rate} % de commission sur les inscriptions payées via CODAKIS`,
+    };
+  }
+
+  return {
+    current: `${rate} %`,
+    suffix: "par inscription",
+    isCustom: false,
+    note: "Le solde du forfait vous est reversé automatiquement",
+  };
 }
 
 function extractPriceSuffix(priceLabel: string): string {
@@ -121,7 +151,11 @@ export function getVitrineDisplayPrice(
   plan: VitrinePlanItem,
   billing: "monthly" | "yearly",
   planPricing?: PlanPricing | null,
-): { current: string; compare?: string; suffix: string; isCustom: boolean } {
+): { current: string; compare?: string; suffix: string; isCustom: boolean; note?: string } {
+  if (isSchoolPlan(plan.plan_key)) {
+    return getSchoolPlanDisplayPrice(plan, planPricing);
+  }
+
   const apiAmounts = resolveVitrinePlanAmounts(plan.plan_key, billing, planPricing);
   if (apiAmounts) {
     const suffix = extractPriceSuffix(plan.price_label);

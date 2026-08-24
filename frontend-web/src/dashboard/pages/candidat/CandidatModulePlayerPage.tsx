@@ -73,6 +73,20 @@ export default function CandidatModulePlayerPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    void fetchCandidatThemes()
+      .then((themes) => {
+        if (!cancelled) setAllThemes(themes.filter((item) => !item.locked));
+      })
+      .catch(() => {
+        if (!cancelled) setAllThemes([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const load = useCallback(async () => {
     if (!themeId || !stepRef) return;
     setLoading(true);
@@ -80,12 +94,8 @@ export default function CandidatModulePlayerPage() {
     setQuizPassed(false);
     setError("");
     try {
-      const [themes, coursePath] = await Promise.all([
-        fetchCandidatThemes(),
-        fetchCandidatCoursePath(themeId),
-      ]);
+      const coursePath = await fetchCandidatCoursePath(themeId);
 
-      setAllThemes(themes.filter((item) => !item.locked));
       setPathSteps(coursePath.steps);
       setCompletedIds(new Set(coursePath.completed_lecon_ids));
       setPassedQuizIds(new Set(coursePath.passed_quiz_ids));
@@ -97,10 +107,12 @@ export default function CandidatModulePlayerPage() {
         setQuizStepPassed(coursePath.passed_quiz_ids.includes(parsedStep.id));
         setQuizPassed(true);
       } else {
-        const data = await fetchCandidatLecon(parsedStep.id);
+        const [data, checkpointQuestion] = await Promise.all([
+          fetchCandidatLecon(parsedStep.id),
+          fetchCandidatThemeCheckpoint(themeId, parsedStep.id).catch(() => null),
+        ]);
         setLecon(data);
         setBodyHtml(await renderBlogBody(data.body));
-        const checkpointQuestion = await fetchCandidatThemeCheckpoint(themeId, data.id).catch(() => null);
         setCheckpoint(checkpointQuestion);
         setQuizStepPassed(false);
         if (!checkpointQuestion) setQuizPassed(true);
@@ -169,9 +181,7 @@ export default function CandidatModulePlayerPage() {
 
   const canAdvance = isQuizStep ? quizStepPassed : !checkpoint || quizPassed;
 
-  if (loading) return <Loader />;
-
-  if (locked) {
+  if (locked && !loading) {
     return (
       <div className="codakis-player codakis-player--locked">
         <div className="codakis-player__locked-card">
@@ -189,8 +199,6 @@ export default function CandidatModulePlayerPage() {
       </div>
     );
   }
-
-  if (error) return <div className="alert alert-danger">{error}</div>;
 
   const stepTitle = isQuizStep
     ? pathSteps.find((item) => item.ref === stepRef)?.title ?? t("coursePlayer.themeQuiz")
@@ -234,7 +242,15 @@ export default function CandidatModulePlayerPage() {
         />
 
         <main className="codakis-player__main">
-          {index >= 0 ? (
+          {loading ? (
+            <div className="codakis-player__content codakis-player__content--loading">
+              <Loader variant="section" message={t("coursePlayer.loadingStep")} />
+            </div>
+          ) : null}
+
+          {!loading && error ? <div className="alert alert-danger m-3">{error}</div> : null}
+
+          {!loading && !error && index >= 0 ? (
             <p className="codakis-player__step">
               {t("coursePlayer.stepPosition", {
                 current: index + 1,
@@ -243,16 +259,18 @@ export default function CandidatModulePlayerPage() {
             </p>
           ) : null}
 
-          {isQuizStep ? (
-            <CourseInlineQuiz
-              quizId={parsedStep.id}
-              alreadyPassed={quizStepPassed}
-              onPassed={() => {
-                setQuizStepPassed(true);
-                setPassedQuizIds((prev) => new Set([...prev, parsedStep.id]));
-              }}
-            />
-          ) : lecon ? (
+          {!loading && !error && isQuizStep ? (
+            <div className="codakis-player__content">
+              <CourseInlineQuiz
+                quizId={parsedStep.id}
+                alreadyPassed={quizStepPassed}
+                onPassed={() => {
+                  setQuizStepPassed(true);
+                  setPassedQuizIds((prev) => new Set([...prev, parsedStep.id]));
+                }}
+              />
+            </div>
+          ) : !loading && !error && lecon ? (
             <article className="codakis-player__content">
               {lecon.cover_image_url ? (
                 <div className="codakis-player__hero">
@@ -288,6 +306,7 @@ export default function CandidatModulePlayerPage() {
             </article>
           ) : null}
 
+          {!loading && !error ? (
           <footer className="codakis-player__footer">
             <button
               type="button"
@@ -302,6 +321,7 @@ export default function CandidatModulePlayerPage() {
                   : t("coursePlayer.finish")}
             </button>
           </footer>
+          ) : null}
         </main>
       </div>
     </div>

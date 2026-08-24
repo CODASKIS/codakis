@@ -5,7 +5,9 @@ import '../../core/api_client.dart';
 import '../../widgets/codakis_logo.dart';
 import '../../widgets/codakis_primary_button.dart';
 import 'auth_service.dart';
-import '../home/home_page.dart';
+import 'forgot_password_page.dart';
+import 'register_page.dart';
+import '../home/main_shell.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.authService});
@@ -43,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => HomePage(authService: widget.authService)),
+        MaterialPageRoute(builder: (_) => MainShell(authService: widget.authService)),
       );
     } on ApiException catch (err) {
       setState(() => _error = err.message);
@@ -137,6 +139,34 @@ class _LoginPageState extends State<LoginPage> {
                       loading: _loading,
                       expand: true,
                       onPressed: _loading ? null : _submit,
+                    ),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _loading
+                            ? null
+                            : () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => ForgotPasswordPage(authService: widget.authService),
+                                  ),
+                                ),
+                        child: const Text('Mot de passe oublié ?'),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: _loading
+                            ? null
+                            : () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => RegisterPage(authService: widget.authService),
+                                  ),
+                                ),
+                        child: const Text('Créer un compte candidat'),
+                      ),
                     ),
                   ],
                 ),
