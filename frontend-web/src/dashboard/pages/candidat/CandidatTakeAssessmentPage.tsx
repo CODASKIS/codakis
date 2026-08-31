@@ -110,6 +110,12 @@ export default function CandidatTakeAssessmentPage({ mode }: TakePageProps) {
     void handleSubmit();
   }, [timer.isExpired, handleSubmit, submitting, result]);
 
+  const question = questions[current];
+  const speechText = useMemo(
+    () => (question ? buildAssessmentSpeechText(question, t) : title),
+    [question, t, title],
+  );
+
   if (loading) return <Loader variant="section" />;
   if (paywallBlocked) {
     return (
@@ -159,12 +165,7 @@ export default function CandidatTakeAssessmentPage({ mode }: TakePageProps) {
     );
   }
 
-  const question = questions[current];
   const progress = questions.length ? ((current + 1) / questions.length) * 100 : 0;
-  const speechText = useMemo(
-    () => (question ? buildAssessmentSpeechText(question, t) : title),
-    [question, t, title],
-  );
 
   return (
     <div className="codakis-assessment">

@@ -6,19 +6,51 @@ Plateforme d'apprentissage du code de la route et de mise en relation avec les a
 
 ```
 codakis/
-├── backend/           # API FastAPI (monolithe modulaire)
-├── frontend-web/      # Portail web Next.js (candidat, auto-école, admin)
-├── mobile/            # Application Flutter (candidat)
-└── docker-compose.yml # Orchestration locale
+├── backend/           # API FastAPI
+├── frontend-web/      # Portail web React (candidat, auto-école, admin)
+├── mobile/            # Application Flutter (build natif, hors Docker)
+└── docker-compose.yml # Déploiement web : PostgreSQL + API + Nginx
 ```
 
-## Documentation
+## Déploiement Docker (recommandé prod / staging)
 
-Les diagrammes UML, cahiers d'analyse/conception et ADR sont maintenus dans le dépôt de documentation associé.
+Stack **web uniquement** : PostgreSQL, API FastAPI et portail Nginx.  
+L'app mobile Flutter se compile à part (`mobile/README.md`).
 
-## Démarrage
+```bash
+cp .env.example .env
+# Éditez POSTGRES_PASSWORD et SECRET_KEY (obligatoires)
 
-### Portail web (vitrine)
+docker compose up -d --build
+```
+
+| Service    | URL / accès |
+|------------|-------------|
+| Portail    | http://localhost:8080 |
+| API (proxy)| http://localhost:8080/api/v1/... |
+| PostgreSQL | interne (`postgres:5432`) |
+
+Arrêt :
+
+```bash
+docker compose down
+```
+
+Données persistées dans les volumes `postgres_data` et `cms_uploads`.
+
+### Variables importantes (`.env`)
+
+| Variable | Rôle |
+|----------|------|
+| `POSTGRES_PASSWORD` | Mot de passe base (obligatoire) |
+| `SECRET_KEY` | Clé JWT (obligatoire) |
+| `WEB_PORT` | Port public du portail (défaut `8080`) |
+| `FRONTEND_URL` / `CORS_ORIGINS` | URL publique du site |
+| `VITE_GOOGLE_CLIENT_ID` | OAuth Google (build + API) |
+
+## Développement local (sans Docker)
+
+### Portail web
 
 ```bash
 cd frontend-web
@@ -28,27 +60,22 @@ npm run dev            # http://localhost:5173
 
 **Langues :** FR / EN (sélecteur dans le header, mémorisé en local).
 
-**Stack v3 :** React 19, Vite, Tailwind 4, i18next — sans Clerk ni auth externe.
+**Stack v3 :** React 19, Vite, Tailwind 4, i18next.
 
-**Pages :** `/`, `/auto-ecoles`, `/themes`, `/tarifs`, `/blog`, `/contact`, etc.
+### Backend API
+
+Voir [`backend/README.md`](backend/README.md).
+
+```bash
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+cp .env.example .env
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
 ### Application mobile (Flutter)
 
-Voir le guide complet : [`mobile/README.md`](mobile/README.md).
+Voir [`mobile/README.md`](mobile/README.md).
 
-```bash
-# Terminal 1 — backend (port 8000)
-
-# Terminal 2 — émulateur léger (attendre l'écran d'accueil)
-cd mobile && ./scripts/start-emulator.sh
-adb devices   # doit afficher emulator-5554   device
-
-# Terminal 3 — app Flutter
-cd mobile
-flutter pub get
-flutter run -d emulator-5554 --dart-define=API_BASE_URL=http://10.0.2.2:8000
-```
-
-Comptes démo : voir `TEST_ACCOUNTS.md`.
-
-> Backend API et espace admin — prochaines étapes.
+Comptes démo : [`TEST_ACCOUNTS.md`](TEST_ACCOUNTS.md).

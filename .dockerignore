@@ -1,0 +1,14 @@
+.git
+**/.venv
+**/venv
+**/__pycache__
+**/.pytest_cache
+**/node_modules
+**/dist
+**/.dart_tool
+**/build
+mobile/
+.env
+.env.*
+!.env.example
+**/*.egg-info

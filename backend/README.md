@@ -5,9 +5,21 @@ API FastAPI pour l'authentification et la gestion des utilisateurs (CDC CODAKIS)
 ## Prérequis
 
 - Python 3.11+
-- PostgreSQL 16 (votre instance locale, sans Docker)
+- PostgreSQL 16 (local ou via `docker compose` à la racine du monorepo)
 
-## Installation
+## Déploiement Docker
+
+L'API peut tourner dans la stack Docker du monorepo :
+
+```bash
+cd ..
+cp .env.example .env
+docker compose up -d --build
+```
+
+L'API est accessible via le proxy Nginx : `http://localhost:8080/api/v1/...`
+
+## Installation (développement local)
 
 ```bash
 cd backend
