@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/components/title_and_action_button.dart';
@@ -104,7 +105,7 @@ class _HomePageState extends State<HomePage> {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Padding(
                         padding: EdgeInsets.all(32),
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(child: CodakisLogoLoader()),
                       );
                     }
                     final themes = snapshot.data ?? [];

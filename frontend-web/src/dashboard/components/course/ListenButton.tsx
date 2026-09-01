@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Loader2, Pause, Volume2 } from "lucide-react";
+import { Pause, Volume2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { AuthApiError, synthesizeCandidatSpeech } from "../../../lib/pedagogyApi";
 
@@ -82,7 +82,14 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
         aria-pressed={playing}
       >
         {loading ? (
-          <Loader2 size={16} className="codakis-listen__spin" aria-hidden />
+          <img
+            src="/images/logo-simple.png"
+            alt=""
+            width={16}
+            height={16}
+            className="codakis-listen__spin"
+            aria-hidden
+          />
         ) : playing ? (
           <Pause size={16} aria-hidden />
         ) : (

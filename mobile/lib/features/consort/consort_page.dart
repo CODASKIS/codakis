@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/app_theme.dart';
@@ -96,7 +97,7 @@ class _ConsortPageState extends State<ConsortPage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CodakisLogoLoader());
           }
           if (snapshot.hasError) {
             return ListView(

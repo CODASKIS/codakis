@@ -1,4 +1,4 @@
-import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
@@ -78,6 +78,10 @@ export default function PlatformSubscriptionCheckout({
         billing_period: billingPeriod,
       });
       setInitResult(result);
+      if (result.payment_url) {
+        window.location.href = result.payment_url;
+        return;
+      }
       setStep("pending");
 
       await confirmPaymentWithRetry(token, result.reference);
@@ -168,14 +172,7 @@ export default function PlatformSubscriptionCheckout({
             </p>
 
             <button type="submit" className="fj-pack-drawer__cta fj-pack-drawer__cta--primary" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="fj-spin" aria-hidden />
-                  {t("packs.checkout.confirming")}
-                </>
-              ) : (
-                t("packs.checkout.submit")
-              )}
+              {loading ? t("packs.checkout.confirming") : t("packs.checkout.submit")}
             </button>
           </form>
         ) : null}

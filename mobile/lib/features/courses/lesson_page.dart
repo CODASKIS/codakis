@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 
 import '../../config/api_config.dart';
 import '../../core/app_theme.dart';
@@ -76,7 +77,7 @@ class _LessonPageState extends State<LessonPage> {
         future: _future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CodakisLogoLoader());
           }
           if (snapshot.hasError) {
             return Center(child: CodakisFormFeedback.error(message: '${snapshot.error}'));

@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
 from app.services.enrollments import create_inscription
+from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
 from app.services.notifications import push_notification
 
 CHANNEL_LABELS = {
@@ -80,6 +81,14 @@ def _calc_enrollment_split(amount_fcfa: int) -> tuple[int, int, int]:
 
 
 def get_payment_config() -> dict:
+    if cinetpay_configured():
+        return {
+            "provider": "cinetpay",
+            "requires_phone": True,
+            "requires_redirect": True,
+            "sandbox": settings.cinetpay_api_key.startswith("sk_test"),
+            "label": "CinetPay — Orange / MTN / Moov / Carte",
+        }
     return {
         "provider": "legacy",
         "requires_phone": True,
@@ -170,20 +179,46 @@ def initiate_payment(
     return paiement
 
 
-def payment_to_initiate_response(paiement: Paiement) -> dict:
+def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = None) -> dict:
     channel_label = CHANNEL_LABELS.get(paiement.channel, paiement.channel)
+    payment_url = None
+    payment_token = None
+
+    if cinetpay_configured() and user is not None:
+        base = settings.frontend_url.rstrip("/")
+        try:
+            checkout = cinetpay_create_checkout(
+                transaction_id=paiement.reference,
+                amount_fcfa=paiement.amount_fcfa,
+                description=paiement.message or "Paiement CODAKIS",
+                customer_name=user.prenom or "Client",
+                customer_surname=user.nom or "CODAKIS",
+                customer_email=user.email,
+                customer_phone=paiement.phone.replace("+237", "").replace("+", ""),
+                notify_url=f"{base}/api/v1/payments/cinetpay/notify",
+                return_url=f"{base}/paiement/retour?ref={paiement.reference}",
+            )
+            payment_url = checkout.get("payment_url")
+            payment_token = checkout.get("payment_token")
+            paiement.channel = "cinetpay"
+            channel_label = "CinetPay"
+        except Exception as exc:
+            paiement.message = f"{paiement.message or ''} (CinetPay: {exc})".strip()
+
+    message = (
+        f"Paiement de {paiement.amount_fcfa:,} FCFA via {channel_label}."
+        + (f" Validez sur la page CinetPay." if payment_url else f" Validez sur {paiement.phone}.")
+    ).replace(",", " ")
+
     return {
         "reference": paiement.reference,
         "status": paiement.status,
         "amount_fcfa": paiement.amount_fcfa,
         "channel": channel_label,
-        "message": (
-            f"Paiement de {paiement.amount_fcfa:,} FCFA via {channel_label}. "
-            f"Validez la demande sur votre téléphone {paiement.phone}."
-        ).replace(",", " "),
-        "ussd_hint": USSD_HINTS.get(paiement.channel),
-        "payment_url": None,
-        "payment_token": None,
+        "message": message,
+        "ussd_hint": None if payment_url else USSD_HINTS.get(paiement.channel),
+        "payment_url": payment_url,
+        "payment_token": payment_token,
         "commission_fcfa": paiement.commission_fcfa,
         "school_payout_fcfa": paiement.school_payout_fcfa,
         "commission_rate_pct": paiement.commission_rate_pct,

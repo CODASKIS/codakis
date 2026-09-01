@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/app_theme.dart';
@@ -79,7 +80,7 @@ class _SchoolPageState extends State<SchoolPage> {
               future: _inscriptionsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()));
+                  return const Padding(padding: EdgeInsets.all(24), child: Center(child: CodakisLogoLoader()));
                 }
                 final items = snapshot.data ?? [];
                 if (items.isEmpty) {
@@ -146,7 +147,7 @@ class _SchoolPageState extends State<SchoolPage> {
               future: _schoolsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Padding(padding: EdgeInsets.all(24), child: Center(child: CircularProgressIndicator()));
+                  return const Padding(padding: EdgeInsets.all(24), child: Center(child: CodakisLogoLoader()));
                 }
                 if (snapshot.hasError) {
                   return CodakisCard(

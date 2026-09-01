@@ -73,6 +73,11 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("ELEVENLABS_MODEL_ID"),
     )
 
+    cinetpay_api_key: str = Field(default="", validation_alias=AliasChoices("CINETPAY_API_KEY"))
+    cinetpay_api_password: str = Field(default="", validation_alias=AliasChoices("CINETPAY_API_PASSWORD"))
+    cinetpay_site_id: str = Field(default="", validation_alias=AliasChoices("CINETPAY_SITE_ID"))
+    cinetpay_currency: str = Field(default="XAF", validation_alias=AliasChoices("CINETPAY_CURRENCY"))
+
     @staticmethod
     def _url_has_password(url: str) -> bool:
         if not url or url.startswith("sqlite"):

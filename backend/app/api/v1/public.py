@@ -1,13 +1,17 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.enrollments import PublicSchoolDetail, PublicSchoolListItem
 from app.services.enrollments import get_public_school, list_public_schools
+from pathlib import Path
 
 router = APIRouter(prefix="/public", tags=["public"])
+
+DRIVING_QUIZ_IMAGES = Path(__file__).resolve().parents[3] / "assets" / "driving-quiz" / "images"
 
 
 @router.get("/auto-ecoles", response_model=list[PublicSchoolListItem])
@@ -39,3 +43,12 @@ def public_get_school(school_id: uuid.UUID, db: Session = Depends(get_db)):
     if school is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Auto-école introuvable")
     return school
+
+
+@router.get("/driving-quiz/images/{filename}")
+def driving_quiz_image(filename: str):
+    safe = Path(filename).name
+    path = (DRIVING_QUIZ_IMAGES / safe).resolve()
+    if not str(path).startswith(str(DRIVING_QUIZ_IMAGES.resolve())) or not path.is_file():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image introuvable")
+    return FileResponse(path)

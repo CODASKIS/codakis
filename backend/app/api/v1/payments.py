@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from sqlalchemy.orm import Session
 
 from app.core.deps import AdminUser, require_roles
@@ -111,7 +111,45 @@ def payment_initiate(
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    return payment_to_initiate_response(paiement)
+    return payment_to_initiate_response(paiement, user)
+
+
+@router.post("/cinetpay/notify")
+async def cinetpay_notify(request: Request, db: Session = Depends(get_db)):
+    """Webhook CinetPay — confirmation automatique du paiement."""
+    from app.db.models import Paiement, Utilisateur
+    from app.services.cinetpay import verify_transaction
+
+    try:
+        body = await request.json()
+    except Exception:
+        body = {}
+
+    transaction_id = body.get("cpm_trans_id") or body.get("transaction_id") or body.get("merchant_transaction_id")
+    if not transaction_id:
+        return {"status": "ignored"}
+
+    paiement = db.query(Paiement).filter(Paiement.reference == str(transaction_id)).first()
+    if paiement is None:
+        return {"status": "not_found"}
+
+    if paiement.status == "completed":
+        return {"status": "already_done"}
+
+    status_ok = body.get("cpm_result") == "00" or body.get("status") == "ACCEPTED"
+    if not status_ok:
+        try:
+            check = verify_transaction(str(transaction_id))
+            status_ok = (check.get("data") or {}).get("status") in {"ACCEPTED", "SUCCESS", "00"}
+        except Exception:
+            status_ok = False
+
+    if status_ok:
+        user = db.get(Utilisateur, paiement.utilisateur_id)
+        if user:
+            confirm_payment(db, user, paiement.reference)
+
+    return {"status": "ok"}
 
 
 @router.get("/{reference}/status", response_model=PaymentStatusResponse)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../core/app_theme.dart';
 import '../core/codakis_button_styles.dart';
+import 'codakis_button_loader.dart';
 
 class CodakisPrimaryButton extends StatelessWidget {
   const CodakisPrimaryButton({
@@ -29,11 +30,7 @@ class CodakisPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = pill ? CodakisRadii.pill : CodakisRadii.button;
     final child = loading
-        ? const SizedBox(
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-          )
+        ? const CodakisButtonLoader(size: 20)
         : Row(
             mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,

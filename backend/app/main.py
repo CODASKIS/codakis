@@ -13,6 +13,7 @@ from app.db.migrate import apply_sql_migrations
 from app.services.blog import seed_blog_articles
 from app.services.pedagogy import seed_lecons, seed_themes
 from app.services.seed_demo import seed_demo_data
+from app.services.seed_driving_quiz import seed_driving_quiz
 
 logger = logging.getLogger("codakis")
 
@@ -46,6 +47,7 @@ def seed_reference_data() -> None:
         seed_themes(db)
         seed_lecons(db, admin)
         seed_demo_data(db, admin)
+        seed_driving_quiz(db, admin)
     finally:
         db.close()
 

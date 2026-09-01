@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'codakis_logo_loader.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 
@@ -74,7 +75,7 @@ class _CodakisVideoIframeState extends State<CodakisVideoIframe> {
           child: AspectRatio(
             aspectRatio: widget.aspectRatio,
             child: controller == null
-                ? const Center(child: CircularProgressIndicator(color: Colors.white54))
+                ? const Center(child: CodakisLogoLoader())
                 : WebViewWidget(controller: controller),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/app_theme.dart';
@@ -82,7 +83,7 @@ class _CoursesPageState extends State<CoursesPage> with AutomaticKeepAliveClient
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: const [
                   SizedBox(height: 120),
-                  Center(child: CircularProgressIndicator()),
+                  Center(child: CodakisLogoLoader()),
                 ],
               );
             }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/app_theme.dart';
@@ -133,7 +134,7 @@ class _ProfilePageState extends State<ProfilePage> {
             if (snapshot.connectionState == ConnectionState.waiting && _profile == null) {
               return ListView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                children: const [SizedBox(height: 120), Center(child: CircularProgressIndicator())],
+                children: const [SizedBox(height: 120), Center(child: CodakisLogoLoader())],
               );
             }
 

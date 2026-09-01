@@ -14,6 +14,7 @@ import PricingPage from "../pages/PricingPage";
 import TechniciansPage from "../pages/TechniciansPage";
 import ConsortPage from "../pages/ConsortPage";
 import DrivingSchoolDetailPage from "../pages/DrivingSchoolDetailPage";
+import PaymentReturnPage from "../pages/PaymentReturnPage";
 
 export default function PublicRoutes() {
   return useRoutes([
@@ -29,6 +30,7 @@ export default function PublicRoutes() {
     { path: "techniciens", element: <Navigate to="/auto-ecoles" replace /> },
     { path: "consort", element: <ConsortPage /> },
     { path: "tarifs", element: <PricingPage /> },
+    { path: "paiement/retour", element: <PaymentReturnPage /> },
     { path: "blog", element: <BlogPage /> },
     { path: "blog/:slug", element: <BlogDetailPage /> },
     { path: "contact", element: <ContactPage /> },

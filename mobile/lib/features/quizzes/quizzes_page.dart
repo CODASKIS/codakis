@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/codakis_logo_loader.dart';
 
 import '../../core/app_theme.dart';
 import '../../core/constants/app_colors.dart';
@@ -144,7 +145,7 @@ class _QuizList<T> extends StatelessWidget {
         future: future,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return ListView(children: const [SizedBox(height: 120), Center(child: CircularProgressIndicator())]);
+            return ListView(children: const [SizedBox(height: 120), Center(child: CodakisLogoLoader())]);
           }
           if (snapshot.hasError) {
             return ListView(
