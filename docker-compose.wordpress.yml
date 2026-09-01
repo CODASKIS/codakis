@@ -56,6 +56,9 @@ services:
       - |
         set -e
         sleep 15
+        mkdir -p /var/www/html/wp-content/upgrade /var/www/html/wp-content/themes /var/www/html/wp-content/plugins /var/www/html/wp-content/uploads
+        chown -R www-data:www-data /var/www/html/wp-content || true
+        chmod -R u+rwX,g+rwX /var/www/html/wp-content || true
         if ! wp core is-installed --path=/var/www/html --allow-root 2>/dev/null; then
           wp core install \
             --path=/var/www/html \

@@ -14,7 +14,7 @@ export default function RichPedagogyContent({ html, className = "" }: Props) {
       {displayHtml.trim() ? (
         <div className={className} dangerouslySetInnerHTML={{ __html: displayHtml }} />
       ) : null}
-      <SimulationsFromHtml html={html} />
+      {DRIVING_SIMULATOR_ENABLED ? <SimulationsFromHtml html={html} /> : null}
     </>
   );
 }
