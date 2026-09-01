@@ -40,6 +40,8 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = "noreply@codakis.cm"
+    smtp_fallback_host: str = Field(default="", validation_alias=AliasChoices("SMTP_FALLBACK_HOST"))
+    smtp_fallback_port: int = Field(default=25, validation_alias=AliasChoices("SMTP_FALLBACK_PORT"))
 
     otp_expire_minutes: int = 15
     otp_length: int = 6

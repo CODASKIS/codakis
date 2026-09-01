@@ -276,3 +276,4 @@ class RefreshTokenRequest(BaseModel):
 class MessageResponse(BaseModel):
     message: str
     debug_otp: str | None = None
+    email_sent: bool | None = None

@@ -119,9 +119,13 @@ export async function registerDrivingSchool(payload: RegisterPayload, langue: st
   return response.message;
 }
 
-export async function requestPasswordReset(email: string): Promise<{ message: string; debugOtp?: string }> {
+export async function requestPasswordReset(email: string): Promise<{ message: string; debugOtp?: string; emailSent?: boolean }> {
   const response = await forgotPassword(email);
-  return { message: response.message, debugOtp: response.debug_otp ?? undefined };
+  return {
+    message: response.message,
+    debugOtp: response.debug_otp ?? undefined,
+    emailSent: response.email_sent ?? undefined,
+  };
 }
 
 export async function verifyResetOtp(email: string, otp: string): Promise<{ message: string }> {

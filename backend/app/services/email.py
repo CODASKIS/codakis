@@ -56,8 +56,23 @@ def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) ->
         raise RuntimeError(f"Resend {response.status_code}: {response.text}")
 
 
-def _send_via_smtp(to: str, subject: str, body: str, html_body: str | None) -> None:
-    if not settings.smtp_host:
+def _send_via_smtp(
+    to: str,
+    subject: str,
+    body: str,
+    html_body: str | None,
+    *,
+    host: str | None = None,
+    port: int | None = None,
+    user: str | None = None,
+    password: str | None = None,
+) -> None:
+    smtp_host = host or settings.smtp_host
+    smtp_port = port or settings.smtp_port
+    smtp_user = user if user is not None else settings.smtp_user
+    smtp_password = password if password is not None else settings.smtp_password
+
+    if not smtp_host:
         raise RuntimeError("SMTP_HOST non configuré")
 
     message = EmailMessage()
@@ -68,38 +83,63 @@ def _send_via_smtp(to: str, subject: str, body: str, html_body: str | None) -> N
     if html_body:
         message.add_alternative(html_body, subtype="html")
 
-    with smtplib.SMTP(settings.smtp_host, settings.smtp_port) as server:
-        server.starttls()
-        if settings.smtp_user:
-            server.login(settings.smtp_user, settings.smtp_password)
+    with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as server:
+        if smtp_port != 25:
+            server.starttls()
+        if smtp_user:
+            server.login(smtp_user, smtp_password)
         server.send_message(message)
 
 
-def send_email(to: str, subject: str, body: str, html_body: str | None = None) -> None:
+def _try_smtp_fallback(to: str, subject: str, body: str, html_body: str | None) -> bool:
+    fallback_host = settings.smtp_fallback_host.strip() or settings.smtp_host.strip()
+    if not fallback_host:
+        return False
+    port = settings.smtp_fallback_port if settings.smtp_fallback_host.strip() else settings.smtp_port
+    try:
+        _send_via_smtp(to, subject, body, html_body, host=fallback_host, port=port, user="", password="")
+        logger.info("E-mail envoyé via SMTP fallback (%s:%s) à %s", fallback_host, port, to)
+        return True
+    except Exception:
+        logger.exception("Échec SMTP fallback vers %s", to)
+        return False
+
+
+def send_email(to: str, subject: str, body: str, html_body: str | None = None) -> bool:
     if settings.app_env == "test":
         _log_console(to, subject, body)
-        return
+        return True
 
     mode = settings.email_mode
     try:
         if mode == "console":
             _log_console(to, subject, body)
-            return
+            return True
         if mode == "resend":
             if not settings.resend_api_key:
                 logger.warning("RESEND_API_KEY manquant")
+                if _try_smtp_fallback(to, subject, body, html_body):
+                    return True
                 _log_console(to, subject, body)
-                return
-            _send_via_resend(to, subject, body, html_body)
-            return
+                return False
+            try:
+                _send_via_resend(to, subject, body, html_body)
+                return True
+            except RuntimeError as exc:
+                logger.warning("Resend a échoué (%s), tentative SMTP fallback", exc)
+                if _try_smtp_fallback(to, subject, body, html_body):
+                    return True
+                raise
         if mode == "smtp":
             _send_via_smtp(to, subject, body, html_body)
-            return
+            return True
         logger.warning("Mode e-mail inconnu: %s", mode)
         _log_console(to, subject, body)
+        return False
     except Exception:
         logger.exception("Échec envoi e-mail à %s", to)
         _log_console(to, subject, body)
+        return False
 
 
 def send_welcome_email(to: str, full_name: str, password_plain: str | None = None) -> None:
@@ -146,11 +186,11 @@ def send_moniteur_invite_email(
     send_email(to, f"Invitation moniteur — {school_name}", plain, html)
 
 
-def send_otp_email(to: str, otp: str) -> None:
+def send_otp_email(to: str, otp: str) -> bool:
     from app.services.email_templates import render_otp_email
 
     plain, html = render_otp_email(otp=otp, expire_minutes=settings.otp_expire_minutes, login_url=login_url())
-    send_email(to, "Code de vérification CODAKIS", plain, html)
+    return send_email(to, "Code de vérification CODAKIS", plain, html)
 
 
 def send_lesson_complete_email(

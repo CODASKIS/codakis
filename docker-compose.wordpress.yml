@@ -1,0 +1,79 @@
+# WordPress CODAKIS (Astra) — port 8082
+# Usage : docker compose -f docker-compose.wordpress.yml up -d
+
+name: codakis-wordpress
+
+services:
+  wp_db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${WP_DB_PASSWORD:-WordPressDemo123!}
+      MARIADB_ROOT_PASSWORD: ${WP_DB_ROOT_PASSWORD:-RootDemo123!}
+    volumes:
+      - wp_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  wordpress:
+    image: wordpress:6.8-php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      wp_db:
+        condition: service_healthy
+    ports:
+      - "${WP_PORT:-8082}:80"
+    environment:
+      WORDPRESS_DB_HOST: wp_db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${WP_DB_PASSWORD:-WordPressDemo123!}
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_HOME', 'http://192.168.1.150:8082');
+        define('WP_SITEURL', 'http://192.168.1.150:8082');
+    volumes:
+      - wp_data:/var/www/html
+
+  wp_setup:
+    image: wordpress:cli-php8.3
+    depends_on:
+      - wordpress
+    environment:
+      WORDPRESS_DB_HOST: wp_db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${WP_DB_PASSWORD:-WordPressDemo123!}
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        set -e
+        sleep 15
+        if ! wp core is-installed --path=/var/www/html --allow-root 2>/dev/null; then
+          wp core install \
+            --path=/var/www/html \
+            --url="http://192.168.1.150:8082" \
+            --title="CODAKIS Blog" \
+            --admin_user=admin \
+            --admin_password="${WP_ADMIN_PASSWORD:-Admin123!}" \
+            --admin_email=admin@codakis.cm \
+            --skip-email \
+            --allow-root
+        fi
+        wp theme install astra --activate --path=/var/www/html --allow-root || true
+        wp theme update astra --path=/var/www/html --allow-root || true
+        wp plugin install litespeed-cache --activate --path=/var/www/html --allow-root || true
+        wp option update blogdescription "Site vitrine CODAKIS — thème Astra" --path=/var/www/html --allow-root
+        wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
+        echo "WordPress + Astra prêt."
+
+volumes:
+  wp_data:
+  wp_db_data:

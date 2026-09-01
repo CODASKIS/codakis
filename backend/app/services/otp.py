@@ -13,7 +13,7 @@ def generate_otp() -> str:
     return "".join(str(secrets.randbelow(10)) for _ in range(length))
 
 
-def create_otp(db: Session, email: str, otp_type: OtpType, utilisateur_id=None) -> str:
+def create_otp(db: Session, email: str, otp_type: OtpType, utilisateur_id=None) -> tuple[str, bool]:
     code = generate_otp()
     db.query(CodeVerification).filter(
         CodeVerification.email == email.lower(),
@@ -30,8 +30,8 @@ def create_otp(db: Session, email: str, otp_type: OtpType, utilisateur_id=None) 
     )
     db.add(record)
     db.commit()
-    send_otp_email(email, code)
-    return code
+    delivered = send_otp_email(email, code)
+    return code, delivered
 
 
 def check_otp(db: Session, email: str, code: str, otp_type: OtpType) -> CodeVerification:

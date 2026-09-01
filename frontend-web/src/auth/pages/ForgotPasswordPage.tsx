@@ -30,6 +30,7 @@ export default function ForgotPasswordPage() {
   const [step, setStep] = useState<Step>("email");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [emailSent, setEmailSent] = useState<boolean | undefined>(undefined);
   const [loading, setLoading] = useState(false);
 
   async function handleEmailSubmit(event: FormEvent) {
@@ -46,6 +47,7 @@ export default function ForgotPasswordPage() {
     try {
       const response = await requestPasswordReset(email.trim());
       setMessage(response.message);
+      setEmailSent(response.emailSent);
       if (response.debugOtp) setOtp(response.debugOtp);
       setStep("otp");
     } catch (err) {
@@ -153,6 +155,7 @@ export default function ForgotPasswordPage() {
               </AuthField>
 
               {error ? <p className="codakis-auth-form__error">{error}</p> : null}
+              {emailSent === false ? <p className="codakis-auth-form__error">{t("auth.forgot.emailFailedHint")}</p> : null}
               {message ? <p className="codakis-auth-form__success">{message}</p> : null}
 
               <button type="submit" className="codakis-auth-form__submit" disabled={loading || otp.length < 6}>

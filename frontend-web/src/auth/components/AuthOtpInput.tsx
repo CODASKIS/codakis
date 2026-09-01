@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
+import { AuthInputBox } from "./AuthFormControls";
 
 type Props = {
   id?: string;
@@ -59,28 +60,30 @@ export default function AuthOtpInput({
   }
 
   return (
-    <div className="codakis-auth-otp" role="group" aria-label="Code OTP">
-      {digits.map((digit, index) => (
-        <input
-          key={`${id}-${index}`}
-          ref={(element) => {
-            inputsRef.current[index] = element;
-          }}
-          id={index === 0 ? id : undefined}
-          className="codakis-auth-otp__cell"
-          type="text"
-          inputMode="numeric"
-          autoComplete={index === 0 ? "one-time-code" : "off"}
-          maxLength={1}
-          value={digit}
-          disabled={disabled}
-          aria-label={`Chiffre ${index + 1}`}
-          onChange={(event) => updateDigit(index, event.target.value)}
-          onKeyDown={(event) => handleKeyDown(index, event.key)}
-          onPaste={handlePaste}
-          onFocus={(event) => event.target.select()}
-        />
-      ))}
-    </div>
+    <AuthInputBox className="codakis-auth-box--otp">
+      <div className="codakis-auth-otp" role="group" aria-label="Code OTP">
+        {digits.map((digit, index) => (
+          <input
+            key={`${id}-${index}`}
+            ref={(element) => {
+              inputsRef.current[index] = element;
+            }}
+            id={index === 0 ? id : undefined}
+            className="codakis-auth-box__input codakis-auth-box__input--otp"
+            type="text"
+            inputMode="numeric"
+            autoComplete={index === 0 ? "one-time-code" : "off"}
+            maxLength={1}
+            value={digit}
+            disabled={disabled}
+            aria-label={`Chiffre ${index + 1}`}
+            onChange={(event) => updateDigit(index, event.target.value)}
+            onKeyDown={(event) => handleKeyDown(index, event.key)}
+            onPaste={handlePaste}
+            onFocus={(event) => event.target.select()}
+          />
+        ))}
+      </div>
+    </AuthInputBox>
   );
 }

@@ -145,6 +145,34 @@ EMAIL_FROM_NAME=CODAKIS
 
 Les e-mails partent pour : connexion, OTP, quiz, bienvenue, etc.
 
+**Limite Resend (mode test)** : sans domaine vérifié (`codakis.cm`), les envois ne fonctionnent que vers l’e-mail du compte Resend. Solution :
+
+1. [resend.com/domains](https://resend.com/domains) → ajouter `codakis.cm` (DNS MX/TXT)
+2. Mettre `SMTP_FROM=noreply@codakis.cm`
+
+**Fallback SMTP (Plesk / Postfix)** : si Resend échoue, l’API tente automatiquement `SMTP_FALLBACK_HOST` (par défaut `172.17.0.1:25`). Pour que le relais fonctionne, configurer Plesk → **Mail Server Settings** / **Smarthost** (sudo requis). Voir `scripts/PLESK_GUIDE.md`.
+
+---
+
+## WordPress + Astra (port 8082)
+
+Site vitrine séparé de l’app CODAKIS :
+
+```bash
+cd ~/codakis
+docker compose -f docker-compose.wordpress.yml up -d
+```
+
+→ **http://192.168.1.150:8082** — Admin : `admin` / `Admin123!` (thème **Astra** installé automatiquement)
+
+Via Plesk (domaine + SSL) :
+
+```bash
+sudo bash ~/codakis/scripts/setup-plesk-wordpress-astra.sh blog.votredomaine.com
+```
+
+Guide Plesk complet : `scripts/PLESK_GUIDE.md`.
+
 ---
 
 ## Paiements CinetPay (sandbox)

@@ -121,11 +121,16 @@ def google_route(payload: GoogleAuthRequest, request: Request, db: Session = Dep
 def forgot_password_route(payload: ForgotPasswordRequest, db: Session = Depends(get_db)):
     user = db.query(Utilisateur).filter(Utilisateur.email == payload.email.lower()).first()
     debug_otp = None
+    email_sent = None
     if user:
-        debug_otp = create_otp(db, payload.email, OtpType.reset_password, user.id)
+        code, delivered = create_otp(db, payload.email, OtpType.reset_password, user.id)
+        email_sent = delivered
+        if settings.app_env in {"development", "test"}:
+            debug_otp = code
     return MessageResponse(
         message="Si un compte existe pour cet e-mail, un code OTP a été envoyé.",
-        debug_otp=debug_otp if settings.app_env in {"development", "test"} else None,
+        debug_otp=debug_otp,
+        email_sent=email_sent if settings.app_env in {"development", "test"} or email_sent is False else None,
     )
 
 

@@ -105,6 +105,7 @@ export type TokenResponse = {
 export type MessageResponse = {
   message: string;
   debug_otp?: string | null;
+  email_sent?: boolean | null;
 };
 
 export type SchoolStatus = "pending" | "validated" | "rejected";
