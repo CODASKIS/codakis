@@ -7,6 +7,7 @@ import CmsCoverImage from "../../../components/common/CmsCoverImage";
 import MediaVideo from "../../../components/common/MediaVideo";
 import Loader from "../../../components/common/Loader";
 import ListenButton from "./ListenButton";
+import RichPedagogyContent from "../simulation/RichPedagogyContent";
 import { buildAssessmentSpeechText } from "../../../lib/assessmentSpeech";
 import { pageTransition } from "../../../components/motion/motionPresets";
 import { useAssessmentTimer } from "../../hooks/useAssessmentTimer";
@@ -186,7 +187,7 @@ export default function CourseInlineQuiz({ quizId, alreadyPassed = false, onPass
             exit={{ opacity: 0, x: -24 }}
             transition={pageTransition}
           >
-            <p className="codakis-assessment__prompt">{question.prompt}</p>
+            <RichPedagogyContent html={question.prompt} className="codakis-assessment__prompt" />
             {question.image_url ? <CmsCoverImage url={question.image_url} alt="" className="codakis-assessment__media" /> : null}
             <MediaVideo url={question.video_url} title={question.prompt} className="codakis-assessment__video" />
 

@@ -36,7 +36,18 @@ export function findSimulationBlocks(html: string): ParsedSimulationBlock[] {
 }
 
 export function stripSimulationBlocks(html: string): string {
-  return html.replace(PRESET_RE, "").replace(REF_RE, "");
+  if (!html) return "";
+  let result = html;
+  result = result.replace(PRESET_RE, "").replace(REF_RE, "");
+  result = result.replace(
+    /<h2[^>]*>\s*Simulation(?:\s+(?:interactive|de conduite))?\s*<\/h2>\s*(?:<p[^>]*>[\s\S]*?<\/p>\s*)?/gi,
+    "",
+  );
+  result = result.replace(
+    /<p[^>]*>\s*(?:Visualisez|Observez|Circulation dense|Carrefour|Scène urbaine|Virage|Obstacles|Voie bloquée|Approche|Trafic|Pri)[^<]*<\/p>\s*/gi,
+    "",
+  );
+  return result.replace(/\n{3,}/g, "\n\n").trim();
 }
 
 type SimulationFromHtmlProps = {

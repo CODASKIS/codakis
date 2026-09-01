@@ -3728,6 +3728,8 @@ body.dashboardkit-active {
     border-radius: 0;
     padding: 2rem;
     animation: codakis-fade-up 0.35s ease 0.1s both;
+    font-family: Nunito, "Open Sans", system-ui, sans-serif;
+    color: #3e3d3f;
   }
 
   .codakis-player-quiz__label {
@@ -3741,8 +3743,10 @@ body.dashboardkit-active {
 
   .codakis-player-quiz h3 {
     margin: 0 0 1.25rem;
-    font-size: 1.6rem;
-    line-height: 1.45;
+    font-size: 1.35rem;
+    line-height: 1.55;
+    font-weight: 700;
+    color: #3e3d3f;
   }
 
   .codakis-player-quiz__options {
@@ -4159,6 +4163,8 @@ body.dashboardkit-active {
     max-width: 960px;
     margin: 0 auto;
     animation: codakis-fade-up 0.35s ease;
+    font-family: Nunito, "Open Sans", system-ui, sans-serif;
+    color: #3e3d3f;
   }
 
   .codakis-assessment__header {
@@ -4190,10 +4196,15 @@ body.dashboardkit-active {
 
     h1 {
       margin: 0;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 700;
-      color: #161616;
+      color: #3e3d3f;
+      font-family: inherit;
     }
+  }
+
+  .codakis-assessment__listen {
+    font-family: inherit;
   }
 
   .codakis-assessment__timer {
@@ -4254,10 +4265,23 @@ body.dashboardkit-active {
 
   .codakis-assessment__prompt {
     margin: 0 0 1rem;
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    line-height: 1.45;
-    color: #161616;
+    line-height: 1.55;
+    color: #3e3d3f;
+    font-family: inherit;
+
+    p {
+      margin: 0 0 0.75rem;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+    }
+
+    h2,
+    h3 {
+      display: none;
+    }
   }
 
   .codakis-assessment__media {
@@ -4324,8 +4348,16 @@ body.dashboardkit-active {
 
   .codakis-assessment__option-index {
     font-weight: 700;
-    color: #525252;
-    font-size: 0.85rem;
+    color: #667085;
+    font-size: 0.9rem;
+    font-family: inherit;
+  }
+
+  .codakis-assessment__option-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #3e3d3f;
+    font-family: inherit;
   }
 
   .codakis-assessment__nav {

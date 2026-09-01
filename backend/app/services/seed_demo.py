@@ -98,23 +98,8 @@ def _simulation_block(scenario_id: str, caption: str) -> str:
 
 
 def inject_demo_simulations(db: Session) -> None:
-    """Ajoute des scènes interactives aux leçons et questions de démo (idempotent)."""
-    for slug, (scenario_id, caption) in LESSON_SCENARIO_BY_SLUG.items():
-        lecon = db.query(Lecon).filter(Lecon.slug == slug).first()
-        if lecon is None or SIM_MARKER in (lecon.body or ""):
-            continue
-        lecon.body = f"{lecon.body or ''}{_simulation_block(scenario_id, caption)}"
-
-    for question in db.query(Question).filter(Question.est_actif.is_(True)).all():
-        if SIM_MARKER in (question.prompt or ""):
-            continue
-        prompt_lower = (question.prompt or "").lower()
-        for keyword, scenario_id, caption in QUESTION_SCENARIO_RULES:
-            if keyword in prompt_lower:
-                question.prompt = f"{question.prompt}\n\n{_simulation_block(scenario_id, caption)}"
-                break
-
-    db.commit()
+    """Simulations désactivées — ne plus injecter de blocs interactifs dans le contenu démo."""
+    return
 
 DEMO_SCHOOLS: list[dict] = [
     {

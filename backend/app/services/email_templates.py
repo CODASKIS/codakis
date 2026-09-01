@@ -26,39 +26,53 @@ DANGER = "#DC2626"
 
 
 def _logo_url() -> str:
-    return f"{settings.frontend_url.rstrip('/')}/images/logo.png"
+    return f"{settings.frontend_url.rstrip('/')}/images/logo/logo.svg"
 
 
 def _fonts_head() -> str:
     return """
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,600;0,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  @media (max-width:620px) {
+    .codakis-email-card { width:100% !important; }
+    .codakis-email-pad { padding:24px 20px !important; }
+    .codakis-email-title { font-size:26px !important; }
+    .codakis-email-otp { font-size:32px !important; }
+  }
+</style>
 """
+
+
+FONT_SANS = "'Google Sans',Arial,Helvetica,sans-serif"
+FONT_MONO = "'Geist Mono',Consolas,'Courier New',monospace"
 
 
 def _base_layout(*, preheader: str, body_html: str, footer_note: str | None = None) -> str:
     note = footer_note or "Vous recevez cet e-mail en lien avec votre compte CODAKIS."
     return f"""<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
   <title>CODAKIS</title>
   {_fonts_head()}
 </head>
-<body style="margin:0;padding:0;background:{BG_PAGE};font-family:'Nunito',Arial,Helvetica,sans-serif;color:{TEXT};">
-  <span style="display:none!important;max-height:0;overflow:hidden;">{escape(preheader)}</span>
+<body style="margin:0;padding:0;background:{BG_PAGE};font-family:{FONT_SANS};color:{TEXT};-webkit-font-smoothing:antialiased;">
+  <span style="display:none!important;max-height:0;overflow:hidden;mso-hide:all;">{escape(preheader)}</span>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:{BG_PAGE};padding:20px 12px;">
     <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-        <tr><td style="padding:42px 32px 16px;background:{BG_CARD};border:1px solid {BORDER};border-radius:12px 12px 0 0;">
-          <img src="{escape(_logo_url())}" alt="CODAKIS" width="125" height="36" style="display:block;border:0;max-width:125px;height:auto;" />
+      <table role="presentation" class="codakis-email-card" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td class="codakis-email-pad" style="padding:42px 32px 16px;background:{BG_CARD};border:1px solid {BORDER};border-radius:12px 12px 0 0;">
+          <img src="{escape(_logo_url())}" alt="CODAKIS" width="140" height="40" style="display:block;border:0;max-width:140px;height:auto;" />
         </td></tr>
-        <tr><td style="padding:0 32px 32px;background:{BG_CARD};border-left:1px solid {BORDER};border-right:1px solid {BORDER};">
+        <tr><td class="codakis-email-pad" style="padding:0 32px 32px;background:{BG_CARD};border-left:1px solid {BORDER};border-right:1px solid {BORDER};">
           {body_html}
         </td></tr>
-        <tr><td style="padding:32px;background:{BG_CARD};border:1px solid {BORDER};border-top:0;border-radius:0 0 12px 12px;text-align:center;">
-          <p style="margin:0 0 8px;font-size:15px;line-height:150%;color:{TEXT_MUTED};">{escape(note)}</p>
-          <p style="margin:0;font-size:15px;line-height:150%;color:{TEXT_MUTED};">
+        <tr><td class="codakis-email-pad" style="padding:32px;background:{BG_CARD};border:1px solid {BORDER};border-top:0;border-radius:0 0 12px 12px;text-align:center;">
+          <p style="margin:0 0 8px;font-size:15px;line-height:150%;font-weight:500;color:{TEXT_MUTED};font-family:{FONT_SANS};">{escape(note)}</p>
+          <p style="margin:0;font-size:15px;line-height:150%;font-weight:500;color:{TEXT_MUTED};font-family:{FONT_SANS};">
             <a href="mailto:contact@codakis.cm" style="color:{BRAND_GREEN_DARK};text-decoration:underline;">contact@codakis.cm</a>
             · CODAKIS — permis de conduire CEMAC
           </p>
@@ -72,14 +86,14 @@ def _base_layout(*, preheader: str, body_html: str, footer_note: str | None = No
 
 def _heading(text: str) -> str:
     return f"""
-      <h1 style="margin:0 0 16px;font-size:32px;line-height:130%;font-weight:600;color:{TEXT};">{escape(text)}</h1>
+      <h1 class="codakis-email-title" style="margin:0 0 16px;font-size:32px;line-height:130%;font-weight:600;color:{TEXT};font-family:{FONT_SANS};">{escape(text)}</h1>
     """
 
 
 def _paragraph(text: str, *, center: bool = False) -> str:
     align = "center" if center else "left"
     return f"""
-      <p style="margin:0 0 24px;font-size:16px;line-height:150%;font-weight:500;color:{TEXT_BODY};text-align:{align};">
+      <p style="margin:0 0 24px;font-size:16px;line-height:150%;font-weight:500;color:{TEXT_BODY};text-align:{align};font-family:{FONT_SANS};">
         {text}
       </p>
     """
@@ -89,7 +103,7 @@ def _cta_button(label: str, url: str) -> str:
     return f"""
       <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
         <tr><td align="center">
-          <a href="{escape(url)}" target="_blank" style="display:inline-block;width:100%;max-width:100%;box-sizing:border-box;padding:12px 32px;border-radius:8px;background:{BRAND_GREEN};color:#fff;font-size:17px;font-weight:600;line-height:24px;text-decoration:none;text-align:center;">
+          <a href="{escape(url)}" target="_blank" style="display:inline-block;width:100%;max-width:100%;box-sizing:border-box;padding:12px 32px;border-radius:8px;background:{BRAND_GREEN};color:#fff;font-size:17px;font-weight:600;line-height:24px;text-decoration:none;text-align:center;font-family:{FONT_SANS};">
             {escape(label)}
           </a>
         </td></tr>
@@ -108,9 +122,9 @@ def _meta_panel(rows: list[tuple[str, str]]) -> str:
             """)
         parts.append(f"""
           <tr>
-            <td valign="middle" style="width:50%;padding:0;font-size:13px;font-weight:700;line-height:140%;color:{TEXT_MUTED};text-transform:uppercase;">{escape(label)}</td>
+            <td valign="middle" style="width:50%;padding:0;font-size:13px;font-weight:700;line-height:140%;color:{TEXT_MUTED};text-transform:uppercase;font-family:{FONT_SANS};">{escape(label)}</td>
             <td style="width:20px;"></td>
-            <td valign="middle" align="right" style="width:50%;font-size:14px;font-weight:500;line-height:150%;color:{TEXT};font-family:Consolas,'Courier New',monospace;">{escape(value)}</td>
+            <td valign="middle" align="right" style="width:50%;font-size:14px;font-weight:500;line-height:150%;color:{TEXT};font-family:{FONT_MONO};">{escape(value)}</td>
           </tr>
         """)
     inner = "".join(parts)
@@ -126,16 +140,16 @@ def _meta_panel(rows: list[tuple[str, str]]) -> str:
 def _otp_block(otp: str, expire_minutes: int) -> str:
     spaced = " ".join(otp[i : i + 3] for i in range(0, len(otp), 3))
     return f"""
-      <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:{TEXT_MUTED};text-align:center;">ou saisissez ce code manuellement</p>
-      <p style="margin:0 0 8px;font-size:40px;font-weight:700;letter-spacing:0.2em;color:{TEXT};text-align:center;">{escape(spaced)}</p>
-      <p style="margin:0 0 24px;font-size:16px;color:{TEXT_MUTED};text-align:center;">Expire dans {expire_minutes} minutes</p>
+      <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:{TEXT_MUTED};text-align:center;font-family:{FONT_SANS};">ou saisissez ce code manuellement</p>
+      <p class="codakis-email-otp" style="margin:0 0 8px;font-size:40px;font-weight:700;letter-spacing:0.2em;color:{TEXT};text-align:center;font-family:{FONT_SANS};">{escape(spaced)}</p>
+      <p style="margin:0 0 24px;font-size:16px;color:{TEXT_MUTED};text-align:center;font-family:{FONT_SANS};">Expire dans {expire_minutes} minutes</p>
     """
 
 
 def _warning_box(html: str) -> str:
     return f"""
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 8px;">
-        <tr><td style="padding:20px;border-radius:5px;background:{WARN_BG};border:1px solid {WARN_BORDER};font-size:16px;line-height:150%;color:{WARN_TEXT};font-weight:500;">
+        <tr><td style="padding:20px;border-radius:5px;background:{WARN_BG};border:1px solid {WARN_BORDER};font-size:16px;line-height:150%;color:{WARN_TEXT};font-weight:500;font-family:{FONT_SANS};">
           {html}
         </td></tr>
       </table>
@@ -196,7 +210,7 @@ def render_login_notification_email(
               ("Adresse IP", ip_address),
               ("Date", time_label),
           ])}
-          {_cta_button("Accéder à mon espace", login_url)}
+          {_cta_button("Vérifier cette connexion", login_url)}
           {_warning_box(
               "Si vous n'êtes pas à l'origine de cette connexion, votre compte peut être compromis. "
               f'<a href="{escape(login_url)}" style="color:{WARN_TEXT};text-decoration:underline;">Sécuriser mon compte →</a>'

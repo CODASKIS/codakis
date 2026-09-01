@@ -1,3 +1,4 @@
+import re
 import uuid
 from datetime import UTC, datetime
 
@@ -21,6 +22,26 @@ from app.db.models import (
     Utilisateur,
 )
 from app.services.media import slugify
+
+_SIM_DIV_PRESET = re.compile(r'<div[^>]*data-codakis-simulation=["\'][^"\']+["\'][^>]*>\s*</div>', re.I)
+_SIM_DIV_REF = re.compile(r'<div[^>]*data-codakis-simulation-ref=["\'][^"\']+["\'][^>]*>\s*</div>', re.I)
+_SIM_H2 = re.compile(
+    r'<h2[^>]*>\s*Simulation(?:\s+(?:interactive|de conduite))?\s*</h2>\s*(?:<p[^>]*>.*?</p>\s*)?',
+    re.I | re.S,
+)
+_SIM_P = re.compile(
+    r'<p[^>]*>\s*(?:Visualisez|Observez|Circulation dense|Carrefour|Scène urbaine|Virage|Obstacles|Voie bloquée|Approche|Trafic|Pri)[^<]*</p>\s*',
+    re.I,
+)
+
+
+def strip_simulation_markup(html: str | None) -> str:
+    if not html:
+        return ""
+    result = html
+    for pattern in (_SIM_DIV_PRESET, _SIM_DIV_REF, _SIM_H2, _SIM_P):
+        result = pattern.sub("", result)
+    return result.strip()
 
 THEME_SEED: list[tuple[str, str, str, int, bool]] = [
     ("signalisation", "Signalisation routière", "Road signs", 1, False),
@@ -277,7 +298,7 @@ def lecon_to_public(lecon: Lecon, theme: Theme, *, include_body: bool = True) ->
         "slug": lecon.slug,
         "title": lecon.title,
         "excerpt": lecon.excerpt,
-        "body": lecon.body if include_body else "",
+        "body": strip_simulation_markup(lecon.body) if include_body else "",
         "cover_image_url": lecon.cover_image_url,
         "sort_order": lecon.sort_order,
         "published_at": lecon.published_at,
@@ -316,7 +337,7 @@ def question_to_public(question: Question) -> dict:
     reponses = sorted(question.reponses, key=lambda item: item.sort_order)
     return {
         "id": question.id,
-        "prompt": question.prompt,
+        "prompt": strip_simulation_markup(question.prompt),
         "image_url": question.image_url,
         "video_url": question.video_url,
         "reponses": [{"id": item.id, "label": item.label, "texte": item.texte} for item in reponses],
