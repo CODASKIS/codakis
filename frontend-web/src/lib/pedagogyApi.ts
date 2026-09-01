@@ -282,6 +282,34 @@ export type CandidatProgress = {
   percent: number;
 };
 
+export type AttemptErrorDetail = {
+  question_id: string;
+  prompt: string | null;
+  explanation: string | null;
+};
+
+export type AttemptHistoryItem = {
+  id: string;
+  kind: "quiz" | "examen";
+  title: string;
+  score: number;
+  reussi: boolean;
+  nb_total: number;
+  nb_erreurs: number;
+  termine_le: string;
+  errors: AttemptErrorDetail[];
+};
+
+export type CandidatDashboard = {
+  progress_percent: number;
+  completed_lecons: number;
+  total_lecons: number;
+  quizzes_passed: number;
+  examens_passed: number;
+  success_rate: number;
+  recent_attempts: AttemptHistoryItem[];
+};
+
 export type CoursePathStep = {
   type: "lecon" | "quiz";
   id: string;
@@ -311,6 +339,22 @@ export function parseStepRef(ref: string): { type: "lecon" | "quiz"; id: string 
 
 export async function fetchCandidatProgress(): Promise<CandidatProgress> {
   return authFetch<CandidatProgress>("/api/v1/candidat/pedagogy/progress");
+}
+
+export async function fetchCandidatDashboard(): Promise<CandidatDashboard> {
+  return authFetch<CandidatDashboard>("/api/v1/candidat/pedagogy/dashboard");
+}
+
+export async function askCandidatTutor(payload: {
+  message: string;
+  context?: string;
+  language?: string;
+}): Promise<string> {
+  const result = await authFetch<{ reply: string }>("/api/v1/candidat/pedagogy/tutor", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  return result.reply;
 }
 
 export async function completeCandidatLecon(leconId: string): Promise<CandidatProgress> {

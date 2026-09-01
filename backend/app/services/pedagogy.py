@@ -680,6 +680,7 @@ def get_examen_questions(db: Session, examen_id: uuid.UUID) -> list[Question]:
 def _detail_for_storage(detail: dict) -> dict:
     return {
         "question_id": str(detail["question_id"]),
+        "prompt": detail.get("prompt"),
         "reponse_id": str(detail["reponse_id"]) if detail.get("reponse_id") else None,
         "correct_reponse_id": str(detail["correct_reponse_id"])
         if detail.get("correct_reponse_id")
@@ -706,6 +707,7 @@ def _score_answers(questions: list[Question], answers: list) -> tuple[int, list[
         details.append(
             {
                 "question_id": question.id,
+                "prompt": question.prompt,
                 "reponse_id": chosen_id,
                 "correct_reponse_id": correct.id if correct else None,
                 "est_correcte": is_correct,
@@ -1005,4 +1007,106 @@ def validate_checkpoint_answer(db: Session, question_id: uuid.UUID, reponse_id: 
         "est_correcte": is_correct,
         "correct_reponse_id": str(correct.id) if correct else None,
         "explanation": question.explanation,
+    }
+
+
+def _enrich_attempt_errors(db: Session, details: list[dict]) -> list[dict]:
+    missing_ids = [
+        uuid.UUID(item["question_id"])
+        for item in details
+        if not item.get("est_correcte") and not item.get("prompt")
+    ]
+    prompts: dict[uuid.UUID, str] = {}
+    if missing_ids:
+        rows = db.query(Question.id, Question.prompt).filter(Question.id.in_(missing_ids)).all()
+        prompts = {row[0]: row[1] for row in rows}
+
+    errors: list[dict] = []
+    for item in details:
+        if item.get("est_correcte"):
+            continue
+        qid = uuid.UUID(item["question_id"])
+        errors.append(
+            {
+                "question_id": str(qid),
+                "prompt": item.get("prompt") or prompts.get(qid),
+                "explanation": item.get("explanation"),
+            }
+        )
+    return errors
+
+
+def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
+    progress = get_candidat_progress(db, candidat)
+    quiz_attempts = (
+        db.query(TentativeQuiz)
+        .filter(TentativeQuiz.candidat_id == candidat.id)
+        .order_by(TentativeQuiz.termine_le.desc())
+        .limit(12)
+        .all()
+    )
+    exam_attempts = (
+        db.query(TentativeExamen)
+        .filter(TentativeExamen.candidat_id == candidat.id)
+        .order_by(TentativeExamen.termine_le.desc())
+        .limit(12)
+        .all()
+    )
+
+    quiz_ids = {item.quiz_id for item in quiz_attempts}
+    exam_ids = {item.examen_id for item in exam_attempts}
+    quiz_titles = {
+        row.id: row.title for row in db.query(Quiz.id, Quiz.title).filter(Quiz.id.in_(quiz_ids)).all()
+    } if quiz_ids else {}
+    exam_titles = {
+        row.id: row.title
+        for row in db.query(Examen.id, Examen.title).filter(Examen.id.in_(exam_ids)).all()
+    } if exam_ids else {}
+
+    history: list[dict] = []
+    for attempt in quiz_attempts:
+        details = attempt.reponses_json or []
+        history.append(
+            {
+                "id": attempt.id,
+                "kind": "quiz",
+                "title": quiz_titles.get(attempt.quiz_id, "Quiz"),
+                "score": attempt.score,
+                "reussi": attempt.reussi,
+                "nb_total": attempt.nb_total,
+                "nb_erreurs": attempt.nb_total - attempt.nb_correctes,
+                "termine_le": attempt.termine_le,
+                "errors": _enrich_attempt_errors(db, details),
+            }
+        )
+    for attempt in exam_attempts:
+        details = attempt.reponses_json or []
+        history.append(
+            {
+                "id": attempt.id,
+                "kind": "examen",
+                "title": exam_titles.get(attempt.examen_id, "Examen"),
+                "score": attempt.score,
+                "reussi": attempt.reussi,
+                "nb_total": len(details) if details else max(attempt.nb_erreurs, 0),
+                "nb_erreurs": attempt.nb_erreurs,
+                "termine_le": attempt.termine_le,
+                "errors": _enrich_attempt_errors(db, details),
+            }
+        )
+
+    history.sort(key=lambda item: item["termine_le"], reverse=True)
+    history = history[:15]
+
+    scores = [item["score"] for item in history]
+    success_rate = round(sum(scores) / len(scores)) if scores else 0
+
+    return {
+        "progress_percent": progress["percent"],
+        "completed_lecons": progress["completed_count"],
+        "total_lecons": progress["total_lecons"],
+        "quizzes_passed": len(progress["passed_quiz_ids"]),
+        "examens_passed": len(progress["passed_examen_ids"]),
+        "success_rate": success_rate,
+        "recent_attempts": history,
     }

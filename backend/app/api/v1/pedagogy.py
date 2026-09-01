@@ -9,11 +9,14 @@ from app.db.models import Examen, Lecon, Question, Quiz, RoleUtilisateur, Statut
 from app.db.session import get_db
 from app.schemas.pedagogy import (
     CandidatProgressResponse,
+    CandidatDashboardResponse,
     CheckpointValidateRequest,
     CheckpointValidateResponse,
     CoursePathResponse,
     QuestionPublic,
     TtsRequest,
+    TutorRequest,
+    TutorResponse,
     ExamenAdmin,
     ExamenCreateRequest,
     ExamenPublic,
@@ -47,6 +50,7 @@ from app.services.pedagogy import (
     create_theme,
     delete_theme,
     examen_to_admin,
+    get_candidat_dashboard,
     get_candidat_progress,
     get_examen_questions,
     get_quiz_questions,
@@ -75,6 +79,7 @@ from app.services.pedagogy import (
     _count_linked_questions_for_quizzes,
 )
 from app.services.tts import TtsError, synthesize_speech
+from app.services.mistral import MistralError, chat_tutor
 
 admin_router = APIRouter(prefix="/admin/pedagogy", tags=["admin-pedagogy"])
 candidat_router = APIRouter(prefix="/candidat/pedagogy", tags=["candidat-pedagogy"])
@@ -332,6 +337,35 @@ def admin_delete_examen(examen_id: uuid.UUID, _: AdminUser, db: Session = Depend
 @candidat_router.get("/progress", response_model=CandidatProgressResponse)
 def candidat_get_progress(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     return get_candidat_progress(db, candidat)
+
+
+@candidat_router.get("/dashboard", response_model=CandidatDashboardResponse)
+def candidat_dashboard(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    return get_candidat_dashboard(db, candidat)
+
+
+@candidat_router.post("/tutor", response_model=TutorResponse)
+def candidat_tutor(
+    payload: TutorRequest,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        ensure_platform_access(db, candidat)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    try:
+        reply = chat_tutor(
+            message=payload.message,
+            context=payload.context,
+            language=payload.language or candidat.langue or "fr",
+        )
+        return {"reply": reply}
+    except MistralError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE if exc.status_code is None else exc.status_code,
+            detail=str(exc),
+        ) from exc
 
 
 @candidat_router.post("/lecons/{lecon_id}/complete", response_model=CandidatProgressResponse)

@@ -8,61 +8,80 @@ Ce document liste les identifiants de démonstration créés automatiquement au 
 
 ## Administrateur
 
-| Champ | Valeur |
-|---|---|
-| E-mail | `admin@codakis.cm` |
-| Mot de passe | `Admin123!` |
-| Rôle | Administrateur |
-| Espace | `/admin` |
+
+| Champ        | Valeur             |
+| ------------ | ------------------ |
+| E-mail       | `admin@codakis.cm` |
+| Mot de passe | `Admin123!`        |
+| Rôle         | Administrateur     |
+| Espace       | `/admin`           |
+
 
 ---
 
 ## Gérants d'auto-école
 
-| E-mail | Mot de passe | Auto-école | Ville |
-|---|---|---|---|
-| `gerant@demo.codakis.cm` | `Demo123!` | Auto-École Volant Vert | Douala (Bonamoussadi) |
-| `gerant2@demo.codakis.cm` | `Demo123!` | Auto-École Route Pro | Yaoundé (Bastos) |
-| `gerant3@demo.codakis.cm` | `Demo123!` | Auto-École Permis Plus | Douala (Akwa) |
+
+| E-mail                    | Mot de passe | Auto-école             | Ville                 |
+| ------------------------- | ------------ | ---------------------- | --------------------- |
+| `gerant@demo.codakis.cm`  | `Demo123!`   | Auto-École Volant Vert | Douala (Bonamoussadi) |
+| `gerant2@demo.codakis.cm` | `Demo123!`   | Auto-École Route Pro   | Yaoundé (Bastos)      |
+| `gerant3@demo.codakis.cm` | `Demo123!`   | Auto-École Permis Plus | Douala (Akwa)         |
+
 
 Espace gérant : `/espace/gerant`
 
 ---
 
+
+
 ## Moniteurs
 
-| E-mail | Mot de passe | Auto-école |
-|---|---|---|
-| `moniteur@demo.codakis.cm` | `Demo123!` | Auto-École Volant Vert |
-| `moniteur2@demo.codakis.cm` | `Demo123!` | Auto-École Volant Vert |
-| `moniteur3@demo.codakis.cm` | `Demo123!` | Auto-École Route Pro |
+
+| E-mail                      | Mot de passe | Auto-école             |
+| --------------------------- | ------------ | ---------------------- |
+| `moniteur@demo.codakis.cm`  | `Demo123!`   | Auto-École Volant Vert |
+| `moniteur2@demo.codakis.cm` | `Demo123!`   | Auto-École Volant Vert |
+| `moniteur3@demo.codakis.cm` | `Demo123!`   | Auto-École Route Pro   |
+
 
 Espace moniteur : `/espace/moniteur`
 
 ---
 
+
+
 ## Candidats
 
-| E-mail | Mot de passe | Abonnement CODAKIS | Auto-école | Usage |
-|---|---|---|---|---|
-| `candidat@demo.codakis.cm` | `Demo123!` | **Pro** (payé — accès cours/quiz/examens) | Aucune | Candidat « code seul » : plateforme débloquée, pas encore inscrit en auto-école |
-| `premium@demo.codakis.cm` | `Demo123!` | **Premium** (payé) | **Auto-École Volant Vert** (forfait démo) | Parcours complet : plateforme + inscription auto-école + dossier Consort |
+
+| E-mail                     | Mot de passe | Abonnement CODAKIS                        | Auto-école                                | Usage                                                                           |
+| -------------------------- | ------------ | ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `candidat@demo.codakis.cm` | `Demo123!`   | **Pro** (payé — accès cours/quiz/examens) | Aucune                                    | Candidat « code seul » : plateforme débloquée, pas encore inscrit en auto-école |
+| `premium@demo.codakis.cm`  | `Demo123!`   | **Premium** (payé)                        | **Auto-École Volant Vert** (forfait démo) | Parcours complet : plateforme + inscription auto-école + dossier Consort        |
+
 
 Espace candidat : `/espace/candidat`
 
 > **Distinction importante**
+>
 > - **Abonnement CODAKIS** = paiement plateforme (cours, quiz, examens blancs) — requis pour tous.
 > - **Inscription auto-école** = paiement séparé (forfait code/conduite) — seulement pour `premium@demo.codakis.cm` en démo.
 
+
+
 ### Parcours auto-école (dashboard)
 
-| Page | URL |
-|---|---|
-| Mon auto-école (inscription active) | `/espace/candidat/auto-ecole` |
-| Parcourir les auto-écoles | `/espace/candidat/auto-ecoles` |
-| Choisir un forfait | `/espace/candidat/auto-ecoles/{uuid}` |
+
+| Page                                | URL                                   |
+| ----------------------------------- | ------------------------------------- |
+| Mon auto-école (inscription active) | `/espace/candidat/auto-ecole`         |
+| Parcourir les auto-écoles           | `/espace/candidat/auto-ecoles`        |
+| Choisir un forfait                  | `/espace/candidat/auto-ecoles/{uuid}` |
+
 
 ---
+
+
 
 ## Site public — auto-écoles (API backend)
 
@@ -71,22 +90,24 @@ Les pages `/auto-ecoles` et la fiche détail chargent désormais **uniquement** 
 - Liste : `GET /api/v1/public/auto-ecoles`
 - Détail : `GET /api/v1/public/auto-ecoles/{uuid}`
 
+
+
 ### Auto-écoles de démo visibles sur le site
 
-1. **Auto-École Volant Vert** — Douala, Bonamoussadi  
-   URL : `/auto-ecoles/e9b607bf-6dd0-4715-96d2-ba5839548d53`  
+1. **Auto-École Volant Vert** — Douala, Bonamoussadi
+  URL : `/auto-ecoles/e9b607bf-6dd0-4715-96d2-ba5839548d53`  
    Forfaits : code, conduite 10h/20h, complet 20h
-
-2. **Auto-École Route Pro** — Yaoundé, Bastos  
-   URL : `/auto-ecoles/7b74538f-23f4-45b0-93f7-f675102ab3d7`  
+2. **Auto-École Route Pro** — Yaoundé, Bastos
+  URL : `/auto-ecoles/7b74538f-23f4-45b0-93f7-f675102ab3d7`  
    Forfaits par défaut + moniteur `moniteur3@demo.codakis.cm`
-
-3. **Auto-École Permis Plus** — Douala, Akwa  
-   URL : `/auto-ecoles/3f8ddf83-d04b-44a5-aae4-9d458283a442`
+3. **Auto-École Permis Plus** — Douala, Akwa
+  URL : `/auto-ecoles/3f8ddf83-d04b-44a5-aae4-9d458283a442`
 
 > Les UUID peuvent varier si la base est recréée. Consultez l'URL du navigateur ou `GET /api/v1/public/auto-ecoles`.
 
 ---
+
+
 
 ## Site public — blog (API backend)
 
@@ -95,20 +116,26 @@ Les pages `/blog` et `/blog/{slug}` chargent l'API :
 - Liste : `GET /api/v1/public/blog`
 - Article : `GET /api/v1/public/blog/{slug}`
 
+
+
 ### Articles publiés (6)
 
-| Slug | Titre |
-|---|---|
-| `reussir-code-route-cameroun` | 10 conseils pour réussir le code de la route au Cameroun |
-| `choisir-auto-ecole-agreee` | Comment choisir une auto-école agréée ? |
-| `dossier-consort-pieces` | Dossier Consort : les 6 pièces à préparer |
-| `paiement-mobile-money-permis` | Payer son forfait permis avec Mobile Money |
-| `examen-blanc-strategies` | Examen blanc : 5 stratégies pour scorer 35/40 |
-| `signalisation-cemac` | Signalisation CEMAC : panneaux à connaître par cœur |
+
+| Slug                           | Titre                                                    |
+| ------------------------------ | -------------------------------------------------------- |
+| `reussir-code-route-cameroun`  | 10 conseils pour réussir le code de la route au Cameroun |
+| `choisir-auto-ecole-agreee`    | Comment choisir une auto-école agréée ?                  |
+| `dossier-consort-pieces`       | Dossier Consort : les 6 pièces à préparer                |
+| `paiement-mobile-money-permis` | Payer son forfait permis avec Mobile Money               |
+| `examen-blanc-strategies`      | Examen blanc : 5 stratégies pour scorer 35/40            |
+| `signalisation-cemac`          | Signalisation CEMAC : panneaux à connaître par cœur      |
+
 
 Exemple : `/blog/reussir-code-route-cameroun`
 
 ---
+
+
 
 ## Pédagogie — cours, quiz, examens
 
@@ -119,6 +146,8 @@ Créés au seed (thèmes CEMAC + contenus enrichis) :
 - **10 thèmes** CEMAC (`signalisation`, `priorites`, `circulation`, …)
 - **1 leçon d'introduction par thème** (`/espace/candidat/cours`)
 - Les **3 premières leçons** incluent une **vidéo YouTube embarquée** et une **image illustrative**
+
+
 
 ### Questions (6)
 
@@ -131,17 +160,23 @@ Questions avec **image** et/ou **vidéo YouTube** pour tester les quiz et examen
 - Passage clouté (image)
 - Alcoolémie
 
+
+
 ### Quiz (3)
 
 Un quiz par thème : **Signalisation**, **Priorités**, **Vitesse**
 
 - Espace candidat : `/espace/candidat/examens`
 
+
+
 ### Examen blanc (1)
 
 - **Examen blanc CEMAC — démo** (6 questions, max 2 erreurs, 30 min)
 
 ---
+
+
 
 ## Parcours de test recommandé
 
@@ -156,6 +191,8 @@ Un quiz par thème : **Signalisation**, **Priorités**, **Vitesse**
 9. **Admin** — Se connecter avec `admin@codakis.cm` / `Admin123!`, éditer le contenu pédagogique et les articles blog.
 
 ---
+
+
 
 ## Réinitialiser les données de démo
 
@@ -177,3 +214,4 @@ Le frontend doit pointer vers l'API :
 # frontend-web/.env
 VITE_API_URL=http://localhost:8000
 ```
+

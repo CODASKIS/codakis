@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Pause, Volume2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { AuthApiError, synthesizeCandidatSpeech } from "../../../lib/pedagogyApi";
+import { synthesizeCandidatSpeech } from "../../../lib/pedagogyApi";
 
 type ListenButtonProps = {
   text: string;
@@ -10,11 +10,16 @@ type ListenButtonProps = {
   resetKey?: string;
 };
 
+const MAX_TTS_CHARS = 1800;
+
+function plainText(value: string): string {
+  return value.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export default function ListenButton({ text, className = "", resetKey = "" }: ListenButtonProps) {
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [error, setError] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
@@ -34,7 +39,6 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
 
   useEffect(() => {
     cleanup();
-    setError("");
   }, [resetKey, text, cleanup]);
 
   async function handleToggle() {
@@ -44,14 +48,15 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
       return;
     }
 
-    const plain = text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const plain = plainText(text);
     if (!plain) return;
 
-    setError("");
+    const limited = plain.length > MAX_TTS_CHARS ? `${plain.slice(0, MAX_TTS_CHARS)}…` : plain;
+
     setLoading(true);
     try {
       cleanup();
-      const blob = await synthesizeCandidatSpeech(plain, i18n.language);
+      const blob = await synthesizeCandidatSpeech(limited, i18n.language);
       const url = URL.createObjectURL(blob);
       objectUrlRef.current = url;
       const audio = new Audio(url);
@@ -61,12 +66,8 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
       audio.onplay = () => setPlaying(true);
       await audio.play();
       setPlaying(true);
-    } catch (err) {
-      const message =
-        err instanceof AuthApiError
-          ? err.message
-          : t("coursePlayer.listenUnavailable");
-      setError(message);
+    } catch {
+      cleanup();
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,7 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
         type="button"
         className="codakis-listen__btn"
         onClick={() => void handleToggle()}
-        disabled={loading || !text.trim()}
+        disabled={loading || !plainText(text)}
         aria-pressed={playing}
       >
         {loading ? (
@@ -101,7 +102,6 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
             ? t("coursePlayer.listenPause")
             : t("coursePlayer.listen")}
       </button>
-      {error ? <p className="codakis-listen__error">{error}</p> : null}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import CourseMiniQuiz from "../../components/course/CourseMiniQuiz";
 import CourseInlineQuiz from "../../components/course/CourseInlineQuiz";
 import CoursePdfDownloads from "../../components/course/CoursePdfDownloads";
 import ListenButton from "../../components/course/ListenButton";
+import CourseAiTutor from "../../components/course/CourseAiTutor";
 import CoursePlayerSidebar from "../../components/course/CoursePlayerSidebar";
 import { renderBlogBody } from "../../../lib/blog-content";
 import {
@@ -289,7 +290,14 @@ export default function CandidatModulePlayerPage() {
                 </header>
               )}
 
-              <ListenButton text={`${lecon.title}. ${lecon.excerpt ?? ""}. ${lecon.body}`} />
+              <ListenButton
+                text={`${lecon.title}. ${lecon.excerpt ?? ""}`}
+                resetKey={lecon.id}
+              />
+
+              <CourseAiTutor
+                context={`Leçon : ${lecon.title}\n${lecon.excerpt ?? ""}\n${lecon.body.replace(/<[^>]+>/g, " ").slice(0, 3000)}`}
+              />
 
               <div
                 className="fj-prose fj-wysiwyg codakis-player-body"

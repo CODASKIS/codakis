@@ -276,10 +276,49 @@ class SubmitQuizRequest(BaseModel):
 
 class SubmitResultDetail(BaseModel):
     question_id: UUID
+    prompt: str | None = None
     reponse_id: UUID | None
     correct_reponse_id: UUID | None
     est_correcte: bool
     explanation: str | None = None
+
+
+class AttemptErrorDetail(BaseModel):
+    question_id: str
+    prompt: str | None = None
+    explanation: str | None = None
+
+
+class AttemptHistoryItem(BaseModel):
+    id: UUID
+    kind: str
+    title: str
+    score: int
+    reussi: bool
+    nb_total: int
+    nb_erreurs: int
+    termine_le: datetime
+    errors: list[AttemptErrorDetail] = Field(default_factory=list)
+
+
+class CandidatDashboardResponse(BaseModel):
+    progress_percent: int
+    completed_lecons: int
+    total_lecons: int
+    quizzes_passed: int
+    examens_passed: int
+    success_rate: int
+    recent_attempts: list[AttemptHistoryItem] = Field(default_factory=list)
+
+
+class TutorRequest(BaseModel):
+    message: str = Field(min_length=1, max_length=2000)
+    context: str | None = Field(default=None, max_length=6000)
+    language: str | None = "fr"
+
+
+class TutorResponse(BaseModel):
+    reply: str
 
 
 class SubmitQuizResult(BaseModel):

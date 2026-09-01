@@ -73,6 +73,12 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("ELEVENLABS_MODEL_ID"),
     )
 
+    mistral_api_key: str = Field(default="", validation_alias=AliasChoices("MISTRAL_API_KEY"))
+    mistral_model: str = Field(
+        default="mistral-small-latest",
+        validation_alias=AliasChoices("MISTRAL_MODEL"),
+    )
+
     cinetpay_api_key: str = Field(default="", validation_alias=AliasChoices("CINETPAY_API_KEY"))
     cinetpay_api_password: str = Field(default="", validation_alias=AliasChoices("CINETPAY_API_PASSWORD"))
     cinetpay_site_id: str = Field(default="", validation_alias=AliasChoices("CINETPAY_SITE_ID"))
