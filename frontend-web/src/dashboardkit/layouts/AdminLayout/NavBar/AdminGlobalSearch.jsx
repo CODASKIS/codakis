@@ -83,12 +83,12 @@ export default function AdminGlobalSearch({ onNavigate }) {
 
   return (
     <div className="codakis-admin-search">
-      <Form className="px-3 pt-3" onSubmit={(event) => event.preventDefault()}>
-        <div className="form-group mb-0 d-flex align-items-center codakis-admin-search__field">
-          <FeatherIcon icon="search" />
+      <Form className="codakis-admin-search__form" onSubmit={(event) => event.preventDefault()}>
+        <div className="codakis-admin-search__field">
+          <FeatherIcon icon="search" aria-hidden />
           <Form.Control
             type="search"
-            className="border-0 shadow-none"
+            className="codakis-admin-search__input"
             placeholder={t("admin.search.placeholder")}
             value={query}
             onChange={(event) => setQuery(event.target.value)}

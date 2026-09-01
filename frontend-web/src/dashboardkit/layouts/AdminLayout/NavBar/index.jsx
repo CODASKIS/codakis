@@ -31,7 +31,7 @@ export default function NavBar() {
         <div className={mobDrpClass.join(' ')}>
           <NavLeft />
         </div>
-        <div className="ms-auto">
+        <div className="ms-auto codakis-header-right">
           <NavRight />
         </div>
       </div>

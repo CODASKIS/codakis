@@ -6,7 +6,12 @@ html:has(body.dashboardkit-active) {
 }
 
 body.dashboardkit-active {
-  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif !important;
+  font-family: Nunito, "Open Sans", system-ui, sans-serif !important;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 
   // Tailwind `.collapse { visibility: collapse }` entre en conflit avec Bootstrap Collapse
   .collapse.show,
@@ -401,6 +406,66 @@ body.dashboardkit-active {
     gap: 0.25rem;
   }
 
+  .codakis-header-right {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    min-height: 70px;
+  }
+
+  .codakis-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    margin: 0;
+  }
+
+  .codakis-header-search,
+  .codakis-header-user {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .codakis-header-search__toggle,
+  .codakis-header-user__toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    margin: 0 !important;
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 8px;
+  }
+
+  .codakis-header-search__toggle {
+    width: 44px;
+    padding-inline: 0 !important;
+  }
+
+  .codakis-header-user__toggle {
+    gap: 0.65rem;
+    max-width: min(280px, 42vw);
+  }
+
+  .codakis-header-search .dropdown-menu.codakis-admin-search-menu {
+    position: fixed !important;
+    inset: auto 1rem auto auto !important;
+    top: calc(70px + 0.35rem + env(safe-area-inset-top, 0px)) !important;
+    transform: none !important;
+    margin: 0;
+    z-index: 1035;
+  }
+
+  @media (min-width: 1025px) {
+    .codakis-header-search .dropdown-menu.codakis-admin-search-menu {
+      position: absolute !important;
+      inset: auto 0 auto auto !important;
+      top: calc(100% + 0.35rem) !important;
+      right: 0 !important;
+    }
+  }
+
   .codakis-header-left {
     flex-shrink: 0;
     display: flex;
@@ -438,6 +503,40 @@ body.dashboardkit-active {
 
   .pc-head-link .user-name {
     color: var(--codakis-black);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .pc-head-link .user-desc {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #667085;
+    line-height: 1.2;
+  }
+
+  .table,
+  .table td,
+  .table th {
+    font-size: 1.35rem;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 1.35rem;
+  }
+
+  .form-control,
+  .form-select {
+    font-family: inherit;
+    font-size: 1.4rem;
+    font-weight: 500;
+  }
+
+  .badge {
+    font-family: inherit;
+    font-weight: 600;
   }
 
   // Icônes contenu
@@ -5116,15 +5215,54 @@ body.dashboardkit-active {
     width: min(420px, calc(100vw - 2rem));
     padding: 0;
     border: 1px solid rgba(29, 38, 48, 0.1);
+    border-radius: 12px;
     box-shadow: 0 12px 40px rgba(29, 38, 48, 0.14);
+    overflow: hidden;
+  }
+
+  .codakis-admin-search__form {
+    padding: 1rem 1rem 0.75rem;
   }
 
   .codakis-admin-search__field {
+    display: flex;
+    align-items: center;
     gap: 0.75rem;
+    border: 0.1rem solid #ccc;
+    border-radius: 0.4rem;
+    background: #fff;
+    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.08);
+    padding: 0.55rem 0.85rem;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+
+    &:focus-within {
+      border-color: var(--codakis-green);
+      box-shadow: inset 0 0 0 0.15rem rgba(29, 185, 106, 0.35);
+    }
 
     svg {
-      color: #6b7280;
+      color: #667085;
       flex-shrink: 0;
+    }
+  }
+
+  .codakis-admin-search__input {
+    border: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #3e3d3f;
+    font-family: inherit;
+
+    &::placeholder {
+      color: #667085;
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none !important;
     }
   }
 
@@ -5138,11 +5276,12 @@ body.dashboardkit-active {
     h6 {
       margin: 0;
       padding: 0.65rem 1rem 0.35rem;
-      font-size: 0.72rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: #6b7280;
+      color: #667085;
+      font-family: inherit;
     }
   }
 
@@ -5168,14 +5307,16 @@ body.dashboardkit-active {
 
     strong {
       color: var(--codakis-black);
-      font-size: 0.95rem;
+      font-size: 1.35rem;
       line-height: 1.35;
+      font-weight: 700;
     }
 
     small {
-      color: #6b7280;
-      font-size: 0.82rem;
+      color: #667085;
+      font-size: 1.25rem;
       line-height: 1.35;
+      font-weight: 500;
     }
   }
 
@@ -5183,7 +5324,8 @@ body.dashboardkit-active {
   .codakis-admin-search__error {
     margin: 0;
     padding: 0.75rem 1rem;
-    font-size: 0.88rem;
+    font-size: 1.3rem;
+    font-weight: 500;
   }
 
   .codakis-admin-search__error {
@@ -5199,10 +5341,11 @@ body.dashboardkit-active {
   }
 
   .codakis-admin-search__link {
-    font-size: 0.82rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--codakis-green-dark);
     text-decoration: none;
+    font-family: inherit;
 
     &:hover {
       color: var(--codakis-green);

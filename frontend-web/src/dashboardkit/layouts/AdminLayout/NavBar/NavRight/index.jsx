@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // react-bootstrap
-import { ListGroup, Dropdown, Form } from 'react-bootstrap';
+import { ListGroup, Dropdown } from 'react-bootstrap';
 
 // third party
 import FeatherIcon from 'feather-icons-react';
@@ -70,36 +70,22 @@ export default function NavRight() {
   }
 
   return (
-    <ListGroup as="ul" bsPrefix=" " className="list-unstyled">
+    <ListGroup as="ul" bsPrefix=" " className="list-unstyled codakis-header-actions">
       {showGlobalSearch ? (
-        <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item d-none d-lg-block">
-          <Dropdown autoClose="outside">
-            <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0" aria-label={t('admin.search.open')}>
+        <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item codakis-header-search">
+          <Dropdown align="end" autoClose="outside" drop="down" popperConfig={{ strategy: 'fixed' }}>
+            <Dropdown.Toggle as="a" variant="link" className="pc-head-link codakis-header-search__toggle arrow-none" aria-label={t('admin.search.open')}>
               <i className="material-icons-two-tone">search</i>
             </Dropdown.Toggle>
-            <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown codakis-admin-search-menu">
+            <Dropdown.Menu className="pc-h-dropdown codakis-admin-search-menu">
               <AdminGlobalSearch />
             </Dropdown.Menu>
           </Dropdown>
         </ListGroup.Item>
       ) : null}
-      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item d-lg-none">
-        <Dropdown autoClose="outside">
-          <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0" aria-label={t('admin.search.open')}>
-            <i className="material-icons-two-tone">search</i>
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown codakis-admin-search-menu">
-            {showGlobalSearch ? <AdminGlobalSearch /> : (
-              <Form className="px-3 py-2">
-                <p className="small text-muted mb-0">{t('admin.search.unavailable')}</p>
-              </Form>
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-      </ListGroup.Item>
-      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item">
+      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item codakis-header-user">
         <Dropdown className="drp-user codakis-user-dropdown" align="end">
-          <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0 user-name">
+          <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none user-name codakis-header-user__toggle">
             <img src={avatarSrc} alt="" className="user-avatar" />
             <span>
               <span className="user-name">{displayName}</span>
