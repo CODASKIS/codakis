@@ -303,7 +303,7 @@
     "createFreeAccount": "Créer un compte gratuit",
     "createFreeAccountAndPay": "Créer un compte gratuit et payer",
     "loginToPay": "J'ai déjà un compte — me connecter",
-    "payMobileMoney": "Payer par Mobile Money",
+    "payMobileMoney": "Payer via CinetPay",
     "viewMySchool": "Voir mon auto-école",
     "wrongRoleHint": "Connectez-vous avec un compte candidat pour acheter un forfait auto-école.",
     "purchaseFlowHint": "Compte CODAKIS gratuit. L'inscription à une auto-école se fait uniquement lors de l'achat d'un forfait (Mobile Money).",
@@ -315,6 +315,8 @@
       "phoneHint": "Format : 6XX XX XX XX (Cameroun)",
       "submit": "Envoyer la demande de paiement",
       "confirming": "Confirmation en cours…",
+      "redirecting": "Redirection vers CinetPay…",
+      "redirectMissing": "Impossible d'ouvrir la page de paiement. Réessayez ou contactez le support.",
       "ussdTitle": "Validez sur votre téléphone",
       "success": "Paiement confirmé — votre forfait est actif.",
       "error": "Le paiement n'a pas pu être confirmé. Réessayez ou vérifiez votre solde.",
@@ -1050,6 +1052,21 @@
     }
   },
   "admin": {
+    "search": {
+      "open": "Recherche globale",
+      "placeholder": "Utilisateur, auto-école, paiement…",
+      "hint": "Saisissez au moins 2 caractères.",
+      "loading": "Recherche en cours…",
+      "empty": "Aucun résultat.",
+      "error": "Recherche impossible.",
+      "unavailable": "Recherche réservée à l'administration.",
+      "groupUsers": "Utilisateurs",
+      "groupSchools": "Auto-écoles",
+      "groupPayments": "Paiements",
+      "browseUsers": "Tous les utilisateurs",
+      "browseSchools": "Toutes les auto-écoles",
+      "browsePayments": "Tous les paiements"
+    },
     "schools": {
       "title": "Gestion des auto-écoles",
       "subtitle": "Consultez tous les dossiers d'inscription, validez ou refusez les demandes. Un e-mail est envoyé au gérant en cas de refus.",

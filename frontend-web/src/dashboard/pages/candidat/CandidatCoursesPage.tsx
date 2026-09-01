@@ -86,7 +86,7 @@ export default function CandidatCoursesPage() {
           <motion.div
             className="codakis-courses__module-grid"
             variants={staggerContainer}
-            initial="hidden"
+            initial={false}
             animate="visible"
           >
             {themes.map((theme, index) => (

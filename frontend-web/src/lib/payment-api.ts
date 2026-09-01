@@ -218,7 +218,7 @@ export type AdminPaymentItem = {
   plan_id: string | null;
   amount_fcfa: number;
   channel: string;
-  phone: string;
+  phone?: string;
   message: string | null;
   receipt_number: string | null;
   payer_name: string | null;

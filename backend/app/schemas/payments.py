@@ -16,8 +16,8 @@ class InitiatePaymentRequest(BaseModel):
     plan_id: str | None = None
     forfait_id: UUID | None = None
     auto_ecole_id: UUID | None = None
-    payment_method: str = Field(..., pattern="^(orange|mtn|moov)$")
-    phone: str = Field(..., min_length=9, max_length=15)
+    payment_method: str = Field(default="orange", pattern="^(orange|mtn|moov)$")
+    phone: str = Field(default="", max_length=15)
     billing_period: str = "monthly"
     purpose: str = "subscription"
 

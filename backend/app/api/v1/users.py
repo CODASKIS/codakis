@@ -20,6 +20,8 @@ from app.schemas.auth import (
     RejectAutoEcoleRequest,
     UserPublic,
 )
+from app.schemas.admin_search import AdminSearchResponse
+from app.services.admin_search import admin_global_search
 from app.services.consort import dossier_to_public, get_or_create_dossier
 from app.services.users import (
     FRONT_TO_ROLE,
@@ -45,6 +47,13 @@ gerant_router = APIRouter(prefix="/gerant", tags=["gerant"])
 @router.get("/users/me", response_model=UserPublic)
 def get_me(current_user: CurrentUser, db: Session = Depends(get_db)):
     return user_to_public(db, current_user)
+
+
+@admin_router.get("/search", response_model=AdminSearchResponse)
+def admin_search(_: AdminUser, q: str = "", db: Session = Depends(get_db)):
+    query = q.strip()
+    results = admin_global_search(db, query)
+    return AdminSearchResponse(query=query, results=results)
 
 
 @admin_router.get("/users", response_model=list[UserPublic])

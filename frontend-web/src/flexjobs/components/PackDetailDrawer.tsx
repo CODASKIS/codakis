@@ -5,7 +5,9 @@ import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { getSession, isAuthenticatedForRole } from "../../auth/authStore";
-import { confirmForfaitPurchase, isCandidateEnrolled } from "../../auth/candidateEnrollment";
+import { isCandidateEnrolled } from "../../auth/candidateEnrollment";
+import { getAccessToken } from "../../lib/authApi";
+import { initiatePayment } from "../../lib/payment-api";
 import {
   buildLoginUrlForPurchase,
   buildRegisterUrlForPurchase,
@@ -18,7 +20,6 @@ import {
   type SchoolForfait,
   type SchoolForfaitType,
 } from "../../data/mockDrivingSchools";
-import MobileMoneyCheckout from "./MobileMoneyCheckout";
 
 type PackDetailDrawerProps = {
   open: boolean;
@@ -69,7 +70,7 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
   const session = getSession();
   const alreadyEnrolled = isCandidateEnrolled();
   const [paying, setPaying] = useState(false);
-  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   useDrawerEffects(open, onClose);
 
@@ -83,26 +84,31 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
       ? purchaseIntentFromSchool(school.id, forfait.id, type)
       : null;
 
-  function handleStartPayment() {
+  async function handleStartPayment() {
     if (!school) return;
-    setCheckoutOpen(true);
-  }
+    const token = getAccessToken();
+    if (!token) return;
 
-  function handlePaymentSuccess(paymentRef: string) {
-    if (!school) return;
     setPaying(true);
-    void confirmForfaitPurchase({
-      schoolId: school.id,
-      schoolName: school.name,
-      schoolCity: school.city,
-      forfaitId: forfait.id,
-      forfaitLabel: forfait.label[lang],
-      paymentRef,
-    }).then(() => {
+    setPaymentError(null);
+    try {
+      const result = await initiatePayment(token, {
+        forfait_id: forfait.id,
+        auto_ecole_id: school.id,
+        payment_method: "orange",
+        phone: session?.phone?.replace(/\D/g, "").slice(-9) ?? "",
+        purpose: "enrollment",
+      });
+      if (result.payment_url) {
+        window.location.href = result.payment_url;
+        return;
+      }
+      setPaymentError(t("packs.checkout.redirectMissing"));
+    } catch (err) {
+      setPaymentError(err instanceof Error ? err.message : t("packs.checkout.error"));
+    } finally {
       setPaying(false);
-      onClose();
-      navigate("/espace/candidat/auto-ecole");
-    });
+    }
   }
 
   function handleRememberAndNavigate(href: string) {
@@ -139,7 +145,7 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
         onClick={handleStartPayment}
         disabled={paying}
       >
-        <span>{paying ? t("common.loading") : t("packs.payMobileMoney")}</span>
+        <span>{paying ? t("packs.checkout.redirecting") : t("packs.payMobileMoney")}</span>
         <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
       </button>
     );
@@ -238,6 +244,12 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
               {t("packs.detail.schoolNote", { name: school.name })}
             </p>
           ) : null}
+
+          {paymentError ? (
+            <p className="fj-pack-drawer__payment-error" role="alert">
+              {paymentError}
+            </p>
+          ) : null}
         </div>
 
         <footer className="fj-pack-drawer__footer">
@@ -248,18 +260,6 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
         </footer>
       </aside>
     </div>
-    {school ? (
-      <MobileMoneyCheckout
-        open={checkoutOpen}
-        onClose={() => setCheckoutOpen(false)}
-        amount={forfait.price}
-        schoolId={school.id}
-        schoolName={school.name}
-        forfaitId={forfait.id}
-        forfaitLabel={forfait.label[lang]}
-        onSuccess={handlePaymentSuccess}
-      />
-    ) : null}
     </>,
     document.body,
   );

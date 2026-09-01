@@ -84,7 +84,7 @@ def get_payment_config() -> dict:
     if cinetpay_configured():
         return {
             "provider": "cinetpay",
-            "requires_phone": True,
+            "requires_phone": False,
             "requires_redirect": True,
             "sandbox": settings.cinetpay_api_key.startswith("sk_test"),
             "label": "CinetPay — Orange / MTN / Moov / Carte",
@@ -110,7 +110,10 @@ def initiate_payment(
     auto_ecole_id: uuid.UUID | None = None,
     billing_period: str = "monthly",
 ) -> Paiement:
-    normalized_phone = normalize_phone(phone)
+    phone_source = phone.strip() or (user.telephone or "").strip()
+    if not phone_source:
+        phone_source = "670000000"
+    normalized_phone = normalize_phone(phone_source)
     amount_fcfa = 0
     label_fr = "Paiement CODAKIS"
     commission_fcfa: int | None = None

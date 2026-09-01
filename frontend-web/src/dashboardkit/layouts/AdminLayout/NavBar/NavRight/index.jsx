@@ -11,6 +11,7 @@ import FeatherIcon from 'feather-icons-react';
 // project imports
 import { useDashboardMenu } from 'contexts/DashboardMenuContext';
 import ConfirmModal from '@/components/common/ConfirmModal';
+import AdminGlobalSearch from '../AdminGlobalSearch';
 import {
   clearSession,
   getSession,
@@ -55,6 +56,7 @@ export default function NavRight() {
   const profilePath = session ? getProfilePath(session.role) : '/';
   const settingsPath = session ? getSettingsPath(session.role) : '/';
   const showSettings = session?.role === 'admin' || session?.role === 'gerant';
+  const showGlobalSearch = session?.role === 'admin';
   const enrollment = session?.role === 'candidat' ? getCandidateEnrollment() : null;
   const enrolled = session?.role === 'candidat' && isCandidateEnrolled();
   const avatarSrc = getUserAvatarUrl(displayName, 40, session?.avatarUrl);
@@ -69,18 +71,29 @@ export default function NavRight() {
 
   return (
     <ListGroup as="ul" bsPrefix=" " className="list-unstyled">
-      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item">
-        <Dropdown>
-          <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0">
+      {showGlobalSearch ? (
+        <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item d-none d-lg-block">
+          <Dropdown autoClose="outside">
+            <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0" aria-label={t('admin.search.open')}>
+              <i className="material-icons-two-tone">search</i>
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown codakis-admin-search-menu">
+              <AdminGlobalSearch />
+            </Dropdown.Menu>
+          </Dropdown>
+        </ListGroup.Item>
+      ) : null}
+      <ListGroup.Item as="li" bsPrefix=" " className="pc-h-item d-lg-none">
+        <Dropdown autoClose="outside">
+          <Dropdown.Toggle as="a" variant="link" className="pc-head-link arrow-none me-0" aria-label={t('admin.search.open')}>
             <i className="material-icons-two-tone">search</i>
           </Dropdown.Toggle>
-          <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown drp-search">
-            <Form className="px-3">
-              <div className="form-group mb-0 d-flex align-items-center">
-                <FeatherIcon icon="search" />
-                <Form.Control type="search" className="border-0 shadow-none" placeholder="Rechercher…" />
-              </div>
-            </Form>
+          <Dropdown.Menu className="dropdown-menu-end pc-h-dropdown codakis-admin-search-menu">
+            {showGlobalSearch ? <AdminGlobalSearch /> : (
+              <Form className="px-3 py-2">
+                <p className="small text-muted mb-0">{t('admin.search.unavailable')}</p>
+              </Form>
+            )}
           </Dropdown.Menu>
         </Dropdown>
       </ListGroup.Item>

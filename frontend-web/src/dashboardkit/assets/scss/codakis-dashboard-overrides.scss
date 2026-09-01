@@ -5078,3 +5078,107 @@ body.dashboardkit-active.minimenu .pc-sidebar {
     display: none !important;
   }
 }
+
+body.dashboardkit-active {
+  .codakis-admin-search-menu {
+    width: min(420px, calc(100vw - 2rem));
+    padding: 0;
+    border: 1px solid rgba(29, 38, 48, 0.1);
+    box-shadow: 0 12px 40px rgba(29, 38, 48, 0.14);
+  }
+
+  .codakis-admin-search__field {
+    gap: 0.75rem;
+
+    svg {
+      color: #6b7280;
+      flex-shrink: 0;
+    }
+  }
+
+  .codakis-admin-search__results {
+    max-height: min(52vh, 420px);
+    overflow-y: auto;
+    padding: 0.25rem 0 0.5rem;
+  }
+
+  .codakis-admin-search__group {
+    h6 {
+      margin: 0;
+      padding: 0.65rem 1rem 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+  }
+
+  .codakis-admin-search__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.65rem 1rem;
+    border: 0;
+    text-align: left;
+
+    svg {
+      margin-top: 0.15rem;
+      color: var(--codakis-green-dark);
+      flex-shrink: 0;
+    }
+  }
+
+  .codakis-admin-search__item-copy {
+    min-width: 0;
+    display: grid;
+    gap: 0.1rem;
+
+    strong {
+      color: var(--codakis-black);
+      font-size: 0.95rem;
+      line-height: 1.35;
+    }
+
+    small {
+      color: #6b7280;
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+  }
+
+  .codakis-admin-search__hint,
+  .codakis-admin-search__error {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+  }
+
+  .codakis-admin-search__error {
+    color: #dc2626;
+  }
+
+  .codakis-admin-search__footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.85rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid rgba(29, 38, 48, 0.08);
+  }
+
+  .codakis-admin-search__link {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--codakis-green-dark);
+    text-decoration: none;
+
+    &:hover {
+      color: var(--codakis-green);
+      text-decoration: underline;
+    }
+  }
+
+  .bs-motion-page {
+    min-height: 1px;
+  }
+}

@@ -303,7 +303,7 @@
     "createFreeAccount": "Create a free account",
     "createFreeAccountAndPay": "Create a free account and pay",
     "loginToPay": "I already have an account — sign in",
-    "payMobileMoney": "Pay via Mobile Money",
+    "payMobileMoney": "Pay via CinetPay",
     "viewMySchool": "View my driving school",
     "wrongRoleHint": "Sign in with a candidate account to purchase a driving school package.",
     "purchaseFlowHint": "Free CODAKIS account. Driving school enrolment happens only when you purchase a package (Mobile Money).",
@@ -315,6 +315,8 @@
       "phoneHint": "Format: 6XX XX XX XX (Cameroon)",
       "submit": "Send payment request",
       "confirming": "Confirming…",
+      "redirecting": "Redirecting to CinetPay…",
+      "redirectMissing": "Unable to open the payment page. Please try again or contact support.",
       "ussdTitle": "Confirm on your phone",
       "success": "Payment confirmed — your plan is active.",
       "error": "Payment could not be confirmed. Try again or check your balance.",
@@ -1050,6 +1052,21 @@
     }
   },
   "admin": {
+    "search": {
+      "open": "Global search",
+      "placeholder": "User, driving school, payment…",
+      "hint": "Type at least 2 characters.",
+      "loading": "Searching…",
+      "empty": "No results.",
+      "error": "Search failed.",
+      "unavailable": "Search is limited to administrators.",
+      "groupUsers": "Users",
+      "groupSchools": "Driving schools",
+      "groupPayments": "Payments",
+      "browseUsers": "All users",
+      "browseSchools": "All driving schools",
+      "browsePayments": "All payments"
+    },
     "schools": {
       "title": "Driving school management",
       "subtitle": "Review all registration files, approve or reject requests. An email is sent to the manager when rejected.",

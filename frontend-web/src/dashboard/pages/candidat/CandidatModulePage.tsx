@@ -101,7 +101,7 @@ export default function CandidatModulePage() {
 
           <motion.div
             key={themeId}
-            initial="hidden"
+            initial={false}
             animate="visible"
             variants={fadeUpVariants}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
@@ -143,7 +143,7 @@ export default function CandidatModulePage() {
               <motion.ol
                 className="codakis-courses__lesson-list"
                 variants={staggerContainer}
-                initial="hidden"
+                initial={false}
                 animate="visible"
               >
                 {lecons.map((lecon, lessonIndex) => (

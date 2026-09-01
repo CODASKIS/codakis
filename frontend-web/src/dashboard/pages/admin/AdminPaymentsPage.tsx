@@ -2,6 +2,7 @@ import { CreditCard, RefreshCw, Wallet } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Badge, Col, Form, Row, Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import TablePagination from "../../../components/common/TablePagination";
@@ -37,6 +38,7 @@ function formatDate(value: string | null, locale: string): string {
 
 export default function AdminPaymentsPage() {
   const { t, i18n } = useTranslation();
+  const [searchParams] = useSearchParams();
   const locale = i18n.language.startsWith("en") ? "en-GB" : "fr-FR";
   const [stats, setStats] = useState<AdminPaymentStats | null>(null);
   const [payments, setPayments] = useState<AdminPaymentItem[]>([]);
@@ -44,7 +46,12 @@ export default function AdminPaymentsPage() {
   const [error, setError] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [purposeFilter, setPurposeFilter] = useState<string>("all");
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(() => searchParams.get("ref") ?? "");
+
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) setSearch(ref);
+  }, [searchParams]);
 
   const load = useCallback(async () => {
     setLoading(true);

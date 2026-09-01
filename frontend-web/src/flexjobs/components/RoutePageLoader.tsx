@@ -6,8 +6,8 @@ import CodakisLoaderPanel from "@/components/common/CodakisLoaderPanel";
 import { beginPageLoad, isPageReady, subscribePageReady } from "@/lib/pageLoadReady";
 import { waitForPublicPageReady } from "@/lib/waitForDashboardContent";
 
-const MIN_VISIBLE_MS = 320;
-const MAX_WAIT_MS = 12000;
+const MIN_VISIBLE_MS = 180;
+const MAX_WAIT_MS = 4500;
 
 function isAdminShellPath(pathname: string): boolean {
   return (

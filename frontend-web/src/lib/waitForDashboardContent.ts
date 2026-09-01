@@ -66,18 +66,22 @@ export async function waitForDashboardReady(contentRoot: HTMLElement | null): Pr
   await nextPaint();
 
   if (contentRoot) {
+    const hasPageContent = () =>
+      Boolean(
+        contentRoot.querySelector(
+          ".card, .row, .table, .codakis-loader-inline, .codakis-consort-page, .codakis-exams, .alert",
+        ),
+      );
+
     const chartSlots = contentRoot.querySelectorAll(".codakis-chart-wrap, .codakis-pie-card__chart");
 
     if (chartSlots.length > 0) {
       await waitForCondition(() => {
         const canvases = contentRoot.querySelectorAll(".apexcharts-canvas");
-        return canvases.length >= chartSlots.length;
+        return canvases.length >= chartSlots.length || hasPageContent();
       }, CONTENT_TIMEOUT_MS);
     } else {
-      await waitForCondition(
-        () => Boolean(contentRoot.querySelector(".card, .row, .table")),
-        CONTENT_TIMEOUT_MS,
-      );
+      await waitForCondition(hasPageContent, 1200);
     }
 
     await waitForImages(contentRoot);

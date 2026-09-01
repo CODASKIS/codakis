@@ -110,7 +110,7 @@ export default function CandidatExamsPage() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeThemeId}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
@@ -150,7 +150,7 @@ export default function CandidatExamsPage() {
               </AnimatePresence>
             </Tab.Pane>
             <Tab.Pane eventKey="examens">
-              <motion.div variants={fadeUpVariants} initial="hidden" animate="visible">
+              <motion.div variants={fadeUpVariants} initial={false} animate="visible">
                 <Table hover className="align-middle">
                   <thead>
                     <tr>
