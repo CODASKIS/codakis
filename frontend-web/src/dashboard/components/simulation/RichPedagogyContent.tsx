@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { SimulationsFromHtml, stripSimulationBlocks } from "./simulationEmbed";
+import { DRIVING_SIMULATOR_ENABLED, SimulationsFromHtml, stripSimulationBlocks } from "./simulationEmbed";
 
 type Props = {
   html: string;

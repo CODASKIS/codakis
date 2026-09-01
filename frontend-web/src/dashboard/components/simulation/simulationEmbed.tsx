@@ -1,6 +1,9 @@
 import SimulationBlock from "./SimulationBlock";
 import { getScenario } from "./presets";
 
+/** Désactivé temporairement — réactiver quand le simulateur sera prêt en production. */
+export const DRIVING_SIMULATOR_ENABLED = false;
+
 const PRESET_RE = /<div[^>]*data-codakis-simulation=["']([^"']+)["'][^>]*>\s*<\/div>/gi;
 const REF_RE = /<div[^>]*data-codakis-simulation-ref=["']([^"']+)["'][^>]*>\s*<\/div>/gi;
 
