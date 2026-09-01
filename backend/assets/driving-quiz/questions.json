@@ -1,402 +1,285 @@
 [
   {
     "numb": 1,
-    "question": "التامين الادنى الاجباري على السيارة يسمى",
-    "answer": "المسؤولية المدنية",
-    "options": [
-      "المسؤولية المدنية",
-      "المسؤولية الحركية"
-    ],
+    "question": "L'assurance minimale obligatoire pour une voiture s'appelle",
+    "answer": "Responsabilité civile",
+    "options": ["Responsabilité civile", "Responsabilité routière"],
     "image": "1.png"
   },
   {
     "numb": 2,
-    "question": "مستوى السائل في هده البطارية مضبوط",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Le niveau de liquide dans cette batterie est correct",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "2.png"
   },
   {
     "numb": 3,
-    "question": "هاد الحمولة ماخصهاش تجاوز فالخلف اكثر من",
-    "answer": "3 متر",
-    "options": [
-      "1 متر",
-      "3 متر"
-    ],
+    "question": "Cette charge ne doit pas dépasser à l'arrière de plus de",
+    "answer": "3 mètres",
+    "options": ["1 mètre", "3 mètres"],
     "image": "3.png"
   },
   {
     "numb": 4,
-    "question": "المسلك لي على ليمن هو ",
-    "answer": "مسلك الدراجات",
-    "options": [
-      "مسلك الدراجات",
-      "مكان مخصص للتوقف"
-    ],
+    "question": "La voie située à droite est",
+    "answer": "Une voie réservée aux cycles",
+    "options": ["Une voie réservée aux cycles", "Un emplacement réservé au stationnement"],
     "image": "4.png"
   },
   {
     "numb": 5,
-    "question": "عند وجود هاد العلامة من الواجب علي",
-    "answer": "مانرميش بقايا السجائر",
-    "options": [
-      "نقص من السرعة",
-      "مانرميش بقايا السجائر"
-    ],
+    "question": "En présence de ce panneau, je dois",
+    "answer": "Ne pas jeter de mégots de cigarette",
+    "options": ["Réduire ma vitesse", "Ne pas jeter de mégots de cigarette"],
     "image": "5.png"
   },
   {
     "numb": 6,
-    "question": "متعن مزيان فالصورة",
-    "answer": "ندوز انا الاول",
-    "options": [
-      "نسمح بالمرور لهاد السيارة",
-      "ندوز انا الاول"
-    ],
+    "question": "Que dois-je faire dans cette situation ?",
+    "answer": "Je passe en premier",
+    "options": ["Laisser passer cette voiture", "Je passe en premier"],
     "image": "6.png"
   },
   {
     "numb": 7,
-    "question": "الاقراص و صفائح الحصر لازم ديما يتغيرو فوقت واحد",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Les disques et plaquettes de frein doivent toujours être remplacés en même temps",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "7.png"
   },
   {
     "numb": 8,
-    "question": "مجموع الوزن مع الحمولة هو 500 كلغ. باش نسوق خاصني بيرمي ب و ه ",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Le poids total avec la charge est de 500 kg. Pour conduire, j'ai besoin du permis B et E",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "8.png"
   },
   {
     "numb": 9,
-    "question": "مسموح لي نستمر فالسير بهاد العجلة بالنسية للمسافات القصيرة",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je suis autorisé à continuer à rouler avec ce pneu sur de courtes distances",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "9.png"
   },
   {
     "numb": 10,
-    "question": "نستعمل المنبه ",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "J'utilise le klaxon",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "10.png"
   },
   {
     "numb": 11,
-    "question": "ماء التبريد كافي",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Le niveau d'eau de refroidissement est suffisant",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "11.png"
   },
   {
     "numb": 12,
-    "question": "من الواجب نبدل مساحات الزجاج ملي تبدا تخلي الاثار ",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je dois remplacer les balais d'essuie-glace dès qu'ils laissent des traces",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "12.png"
   },
   {
     "numb": 13,
-    "question": "من الواجب نراقب الاضواء الخلفية",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je dois contrôler régulièrement les feux arrière",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "13.png"
   },
   {
     "numb": 14,
-    "question": "هاد العلامة كتعلم على",
-    "answer": "مكان ممر الراجلين",
-    "options": [
-      "مكان ممر الراجلين",
-      "ممر الراجلين على بعد 50 متر"
-    ],
+    "question": "Ce panneau indique",
+    "answer": "Un passage pour piétons",
+    "options": ["Un passage pour piétons", "Un passage pour piétons à 50 mètres"],
     "image": "14.png"
   },
   {
     "numb": 15,
-    "question": "غادي بسرعة 60 كلم في الساعة",
-    "answer": "ننقص",
-    "options": [
-      "ننقص",
-      "نبقى غادي بيها"
-    ],
+    "question": "Je roule à 60 km/h",
+    "answer": "Je réduis ma vitesse",
+    "options": ["Je réduis ma vitesse", "Je maintiens ma vitesse"],
     "image": "15.png"
   },
   {
     "numb": 16,
-    "question": "هاد العلامة كتعلمني",
-    "answer": "الطريق منحرفة",
-    "options": [
-      "الطريق منحرفة",
-      "الطريق مقطوعة"
-    ],
+    "question": "Ce panneau m'indique",
+    "answer": "Une route sinueuse",
+    "options": ["Une route sinueuse", "Une route coupée"],
     "image": "16.png"
   },
   {
     "numb": 17,
-    "question": "هاد العلامة كتعلم على ممر السكة الحديدية",
-    "answer": "بالحواجز",
-    "options": [
-      "بالحواجز",
-      "بدون حواجز"
-    ],
+    "question": "Ce panneau indique un passage à niveau",
+    "answer": "Avec barrières",
+    "options": ["Avec barrières", "Sans barrières"],
     "image": "17.png"
   },
   {
     "numb": 18,
-    "question": "كنسوق شاحنة صغيرة, يمكن لي نكمل السير فالطريق الموجودة على ليمن",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je conduis un petit camion, puis-je continuer sur la voie de droite",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "18.png"
   },
   {
     "numb": 19,
-    "question": "غادي بسرعة 40 كلم في الساعة. واجب علي نقص من السرعة",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je roule à 40 km/h. Dois-je réduire ma vitesse ?",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "19.png"
   },
   {
     "numb": 20,
-    "question": "من الواجب عليا ننحاز لاقصى اليمين",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Dois-je me rabattre au maximum sur la droite ?",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "20.png"
   },
   {
     "numb": 21,
-    "question": "كنسوق ب 40 كلم فالساعة. يمكن لي نزيد فالسرعة ديالي",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je roule à 40 km/h. Puis-je augmenter ma vitesse ?",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "21.png"
   },
   {
     "numb": 22,
-    "question": "باش نتجاوز. يمكن لي نستعمل الممر لي فالوسط",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Pour dépasser, puis-je utiliser la voie du milieu ?",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "22.png"
   },
   {
     "numb": 23,
-    "question": "يمكن لي التوقف على طول الرصيف",
-    "answer": "ديال ليسر",
-    "options": [
-      "ديال ليسر",
-      "ديال ليمن"
-    ],
+    "question": "Je peux m'arrêter le long du trottoir",
+    "answer": "À gauche",
+    "options": ["À gauche", "À droite"],
     "image": "23.png"
   },
   {
     "numb": 24,
-    "question": "انا متوقف فمكان مناسب",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Je suis stationné à un endroit approprié",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "24.png"
   },
   {
     "numb": 25,
-    "question": "يمكن لي التوقف على الجنب ليمن ديال الطريق مباشرة من بعد راس العقبة",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Puis-je m'arrêter sur le côté droit de la route juste après le sommet de la côte ?",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "25.png"
   },
   {
     "numb": 26,
-    "question": "هاد السيارة فوضعية مناسبة للتوقف",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Cette voiture est correctement stationnée",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "26.png"
   },
   {
     "numb": 27,
-    "question": "يمكن لي التوقف بين هاد زوج سيارات زورق",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Puis-je m'arrêter entre ces deux voitures bleues ?",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "27.png"
   },
   {
     "numb": 28,
-    "question": "هاد الشاحنة واقفة بالشكل الصحيح",
-    "answer": "لا",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Ce camion est correctement arrêté",
+    "answer": "Non",
+    "options": ["Oui", "Non"],
     "image": "28.png"
   },
   {
     "numb": 29,
-    "question": "هاد العلامة كتعلم على ",
-    "answer": "حركة السير فالاتجاهين",
-    "options": [
-      "طلعة و هبطة",
-      "حركة السير فالاتجاهين"
-    ],
+    "question": "Ce panneau indique",
+    "answer": "Une circulation dans les deux sens",
+    "options": ["Une montée et une descente", "Une circulation dans les deux sens"],
     "image": "29.png"
   },
   {
     "numb": 30,
-    "question": "ابتداء من هاد العلامة يمكن لي نسوق ب",
-    "answer": "40 كلم في الساعة",
-    "options": [
-      "40 كلم في الساعة",
-      "60 كلم في الساعة"
-    ],
+    "question": "À partir de ce panneau, je peux rouler à",
+    "answer": "40 km/h",
+    "options": ["40 km/h", "60 km/h"],
     "image": "30.png"
   },
   {
     "numb": 31,
-    "question": "هاد السهم كيعلم على وجود",
-    "answer": "طريق خاصة لمستعملي الطريق لي غادور على ليسر",
+    "question": "Cette flèche indique l'existence",
+    "answer": "D'une voie réservée aux usagers allant à gauche",
     "options": [
-      "طريق خاصة لمستعملي الطريق لي غادور على ليمن",
-      "طريق خاصة لمستعملي الطريق لي غادور على ليسر"
+      "D'une voie réservée aux usagers allant à droite",
+      "D'une voie réservée aux usagers allant à gauche"
     ],
     "image": "31.png"
   },
   {
     "numb": 32,
-    "question": "التشوير الطرقي كيعلم",
-    "answer": "منعرج على ليسر",
-    "options": [
-      "منعرج على ليسر",
-      "منعرج على ليمن"
-    ],
+    "question": "Cette signalisation indique",
+    "answer": "Un virage à gauche",
+    "options": ["Un virage à gauche", "Un virage à droite"],
     "image": "32.png"
   },
   {
     "numb": 33,
-    "question": "هاد العلامة كتعلم على",
-    "answer": "مستشفى",
-    "options": [
-      "فندق",
-      "مستشفى"
-    ],
+    "question": "Ce panneau indique",
+    "answer": "Un hôpital",
+    "options": ["Un hôtel", "Un hôpital"],
     "image": "33.png"
   },
   {
     "numb": 34,
-    "question": "الخط لي من جهتي دليسر: يمكن لي نتجاوزو",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "La ligne de mon côté gauche : puis-je la franchir pour dépasser ?",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "34.png"
   },
   {
     "numb": 35,
-    "question": "الا تبعت هاد الاتجاه غادي نكون فطريق",
-    "answer": "جهوية",
-    "options": [
-      "وطنية",
-      "جهوية"
-    ],
+    "question": "Si je suis cette direction, je serai sur une route",
+    "answer": "Régionale",
+    "options": ["Nationale", "Régionale"],
     "image": "35.png"
   },
   {
     "numb": 36,
-    "question": "كنسوق شاحنة لنقل البضائع,يمكن لي ندور على ليمن",
-    "answer": "نعم",
-    "options": [
-      "لا",
-      "نعم"
-    ],
+    "question": "Je conduis un camion de transport de marchandises, puis-je tourner à droite ?",
+    "answer": "Oui",
+    "options": ["Non", "Oui"],
     "image": "36.png"
   },
   {
     "numb": 37,
-    "question": "الا تجهت لطريق للي كتادي للصخيرات",
-    "answer": "غنخرج من طريق السيار",
-    "options": [
-      "غندخل لطريق السيار",
-      "غنخرج من طريق السيار"
-    ],
+    "question": "Si je prends la direction des Roches",
+    "answer": "Je sors de l'autoroute",
+    "options": ["J'entre sur l'autoroute", "Je sors de l'autoroute"],
     "image": "37.png"
   },
   {
     "numb": 38,
-    "question": "هاد العلامة كتعلم على",
-    "answer": "خروج الاطفال",
-    "options": [
-      "خروج الاطفال",
-      "ممر خاص بالراجلين"
-    ],
+    "question": "Ce panneau indique",
+    "answer": "Une sortie d'enfants",
+    "options": ["Une sortie d'enfants", "Un passage réservé aux piétons"],
     "image": "38.png"
   },
   {
     "numb": 39,
-    "question": "تمعن فالصورة",
-    "answer": "ننقص من السرعة",
-    "options": [
-      "ننقص من السرعة",
-      "نحتفظ بالسرعة"
-    ],
+    "question": "Observez la photo : que devez-vous faire ?",
+    "answer": "Réduire ma vitesse",
+    "options": ["Réduire ma vitesse", "Maintenir ma vitesse"],
     "image": "39.png"
   },
   {
     "numb": 40,
-    "question": "مستوى الزيت مضبوط",
-    "answer": "نعم",
-    "options": [
-      "نعم",
-      "لا"
-    ],
+    "question": "Le niveau d'huile est correct",
+    "answer": "Oui",
+    "options": ["Oui", "Non"],
     "image": "40.png"
   }
 ]
