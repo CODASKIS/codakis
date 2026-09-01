@@ -17,7 +17,7 @@ COPY app ./app
 COPY scripts ./scripts
 COPY assets ./assets
 
-RUN pip install --upgrade pip \
+RUN pip install "pip<26" \
     && pip install .
 
 RUN mkdir -p /app/uploads/cms
