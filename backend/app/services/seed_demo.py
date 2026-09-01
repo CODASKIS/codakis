@@ -41,6 +41,81 @@ DEMO_IMAGE = "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=
 DEMO_VIDEO_YT = "https://www.youtube.com/watch?v=FG0fTKAqZ5g"
 DEMO_VIDEO_EMBED = "https://www.youtube.com/embed/FG0fTKAqZ5g"
 
+SIM_MARKER = "data-codakis-simulation"
+
+LESSON_SCENARIO_BY_SLUG: dict[str, tuple[str, str]] = {
+    "signalisation-approfondissement": (
+        "heavy-traffic",
+        "Circulation dense : repérez les priorités et les distances de sécurité.",
+    ),
+    "priorites-approfondissement": (
+        "intersection",
+        "Carrefour : appliquez la priorité à droite et observez les feux.",
+    ),
+    "circulation-introduction": (
+        "draft",
+        "Scène urbaine complète : piétons, immeubles et trafic croisé.",
+    ),
+    "vitesse-approfondissement": (
+        "curve",
+        "Virage serré : adaptez votre vitesse et votre trajectoire.",
+    ),
+    "comportement-approfondissement": (
+        "dodge",
+        "Obstacles sur la route : choisissez la meilleure trajectoire.",
+    ),
+    "signalisation-synthese": (
+        "blocked",
+        "Voie partiellement bloquée : ralentissez et contournement.",
+    ),
+    "priorites-introduction": (
+        "intersection",
+        "Approche d'un carrefour : qui est prioritaire ?",
+    ),
+    "circulation-approfondissement": (
+        "draft",
+        "Trafic urbain et piétons : anticipez les déplacements.",
+    ),
+}
+
+QUESTION_SCENARIO_RULES: list[tuple[str, str, str]] = [
+    ("intersection", "intersection", "Visualisez la situation au carrefour avant de répondre."),
+    ("piéton", "draft", "Observez les piétons et le trafic avant de choisir."),
+    ("passage clouté", "draft", "Un piéton s'approche du passage clouté."),
+    ("prioritaire", "intersection", "Qui passe en premier à cette intersection ?"),
+    ("vitesse maximale", "curve", "Adaptez votre vitesse dans cette configuration."),
+    ("panneau triangulaire", "heavy-traffic", "Circulation chargée : repérez les panneaux."),
+    ("arrêter", "blocked", "Route partiellement bloquée : choisissez le bon réflexe."),
+]
+
+
+def _simulation_block(scenario_id: str, caption: str) -> str:
+    return (
+        "<h2>Simulation de conduite</h2>"
+        f"<p>{caption}</p>"
+        f'<div data-codakis-simulation="{scenario_id}"></div>'
+    )
+
+
+def inject_demo_simulations(db: Session) -> None:
+    """Ajoute des scènes interactives aux leçons et questions de démo (idempotent)."""
+    for slug, (scenario_id, caption) in LESSON_SCENARIO_BY_SLUG.items():
+        lecon = db.query(Lecon).filter(Lecon.slug == slug).first()
+        if lecon is None or SIM_MARKER in (lecon.body or ""):
+            continue
+        lecon.body = f"{lecon.body or ''}{_simulation_block(scenario_id, caption)}"
+
+    for question in db.query(Question).filter(Question.est_actif.is_(True)).all():
+        if SIM_MARKER in (question.prompt or ""):
+            continue
+        prompt_lower = (question.prompt or "").lower()
+        for keyword, scenario_id, caption in QUESTION_SCENARIO_RULES:
+            if keyword in prompt_lower:
+                question.prompt = f"{question.prompt}\n\n{_simulation_block(scenario_id, caption)}"
+                break
+
+    db.commit()
+
 DEMO_SCHOOLS: list[dict] = [
     {
         "gerant_email": "gerant@demo.codakis.cm",
@@ -618,6 +693,7 @@ def seed_demo_data(db: Session, admin: Utilisateur | None) -> None:
         _ensure_theme_quizzes(db)
         _expand_demo_lessons(db)
         _enrich_demo_lessons(db)
+        inject_demo_simulations(db)
         demo_schools = {
             s.numero_agrement: s
             for s in db.query(AutoEcole).filter(AutoEcole.numero_agrement.like("DEMO%")).all()
@@ -639,6 +715,7 @@ def seed_demo_data(db: Session, admin: Utilisateur | None) -> None:
     _seed_demo_quizzes_and_exams(db, questions)
     _expand_demo_lessons(db)
     _enrich_demo_lessons(db)
+    inject_demo_simulations(db)
     _seed_demo_enrollment(db, schools)
     logger.info(
         "Données de démonstration créées (%d auto-écoles, comptes *@demo.codakis.cm / %s)",

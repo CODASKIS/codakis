@@ -79,6 +79,14 @@ def seed_lecons(db: Session, author: Utilisateur | None) -> None:
                 f"<p>Cette section couvre {part_excerpt.lower()} "
                 f"Relisez le contenu puis validez la question de contrôle avant de passer à la suite.</p>"
             )
+            if index == 2:
+                scenarios = ["heavy-traffic", "intersection", "draft", "curve", "dodge", "blocked"]
+                scenario_id = scenarios[_sort_order % len(scenarios)]
+                body += (
+                    "<h2>Simulation de conduite</h2>"
+                    "<p>Observez la scène et appliquez la règle du thème.</p>"
+                    f'<div data-codakis-simulation="{scenario_id}"></div>'
+                )
             if index == 3:
                 body += (
                     "<h2>Document à télécharger</h2>"
