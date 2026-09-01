@@ -18,4 +18,7 @@ def apply_sql_migrations() -> None:
             continue
         logger.info("Migration SQL : %s", sql_file.name)
         with engine.begin() as conn:
-            conn.exec_driver_sql(sql)
+            # Exécution DBAPI directe : évite que psycopg interprète % dans LIKE/regexp
+            raw = conn.connection.dbapi_connection
+            with raw.cursor() as cur:
+                cur.execute(sql)
