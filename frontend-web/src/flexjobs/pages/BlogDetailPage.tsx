@@ -17,16 +17,8 @@ import Button from "../components/Button";
 import Container from "../components/Container";
 import SubNav from "../components/SubNav";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
+import { getIdenticonDataUrl } from "@/lib/identicon";
 import { renderBlogBody } from "../../lib/blog-content";
-
-function authorInitials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
 
 function formatDate(publishedAt: string | null | undefined, locale: string) {
   if (!publishedAt) return "";
@@ -137,7 +129,11 @@ export default function BlogDetailPage() {
 
               <div className="fj-blog-article__meta">
                 <span className="fj-blog-article__avatar" aria-hidden="true">
-                  {authorInitials(post.author_name || "BS")}
+                  <img
+                    src={getIdenticonDataUrl(post.author_name || "BS", 64)}
+                    alt=""
+                    className="h-full w-full rounded-full object-cover"
+                  />
                 </span>
                 <div>
                   <p className="fj-blog-article__author">
