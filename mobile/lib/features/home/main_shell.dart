@@ -1,4 +1,3 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/app_colors.dart';
@@ -73,10 +72,7 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
   }
 
   void _onNavTap(int index) {
-    setState(() {
-      _currentIndex = index;
-      if (index == 0 || index == 1) _dataRefreshToken++;
-    });
+    setState(() => _currentIndex = index);
     _loadProgress();
   }
 
@@ -148,21 +144,9 @@ class _MainShellState extends State<MainShell> with WidgetsBindingObserver {
         onOpenConsort: _openConsort,
         onLogout: _logout,
       ),
-      body: PageTransitionSwitcher(
-        transitionBuilder: (child, primaryAnimation, secondaryAnimation) {
-          return SharedAxisTransition(
-            animation: primaryAnimation,
-            secondaryAnimation: secondaryAnimation,
-            transitionType: SharedAxisTransitionType.horizontal,
-            fillColor: AppColors.scaffoldBackground,
-            child: child,
-          );
-        },
-        duration: AppDefaults.duration,
-        child: KeyedSubtree(
-          key: ValueKey<int>(_currentIndex),
-          child: pages[_currentIndex],
-        ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: pages,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _onNavTap(2),

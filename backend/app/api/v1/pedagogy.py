@@ -2,7 +2,7 @@ import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import Response
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, load_only
 
 from app.core.deps import AdminUser, require_roles
 from app.db.models import Examen, Lecon, Question, Quiz, RoleUtilisateur, StatutArticleBlog, Theme, Utilisateur
@@ -71,6 +71,8 @@ from app.services.pedagogy import (
     update_quiz,
     update_theme,
     validate_checkpoint_answer,
+    _count_linked_questions_for_examens,
+    _count_linked_questions_for_quizzes,
 )
 from app.services.tts import TtsError, synthesize_speech
 
@@ -442,6 +444,18 @@ def candidat_list_lecons(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
     lecons = (
         db.query(Lecon)
+        .options(
+            load_only(
+                Lecon.id,
+                Lecon.theme_id,
+                Lecon.slug,
+                Lecon.title,
+                Lecon.excerpt,
+                Lecon.cover_image_url,
+                Lecon.sort_order,
+                Lecon.published_at,
+            )
+        )
         .filter(Lecon.theme_id == theme_id, Lecon.status == StatutArticleBlog.published.value)
         .order_by(Lecon.sort_order.asc())
         .all()
@@ -449,11 +463,8 @@ def candidat_list_lecons(
     locked = not has_platform_access(db, candidat)
     result = []
     for lecon in lecons:
-        payload = lecon_to_public(lecon, theme)
+        payload = lecon_to_public(lecon, theme, include_body=not locked)
         payload["locked"] = locked
-        if locked:
-            # Les titres restent visibles pour donner envie, jamais le contenu.
-            payload["body"] = ""
         result.append(payload)
     return result
 
@@ -485,23 +496,23 @@ def candidat_list_quiz(candidat: Utilisateur = Depends(CandidatUser), db: Sessio
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     quiz_list = db.query(Quiz).filter(Quiz.est_actif.is_(True)).order_by(Quiz.title.asc()).all()
-    result = []
-    for quiz in quiz_list:
-        theme = db.get(Theme, quiz.theme_id)
-        linked_count = len(get_quiz_questions(db, quiz.id))
-        result.append(
-            {
-                "id": quiz.id,
-                "theme_id": quiz.theme_id,
-                "theme_code": theme.code if theme else "",
-                "title": quiz.title,
-                "description": quiz.description,
-                "question_count": quiz.question_count,
-                "duree_minutes": quiz.duree_minutes,
-                "linked_count": linked_count,
-            }
-        )
-    return result
+    quiz_ids = [quiz.id for quiz in quiz_list]
+    theme_ids = {quiz.theme_id for quiz in quiz_list}
+    themes = {theme.id: theme for theme in db.query(Theme).filter(Theme.id.in_(theme_ids)).all()}
+    linked_counts = _count_linked_questions_for_quizzes(db, quiz_ids)
+    return [
+        {
+            "id": quiz.id,
+            "theme_id": quiz.theme_id,
+            "theme_code": themes[quiz.theme_id].code if quiz.theme_id in themes else "",
+            "title": quiz.title,
+            "description": quiz.description,
+            "question_count": quiz.question_count,
+            "duree_minutes": quiz.duree_minutes,
+            "linked_count": linked_counts.get(quiz.id, 0),
+        }
+        for quiz in quiz_list
+    ]
 
 
 @candidat_router.get("/quiz/{quiz_id}", response_model=QuizTakePublic)
@@ -555,21 +566,19 @@ def candidat_list_examens(candidat: Utilisateur = Depends(CandidatUser), db: Ses
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     examens = db.query(Examen).filter(Examen.est_actif.is_(True)).order_by(Examen.title.asc()).all()
-    result = []
-    for examen in examens:
-        linked_count = len(get_examen_questions(db, examen.id))
-        result.append(
-            {
-                "id": examen.id,
-                "title": examen.title,
-                "description": examen.description,
-                "duree_minutes": examen.duree_minutes,
-                "nb_questions": examen.nb_questions,
-                "max_erreurs": examen.max_erreurs,
-                "linked_count": linked_count,
-            }
-        )
-    return result
+    linked_counts = _count_linked_questions_for_examens(db, [examen.id for examen in examens])
+    return [
+        {
+            "id": examen.id,
+            "title": examen.title,
+            "description": examen.description,
+            "duree_minutes": examen.duree_minutes,
+            "nb_questions": examen.nb_questions,
+            "max_erreurs": examen.max_erreurs,
+            "linked_count": linked_counts.get(examen.id, 0),
+        }
+        for examen in examens
+    ]
 
 
 @candidat_router.get("/examens/{examen_id}", response_model=ExamenTakePublic)

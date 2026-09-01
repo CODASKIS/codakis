@@ -355,10 +355,26 @@ class PedagogyService {
   PedagogyService(this._api);
 
   final ApiClient _api;
+  List<CourseTheme>? _themesCache;
+  DateTime? _themesCacheAt;
+  List<QuizSummary>? _quizzesCache;
+  DateTime? _quizzesCacheAt;
+  List<ExamSummary>? _examensCache;
+  DateTime? _examensCacheAt;
+  static const _cacheTtl = Duration(seconds: 60);
+
+  bool _isFresh(DateTime? at) =>
+      at != null && DateTime.now().difference(at) < _cacheTtl;
 
   Future<List<CourseTheme>> fetchThemes() async {
+    if (_themesCache != null && _isFresh(_themesCacheAt)) {
+      return _themesCache!;
+    }
     final rows = await _api.getList('/candidat/pedagogy/themes', auth: true);
-    return rows.whereType<Map<String, dynamic>>().map(CourseTheme.fromJson).toList();
+    final data = rows.whereType<Map<String, dynamic>>().map(CourseTheme.fromJson).toList();
+    _themesCache = data;
+    _themesCacheAt = DateTime.now();
+    return data;
   }
 
   Future<CandidatProgress> fetchProgress() async {
@@ -387,13 +403,25 @@ class PedagogyService {
   }
 
   Future<List<QuizSummary>> fetchQuizzes() async {
+    if (_quizzesCache != null && _isFresh(_quizzesCacheAt)) {
+      return _quizzesCache!;
+    }
     final rows = await _api.getList('/candidat/pedagogy/quiz', auth: true);
-    return rows.whereType<Map<String, dynamic>>().map(QuizSummary.fromJson).toList();
+    final data = rows.whereType<Map<String, dynamic>>().map(QuizSummary.fromJson).toList();
+    _quizzesCache = data;
+    _quizzesCacheAt = DateTime.now();
+    return data;
   }
 
   Future<List<ExamSummary>> fetchExamens() async {
+    if (_examensCache != null && _isFresh(_examensCacheAt)) {
+      return _examensCache!;
+    }
     final rows = await _api.getList('/candidat/pedagogy/examens', auth: true);
-    return rows.whereType<Map<String, dynamic>>().map(ExamSummary.fromJson).toList();
+    final data = rows.whereType<Map<String, dynamic>>().map(ExamSummary.fromJson).toList();
+    _examensCache = data;
+    _examensCacheAt = DateTime.now();
+    return data;
   }
 
   Future<QuizTake> fetchQuiz(String quizId) async {

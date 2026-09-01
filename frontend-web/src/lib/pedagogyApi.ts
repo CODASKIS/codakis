@@ -117,6 +117,29 @@ export type SubmitExamenResult = {
 
 export { AuthApiError };
 
+const CACHE_TTL_MS = 60_000;
+
+type CacheEntry<T> = { data: T; expires: number };
+
+let themesCache: CacheEntry<PedagogyTheme[]> | null = null;
+let quizListCache: CacheEntry<PedagogyQuiz[]> | null = null;
+let examListCache: CacheEntry<PedagogyExamen[]> | null = null;
+
+function readCache<T>(entry: CacheEntry<T> | null): T | null {
+  if (!entry || Date.now() >= entry.expires) return null;
+  return entry.data;
+}
+
+function writeCache<T>(data: T): CacheEntry<T> {
+  return { data, expires: Date.now() + CACHE_TTL_MS };
+}
+
+export function invalidatePedagogyCache() {
+  themesCache = null;
+  quizListCache = null;
+  examListCache = null;
+}
+
 export async function changePassword(currentPassword: string, newPassword: string): Promise<{ message: string }> {
   return authFetch<{ message: string }>("/api/v1/users/me/password", {
     method: "PATCH",
@@ -235,7 +258,11 @@ export async function deleteAdminExamen(id: string): Promise<void> {
 
 // Candidat
 export async function fetchCandidatThemes(): Promise<PedagogyTheme[]> {
-  return authFetch<PedagogyTheme[]>("/api/v1/candidat/pedagogy/themes");
+  const cached = readCache(themesCache);
+  if (cached) return cached;
+  const data = await authFetch<PedagogyTheme[]>("/api/v1/candidat/pedagogy/themes");
+  themesCache = writeCache(data);
+  return data;
 }
 
 export async function fetchCandidatLecons(themeId: string): Promise<PedagogyLecon[]> {
@@ -337,7 +364,11 @@ export async function validateCandidatCheckpoint(
 }
 
 export async function fetchCandidatQuizList(): Promise<PedagogyQuiz[]> {
-  return authFetch<PedagogyQuiz[]>("/api/v1/candidat/pedagogy/quiz");
+  const cached = readCache(quizListCache);
+  if (cached) return cached;
+  const data = await authFetch<PedagogyQuiz[]>("/api/v1/candidat/pedagogy/quiz");
+  quizListCache = writeCache(data);
+  return data;
 }
 
 export async function fetchCandidatQuizTake(id: string): Promise<{ id: string; title: string; theme_code: string; duree_minutes: number; questions: TakeQuestion[] }> {
@@ -356,7 +387,11 @@ export async function submitCandidatQuiz(
 }
 
 export async function fetchCandidatExamens(): Promise<PedagogyExamen[]> {
-  return authFetch<PedagogyExamen[]>("/api/v1/candidat/pedagogy/examens");
+  const cached = readCache(examListCache);
+  if (cached) return cached;
+  const data = await authFetch<PedagogyExamen[]>("/api/v1/candidat/pedagogy/examens");
+  examListCache = writeCache(data);
+  return data;
 }
 
 export async function fetchCandidatExamenTake(id: string): Promise<{ id: string; title: string; duree_minutes: number; max_erreurs: number; questions: TakeQuestion[] }> {

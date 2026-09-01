@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 
 from sqlalchemy import func
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, load_only
 
 from app.db.models import (
     Examen,
@@ -261,7 +261,7 @@ def lecon_to_admin(db: Session, lecon: Lecon) -> dict:
     }
 
 
-def lecon_to_public(lecon: Lecon, theme: Theme) -> dict:
+def lecon_to_public(lecon: Lecon, theme: Theme, *, include_body: bool = True) -> dict:
     return {
         "id": lecon.id,
         "theme_id": lecon.theme_id,
@@ -269,7 +269,7 @@ def lecon_to_public(lecon: Lecon, theme: Theme) -> dict:
         "slug": lecon.slug,
         "title": lecon.title,
         "excerpt": lecon.excerpt,
-        "body": lecon.body,
+        "body": lecon.body if include_body else "",
         "cover_image_url": lecon.cover_image_url,
         "sort_order": lecon.sort_order,
         "published_at": lecon.published_at,
@@ -604,6 +604,59 @@ def examen_to_admin(db: Session, examen: Examen) -> dict:
     }
 
 
+def _count_linked_questions_for_quizzes(db: Session, quiz_ids: list[uuid.UUID]) -> dict[uuid.UUID, int]:
+    if not quiz_ids:
+        return {}
+    rows = (
+        db.query(QuizQuestion.quiz_id, func.count(Question.id))
+        .join(Question, Question.id == QuizQuestion.question_id)
+        .filter(QuizQuestion.quiz_id.in_(quiz_ids), Question.est_actif.is_(True))
+        .group_by(QuizQuestion.quiz_id)
+        .all()
+    )
+    return {quiz_id: count for quiz_id, count in rows}
+
+
+def _count_linked_questions_for_examens(db: Session, examen_ids: list[uuid.UUID]) -> dict[uuid.UUID, int]:
+    if not examen_ids:
+        return {}
+    rows = (
+        db.query(ExamenQuestion.examen_id, func.count(Question.id))
+        .join(Question, Question.id == ExamenQuestion.question_id)
+        .filter(ExamenQuestion.examen_id.in_(examen_ids), Question.est_actif.is_(True))
+        .group_by(ExamenQuestion.examen_id)
+        .all()
+    )
+    return {examen_id: count for examen_id, count in rows}
+
+
+def _quiz_ids_with_active_questions(db: Session, quiz_ids: list[uuid.UUID]) -> set[uuid.UUID]:
+    if not quiz_ids:
+        return set()
+    rows = (
+        db.query(QuizQuestion.quiz_id)
+        .join(Question, Question.id == QuizQuestion.question_id)
+        .filter(QuizQuestion.quiz_id.in_(quiz_ids), Question.est_actif.is_(True))
+        .distinct()
+        .all()
+    )
+    return {row[0] for row in rows}
+
+
+def _load_questions_for_links(db: Session, links: list, question_id_attr: str) -> list[Question]:
+    if not links:
+        return []
+    question_ids = [getattr(link, question_id_attr) for link in links]
+    rows = (
+        db.query(Question)
+        .options(joinedload(Question.reponses))
+        .filter(Question.id.in_(question_ids), Question.est_actif.is_(True))
+        .all()
+    )
+    by_id = {question.id: question for question in rows}
+    return [by_id[qid] for qid in question_ids if qid in by_id]
+
+
 def get_quiz_questions(db: Session, quiz_id: uuid.UUID) -> list[Question]:
     links = (
         db.query(QuizQuestion)
@@ -611,17 +664,7 @@ def get_quiz_questions(db: Session, quiz_id: uuid.UUID) -> list[Question]:
         .order_by(QuizQuestion.sort_order.asc())
         .all()
     )
-    questions: list[Question] = []
-    for link in links:
-        question = (
-            db.query(Question)
-            .options(joinedload(Question.reponses))
-            .filter(Question.id == link.question_id, Question.est_actif.is_(True))
-            .first()
-        )
-        if question:
-            questions.append(question)
-    return questions
+    return _load_questions_for_links(db, links, "question_id")
 
 
 def get_examen_questions(db: Session, examen_id: uuid.UUID) -> list[Question]:
@@ -631,17 +674,7 @@ def get_examen_questions(db: Session, examen_id: uuid.UUID) -> list[Question]:
         .order_by(ExamenQuestion.sort_order.asc())
         .all()
     )
-    questions: list[Question] = []
-    for link in links:
-        question = (
-            db.query(Question)
-            .options(joinedload(Question.reponses))
-            .filter(Question.id == link.question_id, Question.est_actif.is_(True))
-            .first()
-        )
-        if question:
-            questions.append(question)
-    return questions
+    return _load_questions_for_links(db, links, "question_id")
 
 
 def _detail_for_storage(detail: dict) -> dict:
@@ -856,19 +889,18 @@ def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dic
 
 
 def get_theme_checkpoint(db: Session, theme_id: uuid.UUID, lecon: Lecon | None = None) -> dict | None:
-    questions = (
+    base_query = (
         db.query(Question)
         .options(joinedload(Question.reponses))
         .filter(Question.theme_id == theme_id, Question.est_actif.is_(True))
         .order_by(Question.created_at.asc())
-        .all()
     )
-    if not questions:
+    total = base_query.count()
+    if total == 0:
         return None
-    index = 0
-    if lecon is not None:
-        index = max(0, lecon.sort_order - 1) % len(questions)
-    return question_to_public(questions[index])
+    index = max(0, lecon.sort_order - 1) % total if lecon is not None else 0
+    question = base_query.offset(index).limit(1).first()
+    return question_to_public(question) if question else None
 
 
 def _next_course_sort_order(db: Session, theme_id: uuid.UUID) -> int:
@@ -905,6 +937,7 @@ def build_theme_course_steps(
     if active_only:
         quiz_query = quiz_query.filter(Quiz.est_actif.is_(True))
     quizzes = quiz_query.order_by(Quiz.sort_order.asc(), Quiz.created_at.asc()).all()
+    quiz_ids_with_questions = _quiz_ids_with_active_questions(db, [quiz.id for quiz in quizzes])
 
     steps: list[dict] = []
     for lecon in lecons:
@@ -920,7 +953,7 @@ def build_theme_course_steps(
         )
 
     for quiz in quizzes:
-        if not get_quiz_questions(db, quiz.id):
+        if quiz.id not in quiz_ids_with_questions:
             continue
         steps.append(
             {

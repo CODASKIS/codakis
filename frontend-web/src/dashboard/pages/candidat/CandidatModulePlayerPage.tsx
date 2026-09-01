@@ -94,23 +94,25 @@ export default function CandidatModulePlayerPage() {
     setQuizPassed(false);
     setError("");
     try {
-      const coursePath = await fetchCandidatCoursePath(themeId);
-
-      setPathSteps(coursePath.steps);
-      setCompletedIds(new Set(coursePath.completed_lecon_ids));
-      setPassedQuizIds(new Set(coursePath.passed_quiz_ids));
-
       if (parsedStep.type === "quiz") {
+        const coursePath = await fetchCandidatCoursePath(themeId);
+        setPathSteps(coursePath.steps);
+        setCompletedIds(new Set(coursePath.completed_lecon_ids));
+        setPassedQuizIds(new Set(coursePath.passed_quiz_ids));
         setLecon(null);
         setBodyHtml("");
         setCheckpoint(null);
         setQuizStepPassed(coursePath.passed_quiz_ids.includes(parsedStep.id));
         setQuizPassed(true);
       } else {
-        const [data, checkpointQuestion] = await Promise.all([
+        const [coursePath, data, checkpointQuestion] = await Promise.all([
+          fetchCandidatCoursePath(themeId),
           fetchCandidatLecon(parsedStep.id),
           fetchCandidatThemeCheckpoint(themeId, parsedStep.id).catch(() => null),
         ]);
+        setPathSteps(coursePath.steps);
+        setCompletedIds(new Set(coursePath.completed_lecon_ids));
+        setPassedQuizIds(new Set(coursePath.passed_quiz_ids));
         setLecon(data);
         setBodyHtml(await renderBlogBody(data.body));
         setCheckpoint(checkpointQuestion);
