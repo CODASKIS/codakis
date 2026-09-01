@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     google_client_id: str = ""
 
     email_mode: str = "console"
+    resend_api_key: str = Field(default="", validation_alias=AliasChoices("RESEND_API_KEY"))
+    email_from_name: str = Field(default="CODAKIS", validation_alias=AliasChoices("EMAIL_FROM_NAME"))
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""

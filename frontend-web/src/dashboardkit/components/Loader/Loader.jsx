@@ -1,4 +1,4 @@
-// Loader dashboard — même panneau CODAKIS que la vitrine
+// Loader dashboard — logo CODAKIS animé
 
 export default function Loader() {
   return (
@@ -7,12 +7,11 @@ export default function Loader() {
         <img
           src="/images/logo-simple.png"
           alt=""
-          className="codakis-loader-panel__logo"
-          width={40}
-          height={40}
+          className="codakis-loader-panel__logo codakis-loader-panel__logo--spin"
+          width={48}
+          height={48}
           aria-hidden
         />
-        <div className="codakis-loader-panel__spinner" aria-hidden />
       </div>
     </div>
   );

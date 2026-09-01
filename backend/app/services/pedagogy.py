@@ -702,13 +702,24 @@ def submit_quiz(db: Session, candidat: Utilisateur, quiz: Quiz, answers: list) -
         )
     )
     db.commit()
-    return {
+    result = {
         "score": score,
         "nb_correctes": nb_correctes,
         "nb_total": nb_total,
         "reussi": reussi,
         "details": _details_for_response(details),
     }
+    from app.services.email import send_quiz_result_email
+
+    full_name = f"{candidat.prenom or ''} {candidat.nom or ''}".strip() or candidat.email
+    send_quiz_result_email(
+        candidat.email,
+        full_name,
+        quiz_title=quiz.title,
+        score=score,
+        passed=reussi,
+    )
+    return result
 
 
 def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: list, duree_sec: int | None) -> dict:
@@ -732,13 +743,24 @@ def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: l
         )
     )
     db.commit()
-    return {
+    result = {
         "score": score,
         "nb_erreurs": nb_erreurs,
         "nb_total": nb_total,
         "reussi": reussi,
         "details": _details_for_response(details),
     }
+    from app.services.email import send_examen_result_email
+
+    full_name = f"{candidat.prenom or ''} {candidat.nom or ''}".strip() or candidat.email
+    send_examen_result_email(
+        candidat.email,
+        full_name,
+        exam_title=examen.title,
+        score=score,
+        passed=reussi,
+    )
+    return result
 
 
 def _published_lecon_ids(db: Session) -> list[uuid.UUID]:
@@ -812,10 +834,25 @@ def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dic
         .filter(LeconProgress.candidat_id == candidat.id, LeconProgress.lecon_id == lecon.id)
         .first()
     )
+    newly_completed = False
     if existing is None:
         db.add(LeconProgress(candidat_id=candidat.id, lecon_id=lecon.id, completed_at=datetime.now(UTC)))
         db.commit()
-    return get_candidat_progress(db, candidat)
+        newly_completed = True
+    progress = get_candidat_progress(db, candidat)
+    if newly_completed:
+        theme = db.get(Theme, lecon.theme_id)
+        from app.services.email import send_lesson_complete_email
+
+        full_name = f"{candidat.prenom or ''} {candidat.nom or ''}".strip() or candidat.email
+        send_lesson_complete_email(
+            candidat.email,
+            full_name,
+            lesson_title=lecon.title,
+            theme_title=theme.title if theme else "CODAKIS",
+            progress_percent=progress["percent"],
+        )
+    return progress
 
 
 def get_theme_checkpoint(db: Session, theme_id: uuid.UUID, lecon: Lecon | None = None) -> dict | None:

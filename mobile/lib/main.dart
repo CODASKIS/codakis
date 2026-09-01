@@ -11,6 +11,7 @@ import 'features/home/main_shell.dart';
 import 'features/onboarding/onboarding_page.dart';
 import 'core/webview_bootstrap.dart';
 import 'features/onboarding/onboarding_service.dart';
+import 'widgets/codakis_logo_loader.dart';
 
 void main() {
   bootstrapWebView();
@@ -85,7 +86,7 @@ class _CodakisAppState extends State<CodakisApp> {
             theme: buildCodakisTheme(),
             home: switch (_gate) {
               _AppGate.loading => const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
+                  body: Center(child: CodakisLogoLoader()),
                 ),
               _AppGate.onboarding => OnboardingPage(onFinished: _finishOnboarding),
               _AppGate.login => LoginPage(authService: _authService),

@@ -1,8 +1,10 @@
 import uuid
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
+from app.core.security import hash_password
 from app.db.models import OtpType, Utilisateur
 from app.db.session import get_db
 from app.schemas.auth import (
@@ -16,6 +18,8 @@ from app.schemas.auth import (
     ResetPasswordRequest,
     TokenResponse,
 )
+from app.services.email import send_login_notification_email
+from app.services.email_context import client_ip, format_location_hint, parse_user_agent
 from app.services.otp import create_otp, verify_otp
 from app.services.users import (
     authenticate_user,
@@ -23,13 +27,24 @@ from app.services.users import (
     login_or_register_google,
     register_auto_ecole,
     register_candidat,
-    user_to_public,
 )
-from app.core.config import settings
-from app.core.security import hash_password
-from fastapi import Depends
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+def _notify_login(user: Utilisateur, request: Request) -> None:
+    ip = client_ip(
+        request.headers.get("x-forwarded-for"),
+        request.client.host if request.client else None,
+    )
+    full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
+    send_login_notification_email(
+        user.email,
+        full_name,
+        device=parse_user_agent(request.headers.get("user-agent")),
+        location=format_location_hint(ip),
+        ip_address=ip,
+    )
 
 
 @router.post("/register/candidat", response_model=TokenResponse)
@@ -82,20 +97,22 @@ def register_auto_ecole_route(payload: RegisterAutoEcoleRequest, db: Session = D
 
 
 @router.post("/login", response_model=TokenResponse)
-def login_route(payload: LoginRequest, db: Session = Depends(get_db)):
+def login_route(payload: LoginRequest, request: Request, db: Session = Depends(get_db)):
     try:
         user = authenticate_user(db, payload.email, payload.password)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(exc)) from exc
+    _notify_login(user, request)
     return TokenResponse(**build_tokens(user))
 
 
 @router.post("/google", response_model=TokenResponse)
-def google_route(payload: GoogleAuthRequest, db: Session = Depends(get_db)):
+def google_route(payload: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
     try:
         user = login_or_register_google(db, payload.id_token)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    _notify_login(user, request)
     return TokenResponse(**build_tokens(user))
 
 

@@ -1,13 +1,10 @@
-/* Loader CODAKIS — tailles px fixes, indépendantes de l'échelle rem vitrine */
+/* Loader CODAKIS — logo animé, sans spinner séparé */
 
 :root {
-  --codakis-loader-logo-size: 40px;
-  --codakis-loader-spinner-size: 32px;
-  --codakis-loader-spinner-border: 3px;
+  --codakis-loader-logo-size: 48px;
   --codakis-loader-text-size: 14px;
-  --codakis-loader-gap: 12px;
+  --codakis-loader-gap: 16px;
   --codakis-loader-accent: #1db96a;
-  --codakis-loader-track: #e5e5e5;
   --codakis-loader-text-color: #158a4e;
 }
 
@@ -34,18 +31,9 @@
   object-fit: contain;
 }
 
-.codakis-loader-panel__spinner {
-  width: var(--codakis-loader-spinner-size) !important;
-  height: var(--codakis-loader-spinner-size) !important;
-  min-width: var(--codakis-loader-spinner-size) !important;
-  min-height: var(--codakis-loader-spinner-size) !important;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  border: var(--codakis-loader-spinner-border) solid var(--codakis-loader-track);
-  border-top-color: var(--codakis-loader-accent);
-  border-radius: 50%;
-  animation: codakis-loader-spin 0.75s linear infinite;
-  transform: none;
+.codakis-loader-panel__logo--spin {
+  animation: codakis-loader-logo-spin 1.1s linear infinite;
+  transform-origin: center center;
 }
 
 .codakis-loader-panel__text {
@@ -82,14 +70,14 @@
   text-align: center;
 }
 
-@keyframes codakis-loader-spin {
+@keyframes codakis-loader-logo-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .codakis-loader-panel__spinner {
+  .codakis-loader-panel__logo--spin {
     animation: none;
   }
 }
