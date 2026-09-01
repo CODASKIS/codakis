@@ -38,6 +38,30 @@ docker compose down
 
 Données persistées dans les volumes `postgres_data` et `cms_uploads`.
 
+### Serveur Plesk (production)
+
+```bash
+git clone https://github.com/CODASKIS/codakis.git ~/codakis
+cd ~/codakis
+cp .env.example .env   # POSTGRES_PASSWORD + SECRET_KEY + FRONTEND_URL
+./scripts/deploy.sh
+```
+
+Auto-démarrage après reboot :
+
+```bash
+sudo cp scripts/codakis-docker.service /etc/systemd/system/
+sudo systemctl enable --now codakis-docker
+```
+
+Dans Plesk : **Domaines → Proxying / Reverse proxy** → `http://127.0.0.1:8080` pour servir l'app sur le domaine en HTTPS.
+
+Mises à jour :
+
+```bash
+cd ~/codakis && ./scripts/deploy.sh
+```
+
 ### Variables importantes (`.env`)
 
 | Variable | Rôle |
