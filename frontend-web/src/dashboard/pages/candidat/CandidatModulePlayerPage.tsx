@@ -8,6 +8,7 @@ import CourseMiniQuiz from "../../components/course/CourseMiniQuiz";
 import CourseInlineQuiz from "../../components/course/CourseInlineQuiz";
 import CoursePdfDownloads from "../../components/course/CoursePdfDownloads";
 import ListenButton from "../../components/course/ListenButton";
+import RichPedagogyContent from "../../components/simulation/RichPedagogyContent";
 import CourseAiTutor from "../../components/course/CourseAiTutor";
 import CoursePlayerSidebar from "../../components/course/CoursePlayerSidebar";
 import { renderBlogBody } from "../../../lib/blog-content";
@@ -207,6 +208,12 @@ export default function CandidatModulePlayerPage() {
     ? pathSteps.find((item) => item.ref === stepRef)?.title ?? t("coursePlayer.themeQuiz")
     : lecon?.title ?? "";
 
+  const lessonListenText = useMemo(() => {
+    if (!lecon) return "";
+    const bodyPlain = lecon.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    return [lecon.title, lecon.excerpt, bodyPlain].filter(Boolean).join(". ");
+  }, [lecon]);
+
   return (
     <div className={`codakis-player${sidebarOpen ? " codakis-player--nav-open" : " codakis-player--nav-closed"}`}>
       <header className="codakis-player__topbar">
@@ -290,19 +297,13 @@ export default function CandidatModulePlayerPage() {
                 </header>
               )}
 
-              <ListenButton
-                text={`${lecon.title}. ${lecon.excerpt ?? ""}`}
-                resetKey={lecon.id}
-              />
+              <ListenButton text={lessonListenText} resetKey={lecon.id} />
 
               <CourseAiTutor
                 context={`Leçon : ${lecon.title}\n${lecon.excerpt ?? ""}\n${lecon.body.replace(/<[^>]+>/g, " ").slice(0, 3000)}`}
               />
 
-              <div
-                className="fj-prose fj-wysiwyg codakis-player-body"
-                dangerouslySetInnerHTML={{ __html: bodyHtml }}
-              />
+              <RichPedagogyContent html={bodyHtml || lecon.body} className="fj-prose fj-wysiwyg codakis-player-body" />
 
               <CoursePdfDownloads html={bodyHtml} />
 

@@ -10,6 +10,7 @@ import CmsCoverImage from "../../../components/common/CmsCoverImage";
 import MediaVideo from "../../../components/common/MediaVideo";
 import PlatformAccessPanel, { isPlatformAccessError } from "../../components/PlatformAccessPanel";
 import ListenButton from "../../components/course/ListenButton";
+import RichPedagogyContent from "../../components/simulation/RichPedagogyContent";
 import { buildAssessmentSpeechText } from "../../../lib/assessmentSpeech";
 import { useAssessmentTimer } from "../../hooks/useAssessmentTimer";
 import {
@@ -213,7 +214,7 @@ export default function CandidatTakeAssessmentPage({ mode }: TakePageProps) {
             exit={{ opacity: 0, x: -24 }}
             transition={pageTransition}
           >
-          <p className="codakis-assessment__prompt">{question.prompt}</p>
+          <RichPedagogyContent html={question.prompt} className="codakis-assessment__prompt" />
           {question.image_url ? (
             <CmsCoverImage url={question.image_url} alt="" className="codakis-assessment__media" />
           ) : null}

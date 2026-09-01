@@ -103,7 +103,7 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
         window.location.href = result.payment_url;
         return;
       }
-      setPaymentError(t("packs.checkout.redirectMissing"));
+      setPaymentError(result.redirect_error ?? result.message ?? t("packs.checkout.redirectMissing"));
     } catch (err) {
       setPaymentError(err instanceof Error ? err.message : t("packs.checkout.error"));
     } finally {

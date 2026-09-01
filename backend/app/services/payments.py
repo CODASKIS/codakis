@@ -1,3 +1,4 @@
+import logging
 import re
 import secrets
 import uuid
@@ -10,6 +11,8 @@ from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
 from app.services.enrollments import create_inscription
 from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
 from app.services.notifications import push_notification
+
+logger = logging.getLogger("codakis.payments")
 
 CHANNEL_LABELS = {
     "orange": "Orange Money",
@@ -186,6 +189,7 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
     channel_label = CHANNEL_LABELS.get(paiement.channel, paiement.channel)
     payment_url = None
     payment_token = None
+    redirect_error = None
 
     if cinetpay_configured() and user is not None:
         base = settings.frontend_url.rstrip("/")
@@ -197,7 +201,7 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
                 customer_name=user.prenom or "Client",
                 customer_surname=user.nom or "CODAKIS",
                 customer_email=user.email,
-                customer_phone=paiement.phone.replace("+237", "").replace("+", ""),
+                customer_phone=paiement.phone,
                 notify_url=f"{base}/api/v1/payments/cinetpay/notify",
                 return_url=f"{base}/paiement/retour?ref={paiement.reference}",
             )
@@ -206,7 +210,8 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
             paiement.channel = "cinetpay"
             channel_label = "CinetPay"
         except Exception as exc:
-            paiement.message = f"{paiement.message or ''} (CinetPay: {exc})".strip()
+            redirect_error = str(exc)
+            logger.warning("CinetPay redirect failed for %s: %s", paiement.reference, redirect_error)
 
     message = (
         f"Paiement de {paiement.amount_fcfa:,} FCFA via {channel_label}."
@@ -225,6 +230,7 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
         "commission_fcfa": paiement.commission_fcfa,
         "school_payout_fcfa": paiement.school_payout_fcfa,
         "commission_rate_pct": paiement.commission_rate_pct,
+        "redirect_error": redirect_error,
     }
 
 
@@ -307,6 +313,29 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
             body_en=f"Your {plan_label} is active. Access courses, quizzes and exams. Receipt: {paiement.receipt_number}.",
             payload={"payment_ref": paiement.reference, "plan_id": paiement.plan_id},
         )
+
+    purpose_label = "Inscription auto-école"
+    if paiement.purpose == "subscription":
+        purpose_label = PLAN_LABELS.get(paiement.plan_id or "", "Abonnement CODAKIS")
+    elif paiement.purpose == "enrollment" and paiement.forfait_id:
+        forfait = db.get(Forfait, paiement.forfait_id)
+        if forfait:
+            purpose_label = f"Forfait {forfait.label_fr}"
+
+    try:
+        from app.services.email import send_payment_confirmation_email
+
+        full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
+        send_payment_confirmation_email(
+            user.email,
+            full_name,
+            amount_fcfa=paiement.amount_fcfa,
+            reference=paiement.reference,
+            receipt_number=paiement.receipt_number or paiement.reference,
+            purpose_label=purpose_label,
+        )
+    except Exception:
+        logger.exception("E-mail confirmation paiement non envoyé pour %s", paiement.reference)
 
     db.commit()
     db.refresh(paiement)

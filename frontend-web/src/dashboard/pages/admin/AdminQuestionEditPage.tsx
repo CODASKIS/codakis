@@ -6,6 +6,7 @@ import MainCard from "@/dashboardkit/components/Card/MainCard";
 import Loader from "../../../components/common/Loader";
 import CmsCoverImage from "../../../components/common/CmsCoverImage";
 import ConfirmModal from "../../../components/common/ConfirmModal";
+import AdminSimulationInsert from "../../components/simulation/AdminSimulationInsert";
 import MediaVideo from "../../../components/common/MediaVideo";
 import { uploadCmsImage } from "../../../lib/cms-admin-api";
 import {
@@ -136,6 +137,11 @@ export default function AdminQuestionEditPage() {
           <Col md={12}>
             <Form.Group>
               <Form.Label>{t("admin.pedagogy.colPrompt")}</Form.Label>
+              <AdminSimulationInsert
+                lessonTitle={prompt.slice(0, 120)}
+                lessonContext={prompt}
+                onInsert={(snippet) => setPrompt((current) => `${current}\n${snippet}`.trim())}
+              />
               <Form.Control as="textarea" rows={3} required value={prompt} onChange={(e) => setPrompt(e.target.value)} />
             </Form.Group>
           </Col>

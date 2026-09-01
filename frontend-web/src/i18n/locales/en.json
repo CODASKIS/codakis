@@ -442,10 +442,15 @@
       "metaDescription": "Reset your CODAKIS password.",
       "title": "Forgot password",
       "subtitle": "Enter your email to receive an OTP reset code.",
+      "otpSubtitle": "Enter the 6-digit code from your email.",
+      "passwordSubtitle": "Code verified — choose a new password.",
       "hint": "If you don't receive the email, contact our support team.",
       "submit": "Send code",
+      "verifyOtp": "Verify code",
       "otpLabel": "OTP code",
       "otpPlaceholder": "123456",
+      "otpIncomplete": "Enter all 6 digits.",
+      "changeEmail": "Change email",
       "resetSubmit": "Reset password",
       "sent": "If an account exists for {{email}}, you will receive an email with instructions.",
       "contact": "Contact support"
@@ -466,6 +471,8 @@
       "credentials": "Credentials",
       "password": "Password",
       "passwordPlaceholder": "Password",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Re-enter password",
       "language": "Language",
       "fullName": "Full name",
       "fullNamePlaceholder": "First and last name",
@@ -494,7 +501,9 @@
       "required": "Please fill in all required fields.",
       "schoolRequired": "Driving school name is required.",
       "generic": "Something went wrong. Please try again or contact support.",
-      "google": "Google sign-in is unavailable. Try again or use your email."
+      "google": "Google sign-in is unavailable. Try again or use your email.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordTooShort": "Password must be at least 8 characters."
     },
     "roles": {
       "admin": {
@@ -1472,6 +1481,24 @@
     "quizAlreadyPassed": "Quiz passed — you can continue the course.",
     "quizRetry": "Retry quiz",
     "speechAnswer": "Answer {{label}}: {{text}}"
+  },
+  "simulation": {
+    "start": "Start",
+    "pause": "Pause",
+    "debug": "Radar (debug)",
+    "hint": "Interactive simulation: watch traffic, pedestrians and obstacles as in real conditions.",
+    "insertLabel": "Driving scenario",
+    "insertButton": "Insert simulation",
+    "aiTitle": "Generate scene with AI",
+    "aiHint": "AI creates a scene matching your lesson context (lights, pedestrians, buildings, traffic).",
+    "aiSceneTitle": "Scene title",
+    "aiContext": "Pedagogical context",
+    "aiContextPlaceholder": "E.g. priority at intersection, pedestrian crossing…",
+    "aiGenerate": "Generate and insert",
+    "aiGenerating": "Generating…",
+    "aiSuccess": "Scene « {{title}} » inserted.",
+    "aiError": "Could not generate the scene.",
+    "aiMissing": "Provide a title and context for the scene."
   },
   "candidat": {
     "seances": {

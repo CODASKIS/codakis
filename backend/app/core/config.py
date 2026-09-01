@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     cinetpay_api_password: str = Field(default="", validation_alias=AliasChoices("CINETPAY_API_PASSWORD"))
     cinetpay_site_id: str = Field(default="", validation_alias=AliasChoices("CINETPAY_SITE_ID"))
     cinetpay_currency: str = Field(default="XAF", validation_alias=AliasChoices("CINETPAY_CURRENCY"))
+    cinetpay_country_code: str = Field(default="CM", validation_alias=AliasChoices("CINETPAY_COUNTRY_CODE"))
 
     @staticmethod
     def _url_has_password(url: str) -> bool:

@@ -31,6 +31,7 @@ class PaymentInitiateResponse(BaseModel):
     ussd_hint: str | None = None
     payment_url: str | None = None
     payment_token: str | None = None
+    redirect_error: str | None = None
     commission_fcfa: int | None = None
     school_payout_fcfa: int | None = None
     commission_rate_pct: int | None = None

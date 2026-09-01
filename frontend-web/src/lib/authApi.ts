@@ -348,6 +348,20 @@ export async function forgotPassword(email: string): Promise<MessageResponse> {
   return (await response.json()) as MessageResponse;
 }
 
+export async function verifyResetOtp(email: string, otp: string): Promise<MessageResponse> {
+  const response = await fetch(apiUrl("/api/v1/auth/verify-reset-otp"), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, otp }),
+  });
+
+  if (!response.ok) {
+    throw new AuthApiError(await parseError(response), response.status);
+  }
+
+  return (await response.json()) as MessageResponse;
+}
+
 export async function resetPassword(email: string, otp: string, newPassword: string): Promise<MessageResponse> {
   const response = await fetch(apiUrl("/api/v1/auth/reset-password"), {
     method: "POST",

@@ -170,6 +170,11 @@ class ResetPasswordRequest(BaseModel):
     new_password: str = Field(min_length=8)
 
 
+class VerifyResetOtpRequest(BaseModel):
+    email: EmailStr
+    otp: str = Field(min_length=4, max_length=8)
+
+
 class AdminCreateUserRequest(BaseModel):
     email: EmailStr
     role: str

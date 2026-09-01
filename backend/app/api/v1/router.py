@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, blog, enrollments, geo, payments, pedagogy, profile, public, scheduling, users
+from app.api.v1 import auth, blog, enrollments, geo, payments, pedagogy, profile, public, scheduling, simulations, users
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(auth.router)
@@ -23,3 +23,5 @@ api_router.include_router(blog.public_router)
 api_router.include_router(blog.admin_router)
 api_router.include_router(pedagogy.admin_router)
 api_router.include_router(pedagogy.candidat_router)
+api_router.include_router(simulations.admin_router)
+api_router.include_router(simulations.candidat_router)

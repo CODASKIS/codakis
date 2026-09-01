@@ -20,6 +20,7 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [error, setError] = useState("");
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const objectUrlRef = useRef<string | null>(null);
 
@@ -39,6 +40,7 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
 
   useEffect(() => {
     cleanup();
+    setError("");
   }, [resetKey, text, cleanup]);
 
   async function handleToggle() {
@@ -54,9 +56,13 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
     const limited = plain.length > MAX_TTS_CHARS ? `${plain.slice(0, MAX_TTS_CHARS)}…` : plain;
 
     setLoading(true);
+    setError("");
     try {
       cleanup();
       const blob = await synthesizeCandidatSpeech(limited, i18n.language);
+      if (!blob || blob.size === 0) {
+        throw new Error("empty audio");
+      }
       const url = URL.createObjectURL(blob);
       objectUrlRef.current = url;
       const audio = new Audio(url);
@@ -64,10 +70,19 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
       audio.onended = () => setPlaying(false);
       audio.onpause = () => setPlaying(false);
       audio.onplay = () => setPlaying(true);
+      audio.onerror = () => {
+        setError(t("coursePlayer.listenUnavailable"));
+        cleanup();
+      };
       await audio.play();
       setPlaying(true);
-    } catch {
+    } catch (err) {
       cleanup();
+      const message =
+        err instanceof Error && err.message && err.message !== "empty audio"
+          ? err.message
+          : t("coursePlayer.listenUnavailable");
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -102,6 +117,7 @@ export default function ListenButton({ text, className = "", resetKey = "" }: Li
             ? t("coursePlayer.listenPause")
             : t("coursePlayer.listen")}
       </button>
+      {error ? <p className="codakis-listen__error">{error}</p> : null}
     </div>
   );
 }

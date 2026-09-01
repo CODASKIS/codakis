@@ -234,5 +234,28 @@ def send_seance_notification_email(to: str, subject: str, body: str) -> None:
     send_email(to, subject, plain, html)
 
 
+def send_payment_confirmation_email(
+    to: str,
+    full_name: str,
+    *,
+    amount_fcfa: int,
+    reference: str,
+    receipt_number: str,
+    purpose_label: str,
+) -> None:
+    from app.services.email_templates import render_payment_confirmation_email
+
+    dashboard_url = f"{settings.frontend_url.rstrip('/')}/espace/candidat"
+    plain, html = render_payment_confirmation_email(
+        full_name=full_name,
+        amount_fcfa=amount_fcfa,
+        reference=reference,
+        receipt_number=receipt_number,
+        purpose_label=purpose_label,
+        dashboard_url=dashboard_url,
+    )
+    send_email(to, f"Paiement confirmé — {reference}", plain, html)
+
+
 def generate_temp_password() -> str:
     return secrets.token_urlsafe(10)

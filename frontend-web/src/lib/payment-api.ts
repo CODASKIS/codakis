@@ -23,6 +23,7 @@ export type InitiatePaymentResult = {
   commission_fcfa?: number | null;
   school_payout_fcfa?: number | null;
   commission_rate_pct?: number | null;
+  redirect_error?: string | null;
 };
 
 export type PaymentStatusResult = {

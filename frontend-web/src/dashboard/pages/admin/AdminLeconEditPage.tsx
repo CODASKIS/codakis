@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import MainCard from "@/dashboardkit/components/Card/MainCard";
 import QuillEditor from "../../../components/editor/QuillEditor";
+import AdminSimulationInsert from "../../components/simulation/AdminSimulationInsert";
 import Loader from "../../../components/common/Loader";
 import CmsCoverImage from "../../../components/common/CmsCoverImage";
 import ConfirmModal from "../../../components/common/ConfirmModal";
@@ -192,6 +193,12 @@ export default function AdminLeconEditPage() {
           </Col>
           <Col md={12}>
             <Form.Label>{t("admin.pedagogy.body")}</Form.Label>
+            <AdminSimulationInsert
+              themeId={form.theme_id}
+              lessonTitle={form.title}
+              lessonContext={`${form.title}\n${form.excerpt}\n${form.body.replace(/<[^>]+>/g, " ").slice(0, 1500)}`}
+              onInsert={(snippet) => setForm((c) => ({ ...c, body: `${c.body}\n${snippet}` }))}
+            />
             <QuillEditor
               value={form.body}
               onChange={(body) => setForm((c) => ({ ...c, body }))}

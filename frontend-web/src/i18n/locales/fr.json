@@ -442,10 +442,15 @@
       "metaDescription": "Réinitialisez votre mot de passe CODAKIS.",
       "title": "Mot de passe oublié",
       "subtitle": "Entrez votre e-mail pour recevoir un code OTP de réinitialisation.",
+      "otpSubtitle": "Saisissez le code à 6 chiffres reçu par e-mail.",
+      "passwordSubtitle": "Code validé — choisissez un nouveau mot de passe.",
       "hint": "Si vous ne recevez pas l'e-mail, contactez notre équipe support.",
       "submit": "Envoyer le code",
+      "verifyOtp": "Valider le code",
       "otpLabel": "Code OTP",
       "otpPlaceholder": "123456",
+      "otpIncomplete": "Saisissez les 6 chiffres du code.",
+      "changeEmail": "Modifier l'e-mail",
       "resetSubmit": "Réinitialiser le mot de passe",
       "sent": "Si un compte existe pour {{email}}, vous recevrez un e-mail avec les instructions.",
       "contact": "Contacter le support"
@@ -466,6 +471,8 @@
       "credentials": "Identifiants",
       "password": "Mot de passe",
       "passwordPlaceholder": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Retapez le mot de passe",
       "language": "Langue",
       "fullName": "Nom complet",
       "fullNamePlaceholder": "Prénom et nom",
@@ -494,7 +501,9 @@
       "required": "Veuillez remplir tous les champs obligatoires.",
       "schoolRequired": "Le nom de l'auto-école est obligatoire.",
       "generic": "Une erreur est survenue. Réessayez ou contactez le support.",
-      "google": "Connexion Google indisponible. Réessayez ou utilisez votre e-mail."
+      "google": "Connexion Google indisponible. Réessayez ou utilisez votre e-mail.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères."
     },
     "roles": {
       "admin": {
@@ -1477,6 +1486,24 @@
     "quizAlreadyPassed": "Quiz réussi — vous pouvez continuer le parcours.",
     "quizRetry": "Réessayer le quiz",
     "speechAnswer": "Réponse {{label}} : {{text}}"
+  },
+  "simulation": {
+    "start": "Démarrer",
+    "pause": "Pause",
+    "debug": "Radar (debug)",
+    "hint": "Simulation interactive : observez le trafic, les piétons et les obstacles comme en conditions réelles.",
+    "insertLabel": "Scénario de conduite",
+    "insertButton": "Insérer une simulation",
+    "aiTitle": "Générer une scène avec l'IA",
+    "aiHint": "L'IA crée une scène adaptée au contexte pédagogique (feux, piétons, immeubles, trafic).",
+    "aiSceneTitle": "Titre de la scène",
+    "aiContext": "Contexte pédagogique",
+    "aiContextPlaceholder": "Ex. Priorité à droite au carrefour, piéton qui traverse…",
+    "aiGenerate": "Générer et insérer",
+    "aiGenerating": "Génération…",
+    "aiSuccess": "Scène « {{title}} » insérée.",
+    "aiError": "Impossible de générer la scène.",
+    "aiMissing": "Indiquez un titre et un contexte pour la scène."
   },
   "candidat": {
     "seances": {

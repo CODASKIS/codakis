@@ -460,3 +460,46 @@ def render_simple_notification_email(*, subject: str, body: str) -> tuple[str, s
         """,
     )
     return plain, html
+
+
+def render_payment_confirmation_email(
+    *,
+    full_name: str,
+    amount_fcfa: int,
+    reference: str,
+    receipt_number: str,
+    purpose_label: str,
+    dashboard_url: str,
+) -> tuple[str, str]:
+    amount = f"{amount_fcfa:,}".replace(",", " ")
+    plain = "\n".join(
+        [
+            f"Bonjour {full_name},",
+            "",
+            "Votre paiement CODAKIS a été confirmé.",
+            "",
+            f"Montant : {amount} FCFA",
+            f"Objet : {purpose_label}",
+            f"Référence : {reference}",
+            f"Reçu : {receipt_number}",
+            "",
+            f"Accédez à votre espace : {dashboard_url}",
+            "",
+            "— L'équipe CODAKIS",
+        ]
+    )
+    html = _base_layout(
+        preheader=f"Paiement confirmé — {amount} FCFA",
+        body_html=f"""
+          {_heading("Paiement confirmé")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre transaction a bien été enregistrée.")}
+          {_meta_panel([
+              ("Montant", f"{amount} FCFA"),
+              ("Objet", purpose_label),
+              ("Référence", reference),
+              ("Reçu", receipt_number),
+          ])}
+          {_cta_button("Accéder à mon espace", dashboard_url)}
+        """,
+    )
+    return plain, html

@@ -10,6 +10,7 @@ import {
   registerAutoEcole,
   registerCandidat,
   resetPassword,
+  verifyResetOtp as apiVerifyResetOtp,
   userToSession,
 } from "../lib/authApi";
 import { syncCandidateEnrollmentFromApi } from "./candidateEnrollment";
@@ -121,6 +122,11 @@ export async function registerDrivingSchool(payload: RegisterPayload, langue: st
 export async function requestPasswordReset(email: string): Promise<{ message: string; debugOtp?: string }> {
   const response = await forgotPassword(email);
   return { message: response.message, debugOtp: response.debug_otp ?? undefined };
+}
+
+export async function verifyResetOtp(email: string, otp: string): Promise<{ message: string }> {
+  const response = await apiVerifyResetOtp(email, otp);
+  return { message: response.message };
 }
 
 export async function confirmPasswordReset(email: string, otp: string, newPassword: string): Promise<string> {

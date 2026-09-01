@@ -44,6 +44,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("cm");
@@ -84,8 +85,16 @@ export default function RegisterPage({ role }: RegisterPageProps) {
     event.preventDefault();
     setError("");
 
-    if (!fullName.trim() || !username.trim() || !password.trim() || !country) {
+    if (!fullName.trim() || !username.trim() || !password.trim() || !confirmPassword.trim() || !country) {
       setError(t("auth.errors.required"));
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError(t("auth.errors.passwordMismatch"));
+      return;
+    }
+    if (password.length < 8) {
+      setError(t("auth.errors.passwordTooShort"));
       return;
     }
 
@@ -214,6 +223,16 @@ export default function RegisterPage({ role }: RegisterPageProps) {
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 placeholder={t("auth.fields.passwordPlaceholder")}
+              />
+            </AuthField>
+
+            <AuthField label={t("auth.fields.confirmPassword")} htmlFor="register-confirm-password">
+              <AuthPasswordInput
+                id="register-confirm-password"
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder={t("auth.fields.confirmPasswordPlaceholder")}
               />
             </AuthField>
 

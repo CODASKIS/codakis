@@ -34,6 +34,25 @@ def create_otp(db: Session, email: str, otp_type: OtpType, utilisateur_id=None) 
     return code
 
 
+def check_otp(db: Session, email: str, code: str, otp_type: OtpType) -> CodeVerification:
+    """Vérifie un OTP sans le consommer (pré-étape mot de passe)."""
+    record = (
+        db.query(CodeVerification)
+        .filter(
+            CodeVerification.email == email.lower(),
+            CodeVerification.code == code.strip(),
+            CodeVerification.type == otp_type.value,
+            CodeVerification.utilise.is_(False),
+            CodeVerification.expire_le > datetime.now(UTC),
+        )
+        .order_by(CodeVerification.created_at.desc())
+        .first()
+    )
+    if record is None:
+        raise ValueError("Code OTP invalide ou expiré")
+    return record
+
+
 def verify_otp(db: Session, email: str, code: str, otp_type: OtpType) -> CodeVerification:
     record = (
         db.query(CodeVerification)

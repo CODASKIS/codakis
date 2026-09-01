@@ -17,10 +17,11 @@ from app.schemas.auth import (
     RegisterCandidatRequest,
     ResetPasswordRequest,
     TokenResponse,
+    VerifyResetOtpRequest,
 )
 from app.services.email import send_login_notification_email
 from app.services.email_context import client_ip, format_location_hint, parse_user_agent
-from app.services.otp import create_otp, verify_otp
+from app.services.otp import check_otp, create_otp, verify_otp
 from app.services.users import (
     authenticate_user,
     build_tokens,
@@ -126,6 +127,18 @@ def forgot_password_route(payload: ForgotPasswordRequest, db: Session = Depends(
         message="Si un compte existe pour cet e-mail, un code OTP a été envoyé.",
         debug_otp=debug_otp if settings.app_env in {"development", "test"} else None,
     )
+
+
+@router.post("/verify-reset-otp", response_model=MessageResponse)
+def verify_reset_otp_route(payload: VerifyResetOtpRequest, db: Session = Depends(get_db)):
+    user = db.query(Utilisateur).filter(Utilisateur.email == payload.email.lower()).first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Compte introuvable")
+    try:
+        check_otp(db, payload.email, payload.otp, OtpType.reset_password)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return MessageResponse(message="Code vérifié. Vous pouvez définir un nouveau mot de passe.")
 
 
 @router.post("/reset-password", response_model=MessageResponse)
