@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { AUTH_PATHS } from "../../constants/authPaths";
@@ -16,7 +16,6 @@ import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSig
 import AuthSplitLayout from "../components/AuthSplitLayout";
 import {
   AuthApiError,
-  getSession,
   loginWithCredentials,
   loginWithGoogle,
   resolveAuthRedirect,
@@ -29,7 +28,6 @@ export default function LoginPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const session = getSession();
   const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
   const purchaseSchool = useMemo(
     () => (purchaseIntent ? MOCK_DRIVING_SCHOOLS.find((s) => s.id === purchaseIntent.schoolId) : null),
@@ -40,10 +38,6 @@ export default function LoginPage() {
   const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  if (session) {
-    return <Navigate to={resolveAuthRedirect(session.role)} replace />;
-  }
 
   function applyLanguage() {
     if (language !== i18n.language) {
@@ -166,7 +160,7 @@ export default function LoginPage() {
           </form>
 
           <p className="codakis-auth-form__footer">
-            <Link to="/connexion/mot-de-passe">{t("auth.login.forgot")}</Link>
+            <Link to={AUTH_PATHS.forgotPassword}>{t("auth.login.forgot")}</Link>
           </p>
 
           <p className="codakis-auth-form__footer">

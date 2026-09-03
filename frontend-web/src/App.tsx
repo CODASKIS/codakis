@@ -15,6 +15,7 @@ export default function App() {
       <ScrollToTop />
       <RoutePageLoader />
       <Routes>
+        {/* Auth pages — hors PublicLayout, comme avant */}
         <Route path="/connexion/*" element={<ConnexionRoutes />} />
         <Route path="/inscription/*" element={<InscriptionRoutes />} />
 

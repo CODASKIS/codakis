@@ -1,5 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
@@ -17,7 +17,6 @@ import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSig
 import AuthSplitLayout from "../components/AuthSplitLayout";
 import {
   AuthApiError,
-  isAuthenticatedForRole,
   loginWithGoogle,
   registerCandidatAccount,
   resolveAuthRedirect,
@@ -51,10 +50,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  if (isAuthenticatedForRole(role)) {
-    return <Navigate to={resolveAuthRedirect(role)} replace />;
-  }
 
   function applyLanguage() {
     if (language !== i18n.language) {

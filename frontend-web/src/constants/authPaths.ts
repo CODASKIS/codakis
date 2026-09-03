@@ -1,6 +1,7 @@
 /** Chemins auth — source unique pour les liens du site vitrine. */
 export const AUTH_PATHS = {
   login: "/connexion",
+  forgotPassword: "/connexion/mot-de-passe",
   register: {
     /** Inscription candidat (page auth) */
     candidat: "/inscription",
