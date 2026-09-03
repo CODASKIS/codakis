@@ -9,38 +9,39 @@ export type RoleConfig = {
 };
 
 const LOGIN_PATH = "/connexion";
+const HOME_PATH = "/";
 
 export const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   admin: {
     role: "admin",
     loginPath: LOGIN_PATH,
-    dashboardPath: "/admin",
+    dashboardPath: HOME_PATH,
     canRegister: false,
   },
   candidat: {
     role: "candidat",
     loginPath: LOGIN_PATH,
     registerPath: "/inscription",
-    dashboardPath: "/espace/candidat",
+    dashboardPath: HOME_PATH,
     canRegister: true,
   },
   moniteur: {
     role: "moniteur",
     loginPath: LOGIN_PATH,
-    dashboardPath: "/espace/moniteur",
+    dashboardPath: HOME_PATH,
     canRegister: false,
   },
   gerant: {
     role: "gerant",
     loginPath: LOGIN_PATH,
     registerPath: "/inscription-auto-ecole",
-    dashboardPath: "/espace/gerant",
+    dashboardPath: HOME_PATH,
     canRegister: true,
   },
 };
 
-export function getRoleDashboardPath(role: UserRole): string {
-  return ROLE_CONFIG[role].dashboardPath;
+export function getRoleDashboardPath(_role: UserRole): string {
+  return HOME_PATH;
 }
 
 export function getRoleFromPath(pathname: string): UserRole | null {
@@ -51,28 +52,10 @@ export function getRoleFromPath(pathname: string): UserRole | null {
   return null;
 }
 
-export function getProfilePath(role: UserRole): string {
-  switch (role) {
-    case "admin":
-      return "/admin/profil";
-    case "candidat":
-      return "/espace/candidat/profil";
-    case "moniteur":
-      return "/espace/moniteur/profil";
-    case "gerant":
-      return "/espace/gerant/profil";
-    default:
-      return "/";
-  }
+export function getProfilePath(_role: UserRole): string {
+  return HOME_PATH;
 }
 
-export function getSettingsPath(role: UserRole): string {
-  switch (role) {
-    case "admin":
-      return "/admin/parametres";
-    case "gerant":
-      return "/espace/gerant/parametres";
-    default:
-      return getProfilePath(role);
-  }
+export function getSettingsPath(_role: UserRole): string {
+  return HOME_PATH;
 }

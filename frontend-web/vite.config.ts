@@ -2,8 +2,6 @@ import path from "node:path";
 import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 
-const dashboardkitRoot = path.resolve(__dirname, "./src/dashboardkit");
-
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const repoRoot = path.resolve(__dirname, "..");
@@ -15,18 +13,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
-        components: path.resolve(dashboardkitRoot, "components"),
-        layouts: path.resolve(dashboardkitRoot, "layouts"),
-        contexts: path.resolve(dashboardkitRoot, "contexts"),
-        hooks: path.resolve(dashboardkitRoot, "hooks"),
-        store: path.resolve(dashboardkitRoot, "store"),
-        config: path.resolve(dashboardkitRoot, "config"),
-        data: path.resolve(dashboardkitRoot, "data"),
-        utils: path.resolve(dashboardkitRoot, "utils"),
-        assets: path.resolve(dashboardkitRoot, "assets"),
-        views: path.resolve(dashboardkitRoot, "views"),
-        "menu-items": path.resolve(dashboardkitRoot, "menu-items.js"),
-        "menu-items-collapse": path.resolve(dashboardkitRoot, "menu-items-collapse.js"),
       },
     },
     server: {
@@ -62,14 +48,6 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     build: {
       chunkSizeWarningLimit: 600,
-    },
-    css: {
-      preprocessorOptions: {
-        scss: {
-          charset: false,
-          loadPaths: [path.resolve(__dirname, "node_modules")],
-        },
-      },
     },
   };
 });

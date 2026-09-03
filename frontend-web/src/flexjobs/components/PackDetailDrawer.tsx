@@ -132,7 +132,7 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
     );
   } else if (isCandidat && alreadyEnrolled) {
     primaryAction = (
-      <Link to="/espace/candidat/auto-ecole" className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
+      <Link to="/" className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
         <span>{t("packs.viewMySchool")}</span>
         <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
       </Link>

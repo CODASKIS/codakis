@@ -19,7 +19,7 @@ export default function AccountPromoAside({
   title = "Accédez à 500+ auto-écoles agréées",
   bullets = [...DEFAULT_BULLETS],
   ctaLabel = "Voir les forfaits",
-  ctaHref = "/espace/client/abonnement/forfaits",
+  ctaHref = "/",
 }: AccountPromoAsideProps) {
   return (
     <aside className="fj-account-aside">
