@@ -3,14 +3,12 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { AUTH_PATHS } from "../../constants/authPaths";
-import { supportedLanguages } from "../../i18n";
 import {
   AuthDivider,
   AuthField,
   AuthInput,
   AuthInputBox,
   AuthPasswordInput,
-  AuthSelect,
 } from "../components/AuthFormControls";
 import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSignInButton";
 import AuthSplitLayout from "../components/AuthSplitLayout";
@@ -25,7 +23,7 @@ import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purcha
 import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
 
 export default function LoginPage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
@@ -35,15 +33,8 @@ export default function LoginPage() {
   );
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  function applyLanguage() {
-    if (language !== i18n.language) {
-      void i18n.changeLanguage(language);
-    }
-  }
 
   function finishAuth(role: UserRole) {
     if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
@@ -53,7 +44,6 @@ export default function LoginPage() {
   async function handleGoogleLogin(idToken: string) {
     setError("");
     setLoading(true);
-    applyLanguage();
     try {
       const newSession = await loginWithGoogle(idToken);
       finishAuth(newSession.role);
@@ -73,7 +63,6 @@ export default function LoginPage() {
       return;
     }
 
-    applyLanguage();
     setLoading(true);
     try {
       const newSession = await loginWithCredentials(username.trim(), password);
@@ -134,22 +123,6 @@ export default function LoginPage() {
                 onChange={(event) => setPassword(event.target.value)}
                 placeholder={t("auth.fields.passwordPlaceholder")}
               />
-            </AuthField>
-
-            <AuthField label={t("auth.fields.language")} htmlFor="language">
-              <AuthInputBox>
-                <AuthSelect
-                  id="language"
-                  value={language}
-                  onChange={(event) => setLanguage(event.target.value)}
-                >
-                  {supportedLanguages.map((lng) => (
-                    <option key={lng} value={lng}>
-                      {t(`auth.languages.${lng}`)}
-                    </option>
-                  ))}
-                </AuthSelect>
-              </AuthInputBox>
             </AuthField>
 
             {error ? <p className="codakis-auth-form__error">{error}</p> : null}

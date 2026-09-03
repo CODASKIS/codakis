@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
 import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
-import { supportedLanguages } from "../../i18n";
 import {
   AuthDivider,
   AuthField,
@@ -47,15 +46,8 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
   const [country, setCountry] = useState("cm");
-  const [language, setLanguage] = useState(i18n.language);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  function applyLanguage() {
-    if (language !== i18n.language) {
-      void i18n.changeLanguage(language);
-    }
-  }
 
   function finishAuth() {
     if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
@@ -65,7 +57,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   async function handleGoogleSignup(idToken: string) {
     setError("");
     setLoading(true);
-    applyLanguage();
     try {
       await loginWithGoogle(idToken);
       finishAuth();
@@ -93,7 +84,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
       return;
     }
 
-    applyLanguage();
     setLoading(true);
     try {
       await registerCandidatAccount(
@@ -105,7 +95,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
           city: city.trim() || undefined,
           country,
         },
-        language.startsWith("en") ? "en" : "fr",
+        i18n.language.startsWith("en") ? "en" : "fr",
       );
       finishAuth();
     } catch (err) {
@@ -133,8 +123,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
               ? t("auth.register.purchaseHint", { school: purchaseSchool.name })
               : t(`auth.roles.${role}.registerHint`)}
           </p>
-
-          <p className="codakis-auth-form__hint">{t("auth.register.freeAccountHint")}</p>
 
           {isGoogleAuthEnabled() ? (
             <>
@@ -229,22 +217,6 @@ export default function RegisterPage({ role }: RegisterPageProps) {
                 onChange={(event) => setConfirmPassword(event.target.value)}
                 placeholder={t("auth.fields.confirmPasswordPlaceholder")}
               />
-            </AuthField>
-
-            <AuthField label={t("auth.fields.language")} htmlFor="register-language">
-              <AuthInputBox>
-                <AuthSelect
-                  id="register-language"
-                  value={language}
-                  onChange={(event) => setLanguage(event.target.value)}
-                >
-                  {supportedLanguages.map((lng) => (
-                    <option key={lng} value={lng}>
-                      {t(`auth.languages.${lng}`)}
-                    </option>
-                  ))}
-                </AuthSelect>
-              </AuthInputBox>
             </AuthField>
 
             {error ? <p className="codakis-auth-form__error">{error}</p> : null}

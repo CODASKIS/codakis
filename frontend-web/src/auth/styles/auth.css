@@ -142,6 +142,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth__main {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -151,11 +152,19 @@ html:has(.codakis-auth) {
   min-height: 0;
 }
 
+.codakis-auth__toolbar {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  z-index: 5;
+}
+
 .codakis-auth__panel {
   width: 100%;
   max-width: 420px;
   margin: auto;
   flex-shrink: 0;
+  padding-top: 1.2rem;
 }
 
 .codakis-auth__panel--wide {
@@ -247,20 +256,27 @@ html:has(.codakis-auth) {
 
 .codakis-auth__title {
   margin: 0 0 0.4rem;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 2.8rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: #1d2630;
 }
 
 .codakis-auth__subtitle {
   margin: 0 0 2rem;
-  font-size: 1.6rem;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+  line-height: 1.45;
   color: #5b6b79;
 }
 
 .codakis-auth__hint {
   margin: 0 0 1.6rem;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
+  font-weight: 500;
   color: #5b6b79;
   line-height: 1.5;
 }
@@ -290,7 +306,9 @@ html:has(.codakis-auth) {
   padding: 0.6rem 1.2rem;
   border: 0;
   background: #fff;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
+  font-weight: 500;
   color: #3e3d3f;
   outline: none;
   transition: box-shadow 0.15s ease;
@@ -395,20 +413,19 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-google-wrap {
+  position: relative;
   display: flex;
-  justify-content: center;
+  justify-content: stretch;
   width: 100%;
   margin-bottom: 0.4rem;
 }
 
-.codakis-auth-google-wrap > div {
-  width: 100% !important;
-  max-width: 100%;
-}
-
-.codakis-auth-google-wrap iframe {
-  width: 100% !important;
-  max-width: 100%;
+.codakis-auth-google-hidden {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* Google OAuth button */
@@ -418,20 +435,24 @@ html:has(.codakis-auth) {
   justify-content: center;
   gap: 1rem;
   width: 100%;
+  min-height: 4.4rem;
   padding: 1rem 1.4rem;
-  border: 0.1rem solid #ccc;
+  border: 0.1rem solid #d0d5dd;
   border-radius: 0.4rem;
   background: #fff;
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.08);
-  color: #3e3d3f;
+  color: #1f2937;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0;
   cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
 .codakis-auth-google:hover {
-  border-color: #d0d5dd;
+  border-color: #98a2b3;
+  background: #f9fafb;
   box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.12);
 }
 
@@ -473,8 +494,9 @@ html:has(.codakis-auth) {
 .codakis-auth-form__field label {
   display: block;
   margin-bottom: 0.4rem;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.4rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #3e4853;
 }
 
@@ -503,6 +525,7 @@ html:has(.codakis-auth) {
   background: var(--fj-cta-bg, #1db96a);
   box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
   color: #fff;
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.6rem;
   font-weight: 700;
   cursor: pointer;
@@ -522,13 +545,15 @@ html:has(.codakis-auth) {
 
 .codakis-auth-form__footer {
   margin: 1.6rem 0 0;
-  font-size: 1.4rem;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 500;
   color: #5b6b79;
 }
 
 .codakis-auth-form__footer a {
   color: var(--fj-cta-bg, #10b981);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
 

@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router";
+import { useTranslation } from "react-i18next";
 import { AUTH_BRAND_BACKGROUND, AUTH_VOLANT_ICON } from "../assets/authImages";
 import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 
 type AuthSplitLayoutProps = {
   children: ReactNode;
@@ -12,6 +14,8 @@ type AuthSplitLayoutProps = {
 const VOLANT_POSITIONS = ["1", "2", "3", "4", "5"] as const;
 
 export default function AuthSplitLayout({ children, backHref = "/", backLabel }: AuthSplitLayoutProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="codakis-auth">
       <aside className="codakis-auth__brand" aria-hidden={false}>
@@ -39,7 +43,12 @@ export default function AuthSplitLayout({ children, backHref = "/", backLabel }:
         ) : null}
       </aside>
 
-      <main className="codakis-auth__main">{children}</main>
+      <main className="codakis-auth__main">
+        <div className="codakis-auth__toolbar" aria-label={t("lang.switch")}>
+          <LanguageSwitcher variant="auth" />
+        </div>
+        {children}
+      </main>
     </div>
   );
 }
