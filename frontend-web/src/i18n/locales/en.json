@@ -128,12 +128,30 @@
     "ctaText": "Create your account to track each document step by step.",
     "ctaButton": "Get started with CODAKIS",
     "pieces": {
-      "id": { "title": "ID document", "desc": "Valid national ID card or passport." },
-      "birth": { "title": "Birth certificate", "desc": "Certified copy or original as required locally." },
-      "medical": { "title": "Medical certificate", "desc": "Issued by an approved medical centre, valid 3 months." },
-      "photos": { "title": "ID photos", "desc": "Regulatory format, light background, compliant with standards." },
-      "address": { "title": "Proof of address", "desc": "Recent bill or certificate of residence." },
-      "stamps": { "title": "Stamp duties", "desc": "Fiscal stamps required for the Consort file." }
+      "id": {
+        "title": "ID document",
+        "desc": "Valid national ID card or passport."
+      },
+      "birth": {
+        "title": "Birth certificate",
+        "desc": "Certified copy or original as required locally."
+      },
+      "medical": {
+        "title": "Medical certificate",
+        "desc": "Issued by an approved medical centre, valid 3 months."
+      },
+      "photos": {
+        "title": "ID photos",
+        "desc": "Regulatory format, light background, compliant with standards."
+      },
+      "address": {
+        "title": "Proof of address",
+        "desc": "Recent bill or certificate of residence."
+      },
+      "stamps": {
+        "title": "Stamp duties",
+        "desc": "Fiscal stamps required for the Consort file."
+      }
     }
   },
   "pricing": {
@@ -412,13 +430,68 @@
     "register": {
       "metaTitle": "Register — {{role}} | CODAKIS",
       "metaDescription": "Create your CODAKIS account.",
-      "title": "Register",
-      "submit": "Create my free account",
+      "title": "Create an account",
+      "submit": "Sign up",
       "submitAndContinue": "Create my account and continue purchase",
+      "continue": "Continue",
+      "back": "Back",
+      "startCta": "Start learning",
       "freeAccountHint": "CODAKIS registration is free. A driving school is linked to your account only after you pay for a package on the public site.",
       "purchaseHint": "Free candidate account — you can then pay for the package at {{school}}.",
+      "licenseSubtitle": "Choose the license type you are preparing for.",
+      "courseSubtitle": "Choose the learning path you want to follow.",
+      "selectionSummary": "{{license}} · {{course}}",
+      "changeSelection": "Change",
+      "doneSubtitle": "Your account is ready. You can start preparing.",
       "hasAccount": "Already have an account?",
-      "loginLink": "Sign in"
+      "loginLink": "Sign in",
+      "steps": {
+        "aria": "Registration steps",
+        "selectLicense": "Select",
+        "selectCourse": "Select a course",
+        "createAccount": "Create an account",
+        "startLearning": "Start learning"
+      },
+      "licenses": {
+        "B": {
+          "label": "Category B",
+          "hint": "Passenger car"
+        },
+        "A": {
+          "label": "Category A",
+          "hint": "Motorcycle"
+        },
+        "A1": {
+          "label": "Category A1",
+          "hint": "Light motorcycle"
+        },
+        "C": {
+          "label": "Category C",
+          "hint": "Heavy goods vehicle"
+        },
+        "D": {
+          "label": "Category D",
+          "hint": "Passenger transport"
+        },
+        "BE": {
+          "label": "Category BE",
+          "hint": "Car with trailer"
+        }
+      },
+      "courses": {
+        "code": {
+          "label": "Theory",
+          "hint": "Revision and mock exams"
+        },
+        "conduite": {
+          "label": "Driving lessons",
+          "hint": "Practical training with a school"
+        },
+        "complet": {
+          "label": "Theory + driving",
+          "hint": "Full path to your license"
+        }
+      }
     },
     "registerHub": {
       "metaTitle": "Register | CODAKIS",
@@ -444,8 +517,8 @@
       "subtitle": "Enter your email to receive an OTP reset code.",
       "otpSubtitle": "Enter the 6-digit code from your email.",
       "passwordSubtitle": "Code verified — choose a new password.",
-      "hint": "If you don't receive the email, check spam or contact support. Production delivery requires a verified domain on Resend.",
-      "emailFailedHint": "Email could not be sent (Resend domain not verified). Use the dev code shown or contact support.",
+      "hint": "If you don't receive the email, check your spam folder or contact support.",
+      "emailFailedHint": "The email could not be sent. Try again later or contact support.",
       "submit": "Send code",
       "verifyOtp": "Verify code",
       "otpLabel": "OTP code",
@@ -1550,7 +1623,6 @@
       "lockedLead": "Upgrade to Premium to unlock this theme's lessons, its quizzes and the full CEMAC programme.",
       "examsLead": "Practice with themed quizzes or timed mock exams.",
       "noLecons": "No published lessons for this theme.",
-      "backCourses": "Back to courses",
       "backExams": "Back to exams",
       "goExams": "Take a quiz or exam",
       "leconNotFound": "Lesson not found.",
@@ -1670,5 +1742,24 @@
     "empty": "No notifications.",
     "loading": "Loading…",
     "markAllRead": "Mark all as read"
+  },
+  "learning": {
+    "nav": {
+      "roadmap": "Roadmap",
+      "tests": "Tests",
+      "stats": "Statistics",
+      "handbook": "Handbook",
+      "school": "Driving school",
+      "seances": "Lessons",
+      "profile": "Profile"
+    },
+    "roadmap": {
+      "title": "Roadmap",
+      "subtitle": "Follow chapters in order."
+    },
+    "paywall": {
+      "title": "CODAKIS Premium content",
+      "cta": "Browse packages"
+    }
   }
 }

@@ -65,8 +65,14 @@ export async function loginWithCredentials(email: string, password: string): Pro
   return session;
 }
 
-export async function loginWithGoogle(idToken: string): Promise<AuthSession> {
-  const { user } = await loginWithGoogleIdToken(idToken);
+export async function loginWithGoogle(
+  idToken: string,
+  extras?: { typePermis?: string; parcoursSouhaite?: string },
+): Promise<AuthSession> {
+  const { user } = await loginWithGoogleIdToken(idToken, {
+    type_permis: extras?.typePermis,
+    parcours_souhaite: extras?.parcoursSouhaite,
+  });
   const session = userToSession(user);
   setSession(session);
   return session;
@@ -82,6 +88,8 @@ export async function registerCandidatAccount(payload: RegisterPayload, langue: 
     city: payload.city?.trim(),
     country_code: countryCode,
     langue,
+    type_permis: payload.typePermis ?? "B",
+    parcours_souhaite: payload.parcoursSouhaite ?? "complet",
   });
   const session = userToSession(user);
   setSession(session);

@@ -119,6 +119,8 @@ def user_to_public(db: Session, user: Utilisateur) -> UserPublic:
         avatar_url=user.avatar_url,
         country_code=user.country_code,
         langue=user.langue,
+        type_permis=getattr(user, "type_permis", None),
+        parcours_souhaite=getattr(user, "parcours_souhaite", None),
         is_active=user.est_actif,
         school_validated=school_validated,
         school_id=school_id,
@@ -158,7 +160,19 @@ def authenticate_user(db: Session, email: str, password: str) -> Utilisateur:
     return user
 
 
-def register_candidat(db: Session, *, email: str, password: str, full_name: str, phone, city, country_code, langue) -> Utilisateur:
+def register_candidat(
+    db: Session,
+    *,
+    email: str,
+    password: str,
+    full_name: str,
+    phone,
+    city,
+    country_code,
+    langue,
+    type_permis: str = "B",
+    parcours_souhaite: str = "complet",
+) -> Utilisateur:
     if db.query(Utilisateur).filter(Utilisateur.email == email.lower()).first():
         raise ValueError("Un compte existe déjà avec cet e-mail")
     ensure_country(db, country_code)
@@ -174,6 +188,8 @@ def register_candidat(db: Session, *, email: str, password: str, full_name: str,
         ville_id=ville.id if ville else None,
         telephone=phone,
         langue=langue,
+        type_permis=type_permis,
+        parcours_souhaite=parcours_souhaite,
         fournisseur_auth=FournisseurAuth.email.value,
     )
     db.add(user)
@@ -264,7 +280,13 @@ def verify_google_token(id_token_str: str) -> dict:
     return id_token.verify_oauth2_token(id_token_str, google_requests.Request(), settings.google_client_id)
 
 
-def login_or_register_google(db: Session, id_token_str: str) -> Utilisateur:
+def login_or_register_google(
+    db: Session,
+    id_token_str: str,
+    *,
+    type_permis: str | None = None,
+    parcours_souhaite: str | None = None,
+) -> Utilisateur:
     payload = verify_google_token(id_token_str)
     email = payload.get("email", "").lower()
     if not email:
@@ -285,6 +307,10 @@ def login_or_register_google(db: Session, id_token_str: str) -> Utilisateur:
             user.fournisseur_auth = FournisseurAuth.google.value
         if google_sub and not user.supabase_uid:
             user.supabase_uid = uuid.uuid5(uuid.NAMESPACE_DNS, google_sub)
+        if type_permis and not user.type_permis:
+            user.type_permis = type_permis
+        if parcours_souhaite and not user.parcours_souhaite:
+            user.parcours_souhaite = parcours_souhaite
         db.commit()
         assert_can_login(db, user)
         return user
@@ -299,6 +325,8 @@ def login_or_register_google(db: Session, id_token_str: str) -> Utilisateur:
         role=RoleUtilisateur.candidat.value,
         country_code="CM",
         langue="fr",
+        type_permis=type_permis or "B",
+        parcours_souhaite=parcours_souhaite or "complet",
         fournisseur_auth=FournisseurAuth.google.value,
         supabase_uid=uuid.uuid5(uuid.NAMESPACE_DNS, google_sub) if google_sub else None,
     )

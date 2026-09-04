@@ -24,6 +24,21 @@ class FournisseurAuth(str, enum.Enum):
     email_google = "email_google"
 
 
+class TypePermis(str, enum.Enum):
+    B = "B"
+    A = "A"
+    A1 = "A1"
+    C = "C"
+    D = "D"
+    BE = "BE"
+
+
+class ParcoursSouhaite(str, enum.Enum):
+    code = "code"
+    conduite = "conduite"
+    complet = "complet"
+
+
 class OtpType(str, enum.Enum):
     reset_password = "reset_password"
     email_verification = "email_verification"
@@ -87,6 +102,9 @@ class Utilisateur(Base):
     ville_id: Mapped[uuid.UUID | None] = mapped_column(Uuid(as_uuid=True), ForeignKey("villes.id"), nullable=True)
     telephone: Mapped[str | None] = mapped_column(Text, nullable=True)
     langue: Mapped[str] = mapped_column(String(2), default="fr", nullable=False)
+    type_permis: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    parcours_souhaite: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    points: Mapped[int] = mapped_column(default=0, nullable=False)
     fournisseur_auth: Mapped[str] = mapped_column(String(16), default=FournisseurAuth.email.value, nullable=False)
     est_actif: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

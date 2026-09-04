@@ -9,39 +9,38 @@ export type RoleConfig = {
 };
 
 const LOGIN_PATH = "/connexion";
-const HOME_PATH = "/";
 
 export const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   admin: {
     role: "admin",
     loginPath: LOGIN_PATH,
-    dashboardPath: HOME_PATH,
+    dashboardPath: "/",
     canRegister: false,
   },
   candidat: {
     role: "candidat",
     loginPath: LOGIN_PATH,
     registerPath: "/inscription",
-    dashboardPath: HOME_PATH,
+    dashboardPath: "/espace/candidat",
     canRegister: true,
   },
   moniteur: {
     role: "moniteur",
     loginPath: LOGIN_PATH,
-    dashboardPath: HOME_PATH,
+    dashboardPath: "/espace/moniteur",
     canRegister: false,
   },
   gerant: {
     role: "gerant",
     loginPath: LOGIN_PATH,
     registerPath: "/inscription-auto-ecole",
-    dashboardPath: HOME_PATH,
+    dashboardPath: "/espace/gerant",
     canRegister: true,
   },
 };
 
-export function getRoleDashboardPath(_role: UserRole): string {
-  return HOME_PATH;
+export function getRoleDashboardPath(role: UserRole): string {
+  return ROLE_CONFIG[role].dashboardPath;
 }
 
 export function getRoleFromPath(pathname: string): UserRole | null {
@@ -52,10 +51,13 @@ export function getRoleFromPath(pathname: string): UserRole | null {
   return null;
 }
 
-export function getProfilePath(_role: UserRole): string {
-  return HOME_PATH;
+export function getProfilePath(role: UserRole): string {
+  if (role === "candidat") return "/espace/candidat/profil";
+  if (role === "moniteur") return "/espace/moniteur";
+  if (role === "gerant") return "/espace/gerant";
+  return "/";
 }
 
-export function getSettingsPath(_role: UserRole): string {
-  return HOME_PATH;
+export function getSettingsPath(role: UserRole): string {
+  return getProfilePath(role);
 }

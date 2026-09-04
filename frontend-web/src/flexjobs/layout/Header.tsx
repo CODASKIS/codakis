@@ -5,12 +5,16 @@ import { AUTH_PATHS } from "../../constants/authPaths";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import BrandLogo from "../components/BrandLogo";
 import HeaderSearch from "../components/HeaderSearch";
+import { getSession } from "../../auth/authStore";
+import { getRoleDashboardPath } from "../../auth/roles";
 
 export default function Header() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const [searchParams] = useSearchParams();
+  const session = getSession();
+  const espaceHref = session ? getRoleDashboardPath(session.role) : null;
   const isSchoolsDirectory = location.pathname.startsWith("/auto-ecoles");
   const searchDefaults = isSchoolsDirectory
     ? {
@@ -29,8 +33,12 @@ export default function Header() {
     ...mainNav,
     { to: "/themes", label: t("nav.themes") },
     { to: "/contact", label: t("nav.contact") },
-    { to: AUTH_PATHS.login, label: t("nav.login") },
-    { to: AUTH_PATHS.register.candidat, label: t("nav.signup") },
+    ...(espaceHref
+      ? [{ to: espaceHref, label: t("nav.mySpace", { defaultValue: "Mon espace" }) }]
+      : [
+          { to: AUTH_PATHS.login, label: t("nav.login") },
+          { to: AUTH_PATHS.register.candidat, label: t("nav.signup") },
+        ]),
   ] as const;
 
   return (
@@ -62,16 +70,26 @@ export default function Header() {
                 <li className="fj-navbar__lang">
                   <LanguageSwitcher />
                 </li>
-                <li>
-                  <Link to={AUTH_PATHS.login} className="fj-link-login">
-                    {t("nav.login")}
-                  </Link>
-                </li>
-                <li>
-                  <Link to={AUTH_PATHS.register.candidat} className="fj-btn-nav-cta">
-                    {t("nav.signup")}
-                  </Link>
-                </li>
+                {espaceHref ? (
+                  <li>
+                    <Link to={espaceHref} className="fj-btn-nav-cta">
+                      {t("nav.mySpace", { defaultValue: "Mon espace" })}
+                    </Link>
+                  </li>
+                ) : (
+                  <>
+                    <li>
+                      <Link to={AUTH_PATHS.login} className="fj-link-login">
+                        {t("nav.login")}
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to={AUTH_PATHS.register.candidat} className="fj-btn-nav-cta">
+                        {t("nav.signup")}
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

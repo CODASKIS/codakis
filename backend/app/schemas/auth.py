@@ -21,6 +21,8 @@ class UserPublic(BaseModel):
     avatar_url: str | None = None
     country_code: str
     langue: str
+    type_permis: str | None = None
+    parcours_souhaite: str | None = None
     is_active: bool
     school_validated: bool | None = None
     school_id: UUID | None = None
@@ -133,6 +135,8 @@ class RegisterCandidatRequest(BaseModel):
     city: str | None = None
     country_code: str = Field(min_length=2, max_length=2)
     langue: str = Field(default="fr", pattern="^(fr|en)$")
+    type_permis: str = Field(default="B", pattern="^(B|A|A1|C|D|BE)$")
+    parcours_souhaite: str = Field(default="complet", pattern="^(code|conduite|complet)$")
 
 
 class RegisterAutoEcoleRequest(BaseModel):
@@ -158,6 +162,8 @@ class RegisterAutoEcoleRequest(BaseModel):
 
 class GoogleAuthRequest(BaseModel):
     id_token: str
+    type_permis: str | None = Field(default=None, pattern="^(B|A|A1|C|D|BE)$")
+    parcours_souhaite: str | None = Field(default=None, pattern="^(code|conduite|complet)$")
 
 
 class ForgotPasswordRequest(BaseModel):

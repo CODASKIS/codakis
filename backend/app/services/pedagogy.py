@@ -723,6 +723,32 @@ def _details_for_response(details: list[dict]) -> list[dict]:
     return [_detail_for_storage(item) for item in details]
 
 
+POINTS_PER_LESSON = 10
+POINTS_PER_QUIZ_PASS = 25
+POINTS_PER_EXAM_PASS = 50
+LEVEL_STEP = 150
+
+
+def niveau_from_points(points: int) -> int:
+    return 1 + max(0, int(points)) // LEVEL_STEP
+
+
+def next_level_threshold(points: int) -> int:
+    niveau = niveau_from_points(points)
+    return niveau * LEVEL_STEP
+
+
+def award_points(db: Session, candidat: Utilisateur, amount: int) -> int:
+    if amount <= 0:
+        return 0
+    current = int(getattr(candidat, "points", 0) or 0)
+    candidat.points = current + amount
+    db.add(candidat)
+    db.commit()
+    db.refresh(candidat)
+    return amount
+
+
 def _score_answers(questions: list[Question], answers: list) -> tuple[int, list[dict]]:
     answer_map = {item.question_id: item.reponse_id for item in answers}
     details: list[dict] = []
@@ -754,6 +780,7 @@ def submit_quiz(db: Session, candidat: Utilisateur, quiz: Quiz, answers: list) -
     nb_total = len(questions)
     score = round(nb_correctes / nb_total * 100) if nb_total else 0
     reussi = nb_correctes >= max(1, int(nb_total * 0.7))
+    already_passed = str(quiz.id) in _passed_quiz_ids(db, candidat)
     db.add(
         TentativeQuiz(
             candidat_id=candidat.id,
@@ -766,12 +793,19 @@ def submit_quiz(db: Session, candidat: Utilisateur, quiz: Quiz, answers: list) -
         )
     )
     db.commit()
+    points_earned = 0
+    if reussi and not already_passed:
+        points_earned = award_points(db, candidat, POINTS_PER_QUIZ_PASS + score // 20)
+    points_total = int(getattr(candidat, "points", 0) or 0)
     result = {
         "score": score,
         "nb_correctes": nb_correctes,
         "nb_total": nb_total,
         "reussi": reussi,
         "details": _details_for_response(details),
+        "points_earned": points_earned,
+        "points_total": points_total,
+        "niveau": niveau_from_points(points_total),
     }
     from app.services.email import send_quiz_result_email
 
@@ -795,6 +829,7 @@ def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: l
     nb_erreurs = nb_total - nb_correctes
     score = round(nb_correctes / nb_total * 100) if nb_total else 0
     reussi = nb_erreurs <= examen.max_erreurs
+    already_passed = str(examen.id) in _passed_examen_ids(db, candidat)
     db.add(
         TentativeExamen(
             candidat_id=candidat.id,
@@ -807,12 +842,19 @@ def submit_examen(db: Session, candidat: Utilisateur, examen: Examen, answers: l
         )
     )
     db.commit()
+    points_earned = 0
+    if reussi and not already_passed:
+        points_earned = award_points(db, candidat, POINTS_PER_EXAM_PASS)
+    points_total = int(getattr(candidat, "points", 0) or 0)
     result = {
         "score": score,
         "nb_erreurs": nb_erreurs,
         "nb_total": nb_total,
         "reussi": reussi,
         "details": _details_for_response(details),
+        "points_earned": points_earned,
+        "points_total": points_total,
+        "niveau": niveau_from_points(points_total),
     }
     from app.services.email import send_examen_result_email
 
@@ -861,6 +903,7 @@ def get_candidat_progress(db: Session, candidat: Utilisateur) -> dict:
     published_ids = _published_lecon_ids(db)
     total = len(published_ids)
     if total == 0:
+        points = int(getattr(candidat, "points", 0) or 0)
         return {
             "completed_lecon_ids": [],
             "passed_quiz_ids": _passed_quiz_ids(db, candidat),
@@ -868,6 +911,9 @@ def get_candidat_progress(db: Session, candidat: Utilisateur) -> dict:
             "total_lecons": 0,
             "completed_count": 0,
             "percent": 0,
+            "points": points,
+            "niveau": niveau_from_points(points),
+            "points_earned": 0,
         }
     completed_rows = (
         db.query(LeconProgress.lecon_id)
@@ -880,6 +926,7 @@ def get_candidat_progress(db: Session, candidat: Utilisateur) -> dict:
     completed_ids = [str(row[0]) for row in completed_rows]
     completed_count = len(completed_ids)
     percent = round(completed_count / total * 100) if total else 0
+    points = int(getattr(candidat, "points", 0) or 0)
     return {
         "completed_lecon_ids": completed_ids,
         "passed_quiz_ids": _passed_quiz_ids(db, candidat),
@@ -887,7 +934,92 @@ def get_candidat_progress(db: Session, candidat: Utilisateur) -> dict:
         "total_lecons": total,
         "completed_count": completed_count,
         "percent": percent,
+        "points": points,
+        "niveau": niveau_from_points(points),
+        "points_earned": 0,
     }
+
+
+def get_gamification(db: Session, candidat: Utilisateur) -> dict:
+    progress = get_candidat_progress(db, candidat)
+    points = int(getattr(candidat, "points", 0) or 0)
+    niveau = niveau_from_points(points)
+    next_at = next_level_threshold(points)
+    return {
+        "points": points,
+        "niveau": niveau,
+        "chapters_read": progress["completed_count"],
+        "chapters_total": progress["total_lecons"],
+        "next_level_at": next_at,
+        "points_to_next_level": max(0, next_at - points),
+    }
+
+
+def get_global_roadmap(db: Session, candidat: Utilisateur) -> dict:
+    themes = (
+        db.query(Theme)
+        .filter(Theme.est_actif.is_(True))
+        .order_by(Theme.sort_order.asc(), Theme.created_at.asc())
+        .all()
+    )
+    progress = get_candidat_progress(db, candidat)
+    completed = set(progress["completed_lecon_ids"])
+    passed_quizzes = set(progress["passed_quiz_ids"])
+    platform_ok = has_platform_access(db, candidat)
+
+    sections: list[dict] = []
+    flat: list[dict] = []
+    global_index = 0
+
+    for theme_index, theme in enumerate(themes, start=1):
+        theme_locked = bool(theme.is_premium and not platform_ok and not has_premium_access(db, candidat))
+        steps_raw = build_theme_course_steps(db, theme.id, include_drafts=False, active_only=True)
+        section_steps: list[dict] = []
+        for step in steps_raw:
+            global_index += 1
+            step_id = step["id"]
+            done = (step["type"] == "lecon" and step_id in completed) or (
+                step["type"] == "quiz" and step_id in passed_quizzes
+            )
+            entry = {
+                **step,
+                "theme_id": str(theme.id),
+                "theme_code": theme.code,
+                "theme_title": theme.title_fr,
+                "theme_index": theme_index,
+                "global_index": global_index,
+                "status": "done" if done else "locked",
+            }
+            section_steps.append(entry)
+            flat.append(entry)
+        sections.append(
+            {
+                "theme_id": str(theme.id),
+                "theme_code": theme.code,
+                "theme_title": theme.title_fr,
+                "theme_index": theme_index,
+                "is_premium": bool(theme.is_premium),
+                "locked": theme_locked,
+                "steps": section_steps,
+            }
+        )
+
+    # Sequential unlock: first incomplete non-premium-locked step is current
+    found_current = False
+    for section in sections:
+        for step in section["steps"]:
+            if step["status"] == "done":
+                continue
+            if section["locked"]:
+                step["status"] = "premium_locked"
+                continue
+            if not found_current:
+                step["status"] = "current"
+                found_current = True
+            else:
+                step["status"] = "locked"
+
+    return {"sections": sections, "gamification": get_gamification(db, candidat)}
 
 
 def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dict:
@@ -899,10 +1031,12 @@ def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dic
         .first()
     )
     newly_completed = False
+    points_earned = 0
     if existing is None:
         db.add(LeconProgress(candidat_id=candidat.id, lecon_id=lecon.id, completed_at=datetime.now(UTC)))
         db.commit()
         newly_completed = True
+        points_earned = award_points(db, candidat, POINTS_PER_LESSON)
     progress = get_candidat_progress(db, candidat)
     if newly_completed:
         theme = db.get(Theme, lecon.theme_id)
@@ -913,9 +1047,12 @@ def mark_lecon_complete(db: Session, candidat: Utilisateur, lecon: Lecon) -> dic
             candidat.email,
             full_name,
             lesson_title=lecon.title,
-            theme_title=theme.title if theme else "CODAKIS",
+            theme_title=theme.title_fr if theme else "CODAKIS",
             progress_percent=progress["percent"],
         )
+    progress["points"] = int(getattr(candidat, "points", 0) or 0)
+    progress["niveau"] = niveau_from_points(progress["points"])
+    progress["points_earned"] = points_earned
     return progress
 
 
@@ -1129,6 +1266,7 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
 
     scores = [item["score"] for item in history]
     success_rate = round(sum(scores) / len(scores)) if scores else 0
+    gamification = get_gamification(db, candidat)
 
     return {
         "progress_percent": progress["percent"],
@@ -1138,4 +1276,9 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
         "examens_passed": len(progress["passed_examen_ids"]),
         "success_rate": success_rate,
         "recent_attempts": history,
+        "points": gamification["points"],
+        "niveau": gamification["niveau"],
+        "chapters_read": gamification["chapters_read"],
+        "chapters_total": gamification["chapters_total"],
+        "next_level_at": gamification["next_level_at"],
     }

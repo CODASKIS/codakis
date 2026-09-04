@@ -17,6 +17,8 @@ export type ApiUser = {
   school_name?: string | null;
   plan?: "free" | "premium" | null;
   has_password?: boolean;
+  type_permis?: string | null;
+  parcours_souhaite?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
 };
@@ -260,11 +262,18 @@ export async function login(email: string, password: string): Promise<{ tokens: 
   return { tokens, user };
 }
 
-export async function loginWithGoogleIdToken(idToken: string): Promise<{ tokens: TokenResponse; user: ApiUser }> {
+export async function loginWithGoogleIdToken(
+  idToken: string,
+  extras?: { type_permis?: string; parcours_souhaite?: string },
+): Promise<{ tokens: TokenResponse; user: ApiUser }> {
   const response = await fetch(apiUrl("/api/v1/auth/google"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id_token: idToken }),
+    body: JSON.stringify({
+      id_token: idToken,
+      ...(extras?.type_permis ? { type_permis: extras.type_permis } : {}),
+      ...(extras?.parcours_souhaite ? { parcours_souhaite: extras.parcours_souhaite } : {}),
+    }),
   });
 
   if (!response.ok) {
@@ -285,6 +294,8 @@ export async function registerCandidat(payload: {
   city?: string;
   country_code: string;
   langue: string;
+  type_permis?: string;
+  parcours_souhaite?: string;
 }): Promise<{ tokens: TokenResponse; user: ApiUser }> {
   const response = await fetch(apiUrl("/api/v1/auth/register/candidat"), {
     method: "POST",

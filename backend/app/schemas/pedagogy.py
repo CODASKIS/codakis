@@ -309,6 +309,49 @@ class CandidatDashboardResponse(BaseModel):
     examens_passed: int
     success_rate: int
     recent_attempts: list[AttemptHistoryItem] = Field(default_factory=list)
+    points: int = 0
+    niveau: int = 1
+    chapters_read: int = 0
+    chapters_total: int = 0
+    next_level_at: int = 150
+
+
+class GamificationResponse(BaseModel):
+    points: int
+    niveau: int
+    chapters_read: int
+    chapters_total: int
+    next_level_at: int
+    points_to_next_level: int
+
+
+class RoadmapStep(BaseModel):
+    type: str
+    id: str
+    ref: str
+    title: str
+    sort_order: int
+    status: str  # done | current | locked | premium_locked
+    theme_id: str
+    theme_code: str
+    theme_title: str
+    theme_index: int
+    global_index: int
+
+
+class RoadmapSection(BaseModel):
+    theme_id: str
+    theme_code: str
+    theme_title: str
+    theme_index: int
+    is_premium: bool
+    locked: bool
+    steps: list[RoadmapStep]
+
+
+class RoadmapResponse(BaseModel):
+    sections: list[RoadmapSection]
+    gamification: GamificationResponse
 
 
 class TutorRequest(BaseModel):
@@ -327,6 +370,9 @@ class SubmitQuizResult(BaseModel):
     nb_total: int
     reussi: bool
     details: list[SubmitResultDetail]
+    points_earned: int = 0
+    points_total: int = 0
+    niveau: int = 1
 
 
 class SubmitExamenResult(BaseModel):
@@ -335,6 +381,9 @@ class SubmitExamenResult(BaseModel):
     nb_total: int
     reussi: bool
     details: list[SubmitResultDetail]
+    points_earned: int = 0
+    points_total: int = 0
+    niveau: int = 1
 
 
 class CandidatProgressResponse(BaseModel):
@@ -344,6 +393,9 @@ class CandidatProgressResponse(BaseModel):
     total_lecons: int
     completed_count: int
     percent: int
+    points: int = 0
+    niveau: int = 1
+    points_earned: int = 0
 
 
 class CoursePathStep(BaseModel):

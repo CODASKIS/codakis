@@ -348,7 +348,7 @@ html:has(.codakis-auth) {
 
 .codakis-auth-box__input:focus,
 .codakis-auth-box__select:focus {
-  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #1db96a);
+  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #00a859);
   z-index: 1;
   position: relative;
 }
@@ -385,7 +385,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-box__toggle:focus-visible {
-  outline: 0.15rem solid var(--fj-cta-bg, #1db96a);
+  outline: 0.15rem solid var(--fj-cta-bg, #00a859);
   outline-offset: -0.15rem;
   z-index: 2;
 }
@@ -399,7 +399,7 @@ html:has(.codakis-auth) {
   border: 0;
   border-left: 0.1rem solid #ccc;
   border-radius: 0 0.4rem 0.4rem 0;
-  background: var(--fj-cta-bg, #1db96a);
+  background: var(--fj-cta-bg, #00a859);
   color: #fff;
   font-size: 1.4rem;
   font-weight: 600;
@@ -509,9 +509,9 @@ html:has(.codakis-auth) {
 .codakis-auth-form__success {
   margin: 0 0 1.6rem;
   padding: 1.2rem 1.4rem;
-  border: 0.1rem solid color-mix(in srgb, var(--fj-cta-bg, #1db96a) 35%, white);
+  border: 0.1rem solid color-mix(in srgb, var(--fj-cta-bg, #00a859) 35%, white);
   border-radius: 0.4rem;
-  background: color-mix(in srgb, var(--fj-cta-bg, #1db96a) 8%, white);
+  background: color-mix(in srgb, var(--fj-cta-bg, #00a859) 8%, white);
   color: #1d2630;
   font-size: 1.4rem;
   line-height: 1.5;
@@ -519,24 +519,36 @@ html:has(.codakis-auth) {
 
 .codakis-auth-form__submit {
   margin-top: 0.4rem;
-  padding: 1rem 1.4rem;
-  border: none;
-  border-radius: 0.4rem;
-  background: var(--fj-cta-bg, #1db96a);
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  min-height: 4.8rem;
+  padding: 1rem 1.6rem;
+  border: 0.2rem solid var(--fj-cta-hover, #008f4c);
+  border-bottom-width: 0.4rem;
+  border-radius: 1.2rem;
+  background: var(--fj-cta-bg, #00a859);
+  box-shadow: 0 0.15rem 0 rgba(0, 0, 0, 0.06);
   color: #fff;
   font-family: Nunito, system-ui, sans-serif;
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   cursor: pointer;
   text-align: center;
   text-decoration: none;
-  display: inline-block;
-  transition: background-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-bottom-width 0.05s ease, transform 0.05s ease, filter 0.15s ease;
 }
 
 .codakis-auth-form__submit:hover {
-  background: var(--fj-cta-hover, #059669);
+  filter: brightness(1.05);
+  background: var(--fj-cta-bg, #00a859);
+}
+
+.codakis-auth-form__submit:active {
+  border-bottom-width: 0.2rem;
+  transform: translateY(0.2rem);
 }
 
 .codakis-auth-form__submit--link {
@@ -552,7 +564,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-form__footer a {
-  color: var(--fj-cta-bg, #10b981);
+  color: var(--fj-cta-bg, #00a859);
   font-weight: 700;
   text-decoration: none;
 }
@@ -591,7 +603,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-hub__card:hover {
-  border-color: var(--fj-cta-bg, #10b981);
+  border-color: var(--fj-cta-bg, #00a859);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.12);
 }
 
@@ -602,8 +614,8 @@ html:has(.codakis-auth) {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: color-mix(in srgb, var(--fj-cta-bg, #10b981) 12%, white);
-  color: var(--fj-cta-bg, #10b981);
+  background: color-mix(in srgb, var(--fj-cta-bg, #00a859) 12%, white);
+  color: var(--fj-cta-bg, #00a859);
   flex-shrink: 0;
 }
 
@@ -660,7 +672,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-box__input--otp:focus {
-  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #1db96a);
+  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #00a859);
   z-index: 1;
   position: relative;
 }
@@ -675,4 +687,217 @@ html:has(.codakis-auth) {
   font-size: 1.4rem;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.codakis-auth-stepper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin: 0 0 2.4rem;
+  width: 100%;
+}
+
+.codakis-auth-stepper__item {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+  color: #9aa7b2;
+}
+
+.codakis-auth-stepper__item.is-current,
+.codakis-auth-stepper__item.is-done {
+  color: #1d2630;
+}
+
+.codakis-auth-stepper__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  border: 0.2rem solid #d5dde3;
+  background: #fff;
+  font-size: 1.3rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.codakis-auth-stepper__item.is-current .codakis-auth-stepper__badge {
+  border-color: var(--fj-cta-bg, #00a859);
+  color: var(--fj-cta-bg, #00a859);
+}
+
+.codakis-auth-stepper__item.is-done .codakis-auth-stepper__badge {
+  border-color: var(--fj-cta-bg, #00a859);
+  background: var(--fj-cta-bg, #00a859);
+  color: #fff;
+}
+
+.codakis-auth-stepper__label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.codakis-auth-stepper__line {
+  position: absolute;
+  top: 1.4rem;
+  left: calc(50% + 1.6rem);
+  width: calc(100% - 3.2rem);
+  height: 0.2rem;
+  background: #d5dde3;
+}
+
+.codakis-auth-stepper__item.is-done .codakis-auth-stepper__line {
+  background: var(--fj-cta-bg, #00a859);
+}
+
+@media (max-width: 640px) {
+  .codakis-auth-stepper__label {
+    font-size: 1rem;
+  }
+}
+
+.codakis-auth-step {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.codakis-auth-step > .codakis-auth-form__submit,
+.codakis-auth-step__actions .codakis-auth-form__submit,
+.codakis-auth-step__actions .codakis-auth-form__secondary {
+  width: 100%;
+}
+
+.codakis-auth-choice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin: 0;
+}
+
+.codakis-auth-choice {
+  width: 100%;
+  min-height: 4.4rem;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  font-family: Nunito, system-ui, sans-serif;
+  transition: box-shadow 0.15s ease;
+}
+
+.codakis-auth-choice:hover,
+.codakis-auth-choice:focus-visible,
+.codakis-auth-choice.is-selected {
+  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #00a859), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  outline: none;
+}
+
+.codakis-auth-choice__text {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.1rem;
+  min-width: 0;
+  padding: 0.6rem 1.2rem;
+}
+
+.codakis-auth-choice__text strong {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #3e3d3f;
+}
+
+.codakis-auth-choice__text small {
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #667085;
+}
+
+.codakis-auth-choice__radio {
+  flex-shrink: 0;
+  align-self: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  margin-right: 1.2rem;
+  border-radius: 50%;
+  border: 0.15rem solid #ccc;
+  background: #fff;
+  box-shadow: inset 0 0 0 0.35rem transparent;
+}
+
+.codakis-auth-choice.is-selected .codakis-auth-choice__radio {
+  border-color: var(--fj-cta-bg, #00a859);
+  box-shadow: inset 0 0 0 0.4rem var(--fj-cta-bg, #00a859);
+}
+
+.codakis-auth__summary {
+  margin: 0;
+  font-size: 1.4rem;
+  color: #5b6b79;
+}
+
+.codakis-auth__summary-edit {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--fj-cta-bg, #00a859);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.codakis-auth-step__actions {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 1rem;
+  margin-top: 0.4rem;
+}
+
+.codakis-auth-form__secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.4rem;
+  padding: 1rem 1.4rem;
+  border: 0.1rem solid #ccc;
+  border-radius: 0.4rem;
+  background: #fff;
+  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  color: #3e3d3f;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.codakis-auth-form__secondary:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #00a859), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+}
+
+.codakis-auth-form__secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.codakis-auth-step--done .codakis-auth-form__submit {
+  margin-top: 0.8rem;
+}
+
+@media (max-width: 520px) {
+  .codakis-auth-step__actions {
+    grid-template-columns: 1fr;
+  }
 }

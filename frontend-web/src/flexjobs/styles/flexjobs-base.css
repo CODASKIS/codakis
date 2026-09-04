@@ -52,7 +52,11 @@ html:has(.fj-root) {
 }
 
 .fj-root a.fj-btn--outline {
-  color: var(--fj-cta-bg);
+  color: #3e3d3f;
+}
+
+.fj-root a.fj-btn--outline:hover {
+  color: #3e3d3f;
 }
 
 .fj-root img {

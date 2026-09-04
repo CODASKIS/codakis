@@ -1,5 +1,4 @@
 # CODAKIS — déploiement web (PostgreSQL + API + portail)
-# L'app mobile Flutter se build séparément (voir mobile/README.md).
 #
 # Démarrage :
 #   cp .env.example .env   # puis éditer POSTGRES_PASSWORD et SECRET_KEY

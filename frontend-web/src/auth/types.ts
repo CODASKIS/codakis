@@ -55,11 +55,16 @@ export type AuthCredentials = {
   language?: string;
 };
 
+export type TypePermis = "B" | "A" | "A1" | "C" | "D" | "BE";
+export type ParcoursSouhaite = "code" | "conduite" | "complet";
+
 export type RegisterPayload = AuthCredentials & {
   fullName: string;
   phone?: string;
   city?: string;
   country?: string;
+  typePermis?: TypePermis;
+  parcoursSouhaite?: ParcoursSouhaite;
   schoolName?: string;
   schoolAddress?: string;
   mintRegistration?: string;

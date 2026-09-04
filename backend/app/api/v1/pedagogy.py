@@ -13,6 +13,8 @@ from app.schemas.pedagogy import (
     CheckpointValidateRequest,
     CheckpointValidateResponse,
     CoursePathResponse,
+    GamificationResponse,
+    RoadmapResponse,
     QuestionPublic,
     TtsRequest,
     TutorRequest,
@@ -53,6 +55,8 @@ from app.services.pedagogy import (
     get_candidat_dashboard,
     get_candidat_progress,
     get_examen_questions,
+    get_gamification,
+    get_global_roadmap,
     get_quiz_questions,
     get_theme_checkpoint,
     get_theme_course_path,
@@ -342,6 +346,16 @@ def candidat_get_progress(candidat: Utilisateur = Depends(CandidatUser), db: Ses
 @candidat_router.get("/dashboard", response_model=CandidatDashboardResponse)
 def candidat_dashboard(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     return get_candidat_dashboard(db, candidat)
+
+
+@candidat_router.get("/gamification", response_model=GamificationResponse)
+def candidat_gamification(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    return get_gamification(db, candidat)
+
+
+@candidat_router.get("/roadmap", response_model=RoadmapResponse)
+def candidat_roadmap(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    return get_global_roadmap(db, candidat)
 
 
 @candidat_router.post("/tutor", response_model=TutorResponse)

@@ -60,6 +60,8 @@ def register_candidat_route(payload: RegisterCandidatRequest, db: Session = Depe
             city=payload.city,
             country_code=payload.country_code,
             langue=payload.langue,
+            type_permis=payload.type_permis,
+            parcours_souhaite=payload.parcours_souhaite,
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
@@ -110,7 +112,12 @@ def login_route(payload: LoginRequest, request: Request, db: Session = Depends(g
 @router.post("/google", response_model=TokenResponse)
 def google_route(payload: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
     try:
-        user = login_or_register_google(db, payload.id_token)
+        user = login_or_register_google(
+            db,
+            payload.id_token,
+            type_permis=payload.type_permis,
+            parcours_souhaite=payload.parcours_souhaite,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     _notify_login(user, request)

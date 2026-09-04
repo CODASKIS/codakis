@@ -8,15 +8,12 @@ Plateforme d'apprentissage du code de la route et de mise en relation avec les a
 codakis/
 ├── backend/           # API FastAPI
 ├── frontend-web/      # Portail web React (candidat, auto-école, admin)
-├── mobile/            # Application Flutter (build natif, hors Docker)
 └── docker-compose.yml # Déploiement web : PostgreSQL + API + Nginx
 ```
 
 ## Déploiement Docker (recommandé prod / staging)
 
-Stack **web uniquement** : PostgreSQL, API FastAPI et portail Nginx.  
-L'app mobile Flutter se compile à part (`mobile/README.md`).
-
+Stack **web** : PostgreSQL, API FastAPI et portail Nginx.
 ```bash
 cp .env.example .env
 # Éditez POSTGRES_PASSWORD et SECRET_KEY (obligatoires)
@@ -97,9 +94,5 @@ pip install -e ".[dev]"
 cp .env.example .env
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-
-### Application mobile (Flutter)
-
-Voir [`mobile/README.md`](mobile/README.md).
 
 Comptes démo : [`TEST_ACCOUNTS.md`](TEST_ACCOUNTS.md).

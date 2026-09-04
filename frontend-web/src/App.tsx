@@ -6,6 +6,11 @@ import RoutePageLoader from "./flexjobs/components/RoutePageLoader";
 import PublicLayout from "./flexjobs/layout/PublicLayout";
 import PublicRoutes from "./flexjobs/routes/PublicRoutes";
 import { ConnexionRoutes, InscriptionRoutes } from "./routes/AuthAndDashboardRoutes";
+import {
+  CandidatEspaceRoutes,
+  GerantEspaceRoutes,
+  MoniteurEspaceRoutes,
+} from "./learning/routes/EspaceRoutes";
 
 export default function App() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
@@ -15,7 +20,6 @@ export default function App() {
       <ScrollToTop />
       <RoutePageLoader />
       <Routes>
-        {/* Auth pages — hors PublicLayout, comme avant */}
         <Route path="/connexion/*" element={<ConnexionRoutes />} />
         <Route path="/inscription/*" element={<InscriptionRoutes />} />
 
@@ -25,6 +29,9 @@ export default function App() {
         <Route path="/register" element={<Navigate to="/inscription" replace />} />
 
         <Route path="/admin/*" element={<Navigate to="/" replace />} />
+        <Route path="/espace/candidat/*" element={<CandidatEspaceRoutes />} />
+        <Route path="/espace/moniteur/*" element={<MoniteurEspaceRoutes />} />
+        <Route path="/espace/gerant/*" element={<GerantEspaceRoutes />} />
         <Route path="/espace/*" element={<Navigate to="/" replace />} />
 
         <Route element={<PublicLayout />}>

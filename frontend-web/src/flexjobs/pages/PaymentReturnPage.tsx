@@ -61,7 +61,7 @@ export default function PaymentReturnPage() {
           Réf. <code>{ref}</code>
         </p>
       ) : null}
-      <Link to="/" className="btn btn-success">
+      <Link to="/" className="fj-btn fj-btn--primary">
         Retour à l&apos;accueil
       </Link>
     </div>

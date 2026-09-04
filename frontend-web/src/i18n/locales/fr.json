@@ -128,12 +128,30 @@
     "ctaText": "Créez votre compte pour suivre l'avancement de votre dossier pièce par pièce.",
     "ctaButton": "Commencer avec CODAKIS",
     "pieces": {
-      "id": { "title": "Pièce d'identité", "desc": "CNI ou passeport en cours de validité." },
-      "birth": { "title": "Certificat de naissance", "desc": "Copie légalisée ou original selon les exigences locales." },
-      "medical": { "title": "Certificat médical", "desc": "Délivré par un centre médical agréé, valide 3 mois." },
-      "photos": { "title": "Photos d'identité", "desc": "Format réglementaire, fond clair, conformes aux normes." },
-      "address": { "title": "Justificatif de domicile", "desc": "Facture récente ou attestation de résidence." },
-      "stamps": { "title": "Droits de timbres", "desc": "Timbres fiscaux requis pour le dossier Consort." }
+      "id": {
+        "title": "Pièce d'identité",
+        "desc": "CNI ou passeport en cours de validité."
+      },
+      "birth": {
+        "title": "Certificat de naissance",
+        "desc": "Copie légalisée ou original selon les exigences locales."
+      },
+      "medical": {
+        "title": "Certificat médical",
+        "desc": "Délivré par un centre médical agréé, valide 3 mois."
+      },
+      "photos": {
+        "title": "Photos d'identité",
+        "desc": "Format réglementaire, fond clair, conformes aux normes."
+      },
+      "address": {
+        "title": "Justificatif de domicile",
+        "desc": "Facture récente ou attestation de résidence."
+      },
+      "stamps": {
+        "title": "Droits de timbres",
+        "desc": "Timbres fiscaux requis pour le dossier Consort."
+      }
     }
   },
   "pricing": {
@@ -412,13 +430,68 @@
     "register": {
       "metaTitle": "Inscription — {{role}} | CODAKIS",
       "metaDescription": "Créez votre compte CODAKIS.",
-      "title": "Inscription",
-      "submit": "Créer mon compte gratuit",
+      "title": "Créer un compte",
+      "submit": "Inscrivez-vous",
       "submitAndContinue": "Créer mon compte et continuer l'achat",
+      "continue": "Continuez",
+      "back": "Retour",
+      "startCta": "Commencer à apprendre",
       "freeAccountHint": "L'inscription CODAKIS est gratuite. Le rattachement à une auto-école intervient uniquement après paiement d'un forfait sur la vitrine.",
       "purchaseHint": "Compte candidat gratuit — vous pourrez ensuite payer le forfait chez {{school}}.",
-      "hasAccount": "Déjà un compte ?",
-      "loginLink": "Se connecter"
+      "licenseSubtitle": "Choisissez le type de permis que vous préparez.",
+      "courseSubtitle": "Indiquez le parcours que vous souhaitez suivre.",
+      "selectionSummary": "{{license}} · {{course}}",
+      "changeSelection": "Modifier",
+      "doneSubtitle": "Votre compte est prêt. Vous pouvez commencer votre préparation.",
+      "hasAccount": "Vous avez déjà un compte ?",
+      "loginLink": "Connexion",
+      "steps": {
+        "aria": "Étapes d'inscription",
+        "selectLicense": "Sélectionnez",
+        "selectCourse": "Sélectionnez un cours",
+        "createAccount": "Créer un compte",
+        "startLearning": "Commencer à apprendre"
+      },
+      "licenses": {
+        "B": {
+          "label": "Permis B",
+          "hint": "Voiture particulière"
+        },
+        "A": {
+          "label": "Permis A",
+          "hint": "Moto"
+        },
+        "A1": {
+          "label": "Permis A1",
+          "hint": "Cyclomoteur / petite moto"
+        },
+        "C": {
+          "label": "Permis C",
+          "hint": "Poids lourd"
+        },
+        "D": {
+          "label": "Permis D",
+          "hint": "Transport de personnes"
+        },
+        "BE": {
+          "label": "Permis BE",
+          "hint": "Voiture + remorque"
+        }
+      },
+      "courses": {
+        "code": {
+          "label": "Code de la route",
+          "hint": "Révisions et examens blancs"
+        },
+        "conduite": {
+          "label": "Conduite",
+          "hint": "Suivi pratique avec une auto-école"
+        },
+        "complet": {
+          "label": "Code + conduite",
+          "hint": "Parcours complet jusqu'au permis"
+        }
+      }
     },
     "registerHub": {
       "metaTitle": "Inscription | CODAKIS",
@@ -444,8 +517,8 @@
       "subtitle": "Entrez votre e-mail pour recevoir un code OTP de réinitialisation.",
       "otpSubtitle": "Saisissez le code à 6 chiffres reçu par e-mail.",
       "passwordSubtitle": "Code validé — choisissez un nouveau mot de passe.",
-      "hint": "Si vous ne recevez pas l'e-mail, vérifiez les spams ou contactez le support. L'envoi production nécessite un domaine validé sur Resend.",
-      "emailFailedHint": "L'e-mail n'a pas pu être envoyé (domaine Resend non validé). Utilisez le code affiché en développement ou contactez le support.",
+      "hint": "Si vous ne recevez pas l'e-mail, vérifiez vos spams ou contactez le support.",
+      "emailFailedHint": "L'e-mail n'a pas pu être envoyé. Réessayez plus tard ou contactez le support.",
       "submit": "Envoyer le code",
       "verifyOtp": "Valider le code",
       "otpLabel": "Code OTP",
@@ -1295,7 +1368,6 @@
       "deleteLeconTitle": "Supprimer cette leçon ?",
       "deleteLeconConfirm": "Cette action est irréversible.",
       "deleteQuestionTitle": "Supprimer cette question ?",
-      "deleteQuestionConfirm": "La question sera retirée des quiz et examens qui l'utilisent.",
       "themesTitle": "Thèmes CEMAC",
       "newTheme": "Nouveau thème",
       "editTheme": "Modifier le thème",
@@ -1555,7 +1627,6 @@
       "lockedLead": "Passez à l'offre Premium pour débloquer les leçons de ce thème, les quiz associés et l'ensemble du programme CEMAC.",
       "examsLead": "Entraînez-vous avec des quiz par thème ou des examens blancs chronométrés.",
       "noLecons": "Aucune leçon publiée pour ce thème.",
-      "backCourses": "Retour aux cours",
       "backExams": "Retour aux examens",
       "goExams": "Passer un quiz ou examen",
       "leconNotFound": "Leçon introuvable.",
@@ -1675,5 +1746,24 @@
     "empty": "Aucune notification.",
     "loading": "Chargement…",
     "markAllRead": "Tout marquer comme lu"
+  },
+  "learning": {
+    "nav": {
+      "roadmap": "Feuille de route",
+      "tests": "Tests",
+      "stats": "Statistiques",
+      "handbook": "Handbook",
+      "school": "Auto-école",
+      "seances": "Séances",
+      "profile": "Profil"
+    },
+    "roadmap": {
+      "title": "Feuille de route",
+      "subtitle": "Suivez les chapitres dans l'ordre."
+    },
+    "paywall": {
+      "title": "Contenu Premium CODAKIS",
+      "cta": "Voir les forfaits"
+    }
   }
 }
