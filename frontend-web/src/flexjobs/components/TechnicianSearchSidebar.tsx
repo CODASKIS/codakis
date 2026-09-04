@@ -13,7 +13,7 @@ export default function TechnicianSearchSidebar() {
         <div className="fj-tech-sidebar__body">
           <h3>{t("sidebar.promoTitle")}</h3>
           <p>{t("sidebar.promoText")}</p>
-          <Link to={AUTH_PATHS.register.candidat} className="fj-btn fj-btn--primary fj-btn--block">
+          <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--primary ck-public-btn--block">
             {t("nav.signup")}
           </Link>
           <Link to={AUTH_PATHS.login} className="fj-tech-sidebar__link">

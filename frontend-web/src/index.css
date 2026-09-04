@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap")
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap")
 layer(base);
 
 @import "tailwindcss";
@@ -9,6 +9,7 @@ layer(base);
 @import "./flexjobs/styles/codakis-overrides.css";
 @import "./auth/styles/auth.css";
 @import "./learning/styles/learning.css";
+@import "./learning/styles/pro-duo.css";
 
 @custom-variant dark (&:is(.dark *));
 

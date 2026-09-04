@@ -14,7 +14,7 @@ export const ROLE_CONFIG: Record<UserRole, RoleConfig> = {
   admin: {
     role: "admin",
     loginPath: LOGIN_PATH,
-    dashboardPath: "/",
+    dashboardPath: "/espace/admin",
     canRegister: false,
   },
   candidat: {
@@ -44,7 +44,7 @@ export function getRoleDashboardPath(role: UserRole): string {
 }
 
 export function getRoleFromPath(pathname: string): UserRole | null {
-  if (pathname.startsWith("/admin")) return "admin";
+  if (pathname.startsWith("/admin") || pathname.startsWith("/espace/admin")) return "admin";
   if (pathname.startsWith("/espace/candidat")) return "candidat";
   if (pathname.startsWith("/espace/moniteur")) return "moniteur";
   if (pathname.startsWith("/espace/gerant")) return "gerant";
@@ -53,8 +53,9 @@ export function getRoleFromPath(pathname: string): UserRole | null {
 
 export function getProfilePath(role: UserRole): string {
   if (role === "candidat") return "/espace/candidat/profil";
-  if (role === "moniteur") return "/espace/moniteur";
-  if (role === "gerant") return "/espace/gerant";
+  if (role === "moniteur") return "/espace/moniteur/profil";
+  if (role === "gerant") return "/espace/gerant/profil";
+  if (role === "admin") return "/espace/admin/profil";
   return "/";
 }
 

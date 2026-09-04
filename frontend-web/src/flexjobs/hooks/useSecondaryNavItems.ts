@@ -5,6 +5,7 @@ export function useSecondaryNavItems() {
   return [
     { label: t("nav.themes"), to: "/themes" },
     { label: t("nav.drivingSchools"), to: "/auto-ecoles" },
+    { label: t("nav.howItWorks"), to: "/comment-ca-marche" },
     { label: t("nav.consort"), to: "/consort" },
     { label: t("nav.blog"), to: "/blog" },
   ] as const;

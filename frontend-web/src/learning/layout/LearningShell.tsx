@@ -1,49 +1,61 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
 import {
+  Award,
+  BarChart3,
   BookOpen,
   Calendar,
   ChevronDown,
   Map,
-  Moon,
   School,
   Shield,
-  BarChart3,
-  Sun,
   Trophy,
-  LogOut,
-  Settings,
-  Award,
+  User,
 } from "lucide-react";
 import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
-import { clearSession, getSession } from "../../auth/authStore";
+import { clearSession, getSession, hydrateSessionFromApi, setSession } from "../../auth/authStore";
+import type { AuthSession } from "../../auth/types";
+import UserMenuPanel from "../../components/prefs/UserMenuPanel";
 import { useTheme } from "../../context/ThemeContext";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import { fetchCandidatDashboard, fetchGamification, type CandidatDashboard, type Gamification } from "../../lib/pedagogyApi";
 import StickyWidgets from "../components/StickyWidgets";
 
 const TOP_LINKS = [
-  { to: "/espace/candidat", end: true, label: "Feuille de route", icon: Map },
-  { to: "/espace/candidat/tests", label: "Tests supplémentaires", icon: Shield },
-  { to: "/espace/candidat/statistiques", label: "Statistiques", icon: BarChart3 },
-  { to: "/espace/candidat/handbook", label: "Handbook", icon: BookOpen },
+  { to: "/espace/candidat", end: true, label: "Feuille de route", icon: Map, color: "#00a859" },
+  { to: "/espace/candidat/tests", label: "Tests", icon: Shield, color: "#0ea5e9" },
+  { to: "/espace/candidat/statistiques", label: "Statistiques", icon: BarChart3, color: "#f59e0b" },
+  { to: "/espace/candidat/handbook", label: "Handbook", icon: BookOpen, color: "#8b5cf6" },
 ] as const;
 
-const MORE_LINKS = [
-  { to: "/espace/candidat/auto-ecole", label: "Auto-école", icon: School },
-  { to: "/espace/candidat/seances", label: "Séances", icon: Calendar },
-] as const;
-
-const MOBILE_LINKS = [
-  { to: "/espace/candidat", end: true, label: "Cours", icon: Map },
-  { to: "/espace/candidat/tests", label: "Tests", icon: Shield },
-  { to: "/espace/candidat/statistiques", label: "Stats", icon: BarChart3 },
-  { to: "/espace/candidat/handbook", label: "Livre", icon: BookOpen },
-  { to: "/espace/candidat/profil", label: "Profil", icon: Settings },
+const BOTTOM_LINKS = [
+  { to: "/espace/candidat", end: true, label: "Cours", icon: Map, color: "#00a859" },
+  { to: "/espace/candidat/tests", label: "Tests", icon: Shield, color: "#0ea5e9" },
+  { to: "/espace/candidat/statistiques", label: "Stats", icon: BarChart3, color: "#f59e0b" },
+  { to: "/espace/candidat/handbook", label: "Livre", icon: BookOpen, color: "#8b5cf6" },
+  { to: "/espace/candidat/profil", label: "Profil", icon: User, color: "#ec4899" },
 ] as const;
 
 function isImmersive(pathname: string) {
-  return /\/(lecon|quiz|examen)\//.test(pathname);
+  return /\/(lecon|quiz|examen)\//.test(pathname) || pathname.endsWith("/super");
+}
+
+function formatDisplayName(raw?: string | null, email?: string | null): string {
+  const cleaned = (raw ?? "").replace(/\s+/g, " ").trim();
+  if (cleaned) {
+    return cleaned
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  }
+  const local = email?.split("@")[0]?.replace(/[._-]+/g, " ").trim();
+  if (local) {
+    return local
+      .split(" ")
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join(" ");
+  }
+  return "Candidat";
 }
 
 function ProfilePhoto({ name, avatarUrl, size = 40 }: { name: string; avatarUrl?: string | null; size?: number }) {
@@ -52,6 +64,7 @@ function ProfilePhoto({ name, avatarUrl, size = 40 }: { name: string; avatarUrl?
       src={getUserAvatarUrl(name, size, avatarUrl)}
       alt=""
       className="ck-avatar-photo"
+      style={{ width: size, height: size }}
       width={size}
       height={size}
       referrerPolicy="no-referrer"
@@ -62,37 +75,50 @@ function ProfilePhoto({ name, avatarUrl, size = 40 }: { name: string; avatarUrl?
 export default function LearningShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const session = getSession();
-  const { theme, toggleTheme } = useTheme();
+  const { setTheme } = useTheme();
+  const [session, setLocalSession] = useState<AuthSession | null>(() => getSession());
   const [stats, setStats] = useState<Gamification | null>(null);
   const [dash, setDash] = useState<CandidatDashboard | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const immersive = isImmersive(location.pathname);
 
-  const displayName = session?.name?.trim() || session?.email || "Candidat";
+  const displayName = formatDisplayName(session?.name, session?.email);
   const avatarSeed = session?.email || session?.id || displayName;
 
   useEffect(() => {
+    setTheme("light");
+  }, [setTheme]);
+
+  useEffect(() => {
     let cancelled = false;
-    void Promise.all([fetchGamification(), fetchCandidatDashboard().catch(() => null)])
-      .then(([g, d]) => {
-        if (cancelled) return;
-        setStats(g);
-        if (d) setDash(d);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setStats({
-            points: 0,
-            niveau: 1,
-            chapters_read: 0,
-            chapters_total: 0,
-            next_level_at: 150,
-            points_to_next_level: 150,
-          });
-        }
-      });
+    void hydrateSessionFromApi().then((fresh) => {
+      if (!cancelled && fresh) {
+        setLocalSession(fresh);
+        setSession(fresh);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([fetchGamification().catch(() => null), fetchCandidatDashboard().catch(() => null)]).then(([g, d]) => {
+      if (cancelled) return;
+      setStats(
+        g ?? {
+          points: 0,
+          niveau: 1,
+          chapters_read: 0,
+          chapters_total: 0,
+          next_level_at: 150,
+          points_to_next_level: 150,
+        },
+      );
+      if (d) setDash(d);
+    });
     return () => {
       cancelled = true;
     };
@@ -120,80 +146,67 @@ export default function LearningShell() {
       <header className="ck-topbar">
         <div className="ck-topbar__inner">
           <Link to="/espace/candidat" className="ck-topbar__brand" aria-label="CODAKIS">
-            <img src={CODAKIS_LOGO} alt="CODAKIS" />
+            <img src={CODAKIS_LOGO} alt="CODAKIS" className="ck-topbar__brand-img" />
           </Link>
 
           <nav className="ck-topbar__nav" aria-label="Navigation principale">
             {TOP_LINKS.map(({ to, label, icon: Icon, ...rest }) => (
               <NavLink key={to} to={to} end={"end" in rest ? rest.end : false} className={({ isActive }) => (isActive ? "is-active" : undefined)}>
-                <Icon size={18} aria-hidden />
-                <span>{label}</span>
-              </NavLink>
-            ))}
-            {MORE_LINKS.map(({ to, label, icon: Icon }) => (
-              <NavLink key={to} to={to} className={({ isActive }) => `ck-topbar__nav-more${isActive ? " is-active" : ""}`}>
-                <Icon size={18} aria-hidden />
-                <span>{label}</span>
+                <span className="ck-topbar__nav-icon" aria-hidden>
+                  <Icon size={20} strokeWidth={2.25} />
+                </span>
+                <span className="ck-topbar__nav-label">{label}</span>
               </NavLink>
             ))}
           </nav>
 
           <div className="ck-topbar__right">
-            <button type="button" className="ck-learn__theme-btn" onClick={toggleTheme} aria-label={theme === "dark" ? "Mode clair" : "Mode sombre"}>
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
             <span className="ck-topbar__stat">
               <Trophy size={16} /> Niveau {niveau}
             </span>
             <span className="ck-topbar__stat ck-topbar__stat--pts">Points {points}</span>
-            <span className="ck-topbar__stat ck-topbar__stat--ch">Chapitres lus {chapters}</span>
+            <span className="ck-topbar__stat ck-topbar__stat--ch">Chapitres {chapters}</span>
 
             <div className="ck-topbar__profile" ref={menuRef}>
               <button type="button" className="ck-topbar__avatar-btn" aria-expanded={menuOpen} aria-haspopup="menu" onClick={() => setMenuOpen((v) => !v)}>
                 <ProfilePhoto name={avatarSeed} avatarUrl={session?.avatarUrl} size={40} />
-                <ChevronDown size={16} />
+                <span className="ck-topbar__user-name">{displayName}</span>
+                <ChevronDown size={16} aria-hidden />
               </button>
               {menuOpen ? (
                 <div className="ck-topbar__menu" role="menu">
-                  <div className="ck-topbar__menu-head">
-                    <ProfilePhoto name={avatarSeed} avatarUrl={session?.avatarUrl} size={48} />
-                    <div>
-                      <strong>{displayName}</strong>
-                      <small>{session?.email}</small>
-                    </div>
-                  </div>
-                  <Link to="/espace/candidat/statistiques" role="menuitem" onClick={() => setMenuOpen(false)}>
-                    <Award size={16} /> Mes réalisations
-                  </Link>
-                  <Link to="/espace/candidat/profil" role="menuitem" onClick={() => setMenuOpen(false)}>
-                    <Settings size={16} /> Paramètres
-                  </Link>
-                  <button type="button" role="menuitem" onClick={logout}>
-                    <LogOut size={16} /> Se déconnecter
-                  </button>
+                  <UserMenuPanel
+                    name={displayName}
+                    email={session?.email ?? ""}
+                    avatarUrl={session?.avatarUrl}
+                    profileTo="/espace/candidat/profil"
+                    preferencesTo="/espace/candidat/preferences"
+                    onClose={() => setMenuOpen(false)}
+                    onLogout={logout}
+                    extraLinks={[
+                      {
+                        to: "/espace/candidat/statistiques",
+                        label: "Mes réalisations",
+                        icon: <Award size={16} aria-hidden />,
+                      },
+                      {
+                        to: "/espace/candidat/auto-ecole",
+                        label: "Auto-école",
+                        icon: <School size={16} aria-hidden />,
+                      },
+                      {
+                        to: "/espace/candidat/seances",
+                        label: "Séances",
+                        icon: <Calendar size={16} aria-hidden />,
+                      },
+                    ]}
+                  />
                 </div>
               ) : null}
             </div>
           </div>
         </div>
       </header>
-
-      <div className="ck-learn__mobile-bar">
-        <Link to="/espace/candidat" className="ck-learn__mobile-brand">
-          <img src={CODAKIS_LOGO} alt="CODAKIS" />
-        </Link>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-          <button type="button" className="ck-learn__theme-btn" onClick={toggleTheme} aria-label={theme === "dark" ? "Mode clair" : "Mode sombre"}>
-            {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-          </button>
-          <span className="ck-learn__chip ck-learn__chip--level">
-            <Trophy size={18} /> {niveau}
-          </span>
-          <Link to="/espace/candidat/profil" aria-label="Profil">
-            <ProfilePhoto name={avatarSeed} avatarUrl={session?.avatarUrl} size={32} />
-          </Link>
-        </div>
-      </div>
 
       <div className={`ck-learn__body${immersive ? " is-immersive" : ""}`}>
         <main className="ck-learn__feed">
@@ -202,24 +215,36 @@ export default function LearningShell() {
         {!immersive ? (
           <StickyWidgets
             stats={stats}
-            successRate={dash?.success_rate ?? 0}
-            questionsAnswered={(dash?.quizzes_passed ?? 0) + (dash?.examens_passed ?? 0)}
-            questionsTotal={Math.max(dash?.chapters_total ?? dash?.total_lecons ?? 0, 1)}
-            correctAnswers={dash?.quizzes_passed ?? 0}
+            successRate={dash?.first_try_rate ?? dash?.success_rate ?? 0}
+            questionsAnswered={dash?.questions_answered ?? 0}
+            questionsTotal={dash?.questions_total ?? 0}
+            correctAnswers={dash?.correct_answers ?? 0}
+            quizzesPassed={dash?.quizzes_passed ?? 0}
+            examensPassed={dash?.examens_passed ?? 0}
             userName={avatarSeed}
             avatarUrl={session?.avatarUrl}
           />
         ) : null}
       </div>
 
-      <nav className="ck-learn__bottom" aria-label="Navigation mobile">
-        {MOBILE_LINKS.map(({ to, label, icon: Icon, ...rest }) => (
-          <NavLink key={to} to={to} end={"end" in rest ? rest.end : false} className={({ isActive }) => (isActive ? "is-active" : undefined)}>
-            <Icon size={22} aria-hidden />
-            {label}
-          </NavLink>
-        ))}
-      </nav>
+      {!immersive ? (
+        <nav className="ck-dock" aria-label="Navigation mobile">
+          {BOTTOM_LINKS.map(({ to, label, icon: Icon, color, ...rest }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={"end" in rest ? rest.end : false}
+              className={({ isActive }) => `ck-dock__item${isActive ? " is-active" : ""}`}
+              style={{ "--ck-dock-color": color } as CSSProperties}
+            >
+              <span className="ck-dock__icon">
+                <Icon size={24} strokeWidth={2.4} aria-hidden />
+              </span>
+              <span className="ck-dock__label">{label}</span>
+            </NavLink>
+          ))}
+        </nav>
+      ) : null}
     </div>
   );
 }

@@ -13,6 +13,7 @@
     "contact": "Contact",
     "login": "Connexion",
     "signup": "S'inscrire",
+    "mySpace": "Mon espace",
     "signupSchool": "Inscrire mon auto-école",
     "menu": "Menu principal",
     "mobileMenu": "Menu mobile",
@@ -194,7 +195,14 @@
     "loginInstructor": "Espace moniteur",
     "rights": "Tous droits réservés",
     "privacy": "Politique de confidentialité",
-    "terms": "Conditions d'utilisation"
+    "terms": "Conditions d'utilisation",
+    "newsletterTitle": "Restez informé",
+    "newsletterLead": "Conseils code, actus permis et nouveautés CODAKIS — un e-mail de temps en temps, sans spam.",
+    "newsletterEmailLabel": "Adresse e-mail",
+    "newsletterPlaceholder": "votre@email.com",
+    "newsletterSubmit": "S'inscrire",
+    "newsletterSuccess": "Merci ! Vous êtes bien inscrit à la newsletter.",
+    "newsletterError": "Indiquez une adresse e-mail valide."
   },
   "schools": {
     "metaTitle": "Annuaire auto-écoles | CODAKIS",
@@ -411,6 +419,10 @@
     "backToRoles": "Choisir un espace",
     "backToLogin": "Retour à la connexion",
     "backToRegisterHub": "Choisir un type d'inscription",
+    "kori": {
+      "login": "Connecte-toi pour reprendre la route",
+      "register": "Crée ton compte — on démarre ensemble !"
+    },
     "hub": {
       "metaTitle": "Connexion | CODAKIS",
       "metaDescription": "Accédez à votre espace candidat, moniteur, gérant ou administrateur.",

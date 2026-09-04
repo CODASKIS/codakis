@@ -185,54 +185,42 @@ export default function MoniteurHome() {
   if (loading) return <Loader variant="page" />;
 
   const kpis = [
-    { label: "Élèves affectés", value: students.length, icon: Users, tone: "bg-brand-50 text-brand-600" },
-    {
-      label: "Créneaux à venir",
-      value: upcoming.length,
-      icon: CalendarDays,
-      tone: "bg-blue-light-50 text-blue-light-600",
-    },
-    {
-      label: "Heures planifiées",
-      value: plannedHours.toFixed(1),
-      icon: Clock3,
-      tone: "bg-warning-50 text-warning-600",
-    },
-    {
-      label: "Séances terminées",
-      value: done.length,
-      icon: CheckCircle2,
-      tone: "bg-success-50 text-success-600",
-    },
+    { label: "Élèves affectés", value: students.length, icon: Users },
+    { label: "Créneaux à venir", value: upcoming.length, icon: CalendarDays },
+    { label: "Heures planifiées", value: plannedHours.toFixed(1), icon: Clock3 },
+    { label: "Séances terminées", value: done.length, icon: CheckCircle2 },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="ta-page-title">Accueil</h2>
-        <p className="ta-page-sub">Vue d’ensemble de vos séances pratiques.</p>
+        <h2 className="ck-title">Accueil</h2>
+        <p className="ck-subtitle">Vue d’ensemble de vos séances pratiques.</p>
       </div>
 
-      {error ? (
-        <p className="text-error-500" style={{ fontSize: "1.35rem", fontWeight: 700 }}>
-          {error}
-        </p>
-      ) : null}
+      {error ? <p className="ck-empty">{error}</p> : null}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
-            <div key={kpi.label} className="ta-card p-5">
+            <div key={kpi.label} className="ta-kpi">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p style={{ fontSize: "1.3rem", fontWeight: 700, color: "#667085" }}>{kpi.label}</p>
-                  <p className="mt-2" style={{ fontSize: "2.8rem", fontWeight: 800, lineHeight: 1 }}>
-                    {kpi.value}
-                  </p>
+                  <p className="ta-kpi-label">{kpi.label}</p>
+                  <p className="ta-kpi-value">{kpi.value}</p>
                 </div>
-                <span className={`flex h-14 w-14 items-center justify-center rounded-2xl ${kpi.tone}`}>
-                  <Icon size={26} strokeWidth={2.4} />
+                <span
+                  className="flex items-center justify-center"
+                  style={{
+                    width: "4.8rem",
+                    height: "4.8rem",
+                    borderRadius: "1.2rem",
+                    background: "rgba(0, 168, 89, 0.12)",
+                    color: "var(--ck-green)",
+                  }}
+                >
+                  <Icon size={22} strokeWidth={2.4} />
                 </span>
               </div>
             </div>
@@ -245,14 +233,14 @@ export default function MoniteurHome() {
           {items.length ? (
             <Chart options={activityOptions} series={activitySeries} type="bar" height={300} />
           ) : (
-            <p style={{ fontSize: "1.35rem", color: "#667085" }}>Pas encore de données à afficher.</p>
+            <p className="ta-muted">Pas encore de données à afficher.</p>
           )}
         </ComponentCard>
         <ComponentCard title="Répartition" desc="Statut des séances">
           {items.length ? (
             <Chart options={statusOptions} series={statusSeries} type="donut" height={300} />
           ) : (
-            <p style={{ fontSize: "1.35rem", color: "#667085" }}>Aucune séance.</p>
+            <p className="ta-muted">Aucune séance.</p>
           )}
         </ComponentCard>
       </div>
@@ -281,8 +269,8 @@ export default function MoniteurHome() {
                     setSelected(item);
                   }}
                 >
-                  <p style={{ fontSize: "1.45rem", fontWeight: 800 }}>{item.candidat_name}</p>
-                  <p style={{ marginTop: "0.2rem", fontSize: "1.25rem", color: "#667085", fontWeight: 600 }}>
+                  <p className="ta-strong">{item.candidat_name}</p>
+                  <p className="ta-muted" style={{ marginTop: "0.2rem" }}>
                     {formatDateTime(item.starts_at)}
                     {item.lieu ? ` · ${item.lieu}` : ""}
                   </p>
@@ -301,9 +289,7 @@ export default function MoniteurHome() {
                 </div>
               </div>
             ))}
-            {!upcoming.length ? (
-              <p style={{ fontSize: "1.35rem", color: "#667085" }}>Aucune séance à venir.</p>
-            ) : null}
+            {!upcoming.length ? <p className="ta-muted">Aucune séance à venir.</p> : null}
           </div>
         </ComponentCard>
       </div>

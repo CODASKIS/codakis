@@ -34,7 +34,7 @@ export function Modal({ isOpen, onClose, children, className = "", showCloseButt
       <button type="button" className="fixed inset-0 bg-gray-400/50 backdrop-blur-[32px]" aria-label="Fermer" onClick={onClose} />
       <div
         ref={modalRef}
-        className={`relative w-full max-w-lg rounded-3xl bg-white ${className}`}
+      className={`relative w-full max-w-lg rounded-3xl border border-[#e4e7ec] bg-white shadow-[0_20px_40px_rgba(16,24,40,0.12)] ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {showCloseButton ? (

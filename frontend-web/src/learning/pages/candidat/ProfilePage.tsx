@@ -1,16 +1,13 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { Moon, Sun } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import { clearSession, getSession, setSession } from "../../../auth/authStore";
-import { useTheme } from "../../../context/ThemeContext";
 import { fetchMe, updateProfile, userToSession } from "../../../lib/authApi";
 
 type Tab = "compte" | "securite";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
   const [tab, setTab] = useState<Tab>("compte");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -78,8 +75,11 @@ export default function ProfilePage() {
           Gérer le compte
         </button>
         <button type="button" className={tab === "securite" ? "is-active" : undefined} onClick={() => setTab("securite")}>
-          Mot de passe & thème
+          Mot de passe
         </button>
+        <Link to="/espace/candidat/preferences" className={undefined}>
+          Préférences
+        </Link>
       </nav>
 
       <div className="ck-settings__panel">
@@ -151,19 +151,8 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <h1 className="ck-title">Mot de passe & thème</h1>
-            <p className="ck-subtitle">Apparence de l&apos;espace apprenant.</p>
-
-            <div className="ck-settings__section">
-              <h2>Thème</h2>
-              <button type="button" className="ck-list__row" onClick={toggleTheme}>
-                <span className="ck-list__icon">{theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}</span>
-                <span style={{ flex: 1 }}>
-                  <strong>Passer en thème {theme === "dark" ? "clair" : "sombre"}</strong>
-                  <small>Le choix est mémorisé sur cet appareil</small>
-                </span>
-              </button>
-            </div>
+            <h1 className="ck-title">Mot de passe</h1>
+            <p className="ck-subtitle">Sécurité de votre compte.</p>
 
             <div className="ck-settings__section">
               <h2>Sécurité</h2>

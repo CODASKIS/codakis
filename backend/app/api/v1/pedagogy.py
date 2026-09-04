@@ -64,6 +64,7 @@ from app.services.pedagogy import (
     has_premium_access,
     has_platform_access,
     ensure_platform_access,
+    ensure_content_access,
     lecon_to_admin,
     lecon_to_public,
     mark_lecon_complete,
@@ -391,8 +392,9 @@ def candidat_complete_lecon(
     lecon = db.get(Lecon, lecon_id)
     if lecon is None or lecon.status != StatutArticleBlog.published.value:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Leçon introuvable")
+    theme = db.get(Theme, lecon.theme_id)
     try:
-        ensure_platform_access(db, candidat)
+        ensure_content_access(db, candidat, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     try:
@@ -411,7 +413,7 @@ def candidat_theme_course_path(
     if theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
     try:
-        ensure_platform_access(db, candidat)
+        ensure_content_access(db, candidat, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     return get_theme_course_path(db, theme_id, candidat)
@@ -424,8 +426,11 @@ def candidat_theme_checkpoint(
     candidat: Utilisateur = Depends(CandidatUser),
     db: Session = Depends(get_db),
 ):
+    theme = db.get(Theme, theme_id)
+    if theme is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
     try:
-        ensure_platform_access(db, candidat)
+        ensure_content_access(db, candidat, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     lecon = None
@@ -448,7 +453,7 @@ def candidat_text_to_speech(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     try:
         language = payload.language or candidat.langue or "fr"
-        audio = synthesize_speech(payload.text, language)
+        audio = synthesize_speech(payload.text, language, payload.voice_id)
     except TtsError as exc:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)) from exc
     return Response(content=audio, media_type="audio/mpeg")
@@ -460,8 +465,10 @@ def candidat_validate_checkpoint(
     candidat: Utilisateur = Depends(CandidatUser),
     db: Session = Depends(get_db),
 ):
+    question = db.get(Question, payload.question_id)
+    theme = db.get(Theme, question.theme_id) if question is not None else None
     try:
-        ensure_platform_access(db, candidat)
+        ensure_content_access(db, candidat, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     try:
@@ -476,7 +483,7 @@ def candidat_list_themes(candidat: Utilisateur = Depends(CandidatUser), db: Sess
     platform = has_platform_access(db, candidat)
     result = []
     for payload in build_theme_public_payloads(db, themes):
-        payload["locked"] = not platform
+        payload["locked"] = bool(payload.get("is_premium")) and not platform
         result.append(payload)
     return result
 
@@ -508,7 +515,7 @@ def candidat_list_lecons(
         .order_by(Lecon.sort_order.asc())
         .all()
     )
-    locked = not has_platform_access(db, candidat)
+    locked = bool(theme.is_premium) and not has_platform_access(db, candidat)
     result = []
     for lecon in lecons:
         payload = lecon_to_public(lecon, theme, include_body=not locked)
@@ -529,25 +536,29 @@ def candidat_get_lecon(
     theme = db.get(Theme, lecon.theme_id)
     if theme is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thème introuvable")
-    if not has_platform_access(db, candidat):
+    try:
+        ensure_content_access(db, candidat, theme)
+    except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Abonnement CODAKIS requis pour accéder aux cours",
-        )
+            detail=str(exc) if str(exc) else "Abonnement CODAKIS requis pour accéder aux cours",
+        ) from exc
     return lecon_to_public(lecon, theme)
 
 
 @candidat_router.get("/quiz", response_model=list[QuizPublic])
 def candidat_list_quiz(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
-    try:
-        ensure_platform_access(db, candidat)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     quiz_list = db.query(Quiz).filter(Quiz.est_actif.is_(True)).order_by(Quiz.title.asc()).all()
     quiz_ids = [quiz.id for quiz in quiz_list]
     theme_ids = {quiz.theme_id for quiz in quiz_list}
     themes = {theme.id: theme for theme in db.query(Theme).filter(Theme.id.in_(theme_ids)).all()}
-    linked_counts = _count_linked_questions_for_quizzes(db, quiz_ids)
+    platform = has_platform_access(db, candidat)
+    visible = [
+        quiz
+        for quiz in quiz_list
+        if quiz.theme_id in themes and (not themes[quiz.theme_id].is_premium or platform)
+    ]
+    linked_counts = _count_linked_questions_for_quizzes(db, [quiz.id for quiz in visible])
     return [
         {
             "id": quiz.id,
@@ -559,7 +570,7 @@ def candidat_list_quiz(candidat: Utilisateur = Depends(CandidatUser), db: Sessio
             "duree_minutes": quiz.duree_minutes,
             "linked_count": linked_counts.get(quiz.id, 0),
         }
-        for quiz in quiz_list
+        for quiz in visible
     ]
 
 
@@ -569,14 +580,14 @@ def candidat_get_quiz(
     candidat: Utilisateur = Depends(CandidatUser),
     db: Session = Depends(get_db),
 ):
-    try:
-        ensure_platform_access(db, candidat)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     quiz = db.get(Quiz, quiz_id)
     if quiz is None or not quiz.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz introuvable")
     theme = db.get(Theme, quiz.theme_id)
+    try:
+        ensure_content_access(db, candidat, theme)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     questions = get_quiz_questions(db, quiz.id)
     return {
         "id": quiz.id,
@@ -597,8 +608,9 @@ def candidat_submit_quiz(
     quiz = db.get(Quiz, quiz_id)
     if quiz is None or not quiz.est_actif:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Quiz introuvable")
+    theme = db.get(Theme, quiz.theme_id)
     try:
-        ensure_platform_access(db, candidat)
+        ensure_content_access(db, candidat, theme)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
     try:

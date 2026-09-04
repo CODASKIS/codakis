@@ -314,6 +314,10 @@ class CandidatDashboardResponse(BaseModel):
     chapters_read: int = 0
     chapters_total: int = 0
     next_level_at: int = 150
+    questions_answered: int = 0
+    questions_total: int = 0
+    correct_answers: int = 0
+    first_try_rate: int = 0
 
 
 class GamificationResponse(BaseModel):
@@ -417,6 +421,7 @@ class CoursePathResponse(BaseModel):
 class TtsRequest(BaseModel):
     text: str
     language: str | None = None
+    voice_id: str | None = None
 
 
 class CheckpointValidateRequest(BaseModel):

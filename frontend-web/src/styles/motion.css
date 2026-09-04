@@ -35,6 +35,42 @@
     transform: translateY(0) scale(0.98);
   }
 
+  .ck-public .ck-home-step,
+  .ck-public .ck-home-schools__list a,
+  .ck-public .ck-page-section,
+  .ck-learn .ck-schools-panel,
+  .ck-learn .ck-btn,
+  .ta-shell .ck-schools-panel,
+  .ta-shell .ck-btn,
+  .ta-shell .ta-kpi,
+  .ta-shell .ta-row-actions__btn,
+  .ta-shell .ta-page-back {
+    transition:
+      color 0.22s ease,
+      background-color 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.28s ease,
+      transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.22s ease,
+      filter 0.2s ease;
+  }
+
+  .ck-public .ck-home-step:hover,
+  .ck-learn .ck-schools-panel:hover,
+  .ta-shell .ck-schools-panel:hover,
+  .ta-shell .ta-kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.8rem 2rem rgba(16, 24, 40, 0.06);
+  }
+
+  .ck-public .ck-home-hero__photo {
+    animation: ck-float-soft 5.5s ease-in-out infinite;
+  }
+
+  .ck-public .ck-home-hero__glow {
+    animation: ck-glow-pulse 4.5s ease-in-out infinite;
+  }
+
   .bs-motion-page {
     will-change: opacity, transform;
   }
@@ -52,6 +88,28 @@
   }
 }
 
+@keyframes ck-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.6rem);
+  }
+}
+
+@keyframes ck-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -59,7 +117,10 @@
 
   .fj-root *,
   .fj-root *::before,
-  .fj-root *::after {
+  .fj-root *::after,
+  .ck-public *,
+  .ck-learn *,
+  .ta-shell * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

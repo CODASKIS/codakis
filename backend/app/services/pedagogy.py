@@ -175,6 +175,13 @@ def ensure_platform_access(db: Session, user: Utilisateur) -> None:
         )
 
 
+def ensure_content_access(db: Session, user: Utilisateur, theme: Theme | None) -> None:
+    """Cours/quiz des thèmes gratuits accessibles sans abonnement ; premium sinon."""
+    if theme is not None and not bool(theme.is_premium):
+        return
+    ensure_platform_access(db, user)
+
+
 def theme_to_public(db: Session, theme: Theme, counts: dict | None = None) -> dict:
     if counts is None:
         lecon_count = db.query(Lecon).filter(Lecon.theme_id == theme.id).count()
@@ -889,6 +896,18 @@ def _passed_quiz_ids(db: Session, candidat: Utilisateur) -> list[str]:
     return [str(row[0]) for row in rows]
 
 
+def _failed_quiz_ids(db: Session, candidat: Utilisateur) -> set[str]:
+    """Quiz tentés en échec et pas encore réussis — à afficher en rouge sur la feuille de route."""
+    passed = set(_passed_quiz_ids(db, candidat))
+    rows = (
+        db.query(TentativeQuiz.quiz_id)
+        .filter(TentativeQuiz.candidat_id == candidat.id, TentativeQuiz.reussi.is_(False))
+        .distinct()
+        .all()
+    )
+    return {str(row[0]) for row in rows} - passed
+
+
 def _passed_examen_ids(db: Session, candidat: Utilisateur) -> list[str]:
     rows = (
         db.query(TentativeExamen.examen_id)
@@ -965,6 +984,7 @@ def get_global_roadmap(db: Session, candidat: Utilisateur) -> dict:
     progress = get_candidat_progress(db, candidat)
     completed = set(progress["completed_lecon_ids"])
     passed_quizzes = set(progress["passed_quiz_ids"])
+    failed_quizzes = _failed_quiz_ids(db, candidat)
     platform_ok = has_platform_access(db, candidat)
 
     sections: list[dict] = []
@@ -1004,7 +1024,7 @@ def get_global_roadmap(db: Session, candidat: Utilisateur) -> dict:
             }
         )
 
-    # Sequential unlock: first incomplete non-premium-locked step is current
+    # Sequential unlock: first incomplete step is current; failed quizzes stay red until passed
     found_current = False
     for section in sections:
         for step in section["steps"]:
@@ -1013,7 +1033,11 @@ def get_global_roadmap(db: Session, candidat: Utilisateur) -> dict:
             if section["locked"]:
                 step["status"] = "premium_locked"
                 continue
-            if not found_current:
+            is_failed_quiz = step["type"] == "quiz" and step["id"] in failed_quizzes
+            if is_failed_quiz:
+                step["status"] = "failed"
+                found_current = True
+            elif not found_current:
                 step["status"] = "current"
                 found_current = True
             else:
@@ -1208,19 +1232,20 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
         db.query(TentativeQuiz)
         .filter(TentativeQuiz.candidat_id == candidat.id)
         .order_by(TentativeQuiz.termine_le.desc())
-        .limit(12)
         .all()
     )
     exam_attempts = (
         db.query(TentativeExamen)
         .filter(TentativeExamen.candidat_id == candidat.id)
         .order_by(TentativeExamen.termine_le.desc())
-        .limit(12)
         .all()
     )
 
-    quiz_ids = {item.quiz_id for item in quiz_attempts}
-    exam_ids = {item.examen_id for item in exam_attempts}
+    recent_quiz = quiz_attempts[:12]
+    recent_exam = exam_attempts[:12]
+
+    quiz_ids = {item.quiz_id for item in recent_quiz}
+    exam_ids = {item.examen_id for item in recent_exam}
     quiz_titles = {
         row.id: row.title for row in db.query(Quiz.id, Quiz.title).filter(Quiz.id.in_(quiz_ids)).all()
     } if quiz_ids else {}
@@ -1230,7 +1255,7 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
     } if exam_ids else {}
 
     history: list[dict] = []
-    for attempt in quiz_attempts:
+    for attempt in recent_quiz:
         details = attempt.reponses_json or []
         history.append(
             {
@@ -1245,7 +1270,7 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
                 "errors": _enrich_attempt_errors(db, details),
             }
         )
-    for attempt in exam_attempts:
+    for attempt in recent_exam:
         details = attempt.reponses_json or []
         history.append(
             {
@@ -1264,8 +1289,29 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
     history.sort(key=lambda item: item["termine_le"], reverse=True)
     history = history[:15]
 
+    questions_answered = 0
+    correct_answers = 0
+    for attempt in quiz_attempts:
+        questions_answered += int(attempt.nb_total or 0)
+        correct_answers += int(attempt.nb_correctes or 0)
+    for attempt in exam_attempts:
+        details = attempt.reponses_json or []
+        total = len(details) if details else max(int(attempt.nb_erreurs or 0), 0)
+        wrong = int(attempt.nb_erreurs or 0)
+        questions_answered += total
+        correct_answers += max(total - wrong, 0)
+
+    questions_total = (
+        db.query(Question)
+        .filter(Question.est_actif.is_(True))
+        .count()
+    )
+    if questions_total < questions_answered:
+        questions_total = questions_answered
+
+    first_try_rate = round((correct_answers / questions_answered) * 100) if questions_answered else 0
     scores = [item["score"] for item in history]
-    success_rate = round(sum(scores) / len(scores)) if scores else 0
+    success_rate = round(sum(scores) / len(scores)) if scores else first_try_rate
     gamification = get_gamification(db, candidat)
 
     return {
@@ -1281,4 +1327,8 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
         "chapters_read": gamification["chapters_read"],
         "chapters_total": gamification["chapters_total"],
         "next_level_at": gamification["next_level_at"],
+        "questions_answered": questions_answered,
+        "questions_total": questions_total,
+        "correct_answers": correct_answers,
+        "first_try_rate": first_try_rate,
     }

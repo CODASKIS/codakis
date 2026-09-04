@@ -1,20 +1,21 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, Circle, Clock3 } from "lucide-react";
+import { Link, useParams } from "react-router";
+import { CheckCircle2, Circle, Clock3, Eye } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import { getUserAvatarUrl } from "../../../lib/uiAvatars";
 import { fetchMoniteurSeances, type MoniteurSeance } from "../../../lib/enrollmentsApi";
 import ComponentCard from "../../common/ComponentCard";
+import PageBack from "../../common/PageBack";
 import Badge from "../../ui/Badge";
 import Button from "../../ui/Button";
-import { Modal } from "../../ui/Modal";
+import TableActions from "../../ui/TableActions";
 import SeanceDetailModal from "./SeanceDetailModal";
 import { formatDateTime, groupStudents, statusBadgeColor, type StudentGroup } from "./moniteurUtils";
 
-export default function MoniteurEleves() {
+export function MoniteurEleveDetail() {
+  const { id = "" } = useParams();
   const [items, setItems] = useState<MoniteurSeance[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [student, setStudent] = useState<StudentGroup | null>(null);
   const [selectedSeance, setSelectedSeance] = useState<MoniteurSeance | null>(null);
   const [confirmOnly, setConfirmOnly] = useState(false);
 
@@ -25,6 +26,109 @@ export default function MoniteurEleves() {
   useEffect(() => {
     let cancelled = false;
     void load()
+      .catch(() => {
+        if (!cancelled) setItems([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const student = useMemo(() => groupStudents(items).find((s) => s.id === id) ?? null, [items, id]);
+
+  if (loading) return <Loader variant="page" />;
+  if (!student) {
+    return (
+      <div className="space-y-4">
+        <PageBack to="/espace/moniteur/eleves" />
+        <p className="ck-empty">Élève introuvable.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <PageBack to="/espace/moniteur/eleves" label="Retour aux élèves" />
+        <div className="flex items-center gap-4">
+          <img src={getUserAvatarUrl(student.name, 64)} alt="" width={64} height={64} className="rounded-full" />
+          <div>
+            <h2 className="ck-title" style={{ marginBottom: 0 }}>
+              {student.name}
+            </h2>
+            <p className="ck-subtitle">{student.phone || "Sans téléphone"}</p>
+          </div>
+        </div>
+      </div>
+
+      <ComponentCard title="Séances">
+        <div className="space-y-3">
+          {student.seances
+            .slice()
+            .sort((a, b) => +new Date(b.starts_at) - +new Date(a.starts_at))
+            .map((s) => (
+              <div
+                key={s.id}
+                className="flex flex-wrap items-center justify-between gap-2 px-3 py-3"
+                style={{ border: "0.2rem solid var(--ck-line)", borderRadius: "1.2rem" }}
+              >
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 text-left"
+                  onClick={() => {
+                    setConfirmOnly(false);
+                    setSelectedSeance(s);
+                  }}
+                >
+                  <p className="ta-strong">{formatDateTime(s.starts_at)}</p>
+                  <p className="ta-muted">{s.lieu || s.forfait_label || "Séance pratique"}</p>
+                </button>
+                <div className="flex items-center gap-2">
+                  <Badge color={statusBadgeColor(s.statut)}>{s.statut}</Badge>
+                  {s.statut !== "terminee" ? (
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setConfirmOnly(true);
+                        setSelectedSeance(s);
+                      }}
+                    >
+                      Terminer
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+        </div>
+      </ComponentCard>
+
+      <SeanceDetailModal
+        seance={selectedSeance}
+        open={Boolean(selectedSeance)}
+        confirmOnly={confirmOnly}
+        onClose={() => setSelectedSeance(null)}
+        onUpdated={async () => {
+          await load();
+        }}
+      />
+    </div>
+  );
+}
+
+export default function MoniteurEleves() {
+  const [items, setItems] = useState<MoniteurSeance[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchMoniteurSeances()
+      .then((data) => {
+        if (!cancelled) setItems(data);
+      })
       .catch((err) => {
         if (!cancelled) setError(err instanceof Error ? err.message : "Chargement impossible");
       })
@@ -37,37 +141,33 @@ export default function MoniteurEleves() {
   }, []);
 
   const students = useMemo(() => groupStudents(items), [items]);
-  const studentId = student?.id;
-  const activeStudent = useMemo(
-    () => (studentId ? students.find((s) => s.id === studentId) ?? null : null),
-    [students, studentId],
-  );
 
   if (loading) return <Loader variant="page" />;
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="ta-page-title">Élèves</h2>
-        <p className="ta-page-sub">{students.length} élèves suivis · séances qui vous sont assignées</p>
+        <h2 className="ck-title">Élèves</h2>
+        <p className="ck-subtitle">{students.length} élèves suivis · séances qui vous sont assignées</p>
       </div>
 
-      {error ? <p className="text-sm text-error-500">{error}</p> : null}
+      {error ? <p className="ck-empty">{error}</p> : null}
 
       <ComponentCard title="Liste des élèves">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
+        <div className="ck-schools-table-wrap">
+          <table className="ck-schools-table">
             <thead>
-              <tr className="border-b border-gray-100 text-gray-500">
-                <th className="px-3 py-3 font-medium">Élève</th>
-                <th className="px-3 py-3 font-medium">Téléphone</th>
-                <th className="px-3 py-3 font-medium">Séances</th>
-                <th className="px-3 py-3 font-medium">Prochaine</th>
-                <th className="px-3 py-3 font-medium">Progression</th>
+              <tr>
+                <th>Élève</th>
+                <th>Téléphone</th>
+                <th>Séances</th>
+                <th>Prochaine</th>
+                <th>Progression</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {students.map((row) => {
+              {students.map((row: StudentGroup) => {
                 const upcoming =
                   row.seances
                     .filter((s) => s.statut !== "terminee")
@@ -75,115 +175,58 @@ export default function MoniteurEleves() {
                 const done = row.seances.filter((s) => s.statut === "terminee").length;
                 const total = row.seances.length;
                 return (
-                  <tr
-                    key={row.id}
-                    className="cursor-pointer border-b border-gray-50 hover:bg-brand-25"
-                    onClick={() => setStudent(row)}
-                  >
-                    <td className="px-3 py-3">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={getUserAvatarUrl(row.name, 36)}
-                          alt=""
-                          width={36}
-                          height={36}
-                          className="h-9 w-9 rounded-full"
-                        />
-                        <strong className="text-gray-800">{row.name}</strong>
-                      </div>
+                  <tr key={row.id}>
+                    <td>
+                      <Link
+                        to={`/espace/moniteur/eleves/${row.id}`}
+                        className="ck-schools-person"
+                        style={{ textDecoration: "none", color: "inherit" }}
+                      >
+                        <img src={getUserAvatarUrl(row.name, 36)} alt="" width={36} height={36} />
+                        <div>
+                          <strong>{row.name}</strong>
+                        </div>
+                      </Link>
                     </td>
-                    <td className="px-3 py-3 text-gray-600">{row.phone || "—"}</td>
-                    <td className="px-3 py-3 text-gray-600">{total}</td>
-                    <td className="px-3 py-3 text-gray-600">
-                      {upcoming ? formatDateTime(upcoming.starts_at) : "—"}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className="inline-flex items-center gap-1.5 text-gray-700">
+                    <td>{row.phone || "—"}</td>
+                    <td>{total}</td>
+                    <td>{upcoming ? formatDateTime(upcoming.starts_at) : "—"}</td>
+                    <td>
+                      <span
+                        className={`ck-schools-status ${
+                          done === total && total ? "is-done" : done ? "is-progress" : "is-idle"
+                        }`}
+                      >
                         {done === total && total ? (
-                          <CheckCircle2 size={14} className="text-success-500" />
+                          <CheckCircle2 size={14} />
                         ) : done ? (
-                          <Clock3 size={14} className="text-warning-500" />
+                          <Clock3 size={14} />
                         ) : (
-                          <Circle size={14} className="text-gray-400" />
+                          <Circle size={14} />
                         )}
                         {done}/{total}
                       </span>
+                    </td>
+                    <td>
+                      <TableActions
+                        actions={[
+                          {
+                            label: "Voir fiche",
+                            icon: Eye,
+                            to: `/espace/moniteur/eleves/${row.id}`,
+                            variant: "primary",
+                          },
+                        ]}
+                      />
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          {!students.length ? <p className="px-3 py-6 text-sm text-gray-500">Aucun élève assigné pour le moment.</p> : null}
+          {!students.length ? <p className="ck-empty">Aucun élève assigné pour le moment.</p> : null}
         </div>
       </ComponentCard>
-
-      <Modal isOpen={Boolean(activeStudent)} onClose={() => setStudent(null)} className="max-w-xl">
-        {activeStudent ? (
-          <div className="p-6 pt-8 sm:p-8">
-            <div className="flex items-center gap-4 pr-8">
-              <img
-                src={getUserAvatarUrl(activeStudent.name, 64)}
-                alt=""
-                width={64}
-                height={64}
-                className="h-16 w-16 rounded-full"
-              />
-              <div>
-                <h2 className="text-xl font-bold text-gray-800">{activeStudent.name}</h2>
-                <p className="text-sm text-gray-500">{activeStudent.phone || "Sans téléphone"}</p>
-              </div>
-            </div>
-
-            <div className="mt-6 space-y-3">
-              <h3 className="text-sm font-semibold text-gray-700">Séances</h3>
-              {activeStudent.seances
-                .slice()
-                .sort((a, b) => +new Date(b.starts_at) - +new Date(a.starts_at))
-                .map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-gray-100 px-3 py-3"
-                  >
-                    <button
-                      type="button"
-                      className="min-w-0 flex-1 text-left"
-                      onClick={() => {
-                        setConfirmOnly(false);
-                        setSelectedSeance(s);
-                      }}
-                    >
-                      <p className="font-medium text-gray-800">{formatDateTime(s.starts_at)}</p>
-                      <p className="text-xs text-gray-500">{s.lieu || s.forfait_label || "Séance pratique"}</p>
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <Badge color={statusBadgeColor(s.statut)}>{s.statut}</Badge>
-                      {s.statut !== "terminee" ? (
-                        <Button
-                          size="sm"
-                          onClick={() => {
-                            setConfirmOnly(true);
-                            setSelectedSeance(s);
-                          }}
-                        >
-                          Terminer
-                        </Button>
-                      ) : null}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        ) : null}
-      </Modal>
-
-      <SeanceDetailModal
-        seance={selectedSeance}
-        open={Boolean(selectedSeance)}
-        confirmOnly={confirmOnly}
-        onClose={() => setSelectedSeance(null)}
-        onUpdated={load}
-      />
     </div>
   );
 }

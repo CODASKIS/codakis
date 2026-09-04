@@ -10,13 +10,8 @@ import {
   type BlogPostDetail,
   type BlogPostListItem,
 } from "../../lib/cms-api";
-import BlogArticleAside from "../components/BlogArticleAside";
-import BlogArticleShare from "../components/BlogArticleShare";
+import { BlogArticleShare } from "../components/BlogArticleShare";
 import BlogInlineCta from "../components/BlogInlineCta";
-import Button from "../components/Button";
-import Container from "../components/Container";
-import SubNav from "../components/SubNav";
-import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
 import { getIdenticonDataUrl } from "@/lib/identicon";
 import { renderBlogBody } from "../../lib/blog-content";
 
@@ -32,7 +27,6 @@ function formatDate(publishedAt: string | null | undefined, locale: string) {
 export default function BlogDetailPage() {
   const { slug = "" } = useParams();
   const { t, i18n } = useTranslation();
-  const subNavItems = useSecondaryNavItems();
   const [html, setHtml] = useState("");
   const [post, setPost] = useState<BlogPostDetail | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<BlogPostListItem[]>([]);
@@ -83,20 +77,20 @@ export default function BlogDetailPage() {
 
   if (loading) {
     return (
-      <Container className="fj-blog-article fj-blog-article--loading">
+      <div className="ck-article">
         <Loader variant="inline" theme="flexjobs" message={t("blogDetail.loading")} />
-      </Container>
+      </div>
     );
   }
 
   if (notFound || !post) {
     return (
-      <Container className="fj-blog-article fj-blog-article--loading">
-        <h1>{t("blogDetail.notFound")}</h1>
-        <Button href="/blog" className="mt-4">
+      <div className="ck-article">
+        <h1 className="ck-page-title">{t("blogDetail.notFound")}</h1>
+        <Link to="/blog" className="ck-public-btn ck-public-btn--primary" style={{ marginTop: "1.6rem" }}>
           {t("blogDetail.backToBlog")}
-        </Button>
-      </Container>
+        </Link>
+      </div>
     );
   }
 
@@ -105,64 +99,63 @@ export default function BlogDetailPage() {
   return (
     <>
       <PageMeta title={`${post.title} | CODAKIS`} description={post.excerpt ?? post.title} />
-      <SubNav activePath="/blog" items={[...subNavItems]} />
 
-      <article className="fj-blog-article">
-        <Container>
-          <header className="fj-blog-article__header">
-            <div className="fj-blog-article__intro">
-              <nav className="fj-breadcrumb" aria-label={t("blogDetail.breadcrumbAria")}>
-                <ol>
-                  <li>
-                    <Link to="/">{t("breadcrumb.home")}</Link>
-                  </li>
-                  <li>
-                    <Link to="/blog">{t("breadcrumb.blog")}</Link>
-                  </li>
-                  <li className="active" aria-current="page">
-                    {post.title}
-                  </li>
-                </ol>
-              </nav>
+      <article className="ck-article">
+        <nav className="fj-breadcrumb" aria-label={t("blogDetail.breadcrumbAria")}>
+          <ol>
+            <li>
+              <Link to="/">{t("breadcrumb.home")}</Link>
+            </li>
+            <li>
+              <Link to="/blog">{t("breadcrumb.blog")}</Link>
+            </li>
+            <li className="active" aria-current="page">
+              {post.title}
+            </li>
+          </ol>
+        </nav>
 
-              <h1 className="fj-blog-article__title">{post.title}</h1>
+        <h1 className="ck-page-title">{post.title}</h1>
 
-              <div className="fj-blog-article__meta">
-                <span className="fj-blog-article__avatar" aria-hidden="true">
-                  <img
-                    src={getIdenticonDataUrl(post.author_name || "BS", 64)}
-                    alt=""
-                    className="h-full w-full rounded-full object-cover"
-                  />
-                </span>
-                <div>
-                  <p className="fj-blog-article__author">
-                    {t("blogDetail.authorBefore")} <Link to="/blog">{post.author_name}</Link>
-                  </p>
-                  {dateLabel ? (
-                    <p className="fj-blog-article__date">{t("blogDetail.updated", { date: dateLabel })}</p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
+        <div className="ck-article__meta">
+          <img
+            src={getIdenticonDataUrl(post.author_name || "BS", 40)}
+            alt=""
+            width={40}
+            height={40}
+            style={{ borderRadius: "999px" }}
+          />
+          <span>
+            {t("blogDetail.authorBefore")} {post.author_name}
+          </span>
+          {dateLabel ? <span>{t("blogDetail.updated", { date: dateLabel })}</span> : null}
+        </div>
 
-            <div className="fj-blog-article__cover">
-              <CmsCoverImage url={post.cover_image_url} loading="eager" />
-            </div>
-          </header>
-        </Container>
+        <CmsCoverImage url={post.cover_image_url} loading="eager" className="ck-article__cover" />
 
-        <Container>
-          <div className="fj-blog-article__layout">
-            <div className="fj-blog-article__main">
-              <BlogArticleShare title={post.title} url={shareUrl} />
-              <BlogInlineCta />
-              <div className="fj-prose fj-wysiwyg fj-blog-article__content" dangerouslySetInnerHTML={{ __html: html }} />
-            </div>
+        <BlogArticleShare title={post.title} url={shareUrl} />
+        <BlogInlineCta />
 
-            <BlogArticleAside relatedPosts={relatedPosts} />
-          </div>
-        </Container>
+        <div className="ck-article__body fj-prose fj-wysiwyg" dangerouslySetInnerHTML={{ __html: html }} />
+
+        {relatedPosts.length > 0 ? (
+          <section className="ck-article__related">
+            <h2>{t("blogArticle.asideTitle")}</h2>
+            <ul className="ck-blog-list">
+              {relatedPosts.map((item) => (
+                <li key={item.slug}>
+                  <Link to={`/blog/${item.slug}`} className="ck-blog-item">
+                    <CmsCoverImage url={item.cover_image_url} loading="lazy" className="ck-blog-item__thumb" />
+                    <div>
+                      <h2>{item.title}</h2>
+                      {item.excerpt ? <p>{item.excerpt}</p> : null}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
       </article>
     </>
   );

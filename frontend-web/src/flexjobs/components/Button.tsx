@@ -29,10 +29,11 @@ export type ButtonProps = ButtonAsButton | ButtonAsLink;
 function classes(variant: ButtonVariant, size: ButtonSize, block: boolean, extra?: string) {
   return [
     "fj-btn",
-    variant === "primary" && "fj-btn--primary",
-    variant === "outline" && "fj-btn--outline",
-    variant === "ghost-light" && "fj-btn--ghost-light",
-    size === "sm" && "fj-btn--sm",
+    "ck-public-btn",
+    variant === "primary" && "fj-btn--primary ck-public-btn--primary",
+    variant === "outline" && "fj-btn--outline ck-public-btn--ghost",
+    variant === "ghost-light" && "fj-btn--ghost-light ck-public-btn--ghost",
+    size === "sm" && "fj-btn--sm ck-public-btn--sm",
     block && "fj-btn--block",
     extra,
   ]

@@ -3,9 +3,7 @@ import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { AUTH_PATHS } from "../../constants/authPaths";
-import Container from "../components/Container";
-import SubNav from "../components/SubNav";
-import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
+import PublicPageHeader from "../components/PublicPageHeader";
 
 const PIECES = [
   { icon: IdCard, key: "id" },
@@ -18,44 +16,51 @@ const PIECES = [
 
 export default function ConsortPage() {
   const { t } = useTranslation();
-  const subNavItems = useSecondaryNavItems();
 
   return (
     <>
       <PageMeta title={t("consort.metaTitle")} description={t("consort.metaDescription")} />
-      <SubNav activePath="/consort" items={[...subNavItems]} />
 
-      <section className="fj-section fj-consort-page">
-        <Container>
-          <div className="fj-consort-page__hero">
-            <ClipboardList size={48} strokeWidth={1.5} className="fj-consort-page__icon" aria-hidden />
-            <h1>{t("consort.title")}</h1>
-            <p className="fj-consort-page__lead">{t("consort.lead")}</p>
-          </div>
+      <div className="ck-page">
+        <PublicPageHeader
+          title={t("consort.title")}
+          lead={t("consort.lead")}
+          actions={<ClipboardList size={36} strokeWidth={1.5} aria-hidden color="var(--ck-green)" />}
+        />
 
-          <div className="fj-consort-page__grid">
+        <div className="ck-home-steps" style={{ gridTemplateColumns: undefined }}>
+          <div
+            className="ck-home-themes"
+            style={{ gridTemplateColumns: "repeat(auto-fit, minmax(22rem, 1fr))" }}
+          >
             {PIECES.map(({ icon: Icon, key }) => (
-              <article key={key} className="fj-consort-page__card">
-                <span className="fj-consort-page__card-icon" aria-hidden>
-                  <Icon size={28} strokeWidth={1.5} />
+              <article key={key} className="ck-home-step" style={{ flexDirection: "column" }}>
+                <span className="ck-home-step__num" aria-hidden>
+                  <Icon size={20} />
                 </span>
-                <h2>{t(`consort.pieces.${key}.title`)}</h2>
-                <p>{t(`consort.pieces.${key}.desc`)}</p>
+                <div>
+                  <h3>{t(`consort.pieces.${key}.title`)}</h3>
+                  <p>{t(`consort.pieces.${key}.desc`)}</p>
+                </div>
               </article>
             ))}
           </div>
+        </div>
 
-          <div className="fj-consort-page__cta">
-            <p>{t("consort.ctaText")}</p>
-            <Link to={AUTH_PATHS.register.candidat} className="fj-btn fj-btn--primary fj-btn--lg">
+        <div className="ck-page-banner" style={{ marginTop: "3.2rem" }}>
+          <div>
+            <h2>{t("consort.ctaText")}</h2>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
+            <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--ghost ck-public-btn--lg">
               {t("consort.ctaButton")}
             </Link>
-            <Link to={AUTH_PATHS.login} className="fj-consort-page__login">
+            <Link to={AUTH_PATHS.login} className="ck-public-btn ck-public-btn--ghost">
               {t("nav.login")}
             </Link>
           </div>
-        </Container>
-      </section>
+        </div>
+      </div>
     </>
   );
 }

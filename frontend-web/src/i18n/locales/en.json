@@ -13,6 +13,7 @@
     "contact": "Contact",
     "login": "Sign in",
     "signup": "Sign up",
+    "mySpace": "My space",
     "signupSchool": "Register my driving school",
     "menu": "Main navigation",
     "mobileMenu": "Mobile menu",
@@ -194,7 +195,14 @@
     "loginInstructor": "Instructor workspace",
     "rights": "All rights reserved",
     "privacy": "Privacy policy",
-    "terms": "Terms of use"
+    "terms": "Terms of use",
+    "newsletterTitle": "Stay in the loop",
+    "newsletterLead": "Highway-code tips, licence news and CODAKIS updates — occasional emails, no spam.",
+    "newsletterEmailLabel": "Email address",
+    "newsletterPlaceholder": "you@email.com",
+    "newsletterSubmit": "Subscribe",
+    "newsletterSuccess": "Thanks! You’re on the newsletter list.",
+    "newsletterError": "Please enter a valid email address."
   },
   "schools": {
     "metaTitle": "Driving schools directory | CODAKIS",
@@ -411,6 +419,10 @@
     "backToRoles": "Choose a workspace",
     "backToLogin": "Back to sign in",
     "backToRegisterHub": "Choose registration type",
+    "kori": {
+      "login": "Sign in to get back on the road",
+      "register": "Create your account — let's go!"
+    },
     "hub": {
       "metaTitle": "Sign in | CODAKIS",
       "metaDescription": "Access your candidate, instructor, manager or admin workspace.",

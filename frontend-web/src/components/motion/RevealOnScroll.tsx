@@ -29,11 +29,11 @@ export default function RevealOnScroll({
   return (
     <Component
       className={className}
-      initial="visible"
+      initial="hidden"
       whileInView="visible"
       viewport={defaultViewport}
       variants={fadeUpVariants}
-      transition={{ duration: 0.5, ease: easeOutExpo, delay }}
+      transition={{ duration: 0.55, ease: easeOutExpo, delay }}
       {...props}
     >
       {children}

@@ -1,9 +1,8 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
-import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
 import {
   AuthDivider,
   AuthField,
@@ -24,6 +23,7 @@ import { ROLE_CONFIG } from "../roles";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
 import type { ParcoursSouhaite, TypePermis } from "../types";
+import { fetchPublicSchool } from "../../lib/publicSchoolsApi";
 
 type RegisterPageProps = {
   role: "candidat";
@@ -39,10 +39,25 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const [searchParams] = useSearchParams();
   const config = ROLE_CONFIG[role];
   const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
-  const purchaseSchool = useMemo(
-    () => (purchaseIntent ? MOCK_DRIVING_SCHOOLS.find((s) => s.id === purchaseIntent.schoolId) : null),
-    [purchaseIntent],
-  );
+  const [purchaseSchoolName, setPurchaseSchoolName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!purchaseIntent?.schoolId) {
+      setPurchaseSchoolName(null);
+      return;
+    }
+    let cancelled = false;
+    void fetchPublicSchool(purchaseIntent.schoolId)
+      .then((school) => {
+        if (!cancelled) setPurchaseSchoolName(school.name);
+      })
+      .catch(() => {
+        if (!cancelled) setPurchaseSchoolName(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [purchaseIntent]);
 
   const [step, setStep] = useState(1);
   const [typePermis, setTypePermis] = useState<TypePermis>("B");
@@ -136,7 +151,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
         title={t("auth.register.metaTitle", { role: t(`auth.roles.${role}.title`) })}
         description={t("auth.register.metaDescription")}
       />
-      <AuthSplitLayout backHref={AUTH_PATHS.login} backLabel={t("auth.backToLogin")}>
+      <AuthSplitLayout backHref={AUTH_PATHS.login} backLabel={t("auth.backToLogin")} mood="register">
         <div className="codakis-auth__panel codakis-auth__panel--wide codakis-auth__panel--register">
           <nav className="codakis-auth-stepper" aria-label={t("auth.register.steps.aria")}>
             {stepLabels.map((label, index) => {
@@ -229,8 +244,8 @@ export default function RegisterPage({ role }: RegisterPageProps) {
             <div className="codakis-auth-step">
               <h1 className="codakis-auth__title">{t("auth.register.title")}</h1>
               <p className="codakis-auth__subtitle">
-                {purchaseSchool
-                  ? t("auth.register.purchaseHint", { school: purchaseSchool.name })
+                {purchaseSchoolName
+                  ? t("auth.register.purchaseHint", { school: purchaseSchoolName })
                   : t("auth.register.freeAccountHint")}
               </p>
               <p className="codakis-auth__summary">
@@ -347,7 +362,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
                   <button type="submit" className="codakis-auth-form__submit" disabled={loading}>
                     {loading
                       ? t("common.loading")
-                      : purchaseSchool
+                      : purchaseSchoolName
                         ? t("auth.register.submitAndContinue")
                         : t("auth.register.submit")}
                   </button>
@@ -372,7 +387,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
                 })}
               </p>
               <button type="button" className="codakis-auth-form__submit" onClick={goToApp}>
-                {purchaseSchool ? t("auth.register.submitAndContinue") : t("auth.register.startCta")}
+                {purchaseSchoolName ? t("auth.register.submitAndContinue") : t("auth.register.startCta")}
               </button>
             </div>
           ) : null}

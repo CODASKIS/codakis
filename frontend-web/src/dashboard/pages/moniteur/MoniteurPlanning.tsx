@@ -59,11 +59,11 @@ export default function MoniteurPlanning() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="ta-page-title">Planning</h2>
-        <p className="ta-page-sub">Calendrier de vos séances pratiques.</p>
+        <h2 className="ck-title">Planning</h2>
+        <p className="ck-subtitle">Calendrier de vos séances pratiques.</p>
       </div>
 
-      {error ? <p className="text-sm text-error-500">{error}</p> : null}
+      {error ? <p className="ck-empty">{error}</p> : null}
 
       <ComponentCard title="Calendrier">
         <div className="ta-calendar min-h-[32rem]">
@@ -71,9 +71,9 @@ export default function MoniteurPlanning() {
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
             initialView="dayGridMonth"
             headerToolbar={{
-              left: "prev,next today",
+              left: "prev next today",
               center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,listWeek",
+              right: "dayGridMonth timeGridWeek timeGridDay listWeek",
             }}
             locale="fr"
             height="auto"

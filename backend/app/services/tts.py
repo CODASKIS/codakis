@@ -25,10 +25,11 @@ def resolve_voice_id(language: str | None) -> str:
     return voice or "pNInz6obpgDQGcFmaJgB"
 
 
-def resolve_voice_candidates(language: str | None) -> list[str]:
+def resolve_voice_candidates(language: str | None, preferred_voice_id: str | None = None) -> list[str]:
     fallback = settings.elevenlabs_voice_id.strip() or "pNInz6obpgDQGcFmaJgB"
     voices: list[str] = []
-    for voice_id in (resolve_voice_id(language), fallback, "pNInz6obpgDQGcFmaJgB", "EXAVITQu4vr4xnSDxMaL"):
+    preferred = (preferred_voice_id or "").strip()
+    for voice_id in (preferred, resolve_voice_id(language), fallback, "pNInz6obpgDQGcFmaJgB", "EXAVITQu4vr4xnSDxMaL"):
         cleaned = voice_id.strip()
         if cleaned and cleaned not in voices:
             voices.append(cleaned)
@@ -70,7 +71,7 @@ def _request_tts(text: str, voice_id: str) -> bytes:
     return response.content
 
 
-def synthesize_speech(text: str, language: str | None = "fr") -> bytes:
+def synthesize_speech(text: str, language: str | None = "fr", voice_id: str | None = None) -> bytes:
     cleaned = (text or "").strip()
     if not cleaned:
         raise TtsError("Texte vide")
@@ -82,9 +83,9 @@ def synthesize_speech(text: str, language: str | None = "fr") -> bytes:
         raise TtsError("Synthèse vocale non configurée (ELEVENLABS_API_KEY manquante)")
 
     last_error: TtsError | None = None
-    for voice_id in resolve_voice_candidates(language):
+    for candidate in resolve_voice_candidates(language, voice_id):
         try:
-            return _request_tts(cleaned, voice_id)
+            return _request_tts(cleaned, candidate)
         except httpx.HTTPError as exc:
             raise TtsError("Service de synthèse vocale indisponible") from exc
         except TtsError as exc:

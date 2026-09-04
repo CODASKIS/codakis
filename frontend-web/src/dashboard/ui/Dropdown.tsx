@@ -29,10 +29,7 @@ export function Dropdown({ isOpen, onClose, children, className = "" }: Props) {
   if (!isOpen) return null;
 
   return (
-    <div
-      ref={dropdownRef}
-      className={`absolute right-0 z-50 mt-3 rounded-2xl border border-gray-200 bg-white shadow-lg ${className}`}
-    >
+    <div ref={dropdownRef} className={className}>
       {children}
     </div>
   );

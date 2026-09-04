@@ -1,26 +1,45 @@
 import { Navigate, Route, Routes } from "react-router";
 import {
   BarChart3,
+  BookOpen,
   Building2,
   CalendarDays,
   CalendarRange,
   ClipboardList,
   CreditCard,
   LayoutDashboard,
+  Newspaper,
   Settings,
   UserCircle,
   Users,
 } from "lucide-react";
 import RequireAuth from "../../auth/components/RequireAuth";
-import { fetchGerantSchool } from "../../lib/authApi";
 import ProAdminLayout from "../../dashboard/layout/ProAdminLayout";
 import MoniteurHome from "../../dashboard/pages/moniteur/MoniteurHome";
-import MoniteurEleves from "../../dashboard/pages/moniteur/MoniteurEleves";
+import MoniteurEleves, { MoniteurEleveDetail } from "../../dashboard/pages/moniteur/MoniteurEleves";
 import MoniteurPlanning from "../../dashboard/pages/moniteur/MoniteurPlanning";
 import MoniteurSeances from "../../dashboard/pages/moniteur/MoniteurSeances";
 import MoniteurProfil from "../../dashboard/pages/moniteur/MoniteurProfil";
+import GerantHome from "../../dashboard/pages/gerant/GerantHome";
+import GerantProfil from "../../dashboard/pages/gerant/GerantProfil";
+import AdminHome from "../../dashboard/pages/admin/AdminHome";
+import AdminSchools from "../../dashboard/pages/admin/AdminSchools";
+import AdminSchoolDetail from "../../dashboard/pages/admin/AdminSchoolDetail";
+import AdminUsers from "../../dashboard/pages/admin/AdminUsers";
+import AdminUserCreate from "../../dashboard/pages/admin/AdminUserCreate";
+import AdminUserDetail from "../../dashboard/pages/admin/AdminUserDetail";
+import AdminPayments from "../../dashboard/pages/admin/AdminPayments";
+import AdminPaymentDetail from "../../dashboard/pages/admin/AdminPaymentDetail";
+import AdminBlog from "../../dashboard/pages/admin/AdminBlog";
+import AdminBlogForm from "../../dashboard/pages/admin/AdminBlogForm";
+import AdminContent from "../../dashboard/pages/admin/AdminContent";
+import AdminThemeForm from "../../dashboard/pages/admin/AdminThemeForm";
+import AdminLeconForm from "../../dashboard/pages/admin/AdminLeconForm";
+import AdminQuestionForm from "../../dashboard/pages/admin/AdminQuestionForm";
+import AdminQuizForm from "../../dashboard/pages/admin/AdminQuizForm";
+import AdminExamenForm from "../../dashboard/pages/admin/AdminExamenForm";
+import AdminProfil from "../../dashboard/pages/admin/AdminProfil";
 import LearningShell from "../layout/LearningShell";
-import SchoolsShell from "../layout/SchoolsShell";
 import RoadmapPage from "../pages/candidat/RoadmapPage";
 import LessonPage from "../pages/candidat/LessonPage";
 import QuizPage from "../pages/candidat/QuizPage";
@@ -34,20 +53,12 @@ import SeancesPage from "../pages/candidat/SeancesPage";
 import ConsortPage from "../pages/candidat/ConsortPage";
 import ProfilePage from "../pages/candidat/ProfilePage";
 import SuperUpgradePage from "../pages/candidat/SuperUpgradePage";
+import UserPreferencesPage from "../pages/shared/UserPreferencesPage";
 import GerantElevesPage from "../pages/gerant/GerantElevesPage";
+import GerantEleveDetailPage from "../pages/gerant/GerantEleveDetailPage";
 import GerantAssignerPage from "../pages/gerant/GerantAssignerPage";
 import GerantRapportsPage from "../pages/gerant/GerantRapportsPage";
 import GerantParametresPage from "../pages/gerant/GerantParametresPage";
-import StaffProfilePage from "../pages/staff/StaffProfilePage";
-import AdminHomePage from "../pages/admin/AdminHomePage";
-import AdminSchoolsPage from "../pages/admin/AdminSchoolsPage";
-import AdminUsersPage from "../pages/admin/AdminUsersPage";
-import AdminPaymentsPage from "../pages/admin/AdminPaymentsPage";
-
-async function loadGerantSchoolTitle() {
-  const school = await fetchGerantSchool();
-  return school.raison_sociale;
-}
 
 export function CandidatEspaceRoutes() {
   return (
@@ -66,6 +77,15 @@ export function CandidatEspaceRoutes() {
           <Route path="seances" element={<SeancesPage />} />
           <Route path="consort" element={<ConsortPage />} />
           <Route path="profil" element={<ProfilePage />} />
+          <Route
+            path="preferences"
+            element={
+              <UserPreferencesPage
+                profileTo="/espace/candidat/profil"
+                preferencesTo="/espace/candidat/preferences"
+              />
+            }
+          />
           <Route path="super" element={<SuperUpgradePage />} />
           <Route path="*" element={<Navigate to="/espace/candidat" replace />} />
         </Route>
@@ -85,6 +105,7 @@ export function MoniteurEspaceRoutes() {
               roleLabel="Moniteur"
               homeTo="/espace/moniteur"
               profileTo="/espace/moniteur/profil"
+              preferencesTo="/espace/moniteur/preferences"
               title="Espace moniteur"
               navItems={[
                 { to: "/espace/moniteur", label: "Accueil", end: true, icon: LayoutDashboard },
@@ -98,9 +119,19 @@ export function MoniteurEspaceRoutes() {
         >
           <Route index element={<MoniteurHome />} />
           <Route path="eleves" element={<MoniteurEleves />} />
+          <Route path="eleves/:id" element={<MoniteurEleveDetail />} />
           <Route path="planning" element={<MoniteurPlanning />} />
           <Route path="seances" element={<MoniteurSeances />} />
           <Route path="profil" element={<MoniteurProfil />} />
+          <Route
+            path="preferences"
+            element={
+              <UserPreferencesPage
+                profileTo="/espace/moniteur/profil"
+                preferencesTo="/espace/moniteur/preferences"
+              />
+            }
+          />
           <Route path="*" element={<Navigate to="/espace/moniteur" replace />} />
         </Route>
       </Routes>
@@ -114,32 +145,42 @@ export function GerantEspaceRoutes() {
       <Routes>
         <Route
           element={
-            <SchoolsShell
+            <ProAdminLayout
               role="gerant"
-              roleLabel="Gérant auto-école"
+              roleLabel="Gérant"
               homeTo="/espace/gerant"
-              loadTitle={loadGerantSchoolTitle}
               profileTo="/espace/gerant/profil"
-              accent="#00a859"
-              tabs={[
-                { to: "/espace/gerant", label: "Élèves", end: true, icon: Users, color: "#00a859" },
-                { to: "/espace/gerant/assigner", label: "Assigner", icon: ClipboardList, color: "#0ea5e9" },
-                { to: "/espace/gerant/rapports", label: "Rapports", icon: BarChart3, color: "#f59e0b" },
-                { to: "/espace/gerant/parametres", label: "École", icon: Settings, color: "#64748b" },
+              preferencesTo="/espace/gerant/preferences"
+              title="Espace gérant"
+              navItems={[
+                { to: "/espace/gerant", label: "Accueil", end: true, icon: LayoutDashboard },
+                { to: "/espace/gerant/eleves", label: "Élèves", icon: Users },
+                { to: "/espace/gerant/assigner", label: "Assigner", icon: ClipboardList },
+                { to: "/espace/gerant/rapports", label: "Rapports", icon: BarChart3 },
+                { to: "/espace/gerant/parametres", label: "École", icon: Settings },
+                { to: "/espace/gerant/profil", label: "Profil", icon: UserCircle },
               ]}
             />
           }
         >
-          <Route index element={<GerantElevesPage />} />
+          <Route index element={<GerantHome />} />
+          <Route path="eleves" element={<GerantElevesPage />} />
+          <Route path="eleves/:id" element={<GerantEleveDetailPage />} />
           <Route path="assigner" element={<GerantAssignerPage />} />
           <Route path="rapports" element={<GerantRapportsPage />} />
           <Route path="parametres" element={<GerantParametresPage />} />
+          <Route path="profil" element={<GerantProfil />} />
           <Route
-            path="profil"
-            element={<StaffProfilePage homeLabel="Espace gérant" homeTo="/espace/gerant" />}
+            path="preferences"
+            element={
+              <UserPreferencesPage
+                profileTo="/espace/gerant/profil"
+                preferencesTo="/espace/gerant/preferences"
+              />
+            }
           />
           <Route path="forfaits" element={<Navigate to="/espace/gerant/assigner" replace />} />
-          <Route path="inscriptions" element={<Navigate to="/espace/gerant" replace />} />
+          <Route path="inscriptions" element={<Navigate to="/espace/gerant/eleves" replace />} />
           <Route path="seances" element={<Navigate to="/espace/gerant/assigner" replace />} />
           <Route path="*" element={<Navigate to="/espace/gerant" replace />} />
         </Route>
@@ -154,29 +195,57 @@ export function AdminEspaceRoutes() {
       <Routes>
         <Route
           element={
-            <SchoolsShell
+            <ProAdminLayout
               role="admin"
               roleLabel="Administrateur"
               homeTo="/espace/admin"
-              title="CODAKIS Admin"
               profileTo="/espace/admin/profil"
-              accent="#00a859"
-              tabs={[
-                { to: "/espace/admin", label: "Accueil", end: true, icon: LayoutDashboard, color: "#00a859" },
-                { to: "/espace/admin/ecoles", label: "Écoles", icon: Building2, color: "#f59e0b" },
-                { to: "/espace/admin/utilisateurs", label: "Users", icon: Users, color: "#0ea5e9" },
-                { to: "/espace/admin/paiements", label: "Paiements", icon: CreditCard, color: "#8b5cf6" },
+              preferencesTo="/espace/admin/preferences"
+              title="Espace admin"
+              navItems={[
+                { to: "/espace/admin", label: "Accueil", end: true, icon: LayoutDashboard },
+                { to: "/espace/admin/ecoles", label: "Écoles", icon: Building2 },
+                { to: "/espace/admin/utilisateurs", label: "Users", icon: Users },
+                { to: "/espace/admin/paiements", label: "Paiements", icon: CreditCard },
+                { to: "/espace/admin/contenu", label: "Contenu", icon: BookOpen },
+                { to: "/espace/admin/blog", label: "Blog", icon: Newspaper },
+                { to: "/espace/admin/profil", label: "Profil", icon: UserCircle },
               ]}
             />
           }
         >
-          <Route index element={<AdminHomePage />} />
-          <Route path="ecoles" element={<AdminSchoolsPage />} />
-          <Route path="utilisateurs" element={<AdminUsersPage />} />
-          <Route path="paiements" element={<AdminPaymentsPage />} />
+          <Route index element={<AdminHome />} />
+          <Route path="ecoles" element={<AdminSchools />} />
+          <Route path="ecoles/:id" element={<AdminSchoolDetail />} />
+          <Route path="auto-ecoles" element={<Navigate to="/espace/admin/ecoles" replace />} />
+          <Route path="utilisateurs" element={<AdminUsers />} />
+          <Route path="utilisateurs/nouveau" element={<AdminUserCreate />} />
+          <Route path="utilisateurs/:id" element={<AdminUserDetail />} />
+          <Route path="paiements" element={<AdminPayments />} />
+          <Route path="paiements/:reference" element={<AdminPaymentDetail />} />
+          <Route path="contenu" element={<AdminContent />} />
+          <Route path="contenu/themes/nouveau" element={<AdminThemeForm />} />
+          <Route path="contenu/themes/:id" element={<AdminThemeForm />} />
+          <Route path="contenu/lecons/nouveau" element={<AdminLeconForm />} />
+          <Route path="contenu/lecons/:id" element={<AdminLeconForm />} />
+          <Route path="contenu/questions/nouveau" element={<AdminQuestionForm />} />
+          <Route path="contenu/questions/:id" element={<AdminQuestionForm />} />
+          <Route path="contenu/quiz/nouveau" element={<AdminQuizForm />} />
+          <Route path="contenu/quiz/:id" element={<AdminQuizForm />} />
+          <Route path="contenu/examens/nouveau" element={<AdminExamenForm />} />
+          <Route path="contenu/examens/:id" element={<AdminExamenForm />} />
+          <Route path="blog" element={<AdminBlog />} />
+          <Route path="blog/nouveau" element={<AdminBlogForm />} />
+          <Route path="blog/:id" element={<AdminBlogForm />} />
+          <Route path="profil" element={<AdminProfil />} />
           <Route
-            path="profil"
-            element={<StaffProfilePage homeLabel="Espace admin" homeTo="/espace/admin" />}
+            path="preferences"
+            element={
+              <UserPreferencesPage
+                profileTo="/espace/admin/profil"
+                preferencesTo="/espace/admin/preferences"
+              />
+            }
           />
           <Route path="*" element={<Navigate to="/espace/admin" replace />} />
         </Route>

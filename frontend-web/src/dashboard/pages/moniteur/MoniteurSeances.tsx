@@ -51,7 +51,14 @@ export default function MoniteurSeances() {
 
   function SeanceRow({ item, canFinish }: { item: MoniteurSeance; canFinish?: boolean }) {
     return (
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-100 bg-gray-50/60 px-4 py-3">
+      <div
+        className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+        style={{
+          border: "0.2rem solid var(--ck-line)",
+          borderRadius: "1.2rem",
+          background: "var(--ck-surface-2)",
+        }}
+      >
         <button
           type="button"
           className="min-w-0 flex-1 text-left"
@@ -60,8 +67,8 @@ export default function MoniteurSeances() {
             setSelected(item);
           }}
         >
-          <p className="font-semibold text-gray-800">{item.candidat_name}</p>
-          <p className="mt-0.5 text-sm text-gray-500">
+          <p className="ta-strong">{item.candidat_name}</p>
+          <p className="ta-muted" style={{ marginTop: "0.2rem" }}>
             {formatDateTime(item.starts_at)}
             {item.lieu ? ` · ${item.lieu}` : ""}
           </p>
@@ -87,18 +94,18 @@ export default function MoniteurSeances() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="ta-page-title">Séances</h2>
-        <p className="ta-page-sub">À venir et historique de vos leçons de conduite.</p>
+        <h2 className="ck-title">Séances</h2>
+        <p className="ck-subtitle">À venir et historique de vos leçons de conduite.</p>
       </div>
 
-      {error ? <p className="text-sm text-error-500">{error}</p> : null}
+      {error ? <p className="ck-empty">{error}</p> : null}
 
       <ComponentCard title="Séances à venir" desc="Vos prochaines leçons de conduite">
         <div className="space-y-3">
           {upcoming.map((item) => (
             <SeanceRow key={item.id} item={item} canFinish />
           ))}
-          {!upcoming.length ? <p className="text-sm text-gray-500">Aucune séance à venir.</p> : null}
+          {!upcoming.length ? <p className="ck-empty">Aucune séance à venir.</p> : null}
         </div>
       </ComponentCard>
 
@@ -107,7 +114,7 @@ export default function MoniteurSeances() {
           {past.map((item) => (
             <SeanceRow key={item.id} item={item} />
           ))}
-          {!past.length ? <p className="text-sm text-gray-500">Pas encore d’historique.</p> : null}
+          {!past.length ? <p className="ck-empty">Pas encore d’historique.</p> : null}
         </div>
       </ComponentCard>
 

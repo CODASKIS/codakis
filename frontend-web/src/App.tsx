@@ -10,6 +10,7 @@ import {
   CandidatEspaceRoutes,
   GerantEspaceRoutes,
   MoniteurEspaceRoutes,
+  AdminEspaceRoutes,
 } from "./learning/routes/EspaceRoutes";
 
 export default function App() {
@@ -28,7 +29,8 @@ export default function App() {
         <Route path="/login" element={<Navigate to="/connexion" replace />} />
         <Route path="/register" element={<Navigate to="/inscription" replace />} />
 
-        <Route path="/admin/*" element={<Navigate to="/" replace />} />
+        <Route path="/admin/*" element={<Navigate to="/espace/admin" replace />} />
+        <Route path="/espace/admin/*" element={<AdminEspaceRoutes />} />
         <Route path="/espace/candidat/*" element={<CandidatEspaceRoutes />} />
         <Route path="/espace/moniteur/*" element={<MoniteurEspaceRoutes />} />
         <Route path="/espace/gerant/*" element={<GerantEspaceRoutes />} />

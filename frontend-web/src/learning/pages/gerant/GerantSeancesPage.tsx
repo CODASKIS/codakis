@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { Plus } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import { fetchGerantMoniteurs } from "../../../lib/authApi";
 import {
@@ -102,6 +103,7 @@ export default function GerantSeancesPage() {
         {error ? <p className="ck-empty">{error}</p> : null}
         {message ? <p className="ck-empty" style={{ color: "var(--ck-green)" }}>{message}</p> : null}
         <button type="submit" className="ck-btn ck-btn--primary ck-btn--block" disabled={saving || !inscriptions.length}>
+          <Plus size={16} strokeWidth={2.5} />
           {saving ? "Création…" : "Créer la séance"}
         </button>
       </form>

@@ -133,14 +133,14 @@ export default function DrivingSchoolSearchFilters({
         </div>
       </div>
 
-      <button type="button" className="fj-btn fj-btn--primary fj-btn--block" onClick={onApply}>
+      <button type="button" className="ck-public-btn ck-public-btn--primary ck-public-btn--block" onClick={onApply}>
         {t("schools.filters.apply")}
       </button>
 
       <div className="fj-marketplace-filters__register">
         <h3>{t("schools.filters.registerTitle")}</h3>
         <p>{t("schools.filters.registerLead")}</p>
-        <Link to={AUTH_PATHS.register.autoEcole} className="fj-btn fj-btn--outline fj-btn--block">
+        <Link to={AUTH_PATHS.register.autoEcole} className="ck-public-btn ck-public-btn--primary ck-public-btn--block">
           {t("schools.filters.registerCta")}
         </Link>
       </div>

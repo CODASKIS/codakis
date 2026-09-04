@@ -39,7 +39,7 @@ export default function BlogArticleAside({ relatedPosts }: BlogArticleAsideProps
       <div className="fj-blog-aside-box">
         <h2>{t("blogArticle.asideTitle")}</h2>
         <p>{t("blogArticle.asideText")}</p>
-        <Link to="/auto-ecoles" className="fj-btn fj-btn--primary fj-btn--block">
+        <Link to="/auto-ecoles" className="ck-public-btn ck-public-btn--primary ck-public-btn--block">
           {t("blogArticle.asideCta")}
         </Link>
       </div>

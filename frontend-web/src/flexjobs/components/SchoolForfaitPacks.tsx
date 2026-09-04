@@ -170,7 +170,7 @@ function PackCard({
             <ArrowRight size={20} strokeWidth={1.5} className="fj-pricing-dark__btn-icon" aria-hidden />
           </Link>
         )}
-        <button type="button" className="fj-btn fj-btn--outline fj-btn--block fj-school-pack-card__secondary" onClick={onViewDetails}>
+        <button type="button" className="ck-public-btn ck-public-btn--ghost ck-public-btn--block fj-school-pack-card__secondary" onClick={onViewDetails}>
           {t("packs.viewContent")}
         </button>
       </div>

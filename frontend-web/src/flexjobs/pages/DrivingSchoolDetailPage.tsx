@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Car, Clock, MapPin, Phone, TriangleAlert } from "lucide-react";
+import { Clock, MapPin, Phone } from "lucide-react";
 import { Link, useParams, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
@@ -8,8 +8,8 @@ import { fetchPublicSchool, mapPublicSchoolToDrivingSchool } from "../../lib/pub
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
 import Container from "../components/Container";
 import DrivingSchoolLogo from "../components/DrivingSchoolLogo";
-import DrivingSchoolMeta from "../components/DrivingSchoolMeta";
 import PageBreadcrumb from "../components/PageBreadcrumb";
+import PublicPageHeader from "../components/PublicPageHeader";
 import SchoolForfaitPacks from "../components/SchoolForfaitPacks";
 import SubNav from "../components/SubNav";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
@@ -39,7 +39,9 @@ export default function DrivingSchoolDetailPage() {
     return (
       <>
         <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
-        <Container><p className="fj-tech-empty">{t("common.loading")}</p></Container>
+        <Container>
+          <p className="ck-page-lead">{t("common.loading")}</p>
+        </Container>
       </>
     );
   }
@@ -49,8 +51,8 @@ export default function DrivingSchoolDetailPage() {
       <>
         <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
         <Container>
-          <p className="fj-tech-empty">{t("schools.empty")}</p>
-          <Link to="/auto-ecoles" className="fj-btn fj-btn--outline">
+          <p className="ck-page-lead">{t("schools.empty")}</p>
+          <Link to="/auto-ecoles" className="ck-public-btn ck-public-btn--ghost">
             {t("schools.seeAll")}
           </Link>
         </Container>
@@ -59,14 +61,14 @@ export default function DrivingSchoolDetailPage() {
   }
 
   const contactHref = `/contact?school=${encodeURIComponent(school.name)}`;
-  const schoolTitle = school.name.toUpperCase();
+  const location = `${school.city}${school.district ? `, ${school.district}` : ""}`;
 
   return (
     <>
       <PageMeta title={`${school.name} | CODAKIS`} description={school.description[lang]} />
       <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
 
-      <Container>
+      <div className="ck-page">
         <PageBreadcrumb
           items={[
             { label: t("schoolDetail.breadcrumbHome"), to: "/" },
@@ -74,117 +76,80 @@ export default function DrivingSchoolDetailPage() {
             { label: school.name },
           ]}
         />
-      </Container>
 
-      <div className="fj-school-page">
-        <Container>
-          <div className="fj-school-map-block">
-            <div className="fj-school-map-block__map-wrap">
-              <iframe
-                title={t("schoolDetail.mapTitle", { name: school.name })}
-                className="fj-school-map-block__map"
-                src={buildSchoolMapEmbedUrl(school.latitude, school.longitude)}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+        <section className="ck-school-profile">
+          <div className="ck-school-profile__main">
+            <DrivingSchoolLogo school={school} size="lg" />
+            <div>
+              <h1 className="ck-page-title" style={{ fontSize: "clamp(2.2rem, 3vw, 3rem)" }}>
+                {school.name}
+              </h1>
+              <span className="ck-school-profile__badge">{t("schools.certified")}</span>
+              <p className="ck-page-lead" style={{ marginTop: "0.4rem" }}>
+                {location} · {t("schools.ratingAria", { rating: school.rating })}
+              </p>
+              <p className="ck-page-lead">{school.description[lang]}</p>
             </div>
-
-            <aside className="fj-school-map-block__panel">
-              <div className="fj-school-map-block__title-row">
-                <DrivingSchoolLogo school={school} size="lg" />
-                <h1 className="fj-school-map-block__title">{schoolTitle}</h1>
-              </div>
-
-              <DrivingSchoolMeta school={school} showPrice showExcerpt showCertifiedSince />
-
-              <div className="fj-school-map-block__section">
-                <h2 className="fj-school-map-block__label">
-                  <MapPin size={16} aria-hidden />
-                  {t("schoolDetail.address")}
-                </h2>
-                <p>{school.address}</p>
-              </div>
-
-              <div className="fj-school-map-block__section">
-                <h2 className="fj-school-map-block__label">
-                  <Clock size={16} aria-hidden />
-                  {t("schoolDetail.hours")}
-                </h2>
-                <table className="fj-school-map-block__hours">
-                  <tbody>
-                    {DAY_KEYS.map((day) => (
-                      <tr key={day}>
-                        <th scope="row">{t(`schoolDetail.days.${day}`)}</th>
-                        <td>
-                          {school.hours[day] === "closed"
-                            ? t("schoolDetail.closed")
-                            : school.hours[day]}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="fj-school-map-block__section">
-                <h2 className="fj-school-map-block__label">
-                  <Phone size={16} aria-hidden />
-                  {t("schoolDetail.contact")}
-                </h2>
-                <a href={`tel:${school.phone.replace(/\s/g, "")}`} className="fj-school-map-block__phone">
-                  {school.phone}
-                </a>
-              </div>
-
-              <Link to={contactHref} className="fj-btn fj-btn--primary fj-school-map-block__cta">
-                {t("schoolDetail.contactCta")}
-              </Link>
-            </aside>
           </div>
-
-          <SchoolForfaitPacks
-            school={school}
-            title={t("schoolDetail.formationsTitle", { name: schoolTitle })}
-            subtitle={t("packs.subtitleSchool")}
-            className="fj-school-packs"
-            initialBuyForfaitId={buyForfaitId}
-          />
-        </Container>
-
-        <section className="fj-school-quick">
-          <Container>
-            <div className="fj-school-quick__box">
-              <article className="fj-school-quick__row">
-                <TriangleAlert className="fj-school-quick__icon fj-school-quick__icon--code" aria-hidden />
-                <div>
-                  <h2>{t("schoolDetail.reviseCodeTitle")}</h2>
-                  <p>{t("schoolDetail.reviseCodeText")}</p>
-                </div>
-              </article>
-              <article className="fj-school-quick__row">
-                <Car className="fj-school-quick__icon fj-school-quick__icon--drive" aria-hidden />
-                <div>
-                  <h2>{t("schoolDetail.bookLessonTitle")}</h2>
-                  <p>{t("schoolDetail.bookLessonText")}</p>
-                </div>
-              </article>
-            </div>
-          </Container>
+          <div className="ck-school-profile__actions">
+            <Link to={contactHref} className="ck-public-btn ck-public-btn--primary">
+              {t("schoolDetail.contactCta")}
+            </Link>
+            <a href={`tel:${school.phone.replace(/\s/g, "")}`} className="ck-public-btn ck-public-btn--ghost">
+              {school.phone}
+            </a>
+          </div>
         </section>
 
-        <section className="fj-school-about">
-          <Container>
-            <h2 className="fj-school-about__title">{schoolTitle}</h2>
-            <p className="fj-school-about__intro">{school.longDescription[lang]}</p>
+        <PublicPageHeader
+          title={t("schoolDetail.formationsTitle", { name: school.name })}
+          lead={t("packs.subtitleSchool")}
+        />
+        <SchoolForfaitPacks school={school} className="fj-school-packs" initialBuyForfaitId={buyForfaitId} />
 
-            <div className="fj-school-about__access">
-              <div className="fj-school-about__access-visual" aria-hidden />
-              <div>
-                <h3>{t("schoolDetail.accessTitle")}</h3>
-                <p>{school.accessInfo[lang]}</p>
-              </div>
-            </div>
-          </Container>
+        <div className="ck-school-info">
+          <div className="ck-school-info__item">
+            <h3>
+              <MapPin size={18} aria-hidden /> {t("schoolDetail.address")}
+            </h3>
+            <p>{school.address}</p>
+          </div>
+          <div className="ck-school-info__item">
+            <h3>
+              <Phone size={18} aria-hidden /> {t("schoolDetail.contact")}
+            </h3>
+            <a href={`tel:${school.phone.replace(/\s/g, "")}`}>{school.phone}</a>
+          </div>
+          <div className="ck-school-info__item">
+            <h3>
+              <Clock size={18} aria-hidden /> {t("schoolDetail.hours")}
+            </h3>
+            <p>
+              {DAY_KEYS.slice(0, 3)
+                .map((day) => `${t(`schoolDetail.days.${day}`)}: ${school.hours[day] === "closed" ? t("schoolDetail.closed") : school.hours[day]}`)
+                .join(" · ")}
+            </p>
+          </div>
+        </div>
+
+        <section className="ck-page-section">
+          <div className="ck-page-section__head">
+            <h2>{school.name}</h2>
+            <p>{school.longDescription[lang]}</p>
+          </div>
+          <p className="ck-page-lead">
+            <strong>{t("schoolDetail.accessTitle")} — </strong>
+            {school.accessInfo[lang]}
+          </p>
+        </section>
+
+        <section className="ck-school-map" aria-label={t("schoolDetail.mapTitle", { name: school.name })}>
+          <iframe
+            title={t("schoolDetail.mapTitle", { name: school.name })}
+            src={buildSchoolMapEmbedUrl(school.latitude, school.longitude)}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
         </section>
       </div>
     </>

@@ -13,7 +13,7 @@ export default function DomainCard({ label, technicianCount }: DomainCardProps) 
       <p className="text-[1.4rem] text-[#667085] mb-3">
         Techniciens référencés : {technicianCount > 0 ? `${technicianCount}+` : "—"}
       </p>
-      <Link to="/auto-ecoles" className="fj-btn fj-btn--outline fj-btn--sm">
+      <Link to="/auto-ecoles" className="ck-public-btn ck-public-btn--ghost ck-public-btn--sm">
         Voir l&apos;annuaire
       </Link>
     </Card>
@@ -54,11 +54,11 @@ export function PlanCard({
       </p>
       {description ? <p className="text-[1.4rem] text-[#667085] mb-4">{description}</p> : null}
       {isExternal ? (
-        <a href={ctaHref} className="fj-btn fj-btn--primary">
+        <a href={ctaHref} className="ck-public-btn ck-public-btn--primary">
           {ctaLabel}
         </a>
       ) : (
-        <Link to={ctaHref} className="fj-btn fj-btn--primary">
+        <Link to={ctaHref} className="ck-public-btn ck-public-btn--primary">
           {ctaLabel}
         </Link>
       )}

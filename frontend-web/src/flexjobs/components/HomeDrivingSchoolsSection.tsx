@@ -7,7 +7,6 @@ import {
 } from "../../data/mockDrivingSchools";
 import { fetchPublicSchools, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
-import Button from "./Button";
 import Container from "./Container";
 
 export default function HomeDrivingSchoolsSection() {
@@ -30,9 +29,6 @@ export default function HomeDrivingSchoolsSection() {
             <h2 id="home-schools-title">{t("home.schoolsTitle")}</h2>
             <p>{t("home.schoolsLead")}</p>
           </div>
-          <Button href="/auto-ecoles" variant="outline">
-            {t("nav.seeAllSchools")}
-          </Button>
         </div>
 
         {cityGroups.length === 0 ? (
@@ -57,7 +53,7 @@ export default function HomeDrivingSchoolsSection() {
         )}
 
         <div className="fj-home-schools__footer">
-          <Link to="/auto-ecoles" className="fj-btn fj-btn--primary">
+          <Link to="/auto-ecoles" className="ck-public-btn ck-public-btn--primary ck-public-btn--lg">
             {t("nav.seeAllSchools")}
           </Link>
         </div>

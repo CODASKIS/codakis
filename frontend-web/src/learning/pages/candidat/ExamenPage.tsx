@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { X } from "lucide-react";
 import Loader from "../../../components/common/Loader";
+import MediaVideo from "../../../components/common/MediaVideo";
+import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
 import {
   fetchCandidatExamenTake,
   submitCandidatExamen,
@@ -86,9 +88,12 @@ export default function ExamenPage() {
         <p className="ck-subtitle" style={{ marginBottom: "0.8rem" }}>
           {title} · {index + 1}/{questions.length}
         </p>
-        <h1 className="ck-title" style={{ fontSize: "2.2rem", marginBottom: "2rem" }}>
-          {current.prompt}
-        </h1>
+        {current.video_url ? (
+          <MediaVideo url={current.video_url} title={current.prompt} className="ck-challenge__media" />
+        ) : current.image_url ? (
+          <img src={current.image_url} alt="" className="ck-lesson__cover" />
+        ) : null}
+        <SpeakPrompt key={current.id} text={current.prompt} autoPlay />
         <div className="ck-quiz__options" role="radiogroup">
           {current.reponses.map((r, i) => (
             <button

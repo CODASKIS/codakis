@@ -8,17 +8,18 @@ type Props = {
   action?: ReactNode;
 };
 
+/** Panneau = structure exacte .ck-schools-panel du site. */
 export default function ComponentCard({ title, children, className = "", desc = "", action }: Props) {
   return (
-    <div className={`ta-card ${className}`.trim()}>
-      <div className="ta-card__head">
+    <section className={`ck-schools-panel ${className}`.trim()}>
+      <div className="ck-schools-panel__head" style={{ display: "flex", justifyContent: "space-between", gap: "1rem" }}>
         <div>
-          <h3 className="ta-card__title">{title}</h3>
-          {desc ? <p className="ta-card__desc">{desc}</p> : null}
+          <h2>{title}</h2>
+          {desc ? <p>{desc}</p> : null}
         </div>
         {action}
       </div>
-      <div className="ta-card__body">{children}</div>
-    </div>
+      <div>{children}</div>
+    </section>
   );
 }

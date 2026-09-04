@@ -1,4 +1,5 @@
 import { authFetch, AuthApiError, getAccessToken } from "./authApi";
+import { getPreferredVoiceId } from "./userPreferences";
 
 export type PedagogyTheme = {
   id: string;
@@ -319,6 +320,10 @@ export type CandidatDashboard = {
   chapters_read?: number;
   chapters_total?: number;
   next_level_at?: number;
+  questions_answered?: number;
+  questions_total?: number;
+  correct_answers?: number;
+  first_try_rate?: number;
 };
 
 export type Gamification = {
@@ -336,7 +341,7 @@ export type RoadmapStep = {
   ref: string;
   title: string;
   sort_order: number;
-  status: "done" | "current" | "locked" | "premium_locked";
+  status: "done" | "current" | "locked" | "premium_locked" | "failed";
   theme_id: string;
   theme_code: string;
   theme_title: string;
@@ -432,7 +437,11 @@ export async function fetchCandidatCoursePath(themeId: string): Promise<CoursePa
   return authFetch<CoursePath>(`/api/v1/candidat/pedagogy/themes/${themeId}/path`);
 }
 
-export async function synthesizeCandidatSpeech(text: string, language?: string): Promise<Blob> {
+export async function synthesizeCandidatSpeech(
+  text: string,
+  language?: string,
+  voiceId?: string,
+): Promise<Blob> {
   const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "";
   const url = base ? `${base}/api/v1/candidat/pedagogy/tts` : "/api/v1/candidat/pedagogy/tts";
   const token = getAccessToken();
@@ -442,7 +451,11 @@ export async function synthesizeCandidatSpeech(text: string, language?: string):
       "Content-Type": "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ text, language }),
+    body: JSON.stringify({
+      text,
+      language,
+      voice_id: voiceId || getPreferredVoiceId(),
+    }),
   });
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));

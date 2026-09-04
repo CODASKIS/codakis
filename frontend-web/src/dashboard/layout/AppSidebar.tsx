@@ -23,37 +23,33 @@ export default function AppSidebar({ roleLabel, homeTo, items }: Props) {
 
   return (
     <aside
-      className={`fixed top-0 left-0 z-50 flex h-screen flex-col border-r border-gray-200 bg-white px-4 py-6 transition-all duration-300 ease-in-out
-        ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-        lg:translate-x-0
-        ${wide ? "w-[290px]" : "lg:w-[90px]"}
-      `}
+      className={`ta-sidebar ${wide ? "ta-sidebar--wide" : "ta-sidebar--rail"} ${
+        isMobileOpen ? "is-open" : ""
+      }`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="mb-8 flex items-center justify-between gap-3">
-        <Link to={homeTo} className="flex min-w-0 items-center gap-2.5 no-underline">
-          <img
-            src={wide ? CODAKIS_LOGO : CODAKIS_LOGO_ICON}
-            alt="CODAKIS"
-            className={wide ? "h-10 w-auto object-contain" : "h-10 w-10 object-contain"}
-          />
+      {wide ? (
+        <div className="ta-sidebar__brand-wide">
+          <Link to={homeTo} className="ta-sidebar__wordmark" onClick={closeMobile}>
+            <img src={CODAKIS_LOGO} alt="CODAKIS" />
+          </Link>
+          {isMobileOpen ? (
+            <button type="button" className="ta-sidebar__close" onClick={closeMobile} aria-label="Fermer">
+              <X size={20} strokeWidth={2.5} />
+            </button>
+          ) : null}
+        </div>
+      ) : (
+        /* Même structure exacte qu’un lien nav (centrage identique) */
+        <Link to={homeTo} className="ta-sidebar__link ta-sidebar__link--rail ta-sidebar__logo-link" title="CODAKIS">
+          <img src={CODAKIS_LOGO_ICON} alt="CODAKIS" className="ta-sidebar__icon-img" />
         </Link>
-        {isMobileOpen ? (
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 lg:hidden"
-            onClick={closeMobile}
-            aria-label="Fermer le menu"
-          >
-            <X size={22} strokeWidth={2.5} />
-          </button>
-        ) : null}
-      </div>
+      )}
 
-      {wide ? <p className="ta-nav-label mb-3 px-2">{roleLabel}</p> : null}
+      {wide ? <p className="ta-nav-label ta-sidebar__role">{roleLabel}</p> : null}
 
-      <nav className="flex flex-1 flex-col gap-1.5 overflow-y-auto">
+      <nav className="ta-sidebar__nav">
         {items.map((item) => {
           const Icon = item.icon;
           return (
@@ -62,16 +58,12 @@ export default function AppSidebar({ roleLabel, homeTo, items }: Props) {
               to={item.to}
               end={item.end}
               onClick={closeMobile}
-              className={({ isActive }) =>
-                `ta-nav-link flex items-center gap-3 rounded-xl px-3 py-3 transition no-underline ${
-                  isActive
-                    ? "bg-brand-50 text-brand-600"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                } ${!wide ? "justify-center px-2" : ""}`
-              }
               title={item.label}
+              className={({ isActive }) =>
+                `ta-sidebar__link ${isActive ? "is-active" : ""} ${wide ? "" : "ta-sidebar__link--rail"}`
+              }
             >
-              <Icon size={22} strokeWidth={2.4} className="shrink-0" />
+              <Icon size={22} strokeWidth={2.4} className="ta-sidebar__icon" />
               {wide ? <span>{item.label}</span> : null}
             </NavLink>
           );

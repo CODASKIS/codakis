@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
@@ -20,21 +20,36 @@ import {
 } from "../authStore";
 import type { UserRole } from "../types";
 import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
-import { MOCK_DRIVING_SCHOOLS } from "../../data/mockDrivingSchools";
+import { fetchPublicSchool } from "../../lib/publicSchoolsApi";
 
 export default function LoginPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
-  const purchaseSchool = useMemo(
-    () => (purchaseIntent ? MOCK_DRIVING_SCHOOLS.find((s) => s.id === purchaseIntent.schoolId) : null),
-    [purchaseIntent],
-  );
+  const [purchaseSchoolName, setPurchaseSchoolName] = useState<string | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!purchaseIntent?.schoolId) {
+      setPurchaseSchoolName(null);
+      return;
+    }
+    let cancelled = false;
+    void fetchPublicSchool(purchaseIntent.schoolId)
+      .then((school) => {
+        if (!cancelled) setPurchaseSchoolName(school.name);
+      })
+      .catch(() => {
+        if (!cancelled) setPurchaseSchoolName(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [purchaseIntent]);
 
   function finishAuth(role: UserRole) {
     if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
@@ -81,12 +96,12 @@ export default function LoginPage() {
   return (
     <>
       <PageMeta title={t("auth.login.pageTitle")} description={t("auth.login.metaDescription")} />
-      <AuthSplitLayout backHref="/" backLabel={t("auth.backToSite")}>
+      <AuthSplitLayout backHref="/" backLabel={t("auth.backToSite")} mood="login">
         <div className="codakis-auth__panel">
           <h1 className="codakis-auth__title">{t("auth.login.pageTitle")}</h1>
           <p className="codakis-auth__subtitle">
-            {purchaseSchool
-              ? t("auth.login.purchaseHint", { school: purchaseSchool.name })
+            {purchaseSchoolName
+              ? t("auth.login.purchaseHint", { school: purchaseSchoolName })
               : t("auth.login.subtitle")}
           </p>
 

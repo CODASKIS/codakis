@@ -8,6 +8,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   block?: boolean;
 };
 
+/** Boutons = classes exactes du site (.ck-btn). */
 export default function Button({
   children,
   size = "md",
@@ -20,13 +21,12 @@ export default function Button({
   ...rest
 }: Props) {
   const classes = [
-    "ta-btn",
-    variant === "primary" && "ta-btn--primary",
-    variant === "outline" && "ta-btn--outline",
-    variant === "ghost" && "ta-btn--ghost",
-    variant === "danger" && "ta-btn--danger",
-    size === "sm" && "ta-btn--sm",
-    block && "ta-btn--block",
+    "ck-btn",
+    variant === "primary" && "ck-btn--primary",
+    (variant === "outline" || variant === "ghost") && "ck-btn--ghost",
+    variant === "danger" && "ck-btn--danger",
+    size === "sm" && "ck-btn--sm",
+    block && "ck-btn--block",
     className,
   ]
     .filter(Boolean)
@@ -34,7 +34,7 @@ export default function Button({
 
   return (
     <button type={type} className={classes} disabled={disabled} {...rest}>
-      {startIcon ? <span className="ta-btn__icon">{startIcon}</span> : null}
+      {startIcon ? <span className="ta-btn-icon">{startIcon}</span> : null}
       {children}
     </button>
   );

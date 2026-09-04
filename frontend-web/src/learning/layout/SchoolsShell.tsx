@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type ComponentType } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router";
-import { ChevronDown, LogOut, Menu, MoreHorizontal, UserRound, X } from "lucide-react";
+import { ChevronDown, Menu, MoreHorizontal, X } from "lucide-react";
 import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession, hydrateSessionFromApi } from "../../auth/authStore";
+import UserMenuPanel from "../../components/prefs/UserMenuPanel";
 import { useTheme } from "../../context/ThemeContext";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import SchoolsRightRail, { type ProRole } from "../components/SchoolsRightRail";
@@ -23,6 +24,7 @@ type Props = {
   title?: string;
   loadTitle?: () => Promise<string>;
   profileTo: string;
+  preferencesTo: string;
   accent?: string;
 };
 
@@ -44,6 +46,7 @@ function ProfileMenu({
   email,
   avatarUrl,
   profileTo,
+  preferencesTo,
   onClose,
   onLogout,
 }: {
@@ -51,28 +54,21 @@ function ProfileMenu({
   email?: string;
   avatarUrl?: string | null;
   profileTo: string;
+  preferencesTo: string;
   onClose: () => void;
   onLogout: () => void;
 }) {
   return (
     <div className="ck-schools__dropdown" role="menu">
-      <div className="ck-schools__dropdown-head">
-        <ProfilePhoto name={displayName} avatarUrl={avatarUrl} size={48} />
-        <div className="ck-schools__dropdown-meta">
-          <strong title={displayName}>{displayName}</strong>
-          <small title={email ?? ""}>{email}</small>
-        </div>
-      </div>
-      <div className="ck-schools__dropdown-list">
-        <Link to={profileTo} role="menuitem" className="ck-schools__dropdown-item" onClick={onClose}>
-          <UserRound size={18} aria-hidden />
-          <span>Mon compte</span>
-        </Link>
-        <button type="button" role="menuitem" className="ck-schools__dropdown-item is-danger" onClick={onLogout}>
-          <LogOut size={18} aria-hidden />
-          <span>Se déconnecter</span>
-        </button>
-      </div>
+      <UserMenuPanel
+        name={displayName}
+        email={email}
+        avatarUrl={avatarUrl}
+        profileTo={profileTo}
+        preferencesTo={preferencesTo}
+        onClose={onClose}
+        onLogout={onLogout}
+      />
     </div>
   );
 }
@@ -85,6 +81,7 @@ export default function SchoolsShell({
   title,
   loadTitle,
   profileTo,
+  preferencesTo,
   accent = "#00a859",
 }: Props) {
   const navigate = useNavigate();
@@ -149,6 +146,7 @@ export default function SchoolsShell({
     email: session?.email,
     avatarUrl: session?.avatarUrl,
     profileTo,
+    preferencesTo,
     onLogout: logout,
   };
 

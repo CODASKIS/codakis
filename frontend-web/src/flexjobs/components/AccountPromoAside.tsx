@@ -33,7 +33,7 @@ export default function AccountPromoAside({
             </li>
           ))}
         </ul>
-        <Link to={ctaHref} className="fj-btn fj-btn--primary fj-btn--block">
+        <Link to={ctaHref} className="ck-public-btn ck-public-btn--primary ck-public-btn--block">
           {ctaLabel}
         </Link>
       </div>

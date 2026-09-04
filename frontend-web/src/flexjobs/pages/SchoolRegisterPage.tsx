@@ -6,9 +6,7 @@ import { AUTH_PATHS } from "../../constants/authPaths";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
 import { supportedLanguages } from "../../i18n";
 import { AuthApiError, getPostLoginPath, isAuthenticatedForRole, registerDrivingSchool } from "../../auth/authStore";
-import Container from "../components/Container";
 import PageBreadcrumb from "../components/PageBreadcrumb";
-import SubNav from "../components/SubNav";
 
 function PasswordField({
   id,
@@ -171,17 +169,30 @@ export default function SchoolRegisterPage() {
   return (
     <>
       <PageMeta title={t("schoolRegister.metaTitle")} description={t("schoolRegister.metaDescription")} />
-      <SubNav
-        activePath="/inscription-auto-ecole"
-        items={[
-          { label: t("nav.drivingSchools"), to: "/auto-ecoles" },
-          { label: t("guide.navSchool"), to: "/guide/auto-ecole" },
-          { label: t("schoolRegister.navLabel"), to: "/inscription-auto-ecole" },
-        ]}
-      />
 
-      <section className="fj-section fj-signup-wrap">
-        <Container>
+      <div className="ck-auth-register">
+        <aside className="ck-auth-register__card" aria-label={t("schoolRegister.benefitsTitle")}>
+          <h1 className="ck-page-title" style={{ fontSize: "2.4rem" }}>
+            {t("schoolRegister.title")}
+          </h1>
+          <p className="ck-page-lead">{t("schoolRegister.intro")}</p>
+          <p className="ck-page-lead">{t("schoolRegister.verificationHint")}</p>
+          <div className="ck-page-stack" style={{ marginTop: "2rem" }}>
+            {benefits.map((benefit) => (
+              <article key={benefit.title} className="ck-home-step">
+                <span className="ck-home-step__num" aria-hidden>
+                  ✓
+                </span>
+                <div>
+                  <h3>{benefit.title}</h3>
+                  <p>{benefit.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </aside>
+
+        <div className="ck-auth-register__card">
           <PageBreadcrumb
             items={[
               { label: t("breadcrumb.home"), to: "/" },
@@ -189,16 +200,8 @@ export default function SchoolRegisterPage() {
             ]}
           />
 
-          <div className="fj-signup-grid">
-            <div className="fj-signup-left">
-              <div className="fj-signup-intro">
-                <h1>{t("schoolRegister.title")}</h1>
-                <p>{t("schoolRegister.intro")}</p>
-                <p className="fj-field-hint">{t("schoolRegister.verificationHint")}</p>
-              </div>
-
-              <form className="fj-signup-form-box" onSubmit={handleSubmit} noValidate>
-                <h2 className="fj-signup-form-heading">{t("schoolRegister.formTitle")}</h2>
+          <form className="fj-signup-form-box" onSubmit={handleSubmit} noValidate style={{ border: 0, boxShadow: "none", padding: 0 }}>
+            <h2 className="fj-signup-form-heading">{t("schoolRegister.formTitle")}</h2>
 
                 <fieldset className="mb-8 border-0 p-0">
                   <legend className="fj-signup-form-heading text-left justify-start mb-4 text-[1.6rem]">
@@ -508,7 +511,7 @@ export default function SchoolRegisterPage() {
                 {success ? <p className="text-[#27ae60] text-[1.4rem] mt-4">{success}</p> : null}
 
                 <div className="fj-signup-submit">
-                  <button type="submit" className="fj-btn fj-btn--primary fj-signup-submit__btn" disabled={loading}>
+                  <button type="submit" className="ck-public-btn ck-public-btn--primary fj-signup-submit__btn" disabled={loading}>
                     {loading ? t("common.loading") : t("schoolRegister.submit")}
                   </button>
                 </div>
@@ -520,23 +523,8 @@ export default function SchoolRegisterPage() {
                   </Link>
                 </p>
               </form>
-            </div>
-
-            <aside className="fj-signup-benefits" aria-label={t("schoolRegister.benefitsTitle")}>
-              <h2>{t("schoolRegister.benefitsTitle")}</h2>
-              {benefits.map((benefit) => (
-                <div key={benefit.title} className="fj-signup-benefit">
-                  <div className="fj-signup-benefit__icon" aria-hidden="true">
-                    <span>✓</span>
-                  </div>
-                  <strong>{benefit.title}</strong>
-                  <p>{benefit.text}</p>
-                </div>
-              ))}
-            </aside>
-          </div>
-        </Container>
-      </section>
+        </div>
+      </div>
     </>
   );
 }

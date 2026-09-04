@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
-import { KeyRound, Pencil, Plus, Trash2 } from "lucide-react";
+import { CalendarPlus, KeyRound, Package, Pencil, Plus, Trash2, UserPlus, Users } from "lucide-react";
 import Loader from "../../../components/common/Loader";
+import ComponentCard from "../../../dashboard/common/ComponentCard";
 import {
   createGerantMoniteur,
   fetchGerantMoniteurs,
@@ -251,28 +252,33 @@ export default function GerantAssignerPage() {
   if (loading) return <Loader variant="page" />;
 
   return (
-    <div className="ck-schools-stack">
-      <section className="ck-schools-panel">
-        <div className="ck-schools-panel__head ck-schools-panel__head--row">
-          <div>
-            <h2>Parcourir et assigner</h2>
-            <p>Forfaits, séances pratiques et moniteurs</p>
-          </div>
-          <button type="button" className="ck-btn ck-btn--primary ck-schools-edit-btn" onClick={openCreateForfait}>
-            <Plus size={16} />
-            Nouveau forfait
-          </button>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 className="ck-title">Assigner</h2>
+          <p className="ck-subtitle">Forfaits, séances pratiques et équipe moniteurs.</p>
         </div>
-        {error ? <p className="ck-empty">{error}</p> : null}
-        {message ? <p className="ck-empty" style={{ color: "var(--ck-green)" }}>{message}</p> : null}
-        {tempPassword ? (
-          <p className="ck-empty" style={{ color: "var(--ck-orange)" }}>
-            Mot de passe temporaire moniteur : <strong>{tempPassword}</strong>
-          </p>
-        ) : null}
+        <button type="button" className="ck-btn ck-btn--primary" onClick={openCreateForfait}>
+          <Plus size={16} strokeWidth={2.5} />
+          Nouveau forfait
+        </button>
+      </div>
 
+      {error ? <p className="ck-empty">{error}</p> : null}
+      {message ? <p className="ck-empty" style={{ color: "var(--ck-green)" }}>{message}</p> : null}
+      {tempPassword ? (
+        <p className="ck-empty" style={{ color: "var(--ck-orange)" }}>
+          Mot de passe temporaire moniteur : <strong>{tempPassword}</strong>
+        </p>
+      ) : null}
+
+      <ComponentCard
+        title="Forfaits publiés"
+        desc="Offres visibles par les candidats"
+        action={<Package size={20} color="#00a859" strokeWidth={2.4} aria-hidden />}
+      >
         {showForfaitForm ? (
-          <form className="ck-form ck-schools-inline-form" onSubmit={(e) => void onSaveForfait(e)}>
+          <form className="ck-form ck-schools-inline-form" onSubmit={(e) => void onSaveForfait(e)} style={{ marginBottom: "2rem" }}>
             <h3 className="ck-schools-subtitle">
               {editingForfaitId ? "Modifier le forfait" : "Créer un forfait"}
             </h3>
@@ -362,26 +368,33 @@ export default function GerantAssignerPage() {
           </form>
         ) : null}
 
-        <h3 className="ck-schools-subtitle">Forfaits publiés</h3>
-        <div className="ck-schools-cards">
+        <div className="ta-package-grid">
           {forfaits.map((item) => (
-            <article key={item.id} className="ck-schools-card">
-              <strong>{item.label_fr}</strong>
-              <p>
-                {item.prix.toLocaleString("fr-FR")} FCFA
-                {item.heures_conduite ? ` · ${item.heures_conduite}h` : ""}
-              </p>
-              <span className={`ck-schools-pill${item.est_actif ? " is-on" : ""}`}>
-                {item.est_actif ? "Actif" : "Inactif"}
-              </span>
-              <div className="ck-schools-card__actions">
-                <button type="button" className="ck-btn ck-btn--ghost" onClick={() => openEditForfait(item)}>
+            <article key={item.id} className="ta-package-card">
+              <div className="ta-package-card__top">
+                <span className="ta-package-card__icon">
+                  <Package size={20} strokeWidth={2.3} />
+                </span>
+                <span className={`ck-schools-pill${item.est_actif ? " is-on" : ""}`}>
+                  {item.est_actif ? "Actif" : "Inactif"}
+                </span>
+              </div>
+              <div>
+                <strong style={{ fontSize: "1.7rem", display: "block" }}>{item.label_fr}</strong>
+                <p className="ta-package-card__price">{item.prix.toLocaleString("fr-FR")} FCFA</p>
+                <p className="ta-package-card__meta">
+                  {FORFAIT_TYPES.find((t) => t.value === item.type)?.label || item.type}
+                  {item.heures_conduite ? ` · ${item.heures_conduite}h conduite` : ""}
+                </p>
+              </div>
+              <div className="ta-package-card__actions">
+                <button type="button" className="ck-btn ck-btn--ghost ck-btn--sm" onClick={() => openEditForfait(item)}>
                   <Pencil size={14} /> Modifier
                 </button>
-                <button type="button" className="ck-btn ck-btn--ghost" onClick={() => void toggleForfait(item)}>
+                <button type="button" className="ck-btn ck-btn--ghost ck-btn--sm" onClick={() => void toggleForfait(item)}>
                   {item.est_actif ? "Désactiver" : "Activer"}
                 </button>
-                <button type="button" className="ck-btn ck-btn--danger" onClick={() => void removeForfait(item.id)}>
+                <button type="button" className="ck-btn ck-btn--danger ck-btn--sm" onClick={() => void removeForfait(item.id)}>
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -389,11 +402,14 @@ export default function GerantAssignerPage() {
           ))}
           {!forfaits.length ? <p className="ck-empty">Aucun forfait — créez-en un pour publier vos offres.</p> : null}
         </div>
-      </section>
+      </ComponentCard>
 
-      <div className="ck-schools-grid-2">
-        <section className="ck-schools-panel">
-          <h3 className="ck-schools-subtitle">Assigner une séance</h3>
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <ComponentCard
+          title="Assigner une séance"
+          desc="Planifier une séance pratique pour un élève"
+          action={<CalendarPlus size={20} color="#0ea5e9" strokeWidth={2.4} aria-hidden />}
+        >
           <form className="ck-form" onSubmit={(e) => void onCreateSeance(e)}>
             <label>
               Élève
@@ -425,14 +441,21 @@ export default function GerantAssignerPage() {
               <input value={lieu} onChange={(e) => setLieu(e.target.value)} placeholder="Parking, circuit…" />
             </label>
             <button type="submit" className="ck-btn ck-btn--primary ck-btn--block" disabled={savingSeance || !inscriptions.length}>
-              {savingSeance ? "Création…" : "Assigner"}
+              <CalendarPlus size={16} strokeWidth={2.5} />
+              {savingSeance ? "Création…" : "Assigner la séance"}
             </button>
           </form>
-        </section>
+        </ComponentCard>
 
-        <section className="ck-schools-panel">
-          <h3 className="ck-schools-subtitle">Inviter un moniteur</h3>
-          <form className="ck-form" onSubmit={(e) => void onInviteMoniteur(e)}>
+        <ComponentCard
+          title="Équipe moniteurs"
+          desc="Inviter et gérer les accès"
+          action={<Users size={20} color="#00a859" strokeWidth={2.4} aria-hidden />}
+        >
+          <form className="ck-form" onSubmit={(e) => void onInviteMoniteur(e)} style={{ marginBottom: "2rem" }}>
+            <p className="ck-schools-subtitle" style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+              <UserPlus size={16} /> Inviter un moniteur
+            </p>
             <label>
               Prénom
               <input value={inviteFirst} onChange={(e) => setInviteFirst(e.target.value)} required />
@@ -450,6 +473,7 @@ export default function GerantAssignerPage() {
               <input value={invitePhone} onChange={(e) => setInvitePhone(e.target.value)} />
             </label>
             <button type="submit" className="ck-btn ck-btn--primary ck-btn--block" disabled={savingInvite}>
+              <UserPlus size={16} strokeWidth={2.5} />
               {savingInvite ? "Invitation…" : "Inviter"}
             </button>
           </form>
@@ -479,7 +503,7 @@ export default function GerantAssignerPage() {
             ))}
             {!moniteurs.length ? <li className="ck-empty">Aucun moniteur.</li> : null}
           </ul>
-        </section>
+        </ComponentCard>
       </div>
     </div>
   );

@@ -58,7 +58,6 @@ function buildForfaitsRecord(forfaits: PublicForfait[]): DrivingSchool["forfaits
       id: item.id,
       label: { fr: item.label_fr, en: item.label_en },
       price: item.prix,
-      comparePrice: Math.round(item.prix * 1.15),
       description: { fr: item.description_fr ?? item.label_fr, en: item.description_en ?? item.label_en },
       drivingHours: (item.heures_conduite as 5 | 10 | 20 | 30 | undefined) ?? undefined,
     };

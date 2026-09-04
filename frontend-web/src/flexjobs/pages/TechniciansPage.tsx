@@ -1,4 +1,4 @@
-import { Grid3X3, LayoutList, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -11,19 +11,18 @@ import {
   mapPublicSchoolToDrivingSchool,
 } from "../../lib/publicSchoolsApi";
 import type { DrivingSchool } from "../../data/mockDrivingSchools";
-import Container from "../components/Container";
 import DrivingSchoolCard from "../components/DrivingSchoolCard";
 import DrivingSchoolSearchFilters, {
   type SchoolSearchFilters,
 } from "../components/DrivingSchoolSearchFilters";
+import HeaderSearch from "../components/HeaderSearch";
 import Pagination from "../components/Pagination";
+import PublicPageHeader from "../components/PublicPageHeader";
 import SubNav from "../components/SubNav";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
 
-const PAGE_SIZE_GRID = 6;
 const PAGE_SIZE_LIST = 10;
 
-type ViewMode = "list" | "grid";
 type SortKey = "name" | "price_asc" | "price_desc" | "newest";
 
 function parseFilters(params: URLSearchParams): SchoolSearchFilters {
@@ -37,7 +36,7 @@ function parseFilters(params: URLSearchParams): SchoolSearchFilters {
   };
 }
 
-function filtersToParams(filters: SchoolSearchFilters, page: number, view: ViewMode): URLSearchParams {
+function filtersToParams(filters: SchoolSearchFilters, page: number): URLSearchParams {
   const next = new URLSearchParams();
   if (filters.q.trim()) next.set("q", filters.q.trim());
   if (filters.ville.trim()) next.set("ville", filters.ville.trim());
@@ -46,7 +45,6 @@ function filtersToParams(filters: SchoolSearchFilters, page: number, view: ViewM
   if (filters.priceMax.trim()) next.set("price_max", filters.priceMax.trim());
   if (filters.sort && filters.sort !== "name") next.set("sort", filters.sort);
   if (page > 1) next.set("page", String(page));
-  if (view === "grid") next.set("view", "grid");
   return next;
 }
 
@@ -63,9 +61,8 @@ export default function TechniciansPage() {
   const [draftFilters, setDraftFilters] = useState<SchoolSearchFilters>(appliedFilters);
 
   const page = Math.max(1, Number.parseInt(searchParams.get("page") ?? "1", 10) || 1);
-  const viewMode: ViewMode = searchParams.get("view") === "grid" ? "grid" : "list";
   const sort = (appliedFilters.sort || "name") as SortKey;
-  const pageSize = viewMode === "grid" ? PAGE_SIZE_GRID : PAGE_SIZE_LIST;
+  const pageSize = PAGE_SIZE_LIST;
 
   useEffect(() => {
     setDraftFilters(appliedFilters);
@@ -114,10 +111,9 @@ export default function TechniciansPage() {
 
   useEffect(() => {
     if (page !== currentPage) {
-      const nextParams = filtersToParams(appliedFilters, currentPage, viewMode);
-      setSearchParams(nextParams, { replace: true });
+      setSearchParams(filtersToParams(appliedFilters, currentPage), { replace: true });
     }
-  }, [appliedFilters, currentPage, page, setSearchParams, viewMode]);
+  }, [appliedFilters, currentPage, page, setSearchParams]);
 
   const paginatedResults = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -125,12 +121,12 @@ export default function TechniciansPage() {
   }, [currentPage, pageSize, schools]);
 
   const handlePageChange = (nextPage: number) => {
-    setSearchParams(filtersToParams(appliedFilters, nextPage, viewMode));
+    setSearchParams(filtersToParams(appliedFilters, nextPage));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleApplyFilters = () => {
-    setSearchParams(filtersToParams(draftFilters, 1, viewMode));
+    setSearchParams(filtersToParams(draftFilters, 1));
   };
 
   const handleClearFilters = () => {
@@ -143,17 +139,13 @@ export default function TechniciansPage() {
       sort: "name",
     };
     setDraftFilters(empty);
-    setSearchParams(filtersToParams(empty, 1, viewMode));
+    setSearchParams(filtersToParams(empty, 1));
   };
 
   const handleSortChange = (nextSort: SortKey) => {
     const next = { ...appliedFilters, sort: nextSort };
     setDraftFilters(next);
-    setSearchParams(filtersToParams(next, 1, viewMode));
-  };
-
-  const handleViewChange = (nextView: ViewMode) => {
-    setSearchParams(filtersToParams(appliedFilters, currentPage, nextView));
+    setSearchParams(filtersToParams(next, 1));
   };
 
   const themeCode = normalizeThemeCode(appliedFilters.q);
@@ -179,16 +171,23 @@ export default function TechniciansPage() {
       <PageMeta title={t("schools.metaTitle")} description={t("schools.metaDescription")} />
       <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
 
-      <Container className="fj-marketplace-page">
-        <div className="fj-marketplace-header">
-          <div>
-            <h1 className="fj-page-title">{heading}</h1>
-            <p className="fj-page-lead">{t("schools.lead")}</p>
-          </div>
-          <Link to={AUTH_PATHS.register.autoEcole} className="fj-btn fj-btn--primary fj-marketplace-header__cta">
-            <PlusCircle size={18} aria-hidden />
-            {t("schools.registerSchool")}
-          </Link>
+      <div className="ck-page">
+        <PublicPageHeader
+          title={heading}
+          lead={t("schools.lead")}
+          actions={
+            <Link to={AUTH_PATHS.register.autoEcole} className="ck-public-btn ck-public-btn--primary">
+              <PlusCircle size={18} aria-hidden />
+              {t("schools.registerSchool")}
+            </Link>
+          }
+        />
+
+        <div className="ck-public-search ck-public-search--page">
+          <HeaderSearch
+            defaultKeyword={appliedFilters.q}
+            defaultLocation={appliedFilters.ville}
+          />
         </div>
 
         <div className="fj-marketplace-layout">
@@ -220,38 +219,19 @@ export default function TechniciansPage() {
                   </button>
                 ))}
               </div>
-
-              <div className="fj-marketplace-toolbar__views">
-                <button
-                  type="button"
-                  className={viewMode === "list" ? "is-active" : undefined}
-                  aria-label={t("schools.viewList")}
-                  onClick={() => handleViewChange("list")}
-                >
-                  <LayoutList size={18} aria-hidden />
-                </button>
-                <button
-                  type="button"
-                  className={viewMode === "grid" ? "is-active" : undefined}
-                  aria-label={t("schools.viewGrid")}
-                  onClick={() => handleViewChange("grid")}
-                >
-                  <Grid3X3 size={18} aria-hidden />
-                </button>
-              </div>
             </div>
 
             {loading ? <Loader variant="inline" theme="flexjobs" message={t("schools.loading")} /> : null}
-            {loadError ? <p className="fj-tech-empty">{loadError}</p> : null}
+            {loadError ? <p className="ck-page-lead">{loadError}</p> : null}
 
             {!loading && !loadError && paginatedResults.length === 0 ? (
-              <p className="fj-tech-empty">{t("schools.empty")}</p>
+              <p className="ck-page-lead">{t("schools.empty")}</p>
             ) : null}
 
             {!loading && !loadError && paginatedResults.length > 0 ? (
-              <div className={`fj-marketplace-results fj-marketplace-results--${viewMode}`}>
+              <div className="ck-page-stack">
                 {paginatedResults.map((school) => (
-                  <DrivingSchoolCard key={school.id} school={school} layout={viewMode} />
+                  <DrivingSchoolCard key={school.id} school={school} layout="list" />
                 ))}
               </div>
             ) : null}
@@ -266,7 +246,7 @@ export default function TechniciansPage() {
             ) : null}
           </div>
         </div>
-      </Container>
+      </div>
     </>
   );
 }

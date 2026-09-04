@@ -1,257 +1,286 @@
-/* Auth — split layout (LimeSurvey-inspired, CODAKIS theme)
-   Même échelle que la vitrine : 1rem = 10px */
+/* Auth — aligné espace candidat (tokens ck, carte widget, boutons 3D) */
 
 html:has(.codakis-auth) {
   font-size: 62.5%;
 }
 
 .codakis-auth {
-  font-family: Nunito, "Open Sans", system-ui, sans-serif;
+  --ck-green: #00a859;
+  --ck-green-dark: #008f4c;
+  --ck-green-soft: rgba(0, 168, 89, 0.12);
+  --ck-sky: #38bdf8;
+  --ck-text: #1f2937;
+  --ck-muted: #6b7280;
+  --ck-line: #e5e7eb;
+  --ck-surface: #f3f4f6;
+  --ck-surface-2: #ffffff;
+  --ck-shadow: 0 0.8rem 2.4rem rgba(15, 23, 42, 0.08);
+  --fj-cta-bg: var(--ck-green);
+  --fj-cta-hover: var(--ck-green-dark);
+  font-family: Nunito, system-ui, sans-serif;
   font-size: 1.6rem;
   line-height: 1.5;
-  color: #3e3d3f;
-  display: grid;
+  color: var(--ck-text);
   min-height: 100vh;
   min-height: 100dvh;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(0, 168, 89, 0.1), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(56, 189, 248, 0.08), transparent 50%),
+    var(--ck-surface);
 }
 
-@media (max-width: 991px) {
-  .codakis-auth {
-    grid-template-rows: auto minmax(0, 1fr);
-    height: 100dvh;
-    overflow: hidden;
-  }
+html.dark .codakis-auth {
+  --ck-green-soft: rgba(0, 168, 89, 0.22);
+  --ck-text: #f3f4f6;
+  --ck-muted: #9ca3af;
+  --ck-line: #2d3643;
+  --ck-surface: #0b1017;
+  --ck-surface-2: #151c27;
+  --ck-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.45);
+  background:
+    radial-gradient(ellipse 70% 45% at 0% 0%, rgba(0, 168, 89, 0.16), transparent 55%),
+    radial-gradient(ellipse 50% 35% at 100% 0%, rgba(14, 165, 233, 0.1), transparent 50%),
+    var(--ck-surface);
+}
+
+.codakis-auth__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.2rem 1.6rem;
+  border-bottom: 0.2rem solid var(--ck-line);
+  background: color-mix(in srgb, var(--ck-surface-2) 92%, transparent);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.codakis-auth__logo-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.codakis-auth__logo {
+  height: 3.4rem;
+  width: auto;
+  display: block;
+}
+
+html.dark .codakis-auth__logo {
+  filter: brightness(0) invert(1);
+}
+
+.codakis-auth__top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.codakis-auth__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  border-radius: 1rem;
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.35rem;
+  background: var(--ck-surface-2);
+  color: var(--ck-muted);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: border-bottom-width 0.05s, transform 0.05s;
+}
+
+.codakis-auth__back:hover {
+  color: var(--ck-text);
+}
+
+.codakis-auth__back:active {
+  border-bottom-width: 0.15rem;
+  transform: translateY(0.15rem);
+}
+
+.codakis-auth__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  width: 100%;
+  max-width: 110rem;
+  margin: 0 auto;
+  padding: 2.4rem 1.6rem 4rem;
+  align-items: center;
 }
 
 @media (min-width: 992px) {
-  .codakis-auth {
-    grid-template-columns: minmax(280px, 38%) 1fr;
+  .codakis-auth__body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: 3.2rem;
+    padding: 3.2rem 2.4rem 4.8rem;
   }
 }
 
 .codakis-auth__brand {
-  position: relative;
+  display: none;
+  padding: 2.4rem;
+  border-radius: 2rem;
+  border: 0.2rem solid var(--ck-line);
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+}
+
+@media (min-width: 992px) {
+  .codakis-auth__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2.4rem;
+  }
+}
+
+.codakis-auth__brand-copy {
+  display: block;
+}
+
+.codakis-auth__brand-visual {
+  display: grid;
+  place-items: center;
+  margin: 0.8rem -1.2rem -1.6rem;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  line-height: 0;
+}
+
+.codakis-auth__brand-car {
+  display: block;
+  width: min(112%, 42rem);
+  max-width: none;
+  max-height: none;
+  height: auto;
+  margin-inline: auto;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+  /* silhouette only — never box-shadow (rectangular) */
+  filter: drop-shadow(0 1rem 1.4rem rgba(15, 23, 42, 0.16));
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .codakis-auth__brand-car {
+    animation: codakis-auth-car-float 4.8s ease-in-out infinite;
+  }
+}
+
+@keyframes codakis-auth-car-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.8rem);
+  }
+}
+
+.codakis-auth__eyebrow {
+  margin: 0 0 0.8rem;
+  color: var(--ck-green);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.codakis-auth__brand-title {
+  margin: 0 0 1rem;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--ck-text);
+}
+
+.codakis-auth__brand-text {
+  margin: 0 0 2rem;
+  color: var(--ck-muted);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.codakis-auth__highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 2.4rem;
-  background: #131920;
-  color: #fff;
-  overflow: hidden;
+  gap: 1rem;
 }
 
-.codakis-auth__brand::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(160deg, rgba(29, 38, 48, 0.86) 0%, rgba(19, 25, 32, 0.78) 100%);
-  pointer-events: none;
+.codakis-auth__highlights li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ck-text);
 }
 
-.codakis-auth__logo-link {
-  position: relative;
-  z-index: 2;
-  display: inline-block;
-}
-
-.codakis-auth__logo {
-  max-width: 180px;
-  height: auto;
-  filter: brightness(0) invert(1);
-}
-
-.codakis-auth__decor {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.codakis-auth__bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: 72% center;
-  background-repeat: no-repeat;
-}
-
-.codakis-auth__volant {
-  position: absolute;
-  z-index: 2;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.28;
-  pointer-events: none;
-}
-
-.codakis-auth__volant--1 {
-  bottom: 7.2rem;
-  right: 2.4rem;
-  width: 5.6rem;
-  height: 5.6rem;
-  opacity: 0.34;
-}
-
-.codakis-auth__volant--2 {
-  bottom: 2.4rem;
-  right: 10rem;
-  width: 4rem;
-  height: 4rem;
-  transform: rotate(-18deg);
-}
-
-.codakis-auth__volant--3 {
-  bottom: 14rem;
-  left: 1.6rem;
-  width: 4.4rem;
-  height: 4.4rem;
-  transform: rotate(12deg);
-  opacity: 0.22;
-}
-
-.codakis-auth__volant--4 {
-  top: 42%;
-  right: 1.2rem;
-  width: 3.2rem;
-  height: 3.2rem;
-  transform: rotate(24deg);
-  opacity: 0.18;
-}
-
-.codakis-auth__volant--5 {
-  bottom: 9rem;
-  left: 38%;
+.codakis-auth__highlight-icon {
   width: 3.6rem;
   height: 3.6rem;
-  transform: rotate(-8deg);
-  opacity: 0.2;
-}
-
-.codakis-auth__back {
-  position: relative;
-  z-index: 2;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 1.4rem;
-  text-decoration: none;
-}
-
-.codakis-auth__back:hover {
-  color: #fff;
+  border-radius: 1rem;
+  background: var(--ck-green-soft);
+  color: var(--ck-green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .codakis-auth__main {
-  position: relative;
   display: flex;
-  align-items: flex-start;
   justify-content: center;
-  padding: 2.4rem 1.6rem;
-  background: #f3f5f7;
-  overflow-y: auto;
-  min-height: 0;
+  min-width: 0;
+}
+
+.codakis-auth__card {
+  width: 100%;
+  max-width: 46rem;
+  padding: 2.4rem 2rem;
+  border-radius: 2rem;
+  border: 0.2rem solid var(--ck-line);
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+}
+
+@media (min-width: 480px) {
+  .codakis-auth__card {
+    padding: 2.8rem 2.4rem;
+  }
+}
+
+.codakis-auth__panel,
+.codakis-auth__panel--wide,
+.codakis-auth__panel--register {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
 }
 
 .codakis-auth__toolbar {
-  position: absolute;
-  top: 1.2rem;
-  right: 1.2rem;
-  z-index: 5;
-}
-
-.codakis-auth__panel {
-  width: 100%;
-  max-width: 420px;
-  margin: auto;
-  flex-shrink: 0;
-  padding-top: 1.2rem;
-}
-
-.codakis-auth__panel--wide {
-  max-width: 480px;
-}
-
-.codakis-auth__panel--register {
-  max-width: 520px;
-}
-
-@media (max-width: 991px) {
-  .codakis-auth__brand {
-    min-height: 11rem;
-    max-height: 14rem;
-    flex-shrink: 0;
-    padding: 1.6rem;
-  }
-
-  .codakis-auth__logo {
-    max-width: 140px;
-  }
-
-  .codakis-auth__volant--3,
-  .codakis-auth__volant--4,
-  .codakis-auth__volant--5 {
-    display: none;
-  }
-
-  .codakis-auth__main {
-    padding: 1.6rem 1.2rem 3.2rem;
-  }
-
-  .codakis-auth__panel--register {
-    max-width: none;
-  }
-
-  .codakis-auth__title {
-    font-size: 2.4rem;
-  }
-
-  .codakis-auth__subtitle {
-    font-size: 1.4rem;
-    margin-bottom: 1.6rem;
-  }
-
-  .codakis-auth-divider {
-    margin: 1.2rem 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .codakis-auth__brand {
-    min-height: 12rem;
-    max-height: 16rem;
-  }
-
-  .codakis-auth__title {
-    font-size: 2.2rem;
-  }
-
-  .codakis-auth-form {
-    gap: 1rem;
-  }
-
-  .codakis-auth-box--stack-mobile {
-    flex-direction: column;
-  }
-
-  .codakis-auth-box--stack-mobile > .codakis-auth-box__input + .codakis-auth-box__input,
-  .codakis-auth-box--stack-mobile > .codakis-auth-box__input + .codakis-auth-box__select,
-  .codakis-auth-box--stack-mobile > .codakis-auth-box__select + .codakis-auth-box__input {
-    border-left: 0;
-    border-top: 0.1rem solid #ccc;
-  }
-
-  .codakis-auth-box--stack-mobile > .codakis-auth-box__input:first-child:not(:only-child) {
-    border-radius: 0.4rem 0.4rem 0 0;
-  }
-
-  .codakis-auth-box--stack-mobile > .codakis-auth-box__input:last-child:not(:only-child) {
-    border-radius: 0 0 0.4rem 0.4rem;
-  }
-
-  .codakis-auth-box__input,
-  .codakis-auth-box__select {
-    font-size: 1.6rem;
-  }
+  display: none;
 }
 
 .codakis-auth__title {
@@ -260,7 +289,7 @@ html:has(.codakis-auth) {
   font-size: 2.8rem;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #1d2630;
+  color: var(--ck-text);
 }
 
 .codakis-auth__subtitle {
@@ -269,7 +298,7 @@ html:has(.codakis-auth) {
   font-size: 1.55rem;
   font-weight: 500;
   line-height: 1.45;
-  color: #5b6b79;
+  color: var(--ck-muted);
 }
 
 .codakis-auth__hint {
@@ -277,7 +306,7 @@ html:has(.codakis-auth) {
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
   font-weight: 500;
-  color: #5b6b79;
+  color: var(--ck-muted);
   line-height: 1.5;
 }
 
@@ -291,10 +320,10 @@ html:has(.codakis-auth) {
 .codakis-auth-box {
   display: flex;
   align-items: stretch;
-  border: 0.1rem solid #ccc;
-  border-radius: 0.4rem;
-  background: #fff;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  border: 0.2rem solid var(--ck-line);
+  border-radius: 1.2rem;
+  background: var(--ck-surface);
+  box-shadow: none;
   overflow: hidden;
 }
 
@@ -305,17 +334,17 @@ html:has(.codakis-auth) {
   height: 4.4rem;
   padding: 0.6rem 1.2rem;
   border: 0;
-  background: #fff;
+  background: var(--ck-surface);
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
-  font-weight: 500;
-  color: #3e3d3f;
+  font-weight: 600;
+  color: var(--ck-text);
   outline: none;
   transition: box-shadow 0.15s ease;
 }
 
 .codakis-auth-box__input::placeholder {
-  color: #667085;
+  color: var(--ck-muted);
 }
 
 .codakis-auth-box__input:first-child:not(:only-child) {
@@ -327,17 +356,17 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-box__input:only-child {
-  border-radius: 0.4rem;
+  border-radius: 1.2rem;
 }
 
 .codakis-auth-box__input + .codakis-auth-box__input,
 .codakis-auth-box__input + .codakis-auth-box__select,
 .codakis-auth-box__select + .codakis-auth-box__input {
-  border-left: 0.1rem solid #ccc;
+  border-left: 0.2rem solid var(--ck-line);
 }
 
 .codakis-auth-box__select {
-  border-radius: 0.4rem;
+  border-radius: 1.2rem;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23667085' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
@@ -368,10 +397,10 @@ html:has(.codakis-auth) {
   margin: 0;
   padding: 0;
   border: 0;
-  border-left: 0.1rem solid #ccc;
+  border-left: 0.2rem solid var(--ck-line);
   border-radius: 0 0.4rem 0.4rem 0;
-  background: #fff;
-  color: #667085;
+  background: var(--ck-surface);
+  color: var(--ck-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -380,8 +409,8 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-box__toggle:hover {
-  color: #3e3d3f;
-  background: #f9fafb;
+  color: var(--ck-text);
+  background: var(--ck-surface-2);
 }
 
 .codakis-auth-box__toggle:focus-visible {
@@ -397,7 +426,7 @@ html:has(.codakis-auth) {
   margin: 0;
   padding: 0 1.6rem;
   border: 0;
-  border-left: 0.1rem solid #ccc;
+  border-left: 0.2rem solid var(--ck-line);
   border-radius: 0 0.4rem 0.4rem 0;
   background: var(--fj-cta-bg, #00a859);
   color: #fff;
@@ -437,10 +466,11 @@ html:has(.codakis-auth) {
   width: 100%;
   min-height: 4.4rem;
   padding: 1rem 1.4rem;
-  border: 0.1rem solid #d0d5dd;
-  border-radius: 0.4rem;
-  background: #fff;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.08);
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.4rem;
+  border-radius: 1.2rem;
+  background: var(--ck-surface-2);
+  box-shadow: none;
   color: #1f2937;
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
@@ -497,7 +527,7 @@ html:has(.codakis-auth) {
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #3e4853;
+  color: var(--ck-text);
 }
 
 .codakis-auth-form__error {
@@ -510,9 +540,9 @@ html:has(.codakis-auth) {
   margin: 0 0 1.6rem;
   padding: 1.2rem 1.4rem;
   border: 0.1rem solid color-mix(in srgb, var(--fj-cta-bg, #00a859) 35%, white);
-  border-radius: 0.4rem;
+  border-radius: 1.2rem;
   background: color-mix(in srgb, var(--fj-cta-bg, #00a859) 8%, white);
-  color: #1d2630;
+  color: var(--ck-text);
   font-size: 1.4rem;
   line-height: 1.5;
 }
@@ -560,7 +590,7 @@ html:has(.codakis-auth) {
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.45rem;
   font-weight: 500;
-  color: #5b6b79;
+  color: var(--ck-muted);
 }
 
 .codakis-auth-form__footer a {
@@ -622,13 +652,13 @@ html:has(.codakis-auth) {
 .codakis-auth-hub__card strong {
   display: block;
   font-size: 1.5rem;
-  color: #1d2630;
+  color: var(--ck-text);
 }
 
 .codakis-auth-hub__card small {
   display: block;
   font-size: 1.3rem;
-  color: #5b6b79;
+  color: var(--ck-muted);
   margin-top: 0.2rem;
 }
 
@@ -655,7 +685,7 @@ html:has(.codakis-auth) {
   font-size: 2rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  color: #3e3d3f;
+  color: var(--ck-text);
   border-radius: 0;
 }
 
@@ -668,7 +698,7 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth-box__input--otp + .codakis-auth-box__input--otp {
-  border-left: 0.1rem solid #ccc;
+  border-left: 0.2rem solid var(--ck-line);
 }
 
 .codakis-auth-box__input--otp:focus {
@@ -683,7 +713,7 @@ html:has(.codakis-auth) {
   margin-top: 0.75rem;
   border: 0;
   background: transparent;
-  color: #5b6b79;
+  color: var(--ck-muted);
   font-size: 1.4rem;
   text-decoration: underline;
   cursor: pointer;
@@ -711,7 +741,7 @@ html:has(.codakis-auth) {
 
 .codakis-auth-stepper__item.is-current,
 .codakis-auth-stepper__item.is-done {
-  color: #1d2630;
+  color: var(--ck-text);
 }
 
 .codakis-auth-stepper__badge {
@@ -814,7 +844,7 @@ html:has(.codakis-auth) {
 .codakis-auth-choice__text strong {
   font-size: 1.5rem;
   font-weight: 500;
-  color: #3e3d3f;
+  color: var(--ck-text);
 }
 
 .codakis-auth-choice__text small {
@@ -843,7 +873,7 @@ html:has(.codakis-auth) {
 .codakis-auth__summary {
   margin: 0;
   font-size: 1.4rem;
-  color: #5b6b79;
+  color: var(--ck-muted);
 }
 
 .codakis-auth__summary-edit {
@@ -870,11 +900,11 @@ html:has(.codakis-auth) {
   justify-content: center;
   margin-top: 0.4rem;
   padding: 1rem 1.4rem;
-  border: 0.1rem solid #ccc;
-  border-radius: 0.4rem;
+  border: 0.2rem solid var(--ck-line);
+  border-radius: 1.2rem;
   background: #fff;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
-  color: #3e3d3f;
+  box-shadow: none;
+  color: var(--ck-text);
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.6rem;
   font-weight: 700;

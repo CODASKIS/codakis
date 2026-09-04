@@ -99,8 +99,8 @@ export default function MoniteurProfil() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="ta-page-title">Profil</h2>
-        <p className="ta-page-sub">Espace moniteur · {email}</p>
+        <h2 className="ck-title">Profil</h2>
+        <p className="ck-subtitle">Espace moniteur · {email}</p>
       </div>
 
       <ComponentCard
@@ -119,15 +119,16 @@ export default function MoniteurProfil() {
       >
         <div className="mb-6 flex items-center gap-4">
           <img
-            src={getUserAvatarUrl(fullName, 88, avatarUrl)}
+            src={getUserAvatarUrl(fullName, 72, avatarUrl)}
             alt=""
-            width={88}
-            height={88}
-            className="h-[8.8rem] w-[8.8rem] rounded-full object-cover ring-4 ring-brand-100"
+            width={72}
+            height={72}
+            className="rounded-full object-cover"
+            style={{ border: "0.25rem solid color-mix(in srgb, var(--ck-green) 35%, white)" }}
           />
           <div>
-            <p style={{ fontSize: "2rem", fontWeight: 800 }}>{fullName}</p>
-            <p style={{ fontSize: "1.35rem", fontWeight: 700, color: "#667085" }}>{email}</p>
+            <p className="ta-strong">{fullName}</p>
+            <p className="ta-muted">{email}</p>
           </div>
         </div>
 
@@ -139,15 +140,15 @@ export default function MoniteurProfil() {
               ["Téléphone", phone],
               ["E-mail", email],
             ].map(([label, value]) => (
-              <div key={label} className="ta-readonly">
+              <div key={label} className="ck-schools-readonly">
                 <span>{label}</span>
                 <strong>{value || "—"}</strong>
               </div>
             ))}
           </div>
         ) : (
-          <form className="space-y-4" onSubmit={(e) => void onSubmit(e)}>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <form className="ck-schools-profile__form space-y-4" onSubmit={(e) => void onSubmit(e)}>
+            <div className="ck-schools-profile__grid">
               <Input
                 label="Prénom"
                 value={draft.firstName}
@@ -168,7 +169,7 @@ export default function MoniteurProfil() {
               />
               <Input label="E-mail" full value={email} disabled readOnly />
             </div>
-            {error ? <p className="text-error-500" style={{ fontSize: "1.35rem", fontWeight: 700 }}>{error}</p> : null}
+            {error ? <p className="ck-empty">{error}</p> : null}
             <Button type="submit" disabled={saving}>
               {saving ? "Enregistrement…" : "Enregistrer"}
             </Button>
@@ -176,22 +177,18 @@ export default function MoniteurProfil() {
         )}
 
         {!editing && message ? (
-          <p className="mt-4 text-brand-600" style={{ fontSize: "1.35rem", fontWeight: 700 }}>
+          <p className="ck-empty" style={{ color: "var(--ck-green)" }}>
             {message}
           </p>
         ) : null}
-        {!editing && error ? (
-          <p className="mt-4 text-error-500" style={{ fontSize: "1.35rem", fontWeight: 700 }}>
-            {error}
-          </p>
-        ) : null}
+        {!editing && error ? <p className="ck-empty">{error}</p> : null}
       </ComponentCard>
 
-      <div className="flex flex-wrap gap-3">
-        <Button variant="outline" onClick={() => navigate("/espace/moniteur")}>
+      <div className="ck-schools-profile__actions" style={{ marginTop: 0 }}>
+        <Button variant="ghost" onClick={() => navigate("/espace/moniteur")}>
           Retour
         </Button>
-        <Button variant="outline" startIcon={<LogOut size={18} strokeWidth={2.5} />} onClick={logout}>
+        <Button variant="ghost" startIcon={<LogOut size={16} strokeWidth={2.5} />} onClick={logout}>
           Se déconnecter
         </Button>
       </div>

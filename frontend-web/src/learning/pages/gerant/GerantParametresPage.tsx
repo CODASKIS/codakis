@@ -1,7 +1,9 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Pencil, X } from "lucide-react";
+import { Building2, Pencil, ShieldCheck, X } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import { fetchGerantSchool, updateGerantSchool, type GerantSchool } from "../../../lib/authApi";
+import ComponentCard from "../../../dashboard/common/ComponentCard";
+import Button from "../../../dashboard/ui/Button";
 
 type FormState = {
   raisonSociale: string;
@@ -125,143 +127,179 @@ export default function GerantParametresPage() {
   if (loading) return <Loader variant="page" />;
   if (!form || !school) {
     return (
-      <section className="ck-schools-panel">
+      <div className="space-y-6">
+        <h2 className="ck-title">École</h2>
         <p className="ck-empty">{error || "École introuvable."}</p>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="ck-schools-panel" style={{ maxWidth: "56rem" }}>
-      <div className="ck-schools-panel__head ck-schools-panel__head--row">
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2>Paramètres de l’école</h2>
-          <p>Informations publiées et coordonnées — modifiables à tout moment</p>
+          <h2 className="ck-title">École</h2>
+          <p className="ck-subtitle">Profil public et coordonnées de votre établissement.</p>
         </div>
         {!editing ? (
-          <button type="button" className="ck-btn ck-btn--primary ck-schools-edit-btn" onClick={startEdit}>
-            <Pencil size={16} />
+          <Button onClick={startEdit} startIcon={<Pencil size={16} strokeWidth={2.5} />}>
             Modifier
-          </button>
+          </Button>
         ) : (
-          <button type="button" className="ck-btn ck-btn--ghost ck-schools-edit-btn" onClick={cancelEdit}>
-            <X size={16} />
+          <Button variant="ghost" onClick={cancelEdit} startIcon={<X size={16} strokeWidth={2.5} />}>
             Annuler
-          </button>
+          </Button>
         )}
       </div>
 
-      <div className="ck-schools-edit-banner">
-        <Pencil size={16} />
-        <span>
-          {editing
-            ? "Mode édition — modifiez les champs puis enregistrez."
-            : "Cliquez sur Modifier pour mettre à jour le profil de votre auto-école."}
-        </span>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <article className="ta-kpi">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="ta-kpi-label">Agrément</p>
+              <p className="ta-kpi-value" style={{ fontSize: "2rem" }}>{school.numero_agrement}</p>
+            </div>
+            <span
+              className="flex items-center justify-center"
+              style={{
+                width: "4.8rem",
+                height: "4.8rem",
+                borderRadius: "1.2rem",
+                background: "rgba(0, 168, 89, 0.12)",
+                color: "#00a859",
+              }}
+            >
+              <Building2 size={22} strokeWidth={2.4} />
+            </span>
+          </div>
+        </article>
+        <article className="ta-kpi">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="ta-kpi-label">Statut CODAKIS</p>
+              <p className="ta-kpi-value" style={{ fontSize: "2rem" }}>
+                {school.est_validee ? "Validée" : "En validation"}
+              </p>
+            </div>
+            <span
+              className="flex items-center justify-center"
+              style={{
+                width: "4.8rem",
+                height: "4.8rem",
+                borderRadius: "1.2rem",
+                background: school.est_validee ? "rgba(0, 168, 89, 0.12)" : "rgba(245, 158, 11, 0.14)",
+                color: school.est_validee ? "#00a859" : "#d97706",
+              }}
+            >
+              <ShieldCheck size={22} strokeWidth={2.4} />
+            </span>
+          </div>
+        </article>
       </div>
 
-      <p className="ck-subtitle" style={{ marginBottom: "1.6rem" }}>
-        Agrément {school.numero_agrement}
-        {school.est_validee ? " · Validée CODAKIS" : " · En validation"}
-      </p>
-
-      {!editing ? (
-        <div className="ck-schools-readonly-grid">
-          <FieldRow label="Raison sociale" value={form.raisonSociale} />
-          <FieldRow label="Adresse" value={form.adresse} />
-          <FieldRow label="Ville" value={form.ville} />
-          <FieldRow label="Quartier" value={form.quartier} />
-          <FieldRow label="Téléphone" value={form.telephone} />
-          <FieldRow label="Site web" value={form.siteWeb} />
-          <FieldRow label="Moniteurs" value={form.nombreMoniteurs} />
-          <FieldRow label="Véhicules" value={form.nombreVehicules} />
-          <FieldRow label="Années d’expérience" value={form.anneesExperience} />
-          <FieldRow label="Description" value={form.description} />
-          <FieldRow label="Description longue" value={form.descriptionLongue} />
-          <FieldRow label="Accès / horaires" value={form.accessInfo} />
-        </div>
-      ) : (
-        <form className="ck-form" onSubmit={(e) => void onSubmit(e)}>
-          <label>
-            Raison sociale
-            <input value={form.raisonSociale} onChange={(e) => patchForm("raisonSociale", e.target.value)} required />
-          </label>
-          <label>
-            Adresse
-            <input value={form.adresse} onChange={(e) => patchForm("adresse", e.target.value)} required />
-          </label>
-          <div className="ck-schools-profile__grid">
-            <label>
-              Ville
-              <input value={form.ville} onChange={(e) => patchForm("ville", e.target.value)} />
-            </label>
-            <label>
-              Quartier
-              <input value={form.quartier} onChange={(e) => patchForm("quartier", e.target.value)} />
-            </label>
+      <ComponentCard
+        title="Fiche établissement"
+        desc={editing ? "Mode édition — enregistrez vos modifications." : "Informations publiées auprès des candidats."}
+        action={<Building2 size={20} color="#00a859" strokeWidth={2.4} aria-hidden />}
+      >
+        {!editing ? (
+          <div className="ck-schools-readonly-grid">
+            <FieldRow label="Raison sociale" value={form.raisonSociale} />
+            <FieldRow label="Adresse" value={form.adresse} />
+            <FieldRow label="Ville" value={form.ville} />
+            <FieldRow label="Quartier" value={form.quartier} />
+            <FieldRow label="Téléphone" value={form.telephone} />
+            <FieldRow label="Site web" value={form.siteWeb} />
+            <FieldRow label="Moniteurs" value={form.nombreMoniteurs} />
+            <FieldRow label="Véhicules" value={form.nombreVehicules} />
+            <FieldRow label="Années d’expérience" value={form.anneesExperience} />
+            <FieldRow label="Description" value={form.description} />
+            <FieldRow label="Description longue" value={form.descriptionLongue} />
+            <FieldRow label="Accès / horaires" value={form.accessInfo} />
           </div>
-          <label>
-            Téléphone
-            <input value={form.telephone} onChange={(e) => patchForm("telephone", e.target.value)} />
-          </label>
-          <label>
-            Site web
-            <input value={form.siteWeb} onChange={(e) => patchForm("siteWeb", e.target.value)} placeholder="https://" />
-          </label>
-          <div className="ck-schools-profile__grid">
+        ) : (
+          <form className="ck-form ck-schools-profile__form" onSubmit={(e) => void onSubmit(e)}>
             <label>
-              Nombre de moniteurs
-              <input
-                type="number"
-                min={0}
-                value={form.nombreMoniteurs}
-                onChange={(e) => patchForm("nombreMoniteurs", e.target.value)}
+              Raison sociale
+              <input value={form.raisonSociale} onChange={(e) => patchForm("raisonSociale", e.target.value)} required />
+            </label>
+            <label>
+              Adresse
+              <input value={form.adresse} onChange={(e) => patchForm("adresse", e.target.value)} required />
+            </label>
+            <div className="ck-schools-profile__grid">
+              <label>
+                Ville
+                <input value={form.ville} onChange={(e) => patchForm("ville", e.target.value)} />
+              </label>
+              <label>
+                Quartier
+                <input value={form.quartier} onChange={(e) => patchForm("quartier", e.target.value)} />
+              </label>
+            </div>
+            <label>
+              Téléphone
+              <input value={form.telephone} onChange={(e) => patchForm("telephone", e.target.value)} />
+            </label>
+            <label>
+              Site web
+              <input value={form.siteWeb} onChange={(e) => patchForm("siteWeb", e.target.value)} placeholder="https://" />
+            </label>
+            <div className="ck-schools-profile__grid">
+              <label>
+                Nombre de moniteurs
+                <input
+                  type="number"
+                  min={0}
+                  value={form.nombreMoniteurs}
+                  onChange={(e) => patchForm("nombreMoniteurs", e.target.value)}
+                />
+              </label>
+              <label>
+                Nombre de véhicules
+                <input
+                  type="number"
+                  min={0}
+                  value={form.nombreVehicules}
+                  onChange={(e) => patchForm("nombreVehicules", e.target.value)}
+                />
+              </label>
+              <label>
+                Années d’expérience
+                <input
+                  type="number"
+                  min={0}
+                  value={form.anneesExperience}
+                  onChange={(e) => patchForm("anneesExperience", e.target.value)}
+                />
+              </label>
+            </div>
+            <label>
+              Description courte
+              <textarea value={form.description} onChange={(e) => patchForm("description", e.target.value)} rows={3} />
+            </label>
+            <label>
+              Description longue
+              <textarea
+                value={form.descriptionLongue}
+                onChange={(e) => patchForm("descriptionLongue", e.target.value)}
+                rows={4}
               />
             </label>
             <label>
-              Nombre de véhicules
-              <input
-                type="number"
-                min={0}
-                value={form.nombreVehicules}
-                onChange={(e) => patchForm("nombreVehicules", e.target.value)}
-              />
+              Infos d’accès
+              <textarea value={form.accessInfo} onChange={(e) => patchForm("accessInfo", e.target.value)} rows={3} />
             </label>
-            <label>
-              Années d’expérience
-              <input
-                type="number"
-                min={0}
-                value={form.anneesExperience}
-                onChange={(e) => patchForm("anneesExperience", e.target.value)}
-              />
-            </label>
-          </div>
-          <label>
-            Description courte
-            <textarea value={form.description} onChange={(e) => patchForm("description", e.target.value)} rows={3} />
-          </label>
-          <label>
-            Description longue
-            <textarea
-              value={form.descriptionLongue}
-              onChange={(e) => patchForm("descriptionLongue", e.target.value)}
-              rows={4}
-            />
-          </label>
-          <label>
-            Infos d’accès
-            <textarea value={form.accessInfo} onChange={(e) => patchForm("accessInfo", e.target.value)} rows={3} />
-          </label>
-          {error ? <p className="ck-empty">{error}</p> : null}
-          <button type="submit" className="ck-btn ck-btn--primary" disabled={saving}>
-            {saving ? "Enregistrement…" : "Enregistrer les modifications"}
-          </button>
-        </form>
-      )}
+            {error ? <p className="ck-empty">{error}</p> : null}
+            <Button type="submit" disabled={saving}>
+              {saving ? "Enregistrement…" : "Enregistrer les modifications"}
+            </Button>
+          </form>
+        )}
 
-      {!editing && message ? <p className="ck-empty" style={{ color: "var(--ck-green)" }}>{message}</p> : null}
-      {!editing && error ? <p className="ck-empty">{error}</p> : null}
-    </section>
+        {!editing && message ? <p className="ck-empty" style={{ color: "var(--ck-green)", marginTop: "1.2rem" }}>{message}</p> : null}
+        {!editing && error ? <p className="ck-empty" style={{ marginTop: "1.2rem" }}>{error}</p> : null}
+      </ComponentCard>
+    </div>
   );
 }
