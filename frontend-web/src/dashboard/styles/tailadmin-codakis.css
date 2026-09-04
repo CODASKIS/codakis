@@ -1,0 +1,277 @@
+/* TailAdmin shell — CODAKIS light-only (aligné site principal, base 62.5%) */
+.ta-shell {
+  font-family: Nunito, system-ui, sans-serif;
+  min-height: 100dvh;
+  background: #f2f4f7;
+  color: #1d2939;
+  font-size: 1.5rem;
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+.ta-shell h1,
+.ta-shell h2,
+.ta-shell h3 {
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #101828;
+}
+
+.ta-shell .ta-page-title {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+}
+
+.ta-shell .ta-page-sub {
+  margin: 0.4rem 0 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #667085;
+}
+
+.ta-shell .ta-card {
+  border: 0.2rem solid #e4e7ec;
+  border-radius: 1.6rem;
+  background: #fff;
+  box-shadow: 0 0.4rem 0 rgba(15, 23, 42, 0.03);
+}
+
+.ta-shell .ta-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.6rem 1.8rem;
+}
+
+.ta-shell .ta-card__title {
+  margin: 0;
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.ta-shell .ta-card__desc {
+  margin: 0.35rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #667085;
+}
+
+.ta-shell .ta-card__body {
+  border-top: 0.15rem solid #f2f4f7;
+  padding: 1.6rem 1.8rem;
+}
+
+/* Buttons — style site principal (3D / CODAKIS) */
+.ta-shell .ta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 4.4rem;
+  padding: 0.9rem 1.6rem;
+  border-radius: 1.2rem;
+  border: 0.2rem solid transparent;
+  border-bottom-width: 0.4rem;
+  font-family: inherit;
+  font-size: 1.35rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-bottom-width 0.05s, transform 0.05s, filter 0.15s;
+}
+
+.ta-shell .ta-btn:active:not(:disabled) {
+  border-bottom-width: 0.2rem;
+  transform: translateY(0.2rem);
+}
+
+.ta-shell .ta-btn--primary {
+  background: #00a859;
+  border-color: #008f4c;
+  color: #fff;
+}
+
+.ta-shell .ta-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.ta-shell .ta-btn--outline,
+.ta-shell .ta-btn--ghost {
+  background: #fff;
+  border-color: #d0d5dd;
+  color: #475467;
+}
+
+.ta-shell .ta-btn--outline:hover:not(:disabled),
+.ta-shell .ta-btn--ghost:hover:not(:disabled) {
+  background: #f9fafb;
+  color: #101828;
+}
+
+.ta-shell .ta-btn--danger {
+  background: #f04438;
+  border-color: #d92d20;
+  color: #fff;
+}
+
+.ta-shell .ta-btn--sm {
+  min-height: 3.6rem;
+  padding: 0.55rem 1.2rem;
+  font-size: 1.2rem;
+}
+
+.ta-shell .ta-btn--block {
+  width: 100%;
+}
+
+.ta-shell .ta-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ta-shell .ta-btn__icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Inputs */
+.ta-shell .ta-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #344054;
+}
+
+.ta-shell .ta-field--full {
+  grid-column: 1 / -1;
+}
+
+.ta-shell .ta-field__label {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.ta-shell .ta-input {
+  min-height: 4.8rem;
+  width: 100%;
+  padding: 0.85rem 1.2rem;
+  border: 0.2rem solid #d0d5dd;
+  border-radius: 1.2rem;
+  background: #f9fafb;
+  color: #101828;
+  font: inherit;
+  font-size: 1.45rem;
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.ta-shell .ta-input:focus {
+  border-color: #00a859;
+  background: #fff;
+  box-shadow: 0 0 0 0.35rem rgba(0, 168, 89, 0.15);
+}
+
+.ta-shell .ta-input:disabled {
+  background: #f2f4f7;
+  color: #98a2b3;
+}
+
+.ta-shell .ta-readonly {
+  border: 0.2rem solid #e4e7ec;
+  border-radius: 1.2rem;
+  background: #f9fafb;
+  padding: 1.1rem 1.3rem;
+}
+
+.ta-shell .ta-readonly span {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #98a2b3;
+}
+
+.ta-shell .ta-readonly strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #101828;
+}
+
+/* Sidebar / header typography */
+.ta-shell .ta-nav-link {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.ta-shell .ta-nav-label {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #98a2b3;
+}
+
+.ta-shell .ta-header-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.ta-user-dropdown {
+  font-size: 1.4rem;
+}
+
+/* FullCalendar */
+.ta-shell .fc {
+  --fc-border-color: #e4e7ec;
+  --fc-button-bg-color: #00a859;
+  --fc-button-border-color: #00a859;
+  --fc-button-hover-bg-color: #008f4c;
+  --fc-button-hover-border-color: #008f4c;
+  --fc-button-active-bg-color: #166534;
+  --fc-button-active-border-color: #166534;
+  --fc-today-bg-color: #ecfdf5;
+  font-family: inherit;
+  font-size: 1.35rem;
+}
+
+.ta-shell .fc .fc-toolbar-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.ta-shell .fc .fc-button {
+  font-weight: 800 !important;
+  text-transform: none !important;
+  border-radius: 0.8rem !important;
+}
+
+.ta-shell .fc-event {
+  border: none;
+  border-radius: 0.6rem;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.ta-shell .fc-event.ta-event--planifiee {
+  background: #00a859;
+}
+
+.ta-shell .fc-event.ta-event--terminee {
+  background: #12b76a;
+}
+
+.ta-shell .fc-event.ta-event--other {
+  background: #f79009;
+}

@@ -1,0 +1,616 @@
+/* CODAKIS Pro — Duolingo-exact light chrome (admin / moniteur / gérant) */
+
+.ck-pro {
+  --duo-bg: #ffffff;
+  --duo-bg-soft: #f7f7f7;
+  --duo-text: #3c3c3c;
+  --duo-muted: #777777;
+  --duo-line: #e5e5e5;
+  --duo-line-strong: #e5e5e5;
+  --duo-green: #00a859;
+  --duo-green-dark: #008f4c;
+  --duo-blue: #1cb0f6;
+  --duo-radius: 1.6rem;
+  --duo-radius-sm: 1.2rem;
+  --ck-schools-accent: var(--duo-green);
+  --ck-text: var(--duo-text);
+  --ck-muted: var(--duo-muted);
+  --ck-line: var(--duo-line);
+  --ck-bg: var(--duo-bg-soft);
+  --ck-green: var(--duo-green);
+  --ck-green-dark: var(--duo-green-dark);
+  color: var(--duo-text);
+  background: var(--duo-bg) !important;
+  font-family: "Nunito", system-ui, sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}
+
+html.dark .ck-pro,
+html.dark .ck-pro .ck-schools__sidebar,
+html.dark .ck-pro .ck-schools-panel,
+html.dark .ck-pro .ck-schools-detail,
+html.dark .ck-pro .ck-schools-profile,
+html.dark .ck-pro .ck-pro__card,
+html.dark .ck-pro .ck-pro__chips,
+html.dark .ck-pro .ck-pro__top,
+html.dark .ck-pro .ck-pro__dock,
+html.dark .ck-pro .ck-schools__dropdown {
+  background: var(--duo-bg) !important;
+  color: var(--duo-text) !important;
+  border-color: var(--duo-line) !important;
+}
+
+.ck-pro,
+.ck-pro * {
+  color-scheme: light;
+}
+
+/* Layout grid — Duo 3 columns */
+.ck-pro.ck-schools {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: var(--duo-bg) !important;
+}
+
+@media (min-width: 1024px) {
+  .ck-pro.ck-schools {
+    grid-template-columns: 25.6rem minmax(0, 1fr);
+  }
+}
+
+/* Left sidebar */
+.ck-pro .ck-schools__sidebar {
+  background: var(--duo-bg) !important;
+  border-right: 0.2rem solid var(--duo-line);
+  padding: 2.4rem 1.6rem 1.6rem;
+  gap: 1.6rem;
+}
+
+.ck-pro .ck-pro__brand {
+  gap: 0.8rem;
+  padding: 0 0.4rem 0.8rem;
+}
+
+.ck-pro .ck-pro__brand img {
+  height: 3.6rem;
+  width: auto;
+}
+
+.ck-pro .ck-pro__brand span {
+  color: var(--duo-green);
+  font-size: 1.5rem;
+  font-weight: 900;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 0.2rem 0.7rem;
+  border-radius: 0.8rem;
+  border: 0.2rem solid color-mix(in srgb, var(--duo-green) 35%, white);
+  background: color-mix(in srgb, var(--duo-green) 10%, white);
+}
+
+.ck-pro .ck-pro__nav {
+  gap: 0.8rem !important;
+  flex: 1;
+}
+
+.ck-pro .ck-pro__nav-link {
+  min-height: 5.8rem !important;
+  padding: 0 1.2rem 0 0.8rem !important;
+  gap: 1.6rem !important;
+  border: 0.2rem solid transparent !important;
+  border-radius: 1.6rem !important;
+  color: var(--duo-muted) !important;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.04em !important;
+  background: transparent !important;
+}
+
+.ck-pro .ck-pro__nav-link:hover {
+  background: var(--duo-bg-soft) !important;
+  color: var(--duo-text) !important;
+}
+
+.ck-pro .ck-pro__nav-link.is-active {
+  background: color-mix(in srgb, var(--ck-tab-color, var(--duo-blue)) 10%, white) !important;
+  border-color: color-mix(in srgb, var(--ck-tab-color, var(--duo-blue)) 75%, #84d8ff) !important;
+  color: var(--ck-tab-color, var(--duo-blue)) !important;
+}
+
+.ck-pro .ck-pro__nav-icon {
+  width: 4.6rem !important;
+  height: 4.6rem !important;
+  border-radius: 1.2rem !important;
+  background: color-mix(in srgb, var(--ck-tab-color, var(--duo-green)) 14%, white) !important;
+  color: var(--ck-tab-color, var(--duo-green)) !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ck-pro .ck-pro__nav-link.is-active .ck-pro__nav-icon {
+  background: color-mix(in srgb, var(--ck-tab-color, var(--duo-blue)) 18%, white) !important;
+  color: var(--ck-tab-color, var(--duo-blue)) !important;
+}
+
+.ck-pro .ck-pro__nav-icon--avatar {
+  padding: 0 !important;
+  overflow: hidden;
+  background: #ddf4ff !important;
+}
+
+.ck-pro .ck-pro__more {
+  border: 0.2rem solid transparent !important;
+  border-radius: 1.6rem !important;
+  min-height: 5.8rem;
+  padding: 0.6rem 0.8rem !important;
+  background: transparent !important;
+}
+
+.ck-pro .ck-pro__more:hover {
+  background: var(--duo-bg-soft) !important;
+}
+
+.ck-pro .ck-pro__more-icon {
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+  color: var(--duo-muted);
+  flex-shrink: 0;
+}
+
+.ck-pro .ck-schools__side-profile-meta strong {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1.5rem;
+  color: var(--duo-muted);
+}
+
+.ck-pro .ck-schools__side-profile-meta small {
+  display: none;
+}
+
+/* Content */
+.ck-pro__content {
+  background: var(--duo-bg);
+  min-width: 0;
+}
+
+.ck-pro__top {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 1.6rem;
+  border-bottom: 0.2rem solid var(--duo-line);
+  background: var(--duo-bg);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+@media (max-width: 1023px) {
+  .ck-pro__top--mobile {
+    display: flex;
+  }
+}
+
+.ck-pro__top-heading p {
+  margin: 0;
+  color: var(--duo-muted);
+  font-size: 1.2rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ck-pro__top-heading h1 {
+  margin: 0.2rem 0 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--duo-text);
+}
+
+.ck-pro__body {
+  width: min(118rem, 100%);
+  margin: 0 auto;
+  padding: 2.4rem 2.4rem 8rem;
+  display: grid;
+  gap: 3.2rem;
+}
+
+@media (min-width: 1100px) {
+  .ck-pro__body {
+    grid-template-columns: minmax(0, 1fr) 36.8rem;
+    align-items: start;
+    padding: 2.4rem 2.4rem 4rem;
+  }
+
+  .ck-pro__body.is-wide {
+    grid-template-columns: minmax(0, 72rem);
+    justify-content: center;
+  }
+}
+
+.ck-pro__feed {
+  min-width: 0;
+  max-width: 72rem;
+}
+
+.ck-pro__body.is-wide .ck-pro__feed {
+  max-width: none;
+}
+
+/* Right rail — Duo widgets */
+.ck-pro__rail {
+  display: none;
+  flex-direction: column;
+  gap: 1.6rem;
+  position: sticky;
+  top: 2.4rem;
+}
+
+@media (min-width: 1100px) {
+  .ck-pro__rail {
+    display: flex;
+  }
+}
+
+.ck-pro__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem 1.6rem;
+  padding: 1.2rem 1.4rem;
+  border: 0.2rem solid var(--duo-line);
+  border-radius: var(--duo-radius);
+  background: var(--duo-bg);
+}
+
+.ck-pro__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 800;
+  font-size: 1.5rem;
+}
+
+.ck-pro__chip strong {
+  color: var(--duo-text);
+}
+
+.ck-pro__card {
+  padding: 1.6rem 1.8rem;
+  border: 0.2rem solid var(--duo-line);
+  border-radius: var(--duo-radius);
+  background: var(--duo-bg);
+}
+
+.ck-pro__card h3 {
+  margin: 0 0 1rem;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--duo-text);
+}
+
+.ck-pro__section-title {
+  margin: 0 0 1.2rem;
+  padding-bottom: 1rem;
+  border-bottom: 0.2rem solid var(--duo-line);
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--duo-text);
+}
+
+.ck-pro__card-nav {
+  display: grid;
+  gap: 0;
+}
+
+.ck-pro__card-nav a,
+.ck-pro__card-link {
+  display: block;
+  padding: 1rem 0.4rem;
+  border-radius: 0.8rem;
+  color: var(--duo-text);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.ck-pro__card-nav a + a,
+.ck-pro__card-link {
+  border-top: 0.1rem solid var(--duo-line);
+}
+
+.ck-pro__card-nav a.is-active,
+.ck-pro__card-nav a:hover,
+.ck-pro__card-link:hover {
+  color: var(--duo-green);
+  background: transparent;
+}
+
+.ck-pro__lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.ck-pro__lines li {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--duo-muted);
+  line-height: 1.35;
+}
+
+.ck-pro__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.4rem;
+  padding: 0.4rem 0.2rem;
+}
+
+.ck-pro__foot a {
+  color: var(--duo-muted);
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ck-pro__foot a:hover {
+  color: var(--duo-text);
+}
+
+.ck-pro__logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 4.8rem;
+  padding: 1rem 1.6rem;
+  border: 0.2rem solid var(--duo-line);
+  border-radius: var(--duo-radius-sm);
+  background: var(--duo-bg);
+  color: var(--duo-blue);
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.ck-pro__logout:hover {
+  background: var(--duo-bg-soft);
+}
+
+.ck-pro__jump {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.4rem;
+  text-decoration: none;
+  color: inherit;
+  border: 0.2rem solid var(--duo-line) !important;
+  border-radius: var(--duo-radius) !important;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease;
+}
+
+.ck-pro__jump:hover {
+  transform: none;
+  border-color: color-mix(in srgb, var(--duo-green) 40%, var(--duo-line)) !important;
+  box-shadow: none;
+}
+
+.ck-pro__jump h3 {
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.ck-pro__jump p {
+  margin: 0;
+  color: var(--duo-muted);
+  font-weight: 700;
+  font-size: 1.4rem;
+}
+
+.ck-pro__select {
+  min-height: 4.4rem;
+  padding: 0 1.2rem;
+  border-radius: var(--duo-radius-sm);
+  border: 0.2rem solid var(--duo-line);
+  background: var(--duo-bg);
+  color: var(--duo-text);
+  font: inherit;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 1.3rem;
+}
+
+/* Panels / tables / cards — Duo light */
+.ck-pro .ck-schools-panel,
+.ck-pro .ck-schools-detail,
+.ck-pro .ck-schools-profile,
+.ck-pro .ck-schools-card,
+.ck-pro .ck-schools-report-card,
+.ck-pro .ck-schools-readonly,
+.ck-pro .ck-schools-inline-form {
+  background: var(--duo-bg) !important;
+  border: 0.2rem solid var(--duo-line) !important;
+  border-radius: var(--duo-radius) !important;
+  box-shadow: none !important;
+  color: var(--duo-text);
+}
+
+.ck-pro .ck-schools-panel {
+  padding: 2rem 2.2rem;
+}
+
+.ck-pro .ck-schools-panel__head h2,
+.ck-pro .ck-schools-profile__hero h2 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: var(--duo-text);
+  letter-spacing: -0.02em;
+}
+
+.ck-pro .ck-schools-panel__head p,
+.ck-pro .ck-schools-profile__hero p,
+.ck-pro .ck-schools-subtitle {
+  color: var(--duo-muted);
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.ck-pro .ck-schools-table th {
+  color: var(--duo-muted);
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 0.2rem solid var(--duo-line);
+}
+
+.ck-pro .ck-schools-table td {
+  border-bottom: 0.1rem solid var(--duo-line);
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.ck-pro .ck-schools-table tbody tr:hover,
+.ck-pro .ck-schools-table tbody tr.is-selected {
+  background: #f7fdf9 !important;
+}
+
+.ck-pro .ck-schools-pill {
+  border: 0.2rem solid var(--duo-line);
+  border-radius: 999px;
+  background: var(--duo-bg-soft);
+  color: var(--duo-muted);
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.ck-pro .ck-schools-pill.is-on {
+  border-color: color-mix(in srgb, var(--duo-green) 40%, white);
+  background: color-mix(in srgb, var(--duo-green) 12%, white);
+  color: var(--duo-green);
+}
+
+.ck-pro .ck-schools-report-card strong {
+  color: var(--duo-green);
+  font-size: 2.8rem;
+}
+
+.ck-pro .ck-schools-edit-banner {
+  border: 0.2rem solid var(--duo-line);
+  border-style: solid;
+  background: var(--duo-bg-soft);
+  border-radius: var(--duo-radius-sm);
+  color: var(--duo-muted);
+  font-size: 1.4rem;
+}
+
+.ck-pro .ck-schools-profile__form input,
+.ck-pro .ck-form input,
+.ck-pro .ck-form select,
+.ck-pro .ck-form textarea {
+  border: 0.2rem solid var(--duo-line) !important;
+  border-radius: var(--duo-radius-sm) !important;
+  background: var(--duo-bg) !important;
+  color: var(--duo-text) !important;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1.5rem;
+  min-height: 4.8rem;
+  box-shadow: none !important;
+}
+
+.ck-pro .ck-form textarea {
+  min-height: 10rem;
+}
+
+.ck-pro .ck-btn {
+  border-radius: 1.4rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.ck-pro .ck-btn--primary {
+  background: var(--duo-green);
+  border-color: var(--duo-green-dark);
+  color: #fff;
+}
+
+.ck-pro .ck-btn--ghost {
+  background: var(--duo-bg);
+  border-color: var(--duo-line);
+  color: var(--duo-muted);
+}
+
+.ck-pro .ck-btn--danger {
+  background: #fff;
+  border-color: #e5e5e5;
+  color: #ff4b4b;
+}
+
+.ck-pro .ck-schools__dropdown {
+  border: 0.2rem solid var(--duo-line);
+  border-radius: var(--duo-radius);
+  background: var(--duo-bg);
+  box-shadow: 0 0.8rem 2.4rem rgba(0, 0, 0, 0.08);
+}
+
+.ck-pro .ck-schools__dropdown-item {
+  color: var(--duo-text);
+  font-weight: 700;
+}
+
+.ck-pro .ck-schools__dropdown-item.is-danger {
+  color: #ff4b4b !important;
+}
+
+.ck-pro .ck-pro__dock {
+  background: var(--duo-bg) !important;
+  border-top: 0.2rem solid var(--duo-line);
+}
+
+.ck-pro .ck-schools__tab {
+  color: var(--duo-muted);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ck-pro .ck-empty {
+  color: var(--duo-muted);
+  font-weight: 700;
+}
+
+.ck-pro .ck-schools-person strong {
+  color: var(--duo-text);
+}
+
+.ck-pro .ck-schools-person small {
+  color: var(--duo-muted);
+}
+
+.ck-pro .ck-avatar-photo {
+  border: 0.2rem solid var(--duo-line);
+}
