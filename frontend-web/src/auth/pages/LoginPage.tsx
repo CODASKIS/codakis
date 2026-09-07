@@ -60,8 +60,13 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const newSession = await loginWithGoogle(idToken);
-      finishAuth(newSession.role);
+      const { session: newSession, needsProfileCompletion } = await loginWithGoogle(idToken);
+      if (needsProfileCompletion) {
+        if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+        navigate(AUTH_PATHS.completeProfile, { replace: true });
+      } else {
+        finishAuth(newSession.role);
+      }
     } catch (err) {
       setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
     } finally {

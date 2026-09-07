@@ -80,7 +80,7 @@ export default function DomainsPage() {
           </div>
         )}
 
-        <section className="ck-page-section" id="abonnement">
+        {/*<section className="ck-page-section" id="abonnement">
           <div className="ck-page-section__head">
             <h2>{t("nav.subscription")}</h2>
             <p>{t("domains.pagePurpose")}</p>
@@ -91,7 +91,7 @@ export default function DomainsPage() {
               {t("nav.subscription")}
             </Link>
           </div>
-        </section>
+        </section>*/}
       </div>
     </>
   );

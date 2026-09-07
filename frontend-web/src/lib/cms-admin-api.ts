@@ -90,6 +90,43 @@ export async function uploadCmsImage(file: File): Promise<MediaUploadResult> {
   });
 }
 
+// ── Cloudinary uploads ────────────────────────────────────────────────────────
+
+export type CloudinaryUploadResult = {
+  url: string;
+  secure_url: string;
+  public_id: string;
+  resource_type: string;
+  size_bytes: number;
+};
+
+export async function uploadImage(file: File): Promise<CloudinaryUploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return adminFetch<CloudinaryUploadResult>("/api/v1/upload/image", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export async function uploadVideo(file: File): Promise<CloudinaryUploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return adminFetch<CloudinaryUploadResult>("/api/v1/upload/video", {
+    method: "POST",
+    body: formData,
+  });
+}
+
+export async function uploadDocument(file: File): Promise<CloudinaryUploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return adminFetch<CloudinaryUploadResult>("/api/v1/upload/document", {
+    method: "POST",
+    body: formData,
+  });
+}
+
 export function slugifyTitle(title: string): string {
   return title
     .trim()

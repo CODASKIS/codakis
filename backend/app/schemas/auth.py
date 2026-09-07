@@ -10,6 +10,12 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
 
 
+class GoogleTokenResponse(TokenResponse):
+    """Réponse étendue pour l'auth Google, signale un profil incomplet."""
+
+    needs_profile_completion: bool = False
+
+
 class UserPublic(BaseModel):
     id: UUID
     email: EmailStr

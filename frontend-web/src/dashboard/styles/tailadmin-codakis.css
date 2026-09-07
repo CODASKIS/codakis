@@ -1454,3 +1454,384 @@ html:has(.ta-shell) {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════════════
+   Admin School Detail — sections colorées
+   ═══════════════════════════════════════════════════════════ */
+
+/* Section header avec couleur distincte */
+.ta-shell .ta-admin-section {
+  border-width: 0.2rem 0.2rem 0.45rem 0.2rem !important;
+  border-style: solid !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.ta-shell .ta-admin-section__head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 1.8rem;
+  margin: 0;
+}
+
+.ta-shell .ta-admin-section__head h2 {
+  margin: 0;
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.01em;
+}
+
+.ta-shell .ta-admin-section__hint {
+  margin: 0;
+  padding: 0.8rem 1.8rem 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--duo-muted);
+}
+
+/* Liste de faits */
+.ta-shell .ta-admin-facts {
+  list-style: none;
+  margin: 0;
+  padding: 1.2rem 1.8rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ta-shell .ta-admin-fact {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  padding: 0.9rem 0;
+  border-bottom: 0.1rem solid var(--duo-line);
+  min-width: 0;
+}
+
+.ta-shell .ta-admin-fact:last-child {
+  border-bottom: none;
+}
+
+.ta-shell .ta-admin-fact__label {
+  flex-shrink: 0;
+  width: 22rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--duo-muted);
+  padding-top: 0.1rem;
+}
+
+.ta-shell .ta-admin-fact__value {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--duo-text);
+  word-break: break-word;
+}
+
+.ta-shell .ta-admin-desc {
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.ta-shell .ta-admin-code {
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  background: var(--duo-bg-soft);
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.4rem;
+  color: var(--duo-muted);
+}
+
+.ta-shell .ta-admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #0ea5e9;
+  font-weight: 700;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ta-shell .ta-admin-link:hover {
+  text-decoration: underline;
+}
+
+.ta-shell .ta-admin-alert {
+  margin: 0;
+  padding: 1.2rem 1.8rem 1.6rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #dc2626;
+  line-height: 1.5;
+}
+
+.ta-shell .ta-admin-timestamp {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0 1.8rem 1.2rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--duo-muted);
+}
+
+.ta-shell .ta-admin-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--duo-text);
+  padding: 0 1.8rem;
+}
+
+.ta-shell .ta-admin-label textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 0.2rem solid var(--duo-line);
+  border-radius: 1rem;
+  font-family: inherit;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--duo-text);
+  background: var(--duo-bg);
+  resize: vertical;
+}
+
+.ta-shell .ta-admin-msg {
+  padding: 1.2rem 1.6rem;
+  border-radius: 1.2rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  border: 0.2rem solid transparent;
+}
+
+.ta-shell .ta-admin-msg--ok {
+  background: rgba(0, 168, 89, 0.10);
+  border-color: #00a859;
+  color: #00a859;
+}
+
+.ta-shell .ta-admin-msg--error {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.ta-shell .ta-admin-legal-name {
+  margin: 0.2rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--duo-muted);
+}
+
+.ta-shell .ta-admin-logo {
+  width: 5.6rem;
+  height: 5.6rem;
+  object-fit: contain;
+  border-radius: 1.2rem;
+  border: 0.2rem solid var(--duo-line);
+  background: #fff;
+  flex-shrink: 0;
+}
+
+/* 6 métriques en grille */
+@media (min-width: 900px) {
+  .ta-shell .ta-admin-metrics {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .ta-shell .ta-admin-metrics {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+/* Icônes colorées dans les métriques */
+.ta-shell .ta-admin-metrics > div {
+  border-color: var(--metric-color, var(--duo-line));
+}
+
+.ta-shell .ta-admin-metrics > div svg {
+  color: var(--metric-color, var(--duo-muted));
+}
+
+/* Responsive: label plus court sur mobile */
+@media (max-width: 599px) {
+  .ta-shell .ta-admin-fact__label {
+    width: 12rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FileUploadField — composant upload Cloudinary
+   ═══════════════════════════════════════════════════════════ */
+
+.ta-shell .ck-file-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.ta-shell .ck-file-upload__label {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--duo-text);
+}
+
+/* Zone de dépôt / placeholder cliquable */
+.ta-shell .ck-file-upload__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 12rem;
+  padding: 2rem;
+  border: 0.2rem dashed var(--duo-line);
+  border-radius: 1.2rem;
+  background: var(--duo-bg-soft);
+  color: var(--duo-muted);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 700;
+  font-family: inherit;
+  width: 100%;
+}
+
+.ta-shell .ck-file-upload__dropzone:hover:not(:disabled) {
+  border-color: var(--duo-green);
+  background: rgba(0, 168, 89, 0.05);
+  color: var(--duo-green);
+}
+
+.ta-shell .ck-file-upload__dropzone:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ta-shell .ck-file-upload__hint {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--duo-muted);
+}
+
+/* Aperçu image */
+.ta-shell .ck-file-upload__preview--image {
+  border: 0.2rem solid var(--duo-line);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background: #f8fafc;
+  max-height: 22rem;
+}
+
+.ta-shell .ck-file-upload__preview--image img {
+  display: block;
+  width: 100%;
+  max-height: 22rem;
+  object-fit: cover;
+}
+
+/* Aperçu vidéo */
+.ta-shell .ck-file-upload__preview--video {
+  border: 0.2rem solid var(--duo-line);
+  border-radius: 1.2rem;
+  overflow: hidden;
+  background: #000;
+}
+
+.ta-shell .ck-file-upload__video {
+  display: block;
+  width: 100%;
+  max-height: 28rem;
+}
+
+/* Aperçu document */
+.ta-shell .ck-file-upload__preview--doc {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.4rem;
+  border: 0.2rem solid var(--duo-line);
+  border-radius: 1.2rem;
+  background: var(--duo-bg-soft);
+  color: var(--duo-muted);
+}
+
+.ta-shell .ck-file-upload__doc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.ta-shell .ck-file-upload__doc-link {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0ea5e9;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.ta-shell .ck-file-upload__doc-link:hover {
+  text-decoration: underline;
+}
+
+.ta-shell .ck-file-upload__doc-size {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--duo-muted);
+}
+
+/* Barre de progression */
+.ta-shell .ck-file-upload__progress {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--duo-line);
+  overflow: hidden;
+}
+
+.ta-shell .ck-file-upload__progress-bar {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 999px;
+  background: var(--duo-green);
+  animation: ck-upload-progress 1.4s ease-in-out infinite;
+  transform-origin: left;
+}
+
+@keyframes ck-upload-progress {
+  0%   { transform: scaleX(0);    opacity: 1; }
+  60%  { transform: scaleX(0.85); opacity: 1; }
+  100% { transform: scaleX(1);    opacity: 0; }
+}
+
+/* Actions */
+.ta-shell .ck-file-upload__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+/* Messages */
+.ta-shell .ck-file-upload__error {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.ta-shell .ck-file-upload__meta {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--duo-muted);
+  word-break: break-all;
+}

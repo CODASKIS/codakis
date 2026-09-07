@@ -286,7 +286,8 @@ def login_or_register_google(
     *,
     type_permis: str | None = None,
     parcours_souhaite: str | None = None,
-) -> Utilisateur:
+) -> tuple[Utilisateur, bool]:
+    """Retourne (user, is_new) — is_new=True si le compte vient d'être créé."""
     payload = verify_google_token(id_token_str)
     email = payload.get("email", "").lower()
     if not email:
@@ -313,7 +314,7 @@ def login_or_register_google(
             user.parcours_souhaite = parcours_souhaite
         db.commit()
         assert_can_login(db, user)
-        return user
+        return user, False
 
     ensure_country(db, "CM")
     user = Utilisateur(
@@ -336,7 +337,7 @@ def login_or_register_google(
     db.commit()
     db.refresh(user)
     send_welcome_email(user.email, f"{given_name} {family_name}")
-    return user
+    return user, True
 
 
 def admin_create_user(db: Session, data) -> tuple[Utilisateur, str | None]:

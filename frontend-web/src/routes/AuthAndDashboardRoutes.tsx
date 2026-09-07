@@ -2,11 +2,13 @@ import { Navigate, useRoutes } from "react-router";
 import LoginPage from "../auth/pages/LoginPage";
 import RegisterPage from "../auth/pages/RegisterPage";
 import ForgotPasswordPage from "../auth/pages/ForgotPasswordPage";
+import CompleteProfilePage from "../auth/pages/CompleteProfilePage";
 
 export function ConnexionRoutes() {
   return useRoutes([
     { index: true, element: <LoginPage /> },
     { path: "mot-de-passe", element: <ForgotPasswordPage /> },
+    { path: "completer-profil", element: <CompleteProfilePage /> },
     { path: "admin", element: <Navigate to="/connexion" replace /> },
     { path: "candidat", element: <Navigate to="/connexion" replace /> },
     { path: "moniteur", element: <Navigate to="/connexion" replace /> },

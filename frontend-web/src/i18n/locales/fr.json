@@ -104,10 +104,12 @@
     }
   },
   "cookies": {
+    "aria": "Consentement aux cookies",
+    "message": "Nous utilisons des cookies pour sécuriser le site et améliorer votre expérience sur CODAKIS.",
     "learnMore": "En savoir plus",
     "accept": "Accepter",
-    "privacy": "Politique de confidentialité",
-    "terms": "Conditions d'utilisation",
+    "privacy": "Confidentialité",
+    "terms": "Conditions",
     "rights": "© {{year}} CODAKIS. Tous droits réservés."
   },
   "mobile": {
@@ -329,7 +331,7 @@
     "createFreeAccount": "Créer un compte gratuit",
     "createFreeAccountAndPay": "Créer un compte gratuit et payer",
     "loginToPay": "J'ai déjà un compte — me connecter",
-    "payMobileMoney": "Payer via CinetPay",
+    "payMobileMoney": "Payer via PawaPay",
     "viewMySchool": "Voir mon auto-école",
     "wrongRoleHint": "Connectez-vous avec un compte candidat pour acheter un forfait auto-école.",
     "purchaseFlowHint": "Compte CODAKIS gratuit. L'inscription à une auto-école se fait uniquement lors de l'achat d'un forfait (Mobile Money).",
@@ -341,7 +343,7 @@
       "phoneHint": "Format : 6XX XX XX XX (Cameroun)",
       "submit": "Envoyer la demande de paiement",
       "confirming": "Confirmation en cours…",
-      "redirecting": "Redirection vers CinetPay…",
+      "redirecting": "Redirection vers PawaPay…",
       "redirectMissing": "Impossible d'ouvrir la page de paiement. Réessayez ou contactez le support.",
       "ussdTitle": "Validez sur votre téléphone",
       "success": "Paiement confirmé — votre forfait est actif.",
@@ -540,6 +542,17 @@
       "resetSubmit": "Réinitialiser le mot de passe",
       "sent": "Si un compte existe pour {{email}}, vous recevrez un e-mail avec les instructions.",
       "contact": "Contacter le support"
+    },
+    "completeProfile": {
+      "metaTitle": "Compléter mon profil | CODAKIS",
+      "title": "Compléter votre profil",
+      "subtitle": "Quelques informations supplémentaires pour personnaliser votre expérience.",
+      "licenseTitle": "Votre permis et parcours",
+      "licenseSubtitle": "Confirmez le type de permis et le parcours que vous souhaitez suivre.",
+      "infoTitle": "Vos coordonnées",
+      "infoSubtitle": "Ces informations nous permettent de mieux vous accompagner.",
+      "submit": "Enregistrer et continuer",
+      "skip": "Passer pour l'instant"
     },
     "google": {
       "signIn": "Continuer avec Google",

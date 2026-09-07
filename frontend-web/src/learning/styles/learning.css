@@ -2030,6 +2030,50 @@ html.dark .ck-path__item.is-current .ck-path__node {
   margin: 0;
 }
 
+/* ─── Bouton toggle voix dans la barre supérieure du quiz ─── */
+.ck-quiz__voice-toggle {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border: 0.2rem solid var(--ck-line);
+  border-radius: 999px;
+  background: var(--ck-surface-2);
+  color: var(--ck-muted);
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ck-quiz__voice-toggle:hover {
+  border-color: #1cb0f6;
+  color: #1cb0f6;
+  transform: scale(1.08);
+}
+
+.ck-quiz__voice-toggle.is-on {
+  background: #1cb0f6;
+  border-color: #1899d6;
+  color: #fff;
+  box-shadow: 0 0.3rem 0 #1899d6;
+}
+
+.ck-quiz__voice-toggle.is-on:hover {
+  background: #1899d6;
+  color: #fff;
+}
+
+.ck-quiz__voice-toggle.is-off {
+  background: var(--ck-surface);
+  border-color: var(--ck-line);
+  color: var(--ck-locked);
+}
+
 .ck-challenge__body {
   flex: 1;
   display: flex;

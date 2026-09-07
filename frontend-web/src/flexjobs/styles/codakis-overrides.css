@@ -936,53 +936,60 @@
   object-fit: cover;
 }
 
-/* Bandeau cookies — couleurs CODAKIS (après motion.css) */
-.cookiepolicy.cookiepolicy--codakis {
-  background-color: #1a1a1a;
-  border-top: 0.2rem solid #00a859;
-  box-shadow: 0 -0.4rem 1.6rem rgba(0, 0, 0, 0.25);
+/* Bandeau cookies — panneau flottant noir CODAKIS (bas-gauche) */
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__panel {
+  background-color: var(--ck-ink, #1a1a1a);
+  border: 0.2rem solid rgba(255, 255, 255, 0.08);
+  border-top: 0.3rem solid var(--fj-cta-bg, #00a859);
+  border-radius: 1.4rem;
+  box-shadow: 0 1.6rem 4rem rgba(0, 0, 0, 0.35);
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.8rem;
+  padding: 1rem 1.2rem;
 }
 
-.cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more {
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__message {
   color: #ffffff;
-  font-weight: 700;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.3rem;
+  margin: 0 0 0.3rem;
 }
 
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__links {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__links a,
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__links a:hover,
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more:hover {
-  color: #fbb03b;
+  color: var(--fj-accent-orange, #fbb03b);
 }
 
-.cookiepolicy.cookiepolicy--codakis .cookiepolicy__legal a {
-  color: #00a859;
-  font-weight: 600;
-}
-
-.cookiepolicy.cookiepolicy--codakis .cookiepolicy__legal a:hover {
-  color: #fbb03b;
-}
-
-.cookiepolicy.cookiepolicy--codakis .cookiepolicy__legal,
-.cookiepolicy.cookiepolicy--codakis .cookiepolicy__copy,
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__sep {
-  color: rgba(255, 255, 255, 0.82);
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__accept {
   background-color: var(--fj-cta-bg, #00a859);
   color: #ffffff;
-  border: 0.1rem solid var(--fj-cta-bg, #00a859);
-  border-radius: 0.4rem;
+  border: 0;
+  border-radius: 1rem;
   min-height: 3.6rem;
-  padding: 0.65rem 1.2rem;
+  padding: 0.6rem 1.4rem;
   font-family: Nunito, system-ui, sans-serif;
-  font-size: 1.4rem;
-  font-weight: 700;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  font-size: 1.3rem;
+  font-weight: 800;
+  box-shadow: 0 0.25rem 0 #008f4c;
+  align-self: flex-start;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__accept:hover {
   background-color: var(--fj-cta-hover, #008f4c);
-  border-color: var(--fj-cta-hover, #008f4c);
   color: #ffffff;
 }
 
@@ -1689,8 +1696,8 @@
 }
 
 .fj-pack-drawer--conduiteSeule {
-  --fj-drawer-accent: #1d2630;
-  --fj-drawer-accent-dark: #131920;
+  --fj-drawer-accent: #00a859;
+  --fj-drawer-accent-dark: #008f4c;
   --fj-drawer-badge: #e67e22;
 }
 
@@ -4717,4 +4724,281 @@ html.dark .ck-public .fj-school-pack-card .fj-pricing-dark__price-title {
 
 html.dark .ck-home-hero__glow {
   opacity: 0.55;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CODAKIS — Corrections thème (cards, footer, overlays)
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Cards unifiées style Duo (border-bottom épais) ── */
+
+/* .ck-card (espace candidat/gérant) */
+.ck-learn .ck-card,
+.ck-learn .ck-card--page {
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.45rem;
+  border-radius: 1.6rem;
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* .ck-pack-card (page tarifs) */
+.ck-public .ck-pack-card,
+.fj-root.ck-public .ck-pack-card {
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.45rem;
+  border-radius: 1.6rem;
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ck-public .ck-pack-card:hover,
+.fj-root.ck-public .ck-pack-card:hover {
+  border-color: var(--ck-green);
+  transform: translateY(-2px);
+  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.12);
+}
+
+/* .ck-home-step (cards étapes comment-ça-marche) */
+.ck-public .ck-home-step {
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.45rem;
+  border-radius: 1.6rem;
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+}
+
+.ck-public .ck-home-step:hover {
+  border-color: var(--ck-green);
+  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.10);
+  transform: translateY(-2px);
+}
+
+/* .fj-card (blog cards, etc. dans contexte public CODAKIS) */
+.ck-public .fj-card,
+.fj-root.ck-public .fj-card,
+.ck-public .fj-blog-card,
+.fj-root.ck-public .fj-blog-card {
+  border: 0.2rem solid var(--ck-line) !important;
+  border-bottom-width: 0.45rem !important;
+  border-radius: 1.6rem !important;
+  background: var(--ck-surface-2) !important;
+  box-shadow: var(--ck-shadow) !important;
+  color: var(--ck-text);
+}
+
+.ck-public .fj-card:hover,
+.fj-root.ck-public .fj-card:hover,
+.ck-public .fj-blog-card:hover,
+.fj-root.ck-public .fj-blog-card:hover {
+  border-color: var(--ck-green) !important;
+  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.10) !important;
+}
+
+/* Pricing cards forfaits avec border-bottom Duo */
+.ck-public .fj-school-pack-card,
+.ck-public .fj-pricing-dark__card {
+  border-bottom-width: 0.45rem !important;
+}
+
+/* ── Footer — liens colorés ── */
+
+/* Lien "S'inscrire" (compte candidat) en vert dans les colonnes footer */
+.ck-footer ul li a[href="/inscription"],
+.fj-root.ck-public .ck-footer ul li a[href="/inscription"] {
+  color: var(--ck-green) !important;
+  font-weight: 800;
+}
+
+.ck-footer ul li a[href="/inscription"]:hover,
+.fj-root.ck-public .ck-footer ul li a[href="/inscription"]:hover {
+  color: var(--ck-green-dark) !important;
+}
+
+/* Bouton ghost "Inscrire mon auto-école" dans le footer → outline vert */
+.ck-footer__cta-row .ck-public-btn--ghost,
+.fj-root.ck-public .ck-footer__cta-row a.ck-public-btn--ghost {
+  background: transparent !important;
+  border-color: var(--ck-green) !important;
+  color: var(--ck-green) !important;
+}
+
+.ck-footer__cta-row .ck-public-btn--ghost:hover,
+.fj-root.ck-public .ck-footer__cta-row a.ck-public-btn--ghost:hover {
+  background: var(--ck-green-soft) !important;
+  color: var(--ck-green-dark) !important;
+}
+
+/* ── Dark overlay — remplacer le bleu sur hero par un dégradé sombre cohérent ── */
+.fj-hero__overlay {
+  background: linear-gradient(
+    160deg,
+    rgba(15, 23, 42, 0.72) 0%,
+    rgba(15, 23, 42, 0.55) 100%
+  ) !important;
+}
+
+/* Sur les sections avec fond sombre, les liens de navigation restent lisibles */
+.ck-public .fj-site-header--dark a,
+.ck-public .fj-site-header--dark .fj-nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Drawer forfait — thème CODAKIS unifié
+   ═══════════════════════════════════════════════════════════ */
+
+/* Fond blanc propre, police Nunito */
+.ck-public .fj-pack-drawer,
+.fj-root.ck-public .fj-pack-drawer {
+  background: #ffffff;
+  color: var(--ck-text);
+  font-family: Nunito, system-ui, sans-serif;
+  border-left: 0.1rem solid var(--ck-line);
+}
+
+/* Titre */
+.ck-public .fj-pack-drawer__title,
+.fj-root.ck-public .fj-pack-drawer__title {
+  color: var(--ck-text);
+  font-family: Nunito, system-ui, sans-serif;
+  font-weight: 800;
+}
+
+/* Sous-titre (label forfait) */
+.ck-public .fj-pack-drawer__subtitle,
+.fj-root.ck-public .fj-pack-drawer__subtitle {
+  color: var(--fj-drawer-accent);
+  font-weight: 700;
+}
+
+/* Prix — utilise la couleur d'accent */
+.ck-public .fj-pack-drawer__price,
+.fj-root.ck-public .fj-pack-drawer__price {
+  color: var(--ck-text);
+  font-family: Nunito, system-ui, sans-serif;
+}
+
+/* Features */
+.ck-public .fj-pack-drawer__features li,
+.fj-root.ck-public .fj-pack-drawer__features li {
+  color: var(--ck-text);
+  font-size: 1.45rem;
+}
+
+/* Icône check */
+.ck-public .fj-pack-drawer__check,
+.fj-root.ck-public .fj-pack-drawer__check {
+  border-color: var(--fj-drawer-accent);
+  color: var(--fj-drawer-accent);
+}
+
+/* Note école */
+.ck-public .fj-pack-drawer__school,
+.fj-root.ck-public .fj-pack-drawer__school {
+  background: var(--ck-green-soft, rgba(0,168,89,0.08));
+  border-radius: 1rem;
+  color: var(--ck-muted);
+  border: 0.1rem solid rgba(0,168,89,0.18);
+}
+
+/* Footer propre */
+.ck-public .fj-pack-drawer__footer,
+.fj-root.ck-public .fj-pack-drawer__footer {
+  border-top: 0.15rem solid var(--ck-line);
+  background: #fff;
+  padding: 1.4rem 2rem 2rem;
+}
+
+/* Bouton primaire — style ck-public-btn */
+.ck-public .fj-pack-drawer__cta--primary,
+.fj-root.ck-public .fj-pack-drawer__cta--primary {
+  background: var(--fj-drawer-accent) !important;
+  border: 0.2rem solid var(--fj-drawer-accent-dark) !important;
+  border-bottom-width: 0.4rem !important;
+  border-radius: 1.2rem !important;
+  color: #fff !important;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  box-shadow: none;
+  min-height: 4.8rem;
+  transition:
+    filter 0.18s ease,
+    transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
+    border-bottom-width 0.1s ease;
+}
+
+.ck-public .fj-pack-drawer__cta--primary:hover:not(:disabled),
+.fj-root.ck-public .fj-pack-drawer__cta--primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.ck-public .fj-pack-drawer__cta--primary:active:not(:disabled),
+.fj-root.ck-public .fj-pack-drawer__cta--primary:active:not(:disabled) {
+  border-bottom-width: 0.15rem !important;
+  transform: translateY(0.2rem);
+}
+
+.ck-public .fj-pack-drawer__cta--primary:disabled,
+.fj-root.ck-public .fj-pack-drawer__cta--primary:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Bouton secondaire "Fermer" */
+.ck-public .fj-pack-drawer__cta--secondary,
+.fj-root.ck-public .fj-pack-drawer__cta--secondary {
+  background: transparent !important;
+  border: 0.2rem solid var(--ck-line) !important;
+  border-radius: 1.2rem !important;
+  color: var(--ck-muted) !important;
+  font-family: Nunito, system-ui, sans-serif;
+  font-weight: 700;
+  box-shadow: none;
+  min-height: 4rem;
+}
+
+.ck-public .fj-pack-drawer__cta--secondary:hover,
+.fj-root.ck-public .fj-pack-drawer__cta--secondary:hover {
+  border-color: var(--fj-drawer-accent) !important;
+  color: var(--fj-drawer-accent) !important;
+  background: var(--ck-green-soft, rgba(0,168,89,0.05)) !important;
+}
+
+/* Bouton fermer (X) */
+.ck-public .fj-pack-drawer__close,
+.fj-root.ck-public .fj-pack-drawer__close {
+  color: var(--ck-muted);
+  border-radius: 0.8rem;
+}
+
+.ck-public .fj-pack-drawer__close:hover,
+.fj-root.ck-public .fj-pack-drawer__close:hover {
+  background: var(--ck-surface);
+  color: var(--ck-text);
+}
+
+/* Erreur paiement */
+.ck-public .fj-pack-drawer__payment-error,
+.fj-root.ck-public .fj-pack-drawer__payment-error {
+  padding: 1rem 1.2rem;
+  background: rgba(239,68,68,0.08);
+  border: 0.15rem solid #ef4444;
+  border-radius: 0.8rem;
+  color: #dc2626;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-top: 0.8rem;
 }

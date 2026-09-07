@@ -26,7 +26,29 @@ DANGER = "#DC2626"
 
 
 def _logo_url() -> str:
-    return f"{settings.frontend_url.rstrip('/')}/images/logo/logo.svg"
+    """
+    Retourne l'URL absolue du logo PNG pour les e-mails.
+    En développement (localhost), renvoie une chaîne vide → _logo_block() affichera le nom texte.
+    En production, utilise frontend_url + /images/logo.png.
+    """
+    base = settings.frontend_url.rstrip("/")
+    if "localhost" in base or "127.0.0.1" in base:
+        return ""
+    return f"{base}/images/logo.png"
+
+
+def _logo_block() -> str:
+    """Bloc logo adaptatif : image PNG en prod, nom texte stylisé en dev local."""
+    url = _logo_url()
+    if url:
+        return (
+            f'<img src="{escape(url)}" alt="CODAKIS" width="140" height="40" '
+            f'style="display:block;border:0;max-width:140px;height:auto;" />'
+        )
+    return (
+        f'<span style="font-family:{FONT_SANS};font-size:22px;font-weight:700;'
+        f'color:{BRAND_GREEN};letter-spacing:-0.02em;">CODAKIS</span>'
+    )
 
 
 def _fonts_head() -> str:
@@ -65,7 +87,7 @@ def _base_layout(*, preheader: str, body_html: str, footer_note: str | None = No
     <tr><td align="center">
       <table role="presentation" class="codakis-email-card" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
         <tr><td class="codakis-email-pad" style="padding:42px 32px 16px;background:{BG_CARD};border:1px solid {BORDER};border-radius:12px 12px 0 0;">
-          <img src="{escape(_logo_url())}" alt="CODAKIS" width="140" height="40" style="display:block;border:0;max-width:140px;height:auto;" />
+          {_logo_block()}
         </td></tr>
         <tr><td class="codakis-email-pad" style="padding:0 32px 32px;background:{BG_CARD};border-left:1px solid {BORDER};border-right:1px solid {BORDER};">
           {body_html}

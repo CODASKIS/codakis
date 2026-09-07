@@ -265,7 +265,7 @@ export async function login(email: string, password: string): Promise<{ tokens: 
 export async function loginWithGoogleIdToken(
   idToken: string,
   extras?: { type_permis?: string; parcours_souhaite?: string },
-): Promise<{ tokens: TokenResponse; user: ApiUser }> {
+): Promise<{ tokens: TokenResponse; user: ApiUser; needsProfileCompletion: boolean }> {
   const response = await fetch(apiUrl("/api/v1/auth/google"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -280,10 +280,11 @@ export async function loginWithGoogleIdToken(
     throw new AuthApiError(await parseError(response), response.status);
   }
 
-  const tokens = (await response.json()) as TokenResponse;
+  const tokens = (await response.json()) as TokenResponse & { needs_profile_completion?: boolean };
+  const needsProfileCompletion = tokens.needs_profile_completion ?? false;
   setTokens(tokens);
   const user = await fetchMe();
-  return { tokens, user };
+  return { tokens, user, needsProfileCompletion };
 }
 
 export async function registerCandidat(payload: {

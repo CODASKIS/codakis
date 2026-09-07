@@ -71,7 +71,7 @@ export default function Footer() {
           <BrandLogo size="sm" showTagline={false} />
           <p>{t("footer.description")}</p>
           <div className="ck-footer__cta-row">
-            <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--primary">
+            <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--primary co !text-white">
               {t("nav.signup")}
             </Link>
             <Link to={AUTH_PATHS.register.autoEcole} className="ck-public-btn ck-public-btn--ghost">

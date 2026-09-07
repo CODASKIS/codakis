@@ -10,6 +10,7 @@ from app.db.session import get_db
 from app.schemas.auth import (
     ForgotPasswordRequest,
     GoogleAuthRequest,
+    GoogleTokenResponse,
     LoginRequest,
     MessageResponse,
     RefreshTokenRequest,
@@ -109,10 +110,10 @@ def login_route(payload: LoginRequest, request: Request, db: Session = Depends(g
     return TokenResponse(**build_tokens(user))
 
 
-@router.post("/google", response_model=TokenResponse)
+@router.post("/google", response_model=GoogleTokenResponse)
 def google_route(payload: GoogleAuthRequest, request: Request, db: Session = Depends(get_db)):
     try:
-        user = login_or_register_google(
+        user, is_new = login_or_register_google(
             db,
             payload.id_token,
             type_permis=payload.type_permis,
@@ -121,7 +122,9 @@ def google_route(payload: GoogleAuthRequest, request: Request, db: Session = Dep
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     _notify_login(user, request)
-    return TokenResponse(**build_tokens(user))
+    # Un nouveau compte Google ou un compte sans téléphone/ville doit compléter son profil
+    needs_completion = is_new or not user.telephone or not user.ville_id
+    return GoogleTokenResponse(**build_tokens(user), needs_profile_completion=needs_completion)
 
 
 @router.post("/forgot-password", response_model=MessageResponse)

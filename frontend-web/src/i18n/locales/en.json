@@ -104,10 +104,12 @@
     }
   },
   "cookies": {
+    "aria": "Cookie consent",
+    "message": "We use cookies to keep CODAKIS secure and improve your experience.",
     "learnMore": "Learn more",
     "accept": "Accept",
-    "privacy": "Privacy policy",
-    "terms": "Terms of use",
+    "privacy": "Privacy",
+    "terms": "Terms",
     "rights": "© {{year}} CODAKIS. All rights reserved."
   },
   "mobile": {
@@ -329,7 +331,7 @@
     "createFreeAccount": "Create a free account",
     "createFreeAccountAndPay": "Create a free account and pay",
     "loginToPay": "I already have an account — sign in",
-    "payMobileMoney": "Pay via CinetPay",
+    "payMobileMoney": "Pay via PawaPay",
     "viewMySchool": "View my driving school",
     "wrongRoleHint": "Sign in with a candidate account to purchase a driving school package.",
     "purchaseFlowHint": "Free CODAKIS account. Driving school enrolment happens only when you purchase a package (Mobile Money).",
@@ -341,7 +343,7 @@
       "phoneHint": "Format: 6XX XX XX XX (Cameroon)",
       "submit": "Send payment request",
       "confirming": "Confirming…",
-      "redirecting": "Redirecting to CinetPay…",
+      "redirecting": "Redirecting to PawaPay…",
       "redirectMissing": "Unable to open the payment page. Please try again or contact support.",
       "ussdTitle": "Confirm on your phone",
       "success": "Payment confirmed — your plan is active.",
@@ -540,6 +542,17 @@
       "resetSubmit": "Reset password",
       "sent": "If an account exists for {{email}}, you will receive an email with instructions.",
       "contact": "Contact support"
+    },
+    "completeProfile": {
+      "metaTitle": "Complete your profile | CODAKIS",
+      "title": "Complete your profile",
+      "subtitle": "A few more details to personalise your experience.",
+      "licenseTitle": "Your licence & course",
+      "licenseSubtitle": "Confirm the licence type and course path you want to follow.",
+      "infoTitle": "Your contact details",
+      "infoSubtitle": "This helps us tailor your experience.",
+      "submit": "Save and continue",
+      "skip": "Skip for now"
     },
     "google": {
       "signIn": "Continue with Google",

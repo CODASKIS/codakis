@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import { CheckCircle, X, XCircle } from "lucide-react";
+import { CheckCircle, Volume2, VolumeX, X, XCircle } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import MediaVideo from "../../../components/common/MediaVideo";
 import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
@@ -10,6 +10,12 @@ import {
   validateCandidatCheckpoint,
   type TakeQuestion,
 } from "../../../lib/pedagogyApi";
+import {
+  isSpeakingEnabled,
+  setUserPreferences,
+  subscribeUserPreferences,
+} from "../../../lib/userPreferences";
+import { stopSpeaking } from "../../../lib/speak";
 
 type CheckResult = {
   est_correcte: boolean;
@@ -32,6 +38,20 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const startedAt = useMemo(() => Date.now(), [id]);
+
+  // ── état TTS synchronisé avec les préférences utilisateur ──────────────────
+  const [voiceOn, setVoiceOn] = useState<boolean>(() => isSpeakingEnabled());
+
+  useEffect(() => {
+    return subscribeUserPreferences((prefs) => setVoiceOn(prefs.speakingEnabled));
+  }, []);
+
+  function toggleVoice() {
+    const next = !voiceOn;
+    if (!next) stopSpeaking();
+    setUserPreferences({ speakingEnabled: next });
+    // setVoiceOn mis à jour via subscribeUserPreferences
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -135,6 +155,18 @@ export default function QuizPage() {
         <div className="ck-quiz__progress" aria-hidden>
           <span style={{ width: `${progress}%` }} />
         </div>
+        {/* Toggle voix — toujours visible, même si la voix est désactivée */}
+        <button
+          type="button"
+          className={`ck-quiz__voice-toggle${voiceOn ? " is-on" : " is-off"}`}
+          onClick={toggleVoice}
+          aria-label={voiceOn ? "Désactiver la voix" : "Activer la voix"}
+          title={voiceOn ? "Voix activée — cliquer pour désactiver" : "Voix désactivée — cliquer pour activer"}
+        >
+          {voiceOn
+            ? <Volume2 size={18} strokeWidth={2.5} aria-hidden />
+            : <VolumeX size={18} strokeWidth={2.5} aria-hidden />}
+        </button>
       </div>
 
       <div className="ck-challenge__body">

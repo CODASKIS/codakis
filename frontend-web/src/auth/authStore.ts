@@ -68,14 +68,14 @@ export async function loginWithCredentials(email: string, password: string): Pro
 export async function loginWithGoogle(
   idToken: string,
   extras?: { typePermis?: string; parcoursSouhaite?: string },
-): Promise<AuthSession> {
-  const { user } = await loginWithGoogleIdToken(idToken, {
+): Promise<{ session: AuthSession; needsProfileCompletion: boolean }> {
+  const { user, needsProfileCompletion } = await loginWithGoogleIdToken(idToken, {
     type_permis: extras?.typePermis,
     parcours_souhaite: extras?.parcoursSouhaite,
   });
   const session = userToSession(user);
   setSession(session);
-  return session;
+  return { session, needsProfileCompletion };
 }
 
 export async function registerCandidatAccount(payload: RegisterPayload, langue: string): Promise<AuthSession> {

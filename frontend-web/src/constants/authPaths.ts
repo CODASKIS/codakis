@@ -2,6 +2,7 @@
 export const AUTH_PATHS = {
   login: "/connexion",
   forgotPassword: "/connexion/mot-de-passe",
+  completeProfile: "/connexion/completer-profil",
   register: {
     /** Inscription candidat (page auth) */
     candidat: "/inscription",

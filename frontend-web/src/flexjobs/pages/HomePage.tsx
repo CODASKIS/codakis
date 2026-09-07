@@ -5,24 +5,34 @@ import PageMeta from "../../components/common/PageMeta";
 import RevealOnScroll from "../../components/motion/RevealOnScroll";
 import { FJ_IMG } from "../assets/online-images";
 import HeaderSearch from "../components/HeaderSearch";
+import PricingTable from "../components/PricingTable";
 import {
   formatDrivingSchoolListLabel,
   type DrivingSchool,
 } from "../../data/mockDrivingSchools";
 import { fetchPublicSchools, mapPublicSchoolToDrivingSchool } from "../../lib/publicSchoolsApi";
+import { MOCK_VITRINE_PLANS } from "../../data/mockCmsContent";
+import { getPlanPricing, type PlanPricing } from "../../lib/payment-api";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { THEME_CODES } from "../../i18n/themeLabels";
+import { useVitrinePlans } from "../hooks/useCmsData";
 
 const HOME_THEME_CODES = THEME_CODES.slice(0, 6);
 
 export default function HomePage() {
   const { t } = useTranslation();
   const [schools, setSchools] = useState<DrivingSchool[]>([]);
+  const { data: plans, loading: plansLoading } = useVitrinePlans(MOCK_VITRINE_PLANS);
+  const [planPricing, setPlanPricing] = useState<PlanPricing | null>(null);
 
   useEffect(() => {
     void fetchPublicSchools()
       .then((items) => setSchools(items.map((item) => mapPublicSchoolToDrivingSchool(item)).slice(0, 6)))
       .catch(() => setSchools([]));
+
+    getPlanPricing()
+      .then(setPlanPricing)
+      .catch(() => setPlanPricing(null));
   }, []);
 
   const steps = useMemo(
@@ -131,6 +141,19 @@ export default function HomePage() {
             <Link to="/themes" className="ck-public-btn ck-public-btn--ghost">
               {t("home.themesAll")}
             </Link>
+          </div>
+        </div>
+      </RevealOnScroll>
+
+      <RevealOnScroll as="section" className="ck-page-section" id="abonnement">
+        <div className="fj-container">
+          <div className="ck-page-section__head">
+            <h2>{t("nav.subscription")}</h2>
+            <p>{t("domains.pagePurpose")}</p>
+          </div>
+          <PricingTable plans={plans} loading={plansLoading} planPricing={planPricing} />
+          <div className="ck-home-schools__cta" style={{ marginTop: "2rem" }}>
+            
           </div>
         </div>
       </RevealOnScroll>

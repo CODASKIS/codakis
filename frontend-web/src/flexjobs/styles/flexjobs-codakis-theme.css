@@ -8287,11 +8287,11 @@ img.fj-tech-avatar {
 
 /* ─── FAQ accordion (FlexJobs-style) ─── */
 .fj-faq-panel {
-  border: 0.1rem solid #e0e0e0;
-  border-radius: 0.8rem;
-  background: #fff;
-  padding: 2.4rem 2.8rem 0.8rem;
-  margin-bottom: 2.4rem;
+  padding: 1.4rem 1.6rem;
+  border: 0.2rem solid var(--ck-line);
+  border-radius: 1.4rem;
+  background: var(--ck-surface-2);
+
 }
 
 .fj-faq-panel__header {
@@ -8332,7 +8332,7 @@ img.fj-tech-avatar {
 .fj-faq-panel__star--accent {
   top: 0.6rem;
   right: 0;
-  color: #f7941d;
+  color: var(--ck-green);
   font-size: 2rem;
 }
 
@@ -9237,13 +9237,12 @@ img.fj-tech-avatar {
 
 .fj-privacy-page__highlight-list li {
   margin-bottom: 1.6rem;
-  padding-bottom: 1.6rem;
+  padding: 1.6rem;
   border-bottom: 0.1rem solid #eaecf0;
 }
 
 .fj-privacy-page__highlight-list li:last-child {
   margin-bottom: 0;
-  padding-bottom: 0;
   border-bottom: 0;
 }
 

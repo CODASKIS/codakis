@@ -10,6 +10,7 @@ from app.core.config import settings
 from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
 from app.services.enrollments import create_inscription
 from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
+from app.services.pawapay import is_configured as pawapay_configured, create_checkout as pawapay_create_checkout
 from app.services.notifications import push_notification
 
 logger = logging.getLogger("codakis.payments")
@@ -84,6 +85,15 @@ def _calc_enrollment_split(amount_fcfa: int) -> tuple[int, int, int]:
 
 
 def get_payment_config() -> dict:
+    # PawaPay prime sur CinetPay
+    if pawapay_configured():
+        return {
+            "provider": "pawapay",
+            "requires_phone": False,
+            "requires_redirect": True,
+            "sandbox": settings.pawapay_sandbox,
+            "label": "PawaPay — Orange / MTN / Mobile Money",
+        }
     if cinetpay_configured():
         return {
             "provider": "cinetpay",
@@ -191,8 +201,40 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
     payment_token = None
     redirect_error = None
 
-    if cinetpay_configured() and user is not None:
-        base = settings.frontend_url.rstrip("/")
+    base = settings.frontend_url.rstrip("/")
+    return_url = f"{base}/paiement/retour?ref={paiement.reference}"
+
+    # ── PawaPay (priorité) ─────────────────────────────────────────────────
+    if pawapay_configured() and user is not None:
+        callback_url = f"{base}/api/v1/payments/pawapay/callback"
+        # customerMessage : max 22 chars, alphanumérique
+        raw_desc = paiement.message or "Paiement CODAKIS"
+        safe_desc = "".join(c for c in raw_desc if c.isalnum() or c == " ")
+        customer_message = safe_desc.strip()[:22] or "CODAKIS"
+        checkout_id = str(uuid.uuid4())
+        try:
+            result = pawapay_create_checkout(
+                checkout_id=checkout_id,
+                amount_fcfa=paiement.amount_fcfa,
+                currency="XAF",
+                description=customer_message,
+                phone=paiement.phone or user.telephone or "",
+                return_url=return_url,
+                callback_url=callback_url,
+                reason="CODAKIS",
+                language="fr",
+                client_reference_id=paiement.reference,
+            )
+            payment_url = result.get("redirect_url")
+            payment_token = result.get("checkout_id")
+            paiement.channel = "pawapay"
+            channel_label = "PawaPay"
+        except Exception as exc:
+            redirect_error = str(exc)
+            logger.warning("PawaPay checkout failed for %s: %s", paiement.reference, redirect_error)
+
+    # ── CinetPay (fallback si PawaPay non configuré) ───────────────────────
+    elif cinetpay_configured() and user is not None:
         try:
             checkout = cinetpay_create_checkout(
                 transaction_id=paiement.reference,
@@ -203,7 +245,7 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
                 customer_email=user.email,
                 customer_phone=paiement.phone,
                 notify_url=f"{base}/api/v1/payments/cinetpay/notify",
-                return_url=f"{base}/paiement/retour?ref={paiement.reference}",
+                return_url=return_url,
             )
             payment_url = checkout.get("payment_url")
             payment_token = checkout.get("payment_token")
@@ -213,9 +255,10 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
             redirect_error = str(exc)
             logger.warning("CinetPay redirect failed for %s: %s", paiement.reference, redirect_error)
 
+    provider_name = "PawaPay" if paiement.channel == "pawapay" else "CinetPay" if paiement.channel == "cinetpay" else channel_label
     message = (
-        f"Paiement de {paiement.amount_fcfa:,} FCFA via {channel_label}."
-        + (f" Validez sur la page CinetPay." if payment_url else f" Validez sur {paiement.phone}.")
+        f"Paiement de {paiement.amount_fcfa:,} FCFA via {provider_name}."
+        + (f" Validez sur la page de paiement." if payment_url else f" Validez sur {paiement.phone}.")
     ).replace(",", " ")
 
     return {

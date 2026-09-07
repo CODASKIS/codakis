@@ -85,8 +85,15 @@ export default function RegisterPage({ role }: RegisterPageProps) {
     setError("");
     setLoading(true);
     try {
-      await loginWithGoogle(idToken, { typePermis, parcoursSouhaite });
-      finishAuth();
+      const { session, needsProfileCompletion } = await loginWithGoogle(idToken, { typePermis, parcoursSouhaite });
+      if (needsProfileCompletion) {
+        if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+        navigate(AUTH_PATHS.completeProfile, { replace: true });
+      } else {
+        // profil complet (compte existant reconnecté) → aller au dashboard
+        if (purchaseIntent) rememberPurchaseIntent(purchaseIntent);
+        navigate(resolveAuthRedirect(session.role), { replace: true });
+      }
     } catch (err) {
       setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
     } finally {

@@ -52,6 +52,13 @@ class Settings(BaseSettings):
     cms_upload_dir: str = Field(default="uploads/cms", validation_alias=AliasChoices("CMS_UPLOAD_DIR"))
     cms_max_upload_bytes: int = Field(default=5_242_880, validation_alias=AliasChoices("CMS_MAX_UPLOAD_BYTES"))
 
+    # Cloudinary — stockage cloud pour images et documents
+    cloudinary_cloud_name: str = Field(default="", validation_alias=AliasChoices("CLOUDINARY_CLOUD_NAME"))
+    cloudinary_api_key: str = Field(default="", validation_alias=AliasChoices("CLOUDINARY_API_KEY"))
+    cloudinary_api_secret: str = Field(default="", validation_alias=AliasChoices("CLOUDINARY_API_SECRET"))
+    # Si CLOUDINARY_URL est fourni (format cloudinary://key:secret@cloud_name), il prime
+    cloudinary_url: str = Field(default="", validation_alias=AliasChoices("CLOUDINARY_URL"))
+
     platform_commission_rate_pct: int = Field(
         default=10,
         validation_alias=AliasChoices("PLATFORM_COMMISSION_RATE_PCT"),
@@ -86,6 +93,10 @@ class Settings(BaseSettings):
     cinetpay_site_id: str = Field(default="", validation_alias=AliasChoices("CINETPAY_SITE_ID"))
     cinetpay_currency: str = Field(default="XAF", validation_alias=AliasChoices("CINETPAY_CURRENCY"))
     cinetpay_country_code: str = Field(default="CM", validation_alias=AliasChoices("CINETPAY_COUNTRY_CODE"))
+
+    # PawaPay — Mobile Money Afrique Subsaharienne
+    pawapay_token: str = Field(default="", validation_alias=AliasChoices("PAWAPAY_TOKEN"))
+    pawapay_sandbox: bool = Field(default=True, validation_alias=AliasChoices("PAWAPAY_SANDBOX"))
 
     @staticmethod
     def _url_has_password(url: str) -> bool:

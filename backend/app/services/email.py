@@ -1,4 +1,5 @@
 import logging
+import logging
 import secrets
 import smtplib
 from email.message import EmailMessage
@@ -37,8 +38,9 @@ def _log_console(to: str, subject: str, body: str) -> None:
 
 
 def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) -> None:
+    from_addr = _from_address()
     payload: dict = {
-        "from": _from_address(),
+        "from": from_addr,
         "to": [to],
         "subject": subject,
         "text": body,
@@ -46,6 +48,12 @@ def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) ->
     if html_body:
         payload["html"] = html_body
 
+    logger.debug(
+        "Resend → from=%s to=%s subject=%s",
+        from_addr,
+        to,
+        subject,
+    )
     response = httpx.post(
         "https://api.resend.com/emails",
         headers={"Authorization": f"Bearer {settings.resend_api_key}"},
@@ -53,7 +61,15 @@ def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) ->
         timeout=30,
     )
     if response.status_code >= 400:
+        logger.error(
+            "Resend a rejeté l'e-mail : status=%s body=%s | from=%s to=%s",
+            response.status_code,
+            response.text,
+            from_addr,
+            to,
+        )
         raise RuntimeError(f"Resend {response.status_code}: {response.text}")
+    logger.info("Resend → e-mail envoyé à %s (id=%s)", to, response.json().get("id", "?"))
 
 
 def _send_via_smtp(
