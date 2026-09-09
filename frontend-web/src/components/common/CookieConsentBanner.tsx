@@ -2,7 +2,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
-import { acceptCookiePolicy, isCookiePolicyAccepted } from "../../lib/cookieConsent";
+import {
+  acceptCookiePolicy,
+  isCookiePolicyAccepted,
+  refuseCookiePolicy,
+} from "../../lib/cookieConsent";
 
 export default function CookieConsentBanner() {
   const { t } = useTranslation();
@@ -14,6 +18,11 @@ export default function CookieConsentBanner() {
 
   function handleAccept() {
     acceptCookiePolicy();
+    setVisible(false);
+  }
+
+  function handleRefuse() {
+    refuseCookiePolicy();
     setVisible(false);
   }
 
@@ -49,7 +58,10 @@ export default function CookieConsentBanner() {
               </p>
             </div>
 
-            <div className="cookiepolicy__action">
+            <div className="cookiepolicy__actions">
+              <button type="button" className="cookiepolicy__refuse" onClick={handleRefuse}>
+                {t("cookies.refuse")}
+              </button>
               <button type="button" id="cookieconfirm" className="cookiepolicy__accept" onClick={handleAccept}>
                 {t("cookies.accept")}
               </button>

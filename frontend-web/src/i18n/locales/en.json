@@ -25,7 +25,7 @@
     "consort": "Consort file"
   },
   "home": {
-    "metaTitle": "CODAKIS — Learn the highway code in Cameroon",
+    "metaTitle": "Home",
     "metaDescription": "Highway code learning platform and directory of approved driving schools in Cameroon.",
     "heroTitle": "Pass your highway code in Cameroon",
     "heroLead": "Interactive courses, mock exams and a directory of approved driving schools, your full licence journey on one platform.",
@@ -108,6 +108,7 @@
     "message": "We use cookies to keep CODAKIS secure and improve your experience.",
     "learnMore": "Learn more",
     "accept": "Accept",
+    "refuse": "Refuse",
     "privacy": "Privacy",
     "terms": "Terms",
     "rights": "© {{year}} CODAKIS. All rights reserved."
@@ -124,7 +125,7 @@
     "stores": "Coming soon on App Store and Google Play"
   },
   "consort": {
-    "metaTitle": "Consort file | CODAKIS",
+    "metaTitle": "Consort file",
     "metaDescription": "Track the 6 mandatory documents for your driving licence application in Cameroon.",
     "title": "Your Consort file",
     "lead": "CODAKIS helps you track each administrative document required for your driving licence in Cameroon.",
@@ -207,7 +208,7 @@
     "newsletterError": "Please enter a valid email address."
   },
   "schools": {
-    "metaTitle": "Driving schools directory | CODAKIS",
+    "metaTitle": "Driving schools directory",
     "metaDescription": "Find an approved driving school near you in Cameroon.",
     "heading": "Approved driving schools",
     "headingAll": "Approved driving schools directory",
@@ -426,7 +427,7 @@
       "register": "Create your account — let's go!"
     },
     "hub": {
-      "metaTitle": "Sign in | CODAKIS",
+      "metaTitle": "Sign in",
       "metaDescription": "Access your candidate, instructor, manager or admin workspace.",
       "title": "Sign in",
       "subtitle": "Choose your workspace to continue."
@@ -442,7 +443,7 @@
       "registerLink": "Create an account"
     },
     "register": {
-      "metaTitle": "Register — {{role}} | CODAKIS",
+      "metaTitle": "Register {{role}}",
       "metaDescription": "Create your CODAKIS account.",
       "title": "Create an account",
       "submit": "Sign up",
@@ -508,7 +509,7 @@
       }
     },
     "registerHub": {
-      "metaTitle": "Register | CODAKIS",
+      "metaTitle": "Register",
       "metaDescription": "Create a candidate account or register your partner driving school on CODAKIS.",
       "title": "Create an account",
       "subtitle": "Choose the registration type that fits your profile.",
@@ -517,7 +518,7 @@
       "schoolLead": "Publish your packages, manage enrolments and instructors on CODAKIS."
     },
     "registerSchool": {
-      "metaTitle": "Driving school registration | CODAKIS",
+      "metaTitle": "Driving school registration",
       "metaDescription": "Register your approved driving school on the CODAKIS platform.",
       "title": "Register my driving school",
       "subtitle": "Create the manager workspace for your CODAKIS partner school.",
@@ -525,7 +526,7 @@
       "hint": "Your application will be reviewed by the CODAKIS team before listing in the directory."
     },
     "forgot": {
-      "metaTitle": "Forgot password | CODAKIS",
+      "metaTitle": "Forgot password",
       "metaDescription": "Reset your CODAKIS password.",
       "title": "Forgot password",
       "subtitle": "Enter your email to receive an OTP reset code.",
@@ -545,7 +546,7 @@
       "contact": "Contact support"
     },
     "completeProfile": {
-      "metaTitle": "Complete your profile | CODAKIS",
+      "metaTitle": "Complete your profile",
       "title": "Complete your profile",
       "subtitle": "A few more details to personalise your experience.",
       "licenseTitle": "Your licence & course",
@@ -629,7 +630,7 @@
     }
   },
   "schoolRegister": {
-    "metaTitle": "Register my driving school | CODAKIS",
+    "metaTitle": "Register my driving school",
     "metaDescription": "Create your approved driving school manager account and publish your plans on CODAKIS.",
     "navLabel": "Driving school registration",
     "breadcrumb": "Register my driving school",
@@ -1076,7 +1077,7 @@
       }
     },
     "admin": {
-      "metaTitle": "Administration | CODAKIS",
+      "metaTitle": "Administration",
       "metaDescription": "CODAKIS admin dashboard.",
       "title": "CODAKIS administration",
       "lead": "Supervise driving schools, learning content, blog and Mobile Money payments.",
@@ -1091,7 +1092,7 @@
       "recentHint": "Transaction flows and MINT approvals will appear here."
     },
     "candidat": {
-      "metaTitle": "Candidate workspace | CODAKIS",
+      "metaTitle": "Candidate workspace",
       "metaDescription": "Track your theory progress and Consort file.",
       "title": "My licence journey",
       "lead": "CEMAC revision, mock exams and driving school follow-up.",
@@ -1121,7 +1122,7 @@
       "actionSeances": "View my sessions"
     },
     "moniteur": {
-      "metaTitle": "Instructor workspace | CODAKIS",
+      "metaTitle": "Instructor workspace",
       "metaDescription": "Schedule and assigned students.",
       "title": "Instructor workspace",
       "lead": "Driving slots and student follow-up.",
@@ -1137,7 +1138,7 @@
       "scheduleHint": "Candidate bookings will appear here."
     },
     "gerant": {
-      "metaTitle": "Manager workspace | CODAKIS",
+      "metaTitle": "Manager workspace",
       "metaDescription": "Manage your partner driving school.",
       "title": "My driving school",
       "lead": "Enrolments, plans and instructors — CODAKIS SaaS workspace.",

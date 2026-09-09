@@ -9,6 +9,7 @@ import {
   fetchCandidatLecon,
   type PedagogyLecon,
 } from "../../../lib/pedagogyApi";
+import { stopSpeaking, stripSpeakHtml } from "../../../lib/speak";
 
 type PdfDoc = { href: string; label: string };
 
@@ -80,6 +81,7 @@ export default function LessonPage() {
     })();
     return () => {
       cancelled = true;
+      stopSpeaking();
     };
   }, [id, navigate]);
 
@@ -154,7 +156,12 @@ export default function LessonPage() {
             <ChevronLeft size={18} /> Retour
           </Link>
           <div className="ck-lesson__title-row">
-            <SpeakButton text={lecon.title} size="md" className="ck-speak-btn--inline" />
+            <SpeakButton
+              text={`${lecon.title}. ${stripSpeakHtml(cleanedHtml || lecon.excerpt || "")}`}
+              size="md"
+              className="ck-speak-btn--inline"
+              autoPlay
+            />
             <h1 className="ck-title">{lecon.title}</h1>
           </div>
           <p className="ck-subtitle">

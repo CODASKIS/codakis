@@ -1,6 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { Award, BookOpen, Flame, Lock, Shield, Star, Target } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  Clock,
+  Flame,
+  Lock,
+  Medal,
+  Shield,
+  Sparkles,
+  Star,
+  Target,
+  Trophy,
+  Zap,
+} from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import {
   fetchCandidatDashboard,
@@ -18,20 +31,20 @@ const BADGES = [
   { id: "champion", title: "Champion du test", desc: "Réussir 3 quiz", goal: 3, color: "#8b5cf6", Icon: Award },
 ] as const;
 
-const BAR_COLORS = ["#00a859", "#38bdf8", "#f59e0b", "#8b5cf6", "#14b8a6", "#ef4444", "#0ea5e9", "#ec4899"];
-
 function sectionProgress(section: RoadmapSection) {
   const total = section.steps.length || 1;
   const done = section.steps.filter((s) => s.status === "done").length;
   return { pct: Math.round((done / total) * 100), done, total };
 }
 
+type TabKey = "quests" | "badges";
+
 export default function StatsPage() {
   const [data, setData] = useState<CandidatDashboard | null>(null);
   const [sections, setSections] = useState<RoadmapSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [tab, setTab] = useState<"badges" | "stats">("stats");
+  const [tab, setTab] = useState<TabKey>("quests");
 
   useEffect(() => {
     let cancelled = false;
@@ -55,16 +68,13 @@ export default function StatsPage() {
 
   const categoryRows = useMemo(
     () =>
-      sections.map((section, i) => ({
+      sections.map((section) => ({
         id: section.theme_id,
         title: section.theme_title,
-        color: BAR_COLORS[i % BAR_COLORS.length],
         ...sectionProgress(section),
       })),
     [sections],
   );
-
-  if (loading) return <Loader variant="page" />;
 
   const progress = data?.progress_percent ?? 0;
   const firstTry = data?.first_try_rate ?? data?.success_rate ?? 0;
@@ -73,10 +83,53 @@ export default function StatsPage() {
   const examens = data?.examens_passed ?? 0;
   const chaptersRead = data?.chapters_read ?? data?.completed_lecons ?? 0;
   const chaptersTotal = data?.chapters_total ?? data?.total_lecons ?? 0;
-  const answered = data?.questions_answered ?? 0;
-  const totalQ = data?.questions_total ?? Math.max(answered, 0);
-  const correct = data?.correct_answers ?? 0;
-  const gaugeColor = firstTry >= 70 ? "#f59e0b" : firstTry >= 40 ? "#00a859" : "#38bdf8";
+  const points = data?.points ?? 0;
+  const niveau = data?.niveau ?? 1;
+  const streak = data?.streak_days ?? data?.streak ?? 0;
+  const studyMinutes = data?.study_minutes ?? 0;
+
+  const quests = useMemo(() => {
+    const streakGoal = 1;
+    const scoreGoal = 2;
+    const minutesGoal = 10;
+
+    const streakCurrent = Math.min(streakGoal, streak > 0 ? 1 : 0);
+    const scoreCurrent = Math.min(scoreGoal, firstTry >= 80 ? (quizzes >= 2 ? 2 : quizzes >= 1 ? 1 : 0) : 0);
+    const minutesCurrent = Math.min(minutesGoal, studyMinutes);
+
+    const list = [
+      {
+        id: "streak",
+        title: "Prolonge ta série",
+        goal: streakGoal,
+        current: streakCurrent,
+        color: "#FF9600",
+        bg: "#FFF4E5",
+        Icon: Flame,
+      },
+      {
+        id: "score",
+        title: "Obtiens un score d'au moins 80 % dans 2 leçons",
+        goal: scoreGoal,
+        current: scoreCurrent,
+        color: "#00CD66",
+        bg: "#E5F9EF",
+        Icon: Target,
+      },
+      {
+        id: "minutes",
+        title: "Apprends pendant 10 minutes",
+        goal: minutesGoal,
+        current: minutesCurrent,
+        color: "#1CB0F6",
+        bg: "#E5F4FF",
+        Icon: Clock,
+      },
+    ] as const;
+
+    const doneCount = list.filter((q) => q.current >= q.goal).length;
+    return { list, doneCount, total: list.length };
+  }, [streak, firstTry, quizzes, studyMinutes]);
 
   const badgeProgress: Record<string, number> = {
     prodige: firstTry >= 95 ? 1 : 0,
@@ -87,156 +140,263 @@ export default function StatsPage() {
     champion: Math.min(3, quizzes),
   };
 
+  if (loading) return <Loader variant="page" />;
+
   return (
-    <div className="ck-card">
-      <div className="ck-stats-page__head">
-        <h1 className="ck-title" style={{ margin: 0 }}>
-          {tab === "stats" ? "Statistiques" : "Mes réalisations"}
-        </h1>
-        <div className="ck-settings__nav ck-stats-page__tabs">
-          <button type="button" className={tab === "stats" ? "is-active" : undefined} onClick={() => setTab("stats")}>
-            Stats
+    <div className="ck-duo-quests">
+      <section className="ck-quests-hero">
+        <div className="ck-quests-hero__tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "quests"}
+            className={tab === "quests" ? "is-active" : ""}
+            onClick={() => setTab("quests")}
+          >
+            QUÊTES
           </button>
-          <button type="button" className={tab === "badges" ? "is-active" : undefined} onClick={() => setTab("badges")}>
-            Badges
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === "badges"}
+            className={tab === "badges" ? "is-active" : ""}
+            onClick={() => setTab("badges")}
+          >
+            BADGES
           </button>
         </div>
-      </div>
 
-      {error && !data ? <p className="ck-empty">{error}</p> : null}
+        <div className="ck-quests-hero__body">
+          <div className="ck-quests-hero__text">
+            <h1 className="ck-quests-hero__title">
+              Gagne des récompenses grâce aux quêtes !
+            </h1>
+            <p className="ck-quests-hero__subtitle">
+              Tu as terminé{" "}
+              <strong>
+                {quests.doneCount} quête
+                {quests.doneCount > 1 ? "s" : ""} sur {quests.total}
+              </strong>{" "}
+              aujourd
+              {"'"}hui.
+            </p>
+          </div>
+          <div className="ck-quests-hero__mascot" aria-hidden>
+            <Sparkles size={28} />
+          </div>
+        </div>
+      </section>
 
-      {tab === "stats" && (data || !error) ? (
-        <>
-          <section className="ck-stats-block">
-            <h2 className="ck-stats-block__title">Questions</h2>
-            <div className="ck-stats-hero">
-              <div className="ck-widget__ring-wrap" style={{ margin: 0 }}>
-                <svg className="ck-widget__ring" viewBox="0 0 120 70" aria-hidden>
-                  <path d="M10 60 A50 50 0 0 1 110 60" fill="none" stroke="var(--ck-line)" strokeWidth="14" strokeLinecap="round" />
-                  <path
-                    d="M10 60 A50 50 0 0 1 110 60"
-                    fill="none"
-                    stroke={gaugeColor}
-                    strokeWidth="14"
-                    strokeLinecap="round"
-                    strokeDasharray={`${(firstTry / 100) * 157} 157`}
-                  />
-                </svg>
-                <strong className="ck-widget__ring-value" style={{ color: gaugeColor }}>
-                  {firstTry}%
+      {tab === "quests" ? (
+        <section className="ck-quests-panel">
+          <div className="ck-quests-panel__head">
+            <h2 className="ck-quests-panel__title">Quêtes du jour</h2>
+            <span className="ck-quests-panel__timer">
+              <Clock size={16} strokeWidth={2.4} />
+              12 heures
+            </span>
+          </div>
+
+          <ul className="ck-quest-list" role="list">
+            {quests.list.map((q) => {
+              const pct = Math.min(100, Math.round((q.current / q.goal) * 100));
+              const done = q.current >= q.goal;
+              return (
+                <li
+                  key={q.id}
+                  role="listitem"
+                  className={`ck-quest ${done ? "is-done" : ""}`}
+                >
+                  <span
+                    className="ck-quest__icon"
+                    style={{ color: q.color }}
+                    aria-hidden
+                  >
+                    <q.Icon size={36} strokeWidth={2.2} />
+                  </span>
+                  <div className="ck-quest__body">
+                    <strong className="ck-quest__title">{q.title}</strong>
+                    <div className="ck-quest__row">
+                      <div className="ck-quest__bar" aria-hidden>
+                        <span
+                          style={{
+                            width: `${pct}%`,
+                            background: done ? "#58CC02" : q.color,
+                          }}
+                        />
+                      </div>
+                      <span className="ck-quest__count">
+                        {q.current} / {q.goal}
+                      </span>
+                      <span
+                        className={`ck-quest__chest ${done ? "is-unlocked" : ""}`}
+                        aria-label={
+                          done
+                            ? "Récompense récupérée"
+                            : "Récompense à récupérer"
+                        }
+                      >
+                        {done ? (
+                          <Trophy size={20} color="#fff" strokeWidth={2.4} />
+                        ) : (
+                          <Lock size={20} strokeWidth={2.4} />
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+
+          <div className="ck-quest-kpis">
+            <article className="ck-kpi">
+              <span
+                className="ck-kpi__icon"
+                style={{ background: "#FFF4E5", color: "#FF9600" }}
+              >
+                <Zap size={26} strokeWidth={2.3} />
+              </span>
+              <div className="ck-kpi__body">
+                <strong>{points}</strong>
+                <span>XP gagnés</span>
+              </div>
+            </article>
+            <article className="ck-kpi">
+              <span
+                className="ck-kpi__icon"
+                style={{ background: "#FFE5D9", color: "#F97316" }}
+              >
+                <Flame size={26} strokeWidth={2.3} />
+              </span>
+              <div className="ck-kpi__body">
+                <strong>Niv. {niveau}</strong>
+                <span>Niveau actuel</span>
+              </div>
+            </article>
+            <article className="ck-kpi">
+              <span
+                className="ck-kpi__icon"
+                style={{ background: "#E5F9EF", color: "#58CC02" }}
+              >
+                <Trophy size={26} strokeWidth={2.3} />
+              </span>
+              <div className="ck-kpi__body">
+                <strong>{firstTry}%</strong>
+                <span>Correct au 1er essai</span>
+              </div>
+            </article>
+            <article className="ck-kpi">
+              <span
+                className="ck-kpi__icon"
+                style={{ background: "#EFF6FF", color: "#2563EB" }}
+              >
+                <Medal size={26} strokeWidth={2.3} />
+              </span>
+              <div className="ck-kpi__body">
+                <strong>
+                  {chaptersRead}/{chaptersTotal || "—"}
                 </strong>
-                <span className="ck-widget__ring-caption">Correct au 1er essai</span>
+                <span>Chapitres lus</span>
               </div>
-              <div className="ck-stats-hero__panel">
-                <div className="ck-widget__split" style={{ margin: 0, background: "transparent", padding: 0 }}>
-                  <div>
-                    <small>Questions répondues</small>
-                    <strong>
-                      {answered}/{totalQ || "—"}
-                    </strong>
-                  </div>
-                  <div>
-                    <small>Réponses correctes</small>
-                    <strong>{correct}</strong>
-                  </div>
-                  <div>
-                    <small>Chapitres lus</small>
-                    <strong>
-                      {chaptersRead}/{chaptersTotal}
-                    </strong>
-                  </div>
-                  <div>
-                    <small>Points</small>
-                    <strong>{data?.points ?? 0}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+            </article>
+          </div>
 
-          <section className="ck-stats-block">
-            <div className="ck-stats-block__head">
-              <h2 className="ck-stats-block__title">Progression par thème</h2>
-              <Link to="/espace/candidat" className="ck-btn ck-btn--primary ck-btn--sm">
+          <div className="ck-quests-panel">
+            <div className="ck-quests-panel__head">
+              <h2 className="ck-quests-panel__title">Progression par thème</h2>
+              <Link
+                to="/espace/candidat"
+                className="ck-btn ck-btn--primary ck-btn--sm"
+              >
                 Continuer
               </Link>
             </div>
-            <div className="ck-cat-grid">
-              {categoryRows.map(({ id, title, color, pct, done, total }) => (
-                <div key={id} className="ck-cat-card">
-                  <div className="ck-cat-card__top">
-                    <strong style={{ color }}>{pct}%</strong>
-                    <span>{title}</span>
-                  </div>
-                  <div className="ck-cat-card__bar">
-                    <span style={{ width: `${pct}%`, background: color }} />
-                  </div>
-                  <small>
-                    {done}/{total} étapes
-                  </small>
-                </div>
-              ))}
-              {!categoryRows.length ? <p className="ck-empty">Aucun thème pour l&apos;instant.</p> : null}
-            </div>
-          </section>
-
-          <section className="ck-stats-block">
-            <h2 className="ck-stats-block__title">Activité récente</h2>
-            <div className="ck-list">
-              {(data?.recent_attempts ?? []).map((item, i) => (
-                <div key={item.id} className="ck-list__row">
-                  <span
-                    className="ck-list__icon"
-                    style={{
-                      background: `${BAR_COLORS[i % BAR_COLORS.length]}22`,
-                      color: BAR_COLORS[i % BAR_COLORS.length],
-                    }}
-                  >
-                    {item.reussi ? <Star size={18} /> : <Target size={18} />}
-                  </span>
-                  <span style={{ flex: 1 }}>
-                    <strong>{item.title}</strong>
-                    <small>
-                      {item.kind} · {item.score}% · {item.reussi ? "Réussi" : "Échec"}
-                    </small>
-                  </span>
-                </div>
-              ))}
-              {!data?.recent_attempts?.length ? <p className="ck-empty">Aucune tentative pour l&apos;instant.</p> : null}
-            </div>
-          </section>
-        </>
-      ) : null}
-
-      {tab === "badges" ? (
-        <div>
-          {BADGES.map((badge) => {
-            const current = badgeProgress[badge.id] ?? 0;
-            const pct = Math.min(100, Math.round((current / badge.goal) * 100));
-            const Icon = badge.Icon;
-            return (
-              <div key={badge.id} className="ck-badge-row">
-                <span className="ck-badge-icon" style={{ background: badge.color }}>
-                  <Icon size={26} />
-                </span>
-                <div className="ck-badge-meta">
-                  <strong>{badge.title}</strong>
-                  <small>{badge.desc}</small>
-                  <div className="ck-badge-bar">
-                    <div className="ck-badge-bar__track">
-                      <span style={{ width: `${pct}%`, background: badge.color }} />
-                    </div>
-                    <span className="ck-badge-bar__count">
-                      {current}/{badge.goal}
+            <div className="ck-duo-theme-list">
+              {categoryRows.map(({ id, title, pct, done, total }) => (
+                <div key={id} className="ck-duo-theme-row">
+                  <div className="ck-duo-theme-row__top">
+                    <strong>{title}</strong>
+                    <span>
+                      {done}/{total}
                     </span>
                   </div>
+                  <div className="ck-duo-achievement__bar" aria-hidden>
+                    <span style={{ width: `${pct}%` }} />
+                  </div>
                 </div>
-                {current < badge.goal ? <Lock size={16} color="var(--ck-muted)" /> : null}
-              </div>
-            );
-          })}
-        </div>
-      ) : null}
+              ))}
+              {!categoryRows.length ? (
+                <p className="ck-empty">Aucun thème pour l&apos;instant.</p>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      ) : (
+        <section className="ck-quests-panel">
+          <div className="ck-quests-panel__head">
+            <h2 className="ck-quests-panel__title">Badges</h2>
+          </div>
+          <div className="ck-duo-achievements">
+            {BADGES.map((badge) => {
+              const current = badgeProgress[badge.id] ?? 0;
+              const pct = Math.min(100, Math.round((current / badge.goal) * 100));
+              const Icon = badge.Icon;
+              const locked = current < badge.goal;
+              return (
+                <article
+                  key={badge.id}
+                  className={`ck-duo-achievement ${locked ? "is-locked" : ""}`}
+                >
+                  <span
+                    className="ck-duo-achievement__icon"
+                    style={{ background: locked ? "#d1d5db" : badge.color }}
+                  >
+                    <Icon
+                      size={28}
+                      color="#fff"
+                      strokeWidth={2.3}
+                      aria-hidden
+                    />
+                    {!locked ? <small>OK</small> : null}
+                  </span>
+                  <div className="ck-duo-achievement__body">
+                    <div className="ck-duo-achievement__top">
+                      <strong>{badge.title}</strong>
+                      <span>
+                        {current}/{badge.goal}
+                      </span>
+                    </div>
+                    <div className="ck-duo-achievement__bar" aria-hidden>
+                      <span
+                        style={{
+                          width: `${pct}%`,
+                          background: locked ? "#9ca3af" : badge.color,
+                        }}
+                      />
+                    </div>
+                    <p>{badge.desc}</p>
+                  </div>
+                  {locked ? (
+                    <Lock
+                      size={16}
+                      color="var(--ck-muted)"
+                      aria-label="Verrouillé"
+                    />
+                  ) : (
+                    <Trophy
+                      size={16}
+                      color="#58CC02"
+                      aria-label="Débloqué"
+                    />
+                  )}
+                </article>
+              );
+            })}
+          </div>
+          {error && !data ? <p className="ck-empty">{error}</p> : null}
+        </section>
+      )}
     </div>
   );
 }

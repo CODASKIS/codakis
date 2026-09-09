@@ -16,6 +16,7 @@ import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession, hydrateSessionFromApi, setSession } from "../../auth/authStore";
 import type { AuthSession } from "../../auth/types";
 import UserMenuPanel from "../../components/prefs/UserMenuPanel";
+import { useDocumentTitle } from "../../components/common/PageMeta";
 import { useTheme } from "../../context/ThemeContext";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import { fetchCandidatDashboard, fetchGamification, type CandidatDashboard, type Gamification } from "../../lib/pedagogyApi";
@@ -38,6 +39,23 @@ const BOTTOM_LINKS = [
 
 function isImmersive(pathname: string) {
   return /\/(lecon|quiz|examen)\//.test(pathname) || pathname.endsWith("/super");
+}
+
+function candidatPageTitle(pathname: string): string {
+  if (pathname.includes("/lecon/")) return "Leçon";
+  if (pathname.includes("/quiz/") && pathname.includes("/resultat")) return "Résultat";
+  if (pathname.includes("/quiz/")) return "Quiz";
+  if (pathname.includes("/examen/")) return "Examen";
+  if (pathname.endsWith("/tests")) return "Tests";
+  if (pathname.endsWith("/statistiques")) return "Statistiques";
+  if (pathname.endsWith("/handbook")) return "Handbook";
+  if (pathname.endsWith("/profil")) return "Profil";
+  if (pathname.endsWith("/preferences")) return "Préférences";
+  if (pathname.endsWith("/auto-ecole")) return "Mon auto-école";
+  if (pathname.endsWith("/seances")) return "Mes séances";
+  if (pathname.endsWith("/consort")) return "Dossier Consort";
+  if (pathname.endsWith("/super")) return "Premium";
+  return "Feuille de route";
 }
 
 function formatDisplayName(raw?: string | null, email?: string | null): string {
@@ -82,6 +100,7 @@ export default function LearningShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const immersive = isImmersive(location.pathname);
+  useDocumentTitle(candidatPageTitle(location.pathname));
 
   const displayName = formatDisplayName(session?.name, session?.email);
   const avatarSeed = session?.email || session?.id || displayName;

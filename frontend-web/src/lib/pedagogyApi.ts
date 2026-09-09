@@ -441,6 +441,7 @@ export async function synthesizeCandidatSpeech(
   text: string,
   language?: string,
   voiceId?: string,
+  signal?: AbortSignal,
 ): Promise<Blob> {
   const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "";
   const url = base ? `${base}/api/v1/candidat/pedagogy/tts` : "/api/v1/candidat/pedagogy/tts";
@@ -456,6 +457,7 @@ export async function synthesizeCandidatSpeech(
       language,
       voice_id: voiceId || getPreferredVoiceId(),
     }),
+    signal,
   });
   if (!response.ok) {
     const payload = await response.json().catch(() => ({}));

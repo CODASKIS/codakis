@@ -3,12 +3,14 @@ import { Link, useNavigate, useParams } from "react-router";
 import { X } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import MediaVideo from "../../../components/common/MediaVideo";
+import SpeakButton from "../../../components/prefs/SpeakButton";
 import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
 import {
   fetchCandidatExamenTake,
   submitCandidatExamen,
   type TakeQuestion,
 } from "../../../lib/pedagogyApi";
+import { buildQuizSpeakText, stopSpeaking } from "../../../lib/speak";
 
 export default function ExamenPage() {
   const { id = "" } = useParams();
@@ -38,8 +40,17 @@ export default function ExamenPage() {
       });
     return () => {
       cancelled = true;
+      stopSpeaking();
     };
   }, [id]);
+
+  useEffect(() => {
+    return () => stopSpeaking();
+  }, []);
+
+  function closeExamen() {
+    stopSpeaking();
+  }
 
   const current = questions[index];
   const selected = current ? answers[current.id] : undefined;
@@ -50,6 +61,7 @@ export default function ExamenPage() {
     try {
       const payload = Object.entries(answers).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
       const result = await submitCandidatExamen(id, payload, Math.round((Date.now() - started) / 1000));
+      stopSpeaking();
       navigate(`/espace/candidat/quiz/${id}/resultat`, {
         replace: true,
         state: {
@@ -76,7 +88,13 @@ export default function ExamenPage() {
   return (
     <div className="ck-challenge">
       <div className="ck-challenge__top">
-        <Link to="/espace/candidat/tests" className="ck-back" style={{ marginBottom: 0 }} aria-label="Fermer">
+        <Link
+          to="/espace/candidat/tests"
+          className="ck-back"
+          style={{ marginBottom: 0 }}
+          aria-label="Fermer"
+          onClick={closeExamen}
+        >
           <X size={22} />
         </Link>
         <div className="ck-quiz__progress" aria-hidden>
@@ -93,20 +111,31 @@ export default function ExamenPage() {
         ) : current.image_url ? (
           <img src={current.image_url} alt="" className="ck-lesson__cover" />
         ) : null}
-        <SpeakPrompt key={current.id} text={current.prompt} autoPlay />
+        <SpeakPrompt
+          key={current.id}
+          text={current.prompt}
+          speakText={buildQuizSpeakText(current.prompt, current.reponses)}
+          autoPlay
+        />
         <div className="ck-quiz__options" role="radiogroup">
           {current.reponses.map((r, i) => (
-            <button
-              key={r.id}
-              type="button"
-              role="radio"
-              aria-checked={selected === r.id}
-              className={`ck-quiz__option${selected === r.id ? " is-selected" : ""}`}
-              onClick={() => setAnswers((prev) => ({ ...prev, [current.id]: r.id }))}
-            >
-              <span className="ck-quiz__label">{r.label || String(i + 1)}</span>
-              <span style={{ flex: 1 }}>{r.texte}</span>
-            </button>
+            <div key={r.id} className="ck-quiz__option-row">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={selected === r.id}
+                className={`ck-quiz__option${selected === r.id ? " is-selected" : ""}`}
+                onClick={() => setAnswers((prev) => ({ ...prev, [current.id]: r.id }))}
+              >
+                <span className="ck-quiz__label">{r.label || String(i + 1)}</span>
+                <span style={{ flex: 1 }}>{r.texte}</span>
+              </button>
+              <SpeakButton
+                text={`Option ${r.label || String.fromCharCode(65 + i)}. ${r.texte}`}
+                size="sm"
+                className="ck-speak-btn--option"
+              />
+            </div>
           ))}
         </div>
         {error ? <p className="ck-empty">{error}</p> : null}

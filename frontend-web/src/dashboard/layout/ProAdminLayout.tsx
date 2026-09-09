@@ -1,6 +1,7 @@
 import { useEffect, useMemo, type ReactNode } from "react";
 import { Outlet, useLocation } from "react-router";
 import type { LucideIcon } from "lucide-react";
+import { setDocumentTitle } from "../../components/common/PageMeta";
 import { useTheme } from "../../context/ThemeContext";
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import AppHeader from "./AppHeader";
@@ -71,7 +72,7 @@ function ProAdminLayoutInner({
   );
 
   useEffect(() => {
-    document.title = `${pageTitle} · CODAKIS`;
+    setDocumentTitle(pageTitle);
   }, [pageTitle]);
 
   const contentPad = isMobileOpen ? "ml-0" : isExpanded || isHovered ? "lg:ml-[29rem]" : "lg:ml-[9rem]";

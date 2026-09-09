@@ -8,7 +8,7 @@
     "terms": "Terms of use"
   },
   "blog": {
-    "metaTitle": "Blog | CODAKIS",
+    "metaTitle": "Blog",
     "metaDescription": "Tips, news and guides for candidates and driving schools.",
     "searchLabel": "Search articles",
     "searchPlaceholder": "Search articles and content",
@@ -37,7 +37,7 @@
     "empty": "No topics match your search."
   },
   "pricingPage": {
-    "metaTitle": "Plans | CODAKIS",
+    "metaTitle": "Plans",
     "metaDescription": "Choose the plan that fits your licence journey on CODAKIS.",
     "faqTitle": "Frequently asked questions about CODAKIS pricing",
     "faq": [
@@ -70,7 +70,7 @@
     "thanksBodyAfter": "."
   },
   "contact": {
-    "metaTitle": "Contact | CODAKIS",
+    "metaTitle": "Contact",
     "metaDescription": "Questions about the directory, plans or your licence journey?",
     "navHowItWorks": "How it works",
     "navAbout": "About",
@@ -113,7 +113,7 @@
     "addressLine3": "P.O. Box — Yaoundé"
   },
   "about": {
-    "metaTitle": "About | CODAKIS",
+    "metaTitle": "About",
     "metaDescription": "CODAKIS mission: support driving licence candidates and connect them with approved driving schools in Cameroon.",
     "navHowItWorks": "How it works",
     "navAbout": "About",
@@ -201,7 +201,7 @@
     ]
   },
   "howItWorks": {
-    "metaTitle": "How it works | CODAKIS",
+    "metaTitle": "How it works",
     "metaDescription": "Discover the candidate and driving school journey on CODAKIS.",
     "breadcrumb": "How it works",
     "title": "How it works",
@@ -285,9 +285,9 @@
     "directoryCta": "View directory"
   },
   "guide": {
-    "clientMetaTitle": "Client guide | CODAKIS",
+    "clientMetaTitle": "Client guide",
     "clientMetaDescription": "Security tips and best practices for CODAKIS candidates.",
-    "schoolMetaTitle": "Driving school guide | CODAKIS",
+    "schoolMetaTitle": "Driving school guide",
     "schoolMetaDescription": "Security tips and best practices for CODAKIS partner driving schools.",
     "navClient": "Client guide",
     "navSchool": "Driving school guide",
@@ -435,7 +435,7 @@
     "ctaStart": "Get started"
   },
   "privacy": {
-    "metaTitle": "Privacy policy | CODAKIS",
+    "metaTitle": "Privacy policy",
     "metaDescription": "CODAKIS privacy policy and cookies.",
     "title": "Privacy policy",
     "lastUpdatedLabel": "Last updated: {{date}}",
@@ -550,7 +550,7 @@
     ]
   },
   "terms": {
-    "metaTitle": "Terms of use | CODAKIS",
+    "metaTitle": "Terms of use",
     "metaDescription": "General terms of use for the CODAKIS platform.",
     "title": "Terms of use",
     "lastUpdatedLabel": "Last updated: {{date}}",

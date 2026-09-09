@@ -946,61 +946,104 @@
   object-fit: cover;
 }
 
-/* Bandeau cookies — panneau flottant noir CODAKIS (bas-gauche) */
+/* Bandeau cookies — panneau blanc style Duo (bas-gauche) */
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__panel {
-  background-color: var(--ck-ink, #1a1a1a);
-  border: 0.2rem solid rgba(255, 255, 255, 0.08);
-  border-top: 0.3rem solid var(--fj-cta-bg, #00a859);
-  border-radius: 1.4rem;
-  box-shadow: 0 1.6rem 4rem rgba(0, 0, 0, 0.35);
+  background-color: #ffffff;
+  border: 0.2rem solid #e5e7eb;
+  border-bottom-width: 0.4rem;
+  border-radius: 1.6rem;
+  box-shadow: 0 0.8rem 2.4rem rgba(15, 23, 42, 0.12);
   flex-direction: column;
   align-items: stretch;
-  gap: 0.8rem;
-  padding: 1rem 1.2rem;
+  gap: 1rem;
+  padding: 1.2rem 1.4rem;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__message {
-  color: #ffffff;
+  color: #1f2937;
   font-family: Nunito, system-ui, sans-serif;
-  font-size: 1.3rem;
-  margin: 0 0 0.3rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0 0 0.4rem;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__links {
-  color: rgba(255, 255, 255, 0.55);
+  color: #64748b;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__links a,
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more {
-  color: rgba(255, 255, 255, 0.88);
+  color: #334155;
+  font-weight: 700;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__links a:hover,
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more:hover {
-  color: var(--fj-accent-orange, #fbb03b);
+  color: var(--fj-cta-bg, #00a859);
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__sep {
-  color: rgba(255, 255, 255, 0.35);
+  color: #94a3b8;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__accept {
   background-color: var(--fj-cta-bg, #00a859);
   color: #ffffff;
   border: 0;
-  border-radius: 1rem;
-  min-height: 3.6rem;
-  padding: 0.6rem 1.4rem;
+  border-radius: 1.2rem;
+  min-height: 4rem;
+  padding: 0.7rem 1.6rem;
   font-family: Nunito, system-ui, sans-serif;
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  box-shadow: 0 0.25rem 0 #008f4c;
-  align-self: flex-start;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: 0 0.35rem 0 #008f4c;
+  flex: 1 1 auto;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__accept:hover {
   background-color: var(--fj-cta-hover, #008f4c);
   color: #ffffff;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__accept:active {
+  transform: translateY(0.15rem);
+  box-shadow: 0 0.15rem 0 #008f4c;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__actions {
+  display: flex;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__refuse {
+  flex: 1 1 auto;
+  min-height: 4rem;
+  padding: 0.7rem 1.4rem;
+  border: 0.2rem solid #e5e7eb;
+  border-bottom-width: 0.4rem;
+  border-radius: 1.2rem;
+  background: #ffffff;
+  color: #334155;
+  font-family: Nunito, system-ui, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__refuse:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__refuse:active {
+  transform: translateY(0.1rem);
+  border-bottom-width: 0.2rem;
 }
 
 @media (max-width: 991px) {

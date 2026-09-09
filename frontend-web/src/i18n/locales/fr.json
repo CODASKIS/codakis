@@ -25,7 +25,7 @@
     "consort": "Dossier Consort"
   },
   "home": {
-    "metaTitle": "CODAKIS — Apprendre le code de la route au Cameroun",
+    "metaTitle": "Accueil",
     "metaDescription": "Plateforme d'apprentissage du code de la route et annuaire d'auto-écoles agréées au Cameroun.",
     "heroTitle": "Réussissez votre code de la route au Cameroun",
     "heroLead": "Cours interactifs, examens blancs et annuaire d'auto-écoles agréées, tout votre parcours permis sur une seule plateforme.",
@@ -108,6 +108,7 @@
     "message": "Nous utilisons des cookies pour sécuriser le site et améliorer votre expérience sur CODAKIS.",
     "learnMore": "En savoir plus",
     "accept": "Accepter",
+    "refuse": "Refuser",
     "privacy": "Confidentialité",
     "terms": "Conditions",
     "rights": "© {{year}} CODAKIS. Tous droits réservés."
@@ -124,7 +125,7 @@
     "stores": "Bientôt sur App Store et Google Play"
   },
   "consort": {
-    "metaTitle": "Dossier Consort | CODAKIS",
+    "metaTitle": "Dossier Consort",
     "metaDescription": "Suivez les 6 pièces obligatoires de votre dossier administratif permis de conduire au Cameroun.",
     "title": "Votre dossier Consort",
     "lead": "CODAKIS vous aide à suivre chaque pièce du dossier administratif requis pour le permis de conduire au Cameroun.",
@@ -207,7 +208,7 @@
     "newsletterError": "Indiquez une adresse e-mail valide."
   },
   "schools": {
-    "metaTitle": "Annuaire auto-écoles | CODAKIS",
+    "metaTitle": "Annuaire auto-écoles",
     "metaDescription": "Trouvez une auto-école agréée près de chez vous au Cameroun.",
     "heading": "Auto-écoles agréées",
     "headingAll": "Annuaire des auto-écoles agréées",
@@ -426,7 +427,7 @@
       "register": "Crée ton compte — on démarre ensemble !"
     },
     "hub": {
-      "metaTitle": "Connexion | CODAKIS",
+      "metaTitle": "Connexion",
       "metaDescription": "Accédez à votre espace candidat, moniteur, gérant ou administrateur.",
       "title": "Connexion",
       "subtitle": "Choisissez votre espace pour vous connecter."
@@ -442,7 +443,7 @@
       "registerLink": "Créer un compte"
     },
     "register": {
-      "metaTitle": "Inscription — {{role}} | CODAKIS",
+      "metaTitle": "Inscription {{role}}",
       "metaDescription": "Créez votre compte CODAKIS.",
       "title": "Créer un compte",
       "submit": "Inscrivez-vous",
@@ -508,7 +509,7 @@
       }
     },
     "registerHub": {
-      "metaTitle": "Inscription | CODAKIS",
+      "metaTitle": "Inscription",
       "metaDescription": "Créez un compte candidat ou inscrivez votre auto-école partenaire sur CODAKIS.",
       "title": "Créer un compte",
       "subtitle": "Choisissez le type d'inscription adapté à votre profil.",
@@ -517,7 +518,7 @@
       "schoolLead": "Publier vos forfaits, gérer les inscriptions et vos moniteurs sur CODAKIS."
     },
     "registerSchool": {
-      "metaTitle": "Inscription auto-école | CODAKIS",
+      "metaTitle": "Inscription auto-école",
       "metaDescription": "Inscrivez votre auto-école agréée sur la plateforme CODAKIS.",
       "title": "Inscrire mon auto-école",
       "subtitle": "Créez l'espace gérant de votre établissement partenaire CODAKIS.",
@@ -525,7 +526,7 @@
       "hint": "Votre dossier sera vérifié par l'équipe CODAKIS avant publication dans l'annuaire."
     },
     "forgot": {
-      "metaTitle": "Mot de passe oublié | CODAKIS",
+      "metaTitle": "Mot de passe oublié",
       "metaDescription": "Réinitialisez votre mot de passe CODAKIS.",
       "title": "Mot de passe oublié",
       "subtitle": "Entrez votre e-mail pour recevoir un code OTP de réinitialisation.",
@@ -545,7 +546,7 @@
       "contact": "Contacter le support"
     },
     "completeProfile": {
-      "metaTitle": "Compléter mon profil | CODAKIS",
+      "metaTitle": "Compléter mon profil",
       "title": "Compléter votre profil",
       "subtitle": "Quelques informations supplémentaires pour personnaliser votre expérience.",
       "licenseTitle": "Votre permis et parcours",
@@ -629,7 +630,7 @@
     }
   },
   "schoolRegister": {
-    "metaTitle": "Inscrire mon auto-école | CODAKIS",
+    "metaTitle": "Inscrire mon auto-école",
     "metaDescription": "Créez le compte gérant de votre auto-école agréée et publiez vos forfaits sur CODAKIS.",
     "navLabel": "Inscription auto-école",
     "breadcrumb": "Inscrire mon auto-école",
@@ -1076,7 +1077,7 @@
       }
     },
     "admin": {
-      "metaTitle": "Administration | CODAKIS",
+      "metaTitle": "Administration",
       "metaDescription": "Tableau de bord administrateur CODAKIS.",
       "title": "Administration CODAKIS",
       "lead": "Supervision des auto-écoles, du contenu pédagogique, du blog et des paiements Mobile Money.",
@@ -1091,7 +1092,7 @@
       "recentHint": "Les flux transactionnels et agréments MINT apparaîtront ici."
     },
     "candidat": {
-      "metaTitle": "Espace candidat | CODAKIS",
+      "metaTitle": "Espace candidat",
       "metaDescription": "Suivez votre progression code et dossier Consort.",
       "title": "Mon parcours permis",
       "lead": "Révision CEMAC, examens blancs et suivi de votre auto-école.",
@@ -1121,7 +1122,7 @@
       "actionSeances": "Voir mes séances"
     },
     "moniteur": {
-      "metaTitle": "Espace moniteur | CODAKIS",
+      "metaTitle": "Espace moniteur",
       "metaDescription": "Planning et élèves affectés.",
       "title": "Espace moniteur",
       "lead": "Créneaux de conduite et suivi de vos élèves.",
@@ -1137,7 +1138,7 @@
       "scheduleHint": "Les réservations candidats apparaîtront ici."
     },
     "gerant": {
-      "metaTitle": "Espace gérant | CODAKIS",
+      "metaTitle": "Espace gérant",
       "metaDescription": "Gérez votre auto-école partenaire.",
       "title": "Mon auto-école",
       "lead": "Inscriptions, forfaits et moniteurs — espace SaaS CODAKIS.",

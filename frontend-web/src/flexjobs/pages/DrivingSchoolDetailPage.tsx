@@ -65,7 +65,7 @@ export default function DrivingSchoolDetailPage() {
 
   return (
     <>
-      <PageMeta title={`${school.name} | CODAKIS`} description={school.description[lang]} />
+      <PageMeta title={school.name} description={school.description[lang]} />
       <SubNav activePath="/auto-ecoles" items={[...subNavItems]} />
 
       <div className="ck-page">

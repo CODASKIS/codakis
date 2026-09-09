@@ -98,7 +98,7 @@ export default function BlogDetailPage() {
 
   return (
     <>
-      <PageMeta title={`${post.title} | CODAKIS`} description={post.excerpt ?? post.title} />
+      <PageMeta title={post.title} description={post.excerpt ?? post.title} />
 
       <article className="ck-article">
         <nav className="fj-breadcrumb" aria-label={t("blogDetail.breadcrumbAria")}>

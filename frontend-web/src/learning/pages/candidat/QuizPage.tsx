@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { CheckCircle, Volume2, VolumeX, X, XCircle } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import MediaVideo from "../../../components/common/MediaVideo";
+import SpeakButton from "../../../components/prefs/SpeakButton";
 import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
 import {
   fetchCandidatQuizTake,
@@ -15,7 +16,7 @@ import {
   setUserPreferences,
   subscribeUserPreferences,
 } from "../../../lib/userPreferences";
-import { stopSpeaking } from "../../../lib/speak";
+import { stopSpeaking, buildQuizSpeakText } from "../../../lib/speak";
 
 type CheckResult = {
   est_correcte: boolean;
@@ -69,8 +70,17 @@ export default function QuizPage() {
       });
     return () => {
       cancelled = true;
+      stopSpeaking();
     };
   }, [id]);
+
+  useEffect(() => {
+    return () => stopSpeaking();
+  }, []);
+
+  function closeQuiz() {
+    stopSpeaking();
+  }
 
   const current = questions[index];
   const progress = questions.length ? ((index + (status === "checked" ? 1 : 0)) / questions.length) * 100 : 0;
@@ -109,6 +119,7 @@ export default function QuizPage() {
       const merged = current && selected ? { ...answers, [current.id]: selected } : answers;
       const payload = Object.entries(merged).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
       const result = await submitCandidatQuiz(id, payload, Math.round((Date.now() - startedAt) / 1000));
+      stopSpeaking();
       navigate(`/espace/candidat/quiz/${id}/resultat`, { state: { result, title }, replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Envoi impossible");
@@ -149,7 +160,13 @@ export default function QuizPage() {
   return (
     <div className="ck-challenge">
       <div className="ck-challenge__top">
-        <Link to="/espace/candidat" className="ck-back" style={{ marginBottom: 0 }} aria-label="Fermer">
+        <Link
+          to="/espace/candidat"
+          className="ck-back"
+          style={{ marginBottom: 0 }}
+          aria-label="Fermer"
+          onClick={closeQuiz}
+        >
           <X size={22} />
         </Link>
         <div className="ck-quiz__progress" aria-hidden>
@@ -178,27 +195,39 @@ export default function QuizPage() {
         ) : current.image_url ? (
           <img src={current.image_url} alt="" className="ck-lesson__cover" />
         ) : null}
-        <SpeakPrompt key={current.id} text={current.prompt} autoPlay />
+        <SpeakPrompt
+          key={current.id}
+          text={current.prompt}
+          speakText={buildQuizSpeakText(current.prompt, current.reponses)}
+          autoPlay
+        />
         <div className="ck-quiz__options" role="radiogroup">
           {current.reponses.map((r, i) => (
-            <button
-              key={r.id}
-              type="button"
-              role="radio"
-              aria-checked={selected === r.id}
-              className={optionClass(r.id)}
-              onClick={() => choose(r.id)}
-              disabled={status === "checked" || checking}
-            >
-              <span className="ck-quiz__label">{r.label || String(i + 1)}</span>
-              <span style={{ flex: 1 }}>{r.texte}</span>
-            </button>
+            <div key={r.id} className="ck-quiz__option-row">
+              <button
+                type="button"
+                role="radio"
+                aria-checked={selected === r.id}
+                className={optionClass(r.id)}
+                onClick={() => choose(r.id)}
+                disabled={status === "checked" || checking}
+              >
+                <span className="ck-quiz__label">{r.label || String(i + 1)}</span>
+                <span style={{ flex: 1 }}>{r.texte}</span>
+              </button>
+              <SpeakButton
+                text={`Option ${r.label || String.fromCharCode(65 + i)}. ${r.texte}`}
+                size="sm"
+                className="ck-speak-btn--option"
+              />
+            </div>
           ))}
         </div>
         {isBad && checkResult?.explanation ? (
-          <p className="ck-feedback is-wrong" style={{ marginTop: "1.2rem" }}>
-            {checkResult.explanation}
-          </p>
+          <div className="ck-feedback is-wrong" style={{ marginTop: "1.2rem", display: "flex", gap: "0.8rem", alignItems: "flex-start" }}>
+            <SpeakButton key={`expl-${current.id}`} text={checkResult.explanation} size="sm" autoPlay />
+            <p style={{ margin: 0 }}>{checkResult.explanation}</p>
+          </div>
         ) : null}
         {error ? <p className="ck-empty">{error}</p> : null}
       </div>

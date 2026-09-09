@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { clearSession } from "../../../auth/authStore";
 import PrefToggle from "../../../components/prefs/PrefToggle";
+import { setDocumentTitle } from "../../../components/common/PageMeta";
 import {
   ELEVENLABS_VOICES,
   getUserPreferences,
@@ -22,7 +23,7 @@ export default function UserPreferencesPage({ profileTo, preferencesTo }: Props)
   useEffect(() => subscribeUserPreferences(setPrefs), []);
 
   useEffect(() => {
-    document.title = "Préférences · CODAKIS";
+    setDocumentTitle("Préférences");
   }, []);
 
   function patch(next: Partial<UserPreferences>) {

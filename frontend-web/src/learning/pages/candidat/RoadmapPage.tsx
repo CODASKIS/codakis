@@ -161,7 +161,7 @@ export default function RoadmapPage() {
                 onClick={() => openStep(stickyCurrent)}
               >
                 <Star size={14} strokeWidth={2.5} aria-hidden />
-                <span>Étape en cours : {stickyCurrent.title}</span>
+                <span>Étape en cours : {stickyCurrent.title.replace(/\s*[—–−]+\s*/g, " ")}</span>
               </button>
             ) : stickyHasLocked ? (
               <button

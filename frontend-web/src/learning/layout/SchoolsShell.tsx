@@ -4,6 +4,7 @@ import { ChevronDown, Menu, MoreHorizontal, X } from "lucide-react";
 import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession, hydrateSessionFromApi } from "../../auth/authStore";
 import UserMenuPanel from "../../components/prefs/UserMenuPanel";
+import { useDocumentTitle } from "../../components/common/PageMeta";
 import { useTheme } from "../../context/ThemeContext";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import SchoolsRightRail, { type ProRole } from "../components/SchoolsRightRail";
@@ -97,6 +98,14 @@ export default function SchoolsShell({
   const displayName = session?.name || session?.email || roleLabel;
   const hideRightRail =
     role !== "admin" && (location.pathname === homeTo || location.pathname === `${homeTo}/`);
+
+  const activeTabLabel =
+    tabs.find((tab) =>
+      tab.end
+        ? location.pathname === tab.to || location.pathname === `${tab.to}/`
+        : location.pathname === tab.to || location.pathname.startsWith(`${tab.to}/`),
+    )?.label ?? title ?? roleLabel;
+  useDocumentTitle(heading !== (title || roleLabel) ? heading : activeTabLabel);
 
   useEffect(() => {
     setTheme("light");

@@ -25,8 +25,11 @@ export default function SpeakButton({ text, language, className = "", autoPlay =
     setError(false);
     try {
       await speakText(cleaned, language);
-    } catch {
-      setError(true);
+    } catch (err) {
+      const aborted =
+        (err instanceof DOMException && err.name === "AbortError") ||
+        (err instanceof Error && err.name === "AbortError");
+      if (!aborted) setError(true);
     } finally {
       setBusy(false);
     }
@@ -34,8 +37,15 @@ export default function SpeakButton({ text, language, className = "", autoPlay =
 
   useEffect(() => {
     if (!autoPlay || !enabled) return;
-    void play();
-    return () => stopSpeaking();
+    let cancelled = false;
+    void (async () => {
+      await play();
+      if (cancelled) stopSpeaking();
+    })();
+    return () => {
+      cancelled = true;
+      stopSpeaking();
+    };
   }, [autoPlay, enabled, text, play]);
 
   if (!enabled) return null;

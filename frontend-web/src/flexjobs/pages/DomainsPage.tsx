@@ -25,7 +25,7 @@ export default function DomainsPage() {
 
   return (
     <>
-      <PageMeta title={`${t("nav.themes")} | CODAKIS`} description={t("domains.metaDescription")} />
+      <PageMeta title={`${t("nav.themes")}`} description={t("domains.metaDescription")} />
       <SubNav activePath="/themes" items={[...subNavItems]} />
 
       <div className="ck-page">

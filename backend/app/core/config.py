@@ -1,11 +1,20 @@
+from pathlib import Path
 from urllib.parse import quote_plus
 
 from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+def _resolve_env_file() -> str | list[str]:
+    candidates = [
+        Path.cwd() / ".env",
+        Path(__file__).resolve().parents[2] / ".env",
+    ]
+    return [str(p) for p in candidates if p.exists()]
+
+
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(env_file=_resolve_env_file(), env_file_encoding="utf-8", extra="ignore")
 
     postgres_user: str = Field(default="postgres", validation_alias=AliasChoices("POSTGRES_USER"))
     postgres_password: str = Field(default="", validation_alias=AliasChoices("POSTGRES_PASSWORD"))

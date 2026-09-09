@@ -40,7 +40,7 @@ export default function DashboardPageShell({
   return (
     <>
       <PageMeta
-        title={`${metaTitle ?? title} | CODAKIS`}
+        title={metaTitle ?? title}
         description={description ?? title}
       />
       {beforeBreadcrumb}

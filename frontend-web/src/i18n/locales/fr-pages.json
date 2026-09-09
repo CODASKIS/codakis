@@ -8,7 +8,7 @@
     "terms": "Conditions d'utilisation"
   },
   "blog": {
-    "metaTitle": "Blog | CODAKIS",
+    "metaTitle": "Blog",
     "metaDescription": "Conseils, actualités et guides pour candidats et auto-écoles.",
     "searchLabel": "Rechercher dans les articles",
     "searchPlaceholder": "Rechercher articles et contenus",
@@ -37,7 +37,7 @@
     "empty": "Aucun domaine ne correspond à votre recherche."
   },
   "pricingPage": {
-    "metaTitle": "Forfaits | CODAKIS",
+    "metaTitle": "Forfaits",
     "metaDescription": "Choisissez la formule adaptée à votre parcours permis sur CODAKIS.",
     "faqTitle": "Questions fréquentes sur les tarifs CODAKIS",
     "faq": [
@@ -70,7 +70,7 @@
     "thanksBodyAfter": "."
   },
   "contact": {
-    "metaTitle": "Contact | CODAKIS",
+    "metaTitle": "Contact",
     "metaDescription": "Une question sur l'annuaire, les forfaits ou votre parcours permis ?",
     "navHowItWorks": "Comment ça marche",
     "navAbout": "À propos",
@@ -113,7 +113,7 @@
     "addressLine3": "BP — Yaoundé"
   },
   "about": {
-    "metaTitle": "À propos | CODAKIS",
+    "metaTitle": "À propos",
     "metaDescription": "La mission de CODAKIS : accompagner les candidats au permis et connecter avec des auto-écoles agréées au Cameroun.",
     "navHowItWorks": "Comment ça marche",
     "navAbout": "À propos",
@@ -201,7 +201,7 @@
     ]
   },
   "howItWorks": {
-    "metaTitle": "Comment ça marche | CODAKIS",
+    "metaTitle": "Comment ça marche",
     "metaDescription": "Découvrez le parcours candidat et auto-école sur CODAKIS.",
     "breadcrumb": "Comment ça marche",
     "title": "Comment ça marche",
@@ -285,9 +285,9 @@
     "directoryCta": "Voir l'annuaire"
   },
   "guide": {
-    "clientMetaTitle": "Guide client | CODAKIS",
+    "clientMetaTitle": "Guide client",
     "clientMetaDescription": "Conseils de sécurité et bonnes pratiques pour les candidats CODAKIS.",
-    "schoolMetaTitle": "Guide auto-école | CODAKIS",
+    "schoolMetaTitle": "Guide auto-école",
     "schoolMetaDescription": "Conseils de sécurité et bonnes pratiques pour les auto-écoles partenaires CODAKIS.",
     "navClient": "Guide client",
     "navSchool": "Guide auto-école",
@@ -435,7 +435,7 @@
     "ctaStart": "Commencer"
   },
   "privacy": {
-    "metaTitle": "Politique de confidentialité | CODAKIS",
+    "metaTitle": "Politique de confidentialité",
     "metaDescription": "Politique de confidentialité et cookies de CODAKIS.",
     "title": "Politique de confidentialité",
     "lastUpdatedLabel": "Dernière mise à jour : {{date}}",
@@ -550,7 +550,7 @@
     ]
   },
   "terms": {
-    "metaTitle": "Conditions d'utilisation | CODAKIS",
+    "metaTitle": "Conditions d'utilisation",
     "metaDescription": "Conditions générales d'utilisation de la plateforme CODAKIS.",
     "title": "Conditions d'utilisation",
     "lastUpdatedLabel": "Dernière mise à jour : {{date}}",
