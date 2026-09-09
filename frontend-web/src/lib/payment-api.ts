@@ -109,29 +109,30 @@ export type ClientInvoice = {
   payer_name?: string | null;
 };
 
-export async function getMySubscription(token: string): Promise<ClientSubscription | null> {
-  return apiFetch<ClientSubscription | null>("/api/v1/payments/subscription/me", { token });
+export async function getMySubscription(_token?: string): Promise<ClientSubscription | null> {
+  return authFetch<ClientSubscription | null>("/api/v1/payments/subscription/me");
 }
 
-export async function getMyInvoices(token: string): Promise<ClientInvoice[]> {
-  return apiFetch<ClientInvoice[]>("/api/v1/payments/invoices/me", { token });
+export async function getMyInvoices(_token?: string): Promise<ClientInvoice[]> {
+  return authFetch<ClientInvoice[]>("/api/v1/payments/invoices/me");
 }
 
-export async function getMyReceipts(token: string): Promise<ClientInvoice[]> {
-  return apiFetch<ClientInvoice[]>("/api/v1/payments/receipts/me", { token });
+export async function getMyReceipts(_token?: string): Promise<ClientInvoice[]> {
+  return authFetch<ClientInvoice[]>("/api/v1/payments/receipts/me");
 }
 
-export async function getPaymentReceipt(token: string, reference: string): Promise<ClientInvoice> {
-  return apiFetch<ClientInvoice>(`/api/v1/payments/${reference}/receipt`, { token });
+export async function getPaymentReceipt(_token: string, reference: string): Promise<ClientInvoice> {
+  return authFetch<ClientInvoice>(`/api/v1/payments/${reference}/receipt`);
 }
 
 export async function initiatePayment(
-  token: string,
-  payload: InitiatePaymentPayload,
+  tokenOrPayload: string | InitiatePaymentPayload,
+  maybePayload?: InitiatePaymentPayload,
 ): Promise<InitiatePaymentResult> {
-  const data = await apiFetch<InitiateDto>("/api/v1/payments/initiate", {
+  const payload =
+    typeof tokenOrPayload === "string" ? (maybePayload as InitiatePaymentPayload) : tokenOrPayload;
+  return authFetch<InitiateDto>("/api/v1/payments/initiate", {
     method: "POST",
-    token,
     body: JSON.stringify({
       plan_id: payload.plan_id ?? null,
       forfait_id: payload.forfait_id ?? null,
@@ -142,24 +143,22 @@ export async function initiatePayment(
       purpose: payload.purpose ?? "subscription",
     }),
   });
-  return data;
 }
 
 export async function confirmPayment(
-  token: string,
+  _token: string,
   reference: string,
 ): Promise<PaymentStatusResult> {
-  return apiFetch<StatusDto>(`/api/v1/payments/${reference}/confirm`, {
+  return authFetch<StatusDto>(`/api/v1/payments/${reference}/confirm`, {
     method: "POST",
-    token,
   });
 }
 
 export async function getPaymentStatus(
-  token: string,
+  _token: string,
   reference: string,
 ): Promise<PaymentStatusResult> {
-  return apiFetch<StatusDto>(`/api/v1/payments/${reference}/status`, { token });
+  return authFetch<StatusDto>(`/api/v1/payments/${reference}/status`);
 }
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

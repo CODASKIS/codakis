@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2 } from "lucide-react";
 import PageMeta from "../../components/common/PageMeta";
 import { CEMAC_COUNTRIES } from "../../data/cemacCountries";
 import {

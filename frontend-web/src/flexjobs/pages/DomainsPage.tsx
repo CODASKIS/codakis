@@ -1,15 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
 import Loader from "../../components/common/Loader";
 import { AUTH_PATHS } from "../../constants/authPaths";
-import { MOCK_VITRINE_PLANS } from "../../data/mockCmsContent";
-import { getPlanPricing, type PlanPricing } from "../../lib/payment-api";
 import PublicPageHeader from "../components/PublicPageHeader";
-import PricingTable from "../components/PricingTable";
 import SubNav from "../components/SubNav";
-import { usePublicDomains, useVitrinePlans } from "../hooks/useCmsData";
+import { usePublicDomains } from "../hooks/useCmsData";
 import { useSecondaryNavItems } from "../hooks/useSecondaryNavItems";
 import { getThemeLabel, themeMatchesSearch } from "../../i18n/themeLabels";
 import { MOCK_DOMAINS } from "../../data/mockCmsContent";
@@ -18,15 +15,7 @@ export default function DomainsPage() {
   const { t } = useTranslation();
   const subNavItems = useSecondaryNavItems();
   const { data: domains, loading } = usePublicDomains(MOCK_DOMAINS);
-  const { data: plans, loading: plansLoading } = useVitrinePlans(MOCK_VITRINE_PLANS);
   const [query, setQuery] = useState("");
-  const [planPricing, setPlanPricing] = useState<PlanPricing | null>(null);
-
-  useEffect(() => {
-    getPlanPricing()
-      .then(setPlanPricing)
-      .catch(() => setPlanPricing(null));
-  }, []);
 
   const visibleDomains = useMemo(() => {
     const normalized = query.trim().toLowerCase();

@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = "noreply@codakis.cm"
+    smtp_from: str = Field(default="noreply@codakis.cm", validation_alias=AliasChoices("SMTP_FROM", "EMAIL_FROM"))
     smtp_fallback_host: str = Field(default="", validation_alias=AliasChoices("SMTP_FALLBACK_HOST"))
     smtp_fallback_port: int = Field(default=25, validation_alias=AliasChoices("SMTP_FALLBACK_PORT"))
 
@@ -48,6 +48,11 @@ class Settings(BaseSettings):
 
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
     frontend_url: str = "http://localhost:5173"
+    # URL HTTPS publique pour les retours paiement (PawaPay). Si vide → frontend_url.
+    payment_return_base_url: str = Field(
+        default="",
+        validation_alias=AliasChoices("PAYMENT_RETURN_BASE_URL"),
+    )
     app_env: str = "development"
     cms_upload_dir: str = Field(default="uploads/cms", validation_alias=AliasChoices("CMS_UPLOAD_DIR"))
     cms_max_upload_bytes: int = Field(default=5_242_880, validation_alias=AliasChoices("CMS_MAX_UPLOAD_BYTES"))

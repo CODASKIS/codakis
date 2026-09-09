@@ -17,6 +17,7 @@ from __future__ import annotations
 import logging
 import uuid
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
@@ -49,11 +50,29 @@ def _truncate(s: str, max_len: int) -> str:
     return s[:max_len] if len(s) > max_len else s
 
 
+def is_public_return_url(return_url: str) -> bool:
+    """Retourne True si l'URL de retour est publique et compatible avec PawaPay."""
+    parsed = urlparse(return_url)
+    host = (parsed.hostname or "").lower()
+    return parsed.scheme == "https" and bool(parsed.netloc) and host not in {"localhost", "127.0.0.1", "::1"}
+
+
+def _validate_return_url(return_url: str) -> str:
+    """PawaPay requires a public HTTPS URL. localhost / HTTP URLs are rejected by the sandbox."""
+    if not is_public_return_url(return_url):
+        raise RuntimeError(
+            "PawaPay returnUrl invalide : utilisez une URL HTTPS publique (et non localhost). "
+            f"Valeur reçue : {return_url}"
+        )
+    return return_url
+
+
 def create_checkout(
     *,
     checkout_id: str | None = None,
     amount_fcfa: int,
     currency: str = "XAF",
+    country: str = "CMR",
     description: str = "Paiement CODAKIS",
     phone: str | None = None,
     return_url: str,
@@ -65,36 +84,26 @@ def create_checkout(
     """
     Crée un Checkout PawaPay v2 et retourne { checkout_id, redirect_url }.
 
-    Paramètres :
-    - checkout_id   : UUIDv4 généré par nos soins (idempotence)
-    - amount_fcfa   : montant en XAF (entier)
-    - currency      : ISO 4217 (XAF pour CEMAC)
-    - description   : 4–22 caractères, alphanumérique + espace (customerMessage)
-    - phone         : numéro Mobile Money (optionnel, pré-remplit le formulaire)
-    - return_url    : URL de retour après paiement
-    - callback_url  : URL de callback asynchrone (optionnel, peut être configuré dans le dashboard)
-    - reason        : label visible par le client (4–22 chars)
-    - language      : "fr" ou "en"
+    IMPORTANT: la sandbox PawaPay rejette actuellement les champs `reason` et
+    `customerMessage` comme paramètres non supportés, même si la documentation
+    les présente comme requis. Le payload réellement accepté par le provider est
+    le plus minimal possible : checkoutId + returnUrl + returnMethod + amounts.
     """
     if not is_configured():
         raise RuntimeError(
             "PawaPay non configuré (PAWAPAY_TOKEN requis dans .env)"
         )
 
+    # PawaPay rejects localhost / HTTP return URLs. Fail fast before sending the request
+    # so the app can switch to the CinetPay fallback instead of producing a broken checkout.
+    _validate_return_url(return_url)
+
     cid = checkout_id or str(uuid.uuid4())
 
-    # customerMessage : 4–22 chars, alphanumérique + espaces uniquement
-    safe_desc = "".join(c for c in description if c.isalnum() or c == " ")
-    customer_message = _truncate(safe_desc.strip() or "CODAKIS paiement", 22)
-    if len(customer_message) < 4:
-        customer_message = "CODAKIS"
-
-    # reason : même contrainte
-    safe_reason = "".join(c for c in reason if c.isalnum() or c == " ")
-    reason_text = _truncate(safe_reason.strip() or "CODAKIS", 22)
-    if len(reason_text) < 4:
-        reason_text = "CODAKIS"
-
+    # Les champs `reason` / `customerMessage` / `defaultLanguage` / `callbackUrl`
+    # et même `payer.type` sont rejetés par la sandbox PawaPay actuelle comme
+    # "unsupported parameter" / "invalid parameter".
+    # On envoie uniquement le payload minimal validé par l’API live.
     payload: dict[str, Any] = {
         "checkoutId": cid,
         "returnUrl": return_url,
@@ -103,32 +112,18 @@ def create_checkout(
             {
                 "amount": str(amount_fcfa),
                 "currency": currency,
+                "country": country,
             }
         ],
-        "reason": [
-            {"value": reason_text, "language": language},
-        ],
-        "customerMessage": customer_message,
-        "defaultLanguage": language,
-        "expiresAfter": 30,
     }
 
-    if client_reference_id:
-        payload["clientReferenceId"] = client_reference_id
+    logger.info("PawaPay create_checkout payload for %s: %s", cid, payload)
 
-    # Pré-remplir le téléphone si fourni
-    if phone:
-        payload["payer"] = {
-            "type": "MSISDN",
-            "accountDetails": {
-                "phoneNumber": _normalize_msisdn(phone),
-            },
-            "allowCustomerToOverride": True,
-        }
-
-    # URL de callback si fournie (sinon configurée dans le dashboard PawaPay)
-    if callback_url:
-        payload["callbackUrl"] = callback_url
+    # NOTE: Some live PawaPay sandbox responses reject `payer`, `reason`,
+    # `customerMessage`, `defaultLanguage`, `expiresAfter`, and callback-related
+    # fields even when the docs describe them as valid. Keep the request minimal.
+    # The phone can be passed separately in the app flow, but it must not be
+    # included inside the `payer` object for the live sandbox.
 
     try:
         resp = httpx.post(

@@ -1,8 +1,9 @@
 from contextlib import asynccontextmanager
 import logging
-
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.v1.router import api_router
 from app.core.config import settings
@@ -16,7 +17,6 @@ from app.services.seed_demo import seed_demo_data
 from app.services.seed_driving_quiz import seed_driving_quiz
 
 logger = logging.getLogger("codakis")
-
 
 def seed_reference_data() -> None:
     db = db_session.SessionLocal()
@@ -51,7 +51,6 @@ def seed_reference_data() -> None:
     finally:
         db.close()
 
-
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     if (
@@ -68,8 +67,10 @@ async def lifespan(_: FastAPI):
     seed_reference_data()
     yield
 
-
 app = FastAPI(title="CODAKIS API", version="0.1.0", lifespan=lifespan)
+
+# Mount static files from assets directory
+app.mount("/assets", StaticFiles(directory=str(Path(__file__).parent.parent / "assets")), name="assets")
 
 app.add_middleware(
     CORSMiddleware,
@@ -80,7 +81,6 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
-
 
 @app.get("/health")
 def health():

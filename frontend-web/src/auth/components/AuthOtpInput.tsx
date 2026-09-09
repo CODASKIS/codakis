@@ -72,7 +72,7 @@ export default function AuthOtpInput({
             className="codakis-auth-box__input codakis-auth-box__input--otp"
             type="text"
             inputMode="numeric"
-            autoComplete={index === 0 ? "one-time-code" : "off"}
+            autoComplete="off"
             maxLength={1}
             value={digit}
             disabled={disabled}

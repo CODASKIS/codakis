@@ -237,8 +237,11 @@ export default function AdminPayments() {
             <thead>
               <tr>
                 <th>Référence</th>
+                <th>Forfait / Offre payée</th>
+                <th>Client / Payeur</th>
                 <th>Statut</th>
                 <th>Montant</th>
+                <th>Canal</th>
                 <th>Date</th>
                 <th>Actions</th>
               </tr>
@@ -248,16 +251,33 @@ export default function AdminPayments() {
                 <tr key={item.reference}>
                   <td>
                     <div className="ta-cell-stack">
-                      <p className="ta-cell-stack__title">{item.receipt_number || item.reference.slice(0, 12)}</p>
-                      <p className="ta-cell-stack__sub">
-                        {item.context_label || item.school_name || item.payer_name || "—"}
+                      <p className="ta-cell-stack__title">{item.receipt_number || item.reference}</p>
+                      <p className="ta-cell-stack__sub">{item.purpose === "subscription" ? "Abonnement" : "Inscription auto-école"}</p>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="ta-cell-stack">
+                      <p className="ta-cell-stack__title" style={{ color: "var(--duo-green, #00a859)", fontWeight: 700 }}>
+                        {item.forfait_label || item.context_label || (item.plan_id ? `Abonnement ${item.plan_id.toUpperCase()}` : "—")}
                       </p>
+                      {item.school_name ? <p className="ta-cell-stack__sub">{item.school_name}</p> : null}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="ta-cell-stack">
+                      <p className="ta-cell-stack__title">{item.payer_name || "Client"}</p>
+                      <p className="ta-cell-stack__sub">{item.payer_email || item.phone || "—"}</p>
                     </div>
                   </td>
                   <td>
                     <span className={`ck-schools-pill${isPaid(item.status) ? " is-on" : ""}`}>{item.status}</span>
                   </td>
-                  <td>{formatFcfa(item.amount_fcfa)}</td>
+                  <td style={{ fontWeight: 800 }}>{formatFcfa(item.amount_fcfa)}</td>
+                  <td>
+                    <span className="ck-schools-badge" style={{ background: "#ecfdf5", color: "#00a859", padding: "0.2rem 0.6rem", borderRadius: "0.4rem", fontSize: "1.2rem", fontWeight: 700 }}>
+                      {item.channel || "PawaPay"}
+                    </span>
+                  </td>
                   <td>
                     <span className="ta-cell-stack__sub">{formatDate(item.created_at)}</span>
                   </td>

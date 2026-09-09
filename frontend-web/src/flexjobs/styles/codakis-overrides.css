@@ -10,6 +10,16 @@
   --fj-accent-red: #ee1c25;
   --fj-accent-orange: #fbb03b;
   --fj-text-muted: #64748b;
+  --ck-green: #00a859;
+  --ck-green-dark: #008f4c;
+  --ck-green-soft: rgba(0, 168, 89, 0.12);
+  --ck-sky: #38bdf8;
+  --ck-text: #1f2937;
+  --ck-muted: #6b7280;
+  --ck-line: #e5e7eb;
+  --ck-surface: #f3f4f6;
+  --ck-surface-2: #ffffff;
+  --ck-shadow: 0 0.8rem 2.4rem rgba(15, 23, 42, 0.08);
 }
 
 .fj-root {
@@ -1864,37 +1874,47 @@
   width: 100%;
   min-height: 4.8rem;
   padding: 1rem 1.6rem;
-  border-radius: 0.4rem;
+  border-radius: 1.2rem;
   font-size: 1.5rem;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.fj-pack-drawer__cta:hover,
+.fj-pack-drawer__cta:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 0.8rem 1.8rem rgba(21, 138, 78, 0.18);
 }
 
 .fj-pack-drawer__cta--primary {
   border: 0.1rem solid var(--fj-drawer-accent);
   background: var(--fj-drawer-accent);
   color: #fff !important;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  box-shadow: 0 0.8rem 1.6rem rgba(21, 138, 78, 0.18);
 }
 
-.fj-pack-drawer__cta--primary:hover {
+.fj-pack-drawer__cta--primary:hover,
+.fj-pack-drawer__cta--primary:focus-visible {
   background: var(--fj-drawer-accent-dark);
   border-color: var(--fj-drawer-accent-dark);
   text-decoration: none;
 }
 
 .fj-pack-drawer__cta--secondary {
-  border: 0.1rem solid #ccc;
+  border: 0.1rem solid #d0d5dd;
   background: #fff;
-  color: #3e3d3f;
-  box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+  color: #1f2937;
+  box-shadow: 0 0.2rem 0.8rem rgba(15, 23, 42, 0.06);
 }
 
-.fj-pack-drawer__cta--secondary:hover {
-  background: #fff;
-  box-shadow: inset 0 0 0 0.15rem var(--fj-cta-bg, #00a859), 0 0.2rem 0.4rem rgba(0, 0, 0, 0.12);
+.fj-pack-drawer__cta--secondary:hover,
+.fj-pack-drawer__cta--secondary:focus-visible {
+  background: #f8fafc;
+  border-color: var(--fj-drawer-accent);
+  color: var(--fj-drawer-accent-dark);
+  box-shadow: 0 0.6rem 1.2rem rgba(15, 23, 42, 0.08);
 }
 
 @media (max-width: 767px) {
@@ -2654,18 +2674,6 @@ html.dark .ck-public-topbar .fj-brand__logo {
   }
 }
 
-@media (max-width: 420px) {
-  .ck-public-topbar__lang--bar {
-    display: none;
-  }
-
-  .ck-public-topbar__espace {
-    padding-inline: 0.85rem;
-    font-size: 1.05rem;
-    letter-spacing: 0.02em;
-  }
-}
-
 @media (max-width: 720px) {
   .ck-public-topbar__right .ck-public-btn--ghost {
     display: none;
@@ -2717,24 +2725,21 @@ html.dark .ck-public-topbar .fj-brand__logo {
 
 .ck-public-btn--primary:hover,
 .ck-public a.ck-public-btn--primary:hover,
-.fj-root a.ck-public-btn--primary:hover {
-  filter: brightness(1.05);
+.fj-root a.ck-public-btn--primary:hover,
+.fj-pricing-dark__btn:hover,
+.fj-pricing-dark__btn.is-featured:hover {
+  background: var(--ck-green-dark, #008f4c) !important;
+  border-color: var(--ck-green-dark, #008f4c) !important;
   color: #fff !important;
-}
-
-.ck-public-btn--ghost,
-.ck-public a.ck-public-btn--ghost,
-.fj-root a.ck-public-btn--ghost {
-  background: var(--ck-surface-2);
-  border-color: var(--ck-line);
-  color: var(--ck-text) !important;
+  filter: brightness(1.05);
 }
 
 .ck-public-btn--ghost:hover,
 .ck-public a.ck-public-btn--ghost:hover,
 .fj-root a.ck-public-btn--ghost:hover {
-  color: var(--ck-text) !important;
-  background: var(--ck-surface);
+  color: #fff !important;
+  background: var(--ck-green, #00a859) !important;
+  border-color: var(--ck-green-dark, #008f4c) !important;
 }
 
 .ck-public-btn--lg {
@@ -4174,6 +4179,25 @@ html.dark .ck-footer .fj-brand__logo {
   gap: 1rem;
 }
 
+.ck-school-profile__actions .ck-public-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 4.4rem;
+  padding: 0.8rem 1.5rem;
+  border-radius: 1rem;
+  white-space: nowrap;
+  box-shadow: 0 0.8rem 1.8rem rgba(0, 168, 89, 0.12);
+}
+
+.ck-school-profile__actions .ck-public-btn--primary {
+  min-width: 15.5rem;
+}
+
+.ck-school-profile__actions .ck-public-btn:hover {
+  box-shadow: 0 1rem 2rem rgba(0, 168, 89, 0.18);
+}
+
 .ck-school-info {
   display: grid;
   gap: 1rem;
@@ -4342,12 +4366,13 @@ html.dark .ck-footer .fj-brand__logo {
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
-  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.ck-article-share__btn:hover {
+.ck-article-share__btn:hover,
+.ck-article-share__btn:focus-visible {
   transform: translateY(-1px);
-  border-color: var(--ck-green);
+  box-shadow: 0 0.8rem 1.8rem rgba(21, 138, 78, 0.18);
 }
 
 .ck-article-share__btn--whatsapp:hover {
@@ -4702,6 +4727,74 @@ html.dark .ck-footer .fj-brand__logo {
 }
 
 .ck-public .fj-pricing-dark__btn,
+.ck-public a.fj-pricing-dark__btn,
+.fj-root .fj-pricing-dark__btn,
+.fj-root a.fj-pricing-dark__btn,
+.fj-root a.fj-pricing-dark__btn.fj-pricing-dark__btn--as-button,
+.fj-pricing-dark__btn.fj-pricing-dark__btn--as-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 4.4rem;
+  padding: 0.7rem 1.4rem;
+  border: 0.2rem solid var(--ck-green-dark, #008f4c);
+  border-bottom-width: 0.4rem;
+  border-radius: 1.2rem !important;
+  background: var(--ck-green, #00a859) !important;
+  color: #fff !important;
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: none;
+  transition:
+    border-bottom-width 0.12s ease,
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.ck-public .fj-pricing-dark__btn:hover,
+.ck-public a.fj-pricing-dark__btn:hover,
+.fj-root .fj-pricing-dark__btn:hover,
+.fj-root a.fj-pricing-dark__btn:hover,
+.fj-root .fj-pricing-dark__btn.is-featured:hover,
+.fj-root a.fj-pricing-dark__btn.is-featured:hover,
+.fj-pricing-dark__btn.is-featured:hover {
+  background: var(--ck-green-dark, #008f4c) !important;
+  border-color: var(--ck-green-dark, #008f4c) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+.ck-public .fj-pricing-dark__btn.is-featured,
+.fj-root .fj-pricing-dark__btn.is-featured,
+.fj-root a.fj-pricing-dark__btn.is-featured {
+  background: var(--ck-green, #00a859) !important;
+  border-color: var(--ck-green-dark, #008f4c) !important;
+}
+
+.ck-public .fj-pricing-dark__btn .fj-pricing-dark__btn-icon,
+.fj-root .fj-pricing-dark__btn .fj-pricing-dark__btn-icon {
+  flex-shrink: 0;
+}
+
+.ck-public .fj-school-pack-card__secondary,
+.fj-root .fj-school-pack-card__secondary {
+  border-color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
+  color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
+}
+
+.ck-public .fj-pricing-dark__btn,
 .ck-public a.fj-pricing-dark__btn {
   border-radius: 1.2rem !important;
   font-family: inherit;
@@ -4710,295 +4803,3 @@ html.dark .ck-footer .fj-brand__logo {
   letter-spacing: 0.04em;
 }
 
-.ck-public .fj-school-pack-card__secondary {
-  border-color: var(--ck-line) !important;
-  color: var(--ck-text) !important;
-}
-
-html.dark .ck-public .fj-school-pack-card--conduiteSeule .fj-pricing-dark__tier,
-html.dark .ck-public .fj-school-pack-card--conduiteSeule .fj-pricing-dark__price-title,
-html.dark .ck-public .fj-school-pack-card .fj-pricing-dark__tier,
-html.dark .ck-public .fj-school-pack-card .fj-pricing-dark__price-title {
-  color: var(--ck-text) !important;
-}
-
-html.dark .ck-home-hero__glow {
-  opacity: 0.55;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   CODAKIS — Corrections thème (cards, footer, overlays)
-   ═══════════════════════════════════════════════════════════ */
-
-/* ── Cards unifiées style Duo (border-bottom épais) ── */
-
-/* .ck-card (espace candidat/gérant) */
-.ck-learn .ck-card,
-.ck-learn .ck-card--page {
-  border: 0.2rem solid var(--ck-line);
-  border-bottom-width: 0.45rem;
-  border-radius: 1.6rem;
-  background: var(--ck-surface-2);
-  box-shadow: var(--ck-shadow);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* .ck-pack-card (page tarifs) */
-.ck-public .ck-pack-card,
-.fj-root.ck-public .ck-pack-card {
-  border: 0.2rem solid var(--ck-line);
-  border-bottom-width: 0.45rem;
-  border-radius: 1.6rem;
-  background: var(--ck-surface-2);
-  box-shadow: var(--ck-shadow);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ck-public .ck-pack-card:hover,
-.fj-root.ck-public .ck-pack-card:hover {
-  border-color: var(--ck-green);
-  transform: translateY(-2px);
-  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.12);
-}
-
-/* .ck-home-step (cards étapes comment-ça-marche) */
-.ck-public .ck-home-step {
-  border: 0.2rem solid var(--ck-line);
-  border-bottom-width: 0.45rem;
-  border-radius: 1.6rem;
-  background: var(--ck-surface-2);
-  box-shadow: var(--ck-shadow);
-}
-
-.ck-public .ck-home-step:hover {
-  border-color: var(--ck-green);
-  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.10);
-  transform: translateY(-2px);
-}
-
-/* .fj-card (blog cards, etc. dans contexte public CODAKIS) */
-.ck-public .fj-card,
-.fj-root.ck-public .fj-card,
-.ck-public .fj-blog-card,
-.fj-root.ck-public .fj-blog-card {
-  border: 0.2rem solid var(--ck-line) !important;
-  border-bottom-width: 0.45rem !important;
-  border-radius: 1.6rem !important;
-  background: var(--ck-surface-2) !important;
-  box-shadow: var(--ck-shadow) !important;
-  color: var(--ck-text);
-}
-
-.ck-public .fj-card:hover,
-.fj-root.ck-public .fj-card:hover,
-.ck-public .fj-blog-card:hover,
-.fj-root.ck-public .fj-blog-card:hover {
-  border-color: var(--ck-green) !important;
-  box-shadow: 0 1.2rem 3.2rem rgba(0, 168, 89, 0.10) !important;
-}
-
-/* Pricing cards forfaits avec border-bottom Duo */
-.ck-public .fj-school-pack-card,
-.ck-public .fj-pricing-dark__card {
-  border-bottom-width: 0.45rem !important;
-}
-
-/* ── Footer — liens colorés ── */
-
-/* Lien "S'inscrire" (compte candidat) en vert dans les colonnes footer */
-.ck-footer ul li a[href="/inscription"],
-.fj-root.ck-public .ck-footer ul li a[href="/inscription"] {
-  color: var(--ck-green) !important;
-  font-weight: 800;
-}
-
-.ck-footer ul li a[href="/inscription"]:hover,
-.fj-root.ck-public .ck-footer ul li a[href="/inscription"]:hover {
-  color: var(--ck-green-dark) !important;
-}
-
-/* Bouton ghost "Inscrire mon auto-école" dans le footer → outline vert */
-.ck-footer__cta-row .ck-public-btn--ghost,
-.fj-root.ck-public .ck-footer__cta-row a.ck-public-btn--ghost {
-  background: transparent !important;
-  border-color: var(--ck-green) !important;
-  color: var(--ck-green) !important;
-}
-
-.ck-footer__cta-row .ck-public-btn--ghost:hover,
-.fj-root.ck-public .ck-footer__cta-row a.ck-public-btn--ghost:hover {
-  background: var(--ck-green-soft) !important;
-  color: var(--ck-green-dark) !important;
-}
-
-/* ── Dark overlay — remplacer le bleu sur hero par un dégradé sombre cohérent ── */
-.fj-hero__overlay {
-  background: linear-gradient(
-    160deg,
-    rgba(15, 23, 42, 0.72) 0%,
-    rgba(15, 23, 42, 0.55) 100%
-  ) !important;
-}
-
-/* Sur les sections avec fond sombre, les liens de navigation restent lisibles */
-.ck-public .fj-site-header--dark a,
-.ck-public .fj-site-header--dark .fj-nav-link {
-  color: rgba(255, 255, 255, 0.9) !important;
-}
-
-/* ═══════════════════════════════════════════════════════════
-   Drawer forfait — thème CODAKIS unifié
-   ═══════════════════════════════════════════════════════════ */
-
-/* Fond blanc propre, police Nunito */
-.ck-public .fj-pack-drawer,
-.fj-root.ck-public .fj-pack-drawer {
-  background: #ffffff;
-  color: var(--ck-text);
-  font-family: Nunito, system-ui, sans-serif;
-  border-left: 0.1rem solid var(--ck-line);
-}
-
-/* Titre */
-.ck-public .fj-pack-drawer__title,
-.fj-root.ck-public .fj-pack-drawer__title {
-  color: var(--ck-text);
-  font-family: Nunito, system-ui, sans-serif;
-  font-weight: 800;
-}
-
-/* Sous-titre (label forfait) */
-.ck-public .fj-pack-drawer__subtitle,
-.fj-root.ck-public .fj-pack-drawer__subtitle {
-  color: var(--fj-drawer-accent);
-  font-weight: 700;
-}
-
-/* Prix — utilise la couleur d'accent */
-.ck-public .fj-pack-drawer__price,
-.fj-root.ck-public .fj-pack-drawer__price {
-  color: var(--ck-text);
-  font-family: Nunito, system-ui, sans-serif;
-}
-
-/* Features */
-.ck-public .fj-pack-drawer__features li,
-.fj-root.ck-public .fj-pack-drawer__features li {
-  color: var(--ck-text);
-  font-size: 1.45rem;
-}
-
-/* Icône check */
-.ck-public .fj-pack-drawer__check,
-.fj-root.ck-public .fj-pack-drawer__check {
-  border-color: var(--fj-drawer-accent);
-  color: var(--fj-drawer-accent);
-}
-
-/* Note école */
-.ck-public .fj-pack-drawer__school,
-.fj-root.ck-public .fj-pack-drawer__school {
-  background: var(--ck-green-soft, rgba(0,168,89,0.08));
-  border-radius: 1rem;
-  color: var(--ck-muted);
-  border: 0.1rem solid rgba(0,168,89,0.18);
-}
-
-/* Footer propre */
-.ck-public .fj-pack-drawer__footer,
-.fj-root.ck-public .fj-pack-drawer__footer {
-  border-top: 0.15rem solid var(--ck-line);
-  background: #fff;
-  padding: 1.4rem 2rem 2rem;
-}
-
-/* Bouton primaire — style ck-public-btn */
-.ck-public .fj-pack-drawer__cta--primary,
-.fj-root.ck-public .fj-pack-drawer__cta--primary {
-  background: var(--fj-drawer-accent) !important;
-  border: 0.2rem solid var(--fj-drawer-accent-dark) !important;
-  border-bottom-width: 0.4rem !important;
-  border-radius: 1.2rem !important;
-  color: #fff !important;
-  font-family: Nunito, system-ui, sans-serif;
-  font-size: 1.45rem;
-  font-weight: 800;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  box-shadow: none;
-  min-height: 4.8rem;
-  transition:
-    filter 0.18s ease,
-    transform 0.15s cubic-bezier(0.22, 1, 0.36, 1),
-    border-bottom-width 0.1s ease;
-}
-
-.ck-public .fj-pack-drawer__cta--primary:hover:not(:disabled),
-.fj-root.ck-public .fj-pack-drawer__cta--primary:hover:not(:disabled) {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-}
-
-.ck-public .fj-pack-drawer__cta--primary:active:not(:disabled),
-.fj-root.ck-public .fj-pack-drawer__cta--primary:active:not(:disabled) {
-  border-bottom-width: 0.15rem !important;
-  transform: translateY(0.2rem);
-}
-
-.ck-public .fj-pack-drawer__cta--primary:disabled,
-.fj-root.ck-public .fj-pack-drawer__cta--primary:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-/* Bouton secondaire "Fermer" */
-.ck-public .fj-pack-drawer__cta--secondary,
-.fj-root.ck-public .fj-pack-drawer__cta--secondary {
-  background: transparent !important;
-  border: 0.2rem solid var(--ck-line) !important;
-  border-radius: 1.2rem !important;
-  color: var(--ck-muted) !important;
-  font-family: Nunito, system-ui, sans-serif;
-  font-weight: 700;
-  box-shadow: none;
-  min-height: 4rem;
-}
-
-.ck-public .fj-pack-drawer__cta--secondary:hover,
-.fj-root.ck-public .fj-pack-drawer__cta--secondary:hover {
-  border-color: var(--fj-drawer-accent) !important;
-  color: var(--fj-drawer-accent) !important;
-  background: var(--ck-green-soft, rgba(0,168,89,0.05)) !important;
-}
-
-/* Bouton fermer (X) */
-.ck-public .fj-pack-drawer__close,
-.fj-root.ck-public .fj-pack-drawer__close {
-  color: var(--ck-muted);
-  border-radius: 0.8rem;
-}
-
-.ck-public .fj-pack-drawer__close:hover,
-.fj-root.ck-public .fj-pack-drawer__close:hover {
-  background: var(--ck-surface);
-  color: var(--ck-text);
-}
-
-/* Erreur paiement */
-.ck-public .fj-pack-drawer__payment-error,
-.fj-root.ck-public .fj-pack-drawer__payment-error {
-  padding: 1rem 1.2rem;
-  background: rgba(239,68,68,0.08);
-  border: 0.15rem solid #ef4444;
-  border-radius: 0.8rem;
-  color: #dc2626;
-  font-size: 1.35rem;
-  font-weight: 700;
-  margin-top: 0.8rem;
-}

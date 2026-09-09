@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from html import escape
+from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
 from app.core.config import settings
@@ -24,32 +25,22 @@ WARN_BORDER = "#F9ECE3"
 WARN_TEXT = "#867251"
 DANGER = "#DC2626"
 
-
 def _logo_url() -> str:
     """
     Retourne l'URL absolue du logo PNG pour les e-mails.
-    En développement (localhost), renvoie une chaîne vide → _logo_block() affichera le nom texte.
-    En production, utilise frontend_url + /images/logo.png.
+    On force une URL publique pour que le logo s'affiche dans Gmail.
     """
-    base = settings.frontend_url.rstrip("/")
-    if "localhost" in base or "127.0.0.1" in base:
-        return ""
+    base = settings.frontend_url.strip().rstrip("/")
+    if not base or "localhost" in base or "127.0.0.1" in base:
+        return "https://www.codakis.cm/images/logo.png"
     return f"{base}/images/logo.png"
 
-
 def _logo_block() -> str:
-    """Bloc logo adaptatif : image PNG en prod, nom texte stylisé en dev local."""
-    url = _logo_url()
-    if url:
-        return (
-            f'<img src="{escape(url)}" alt="CODAKIS" width="140" height="40" '
-            f'style="display:block;border:0;max-width:140px;height:auto;" />'
-        )
+    """Bloc logo intégré via URL pour éviter les problèmes de rendu."""
     return (
-        f'<span style="font-family:{FONT_SANS};font-size:22px;font-weight:700;'
-        f'color:{BRAND_GREEN};letter-spacing:-0.02em;">CODAKIS</span>'
+        f'<img src="{_logo_url()}" alt="CODAKIS" width="140" height="40" '
+        f'style="display:block;border:0;max-width:140px;height:auto;" />'
     )
-
 
 def _fonts_head() -> str:
     return """
@@ -65,10 +56,8 @@ def _fonts_head() -> str:
 </style>
 """
 
-
 FONT_SANS = "'Google Sans',Arial,Helvetica,sans-serif"
 FONT_MONO = "'Geist Mono',Consolas,'Courier New',monospace"
-
 
 def _base_layout(*, preheader: str, body_html: str, footer_note: str | None = None) -> str:
     note = footer_note or "Vous recevez cet e-mail en lien avec votre compte CODAKIS."
@@ -105,12 +94,10 @@ def _base_layout(*, preheader: str, body_html: str, footer_note: str | None = No
 </body>
 </html>"""
 
-
 def _heading(text: str) -> str:
     return f"""
       <h1 class="codakis-email-title" style="margin:0 0 16px;font-size:32px;line-height:130%;font-weight:600;color:{TEXT};font-family:{FONT_SANS};">{escape(text)}</h1>
     """
-
 
 def _paragraph(text: str, *, center: bool = False) -> str:
     align = "center" if center else "left"
@@ -119,7 +106,6 @@ def _paragraph(text: str, *, center: bool = False) -> str:
         {text}
       </p>
     """
-
 
 def _cta_button(label: str, url: str) -> str:
     return f"""
@@ -131,7 +117,6 @@ def _cta_button(label: str, url: str) -> str:
         </td></tr>
       </table>
     """
-
 
 def _meta_panel(rows: list[tuple[str, str]]) -> str:
     parts: list[str] = []
@@ -158,15 +143,12 @@ def _meta_panel(rows: list[tuple[str, str]]) -> str:
       </table>
     """
 
-
 def _otp_block(otp: str, expire_minutes: int) -> str:
-    spaced = " ".join(otp[i : i + 3] for i in range(0, len(otp), 3))
+    spaced = " ".join(otp[i:i+3] for i in range(0, len(otp), 3))
     return f"""
-      <p style="margin:0 0 8px;font-size:16px;font-weight:600;color:{TEXT_MUTED};text-align:center;font-family:{FONT_SANS};">ou saisissez ce code manuellement</p>
       <p class="codakis-email-otp" style="margin:0 0 8px;font-size:40px;font-weight:700;letter-spacing:0.2em;color:{TEXT};text-align:center;font-family:{FONT_SANS};">{escape(spaced)}</p>
       <p style="margin:0 0 24px;font-size:16px;color:{TEXT_MUTED};text-align:center;font-family:{FONT_SANS};">Expire dans {expire_minutes} minutes</p>
     """
-
 
 def _warning_box(html: str) -> str:
     return f"""
@@ -177,7 +159,6 @@ def _warning_box(html: str) -> str:
       </table>
     """
 
-
 def _info_box(html: str, *, danger: bool = False) -> str:
     bg = "#FEF2F2" if danger else "#F0FDF4"
     border = DANGER if danger else BRAND_GREEN
@@ -187,10 +168,8 @@ def _info_box(html: str, *, danger: bool = False) -> str:
       </p>
     """
 
-
 def format_otp_display(otp: str) -> str:
-    return " ".join(otp[i : i + 3] for i in range(0, len(otp), 3))
-
+    return " ".join(otp[i:i+3] for i in range(0, len(otp), 3))
 
 def render_login_notification_email(
     *,
@@ -242,8 +221,7 @@ def render_login_notification_email(
     )
     return plain, html
 
-
-def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = None) -> tuple[str, str]:
+def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = None, email: str | None = None) -> tuple[str, str]:
     spaced = format_otp_display(otp)
     plain = "\n".join(
         [
@@ -256,14 +234,20 @@ def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = N
             "— L'équipe CODAKIS",
         ]
     )
-    reset_url = login_url or f"{settings.frontend_url.rstrip('/')}/connexion/mot-de-passe"
+    if login_url and (email or otp):
+        reset_url = f"{login_url}?{urlencode({k: v for k, v in {'email': email or '', 'otp': otp or ''}.items() if v})}"
+    elif login_url:
+        reset_url = login_url
+    else:
+        reset_url = build_reset_password_url(email=email, otp=otp)
     html = _base_layout(
         preheader="Code de vérification CODAKIS",
         body_html=f"""
           {_heading("Vérification de sécurité")}
           {_paragraph("Utilisez le code ci-dessous pour réinitialiser votre mot de passe. Ne le partagez avec personne.")}
           {_otp_block(otp, expire_minutes)}
-          {_cta_button("Réinitialiser mon mot de passe", reset_url)}
+          {_paragraph("Pour réinitialiser votre mot de passe, entrez le code ci-dessus sur cette page :", center=True)}
+          {_cta_button("Aller à la page de réinitialisation", reset_url)}
           {_warning_box(
               "Si vous n'avez pas demandé cette réinitialisation, ignorez cet e-mail ou "
               f'<a href="mailto:contact@codakis.cm" style="color:{WARN_TEXT};text-decoration:underline;">contactez le support →</a>'
@@ -272,6 +256,20 @@ def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = N
     )
     return plain, html
 
+def build_reset_password_url(*, email: str | None = None, otp: str | None = None) -> str:
+    """Build the exact password-reset route used by the frontend app."""
+    base = settings.frontend_url.strip().rstrip("/")
+    if not base:
+        base = "https://www.codakis.cm"
+    reset_url = f"{base}/connexion/mot-de-passe"
+    params = {}
+    if email:
+        params["email"] = email
+    if otp:
+        params["otp"] = otp
+    if params:
+        reset_url = f"{reset_url}?{urlencode(params)}"
+    return reset_url
 
 def render_welcome_email(*, full_name: str, login_url: str, temp_password: str | None = None) -> tuple[str, str]:
     password_html = ""
@@ -304,157 +302,21 @@ def render_welcome_email(*, full_name: str, login_url: str, temp_password: str |
     )
     return plain, html
 
-
-def render_lesson_complete_email(
-    *,
-    full_name: str,
-    lesson_title: str,
-    theme_title: str,
-    progress_percent: int,
-    courses_url: str,
-) -> tuple[str, str]:
-    plain = "\n".join(
-        [
-            f"Bravo {full_name} !",
-            "",
-            f"Vous avez terminé la leçon « {lesson_title} » ({theme_title}).",
-            f"Progression globale : {progress_percent} %.",
-            "",
-            f"Continuer : {courses_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    )
-    html = _base_layout(
-        preheader=f"Leçon terminée — {lesson_title}",
-        body_html=f"""
-          {_heading("Leçon terminée !")}
-          {_paragraph(f"Bravo <strong>{escape(full_name)}</strong>, vous avez complété <strong>« {escape(lesson_title)} »</strong> dans le thème <strong>{escape(theme_title)}</strong>.")}
-          {_info_box(f"<strong>Progression globale :</strong> {progress_percent} % des leçons publiées.")}
-          {_cta_button("Continuer mes cours", courses_url)}
-        """,
-    )
-    return plain, html
-
-
-def render_quiz_result_email(
-    *,
-    full_name: str,
-    quiz_title: str,
-    score: int,
-    passed: bool,
-    exams_url: str,
-) -> tuple[str, str]:
-    status = "Réussi" if passed else "À retravailler"
-    plain = "\n".join(
-        [
-            f"Bonjour {full_name},",
-            "",
-            f"Résultat du quiz « {quiz_title} » : {score} % — {status}.",
-            "",
-            f"Voir mes examens : {exams_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    )
-    html = _base_layout(
-        preheader=f"Résultat quiz — {quiz_title}",
-        body_html=f"""
-          {_heading("Résultat de votre quiz")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, voici votre résultat pour <strong>« {escape(quiz_title)} »</strong>.")}
-          {_info_box(f"<strong>Score :</strong> {score} % — <strong>{escape(status)}</strong>", danger=not passed)}
-          {_cta_button("Voir mes examens", exams_url)}
-        """,
-    )
-    return plain, html
-
-
-def render_examen_result_email(
-    *,
-    full_name: str,
-    exam_title: str,
-    score: int,
-    passed: bool,
-    exams_url: str,
-) -> tuple[str, str]:
-    status = "Réussi" if passed else "Échoué"
-    plain = "\n".join(
-        [
-            f"Bonjour {full_name},",
-            "",
-            f"Résultat de l'examen « {exam_title} » : {score} % — {status}.",
-            "",
-            f"Détails : {exams_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    )
-    html = _base_layout(
-        preheader=f"Résultat examen — {exam_title}",
-        body_html=f"""
-          {_heading("Résultat de votre examen")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, voici votre résultat pour <strong>« {escape(exam_title)} »</strong>.")}
-          {_info_box(f"<strong>Score :</strong> {score} % — <strong>{escape(status)}</strong>", danger=not passed)}
-          {_cta_button("Voir mes examens", exams_url)}
-        """,
-    )
-    return plain, html
-
-
-def render_moniteur_invite_email(
-    *,
-    full_name: str,
-    school_name: str,
-    login_url: str,
-    temp_password: str | None = None,
-) -> tuple[str, str]:
-    password_html = ""
-    password_block = ""
-    if temp_password:
-        password_block = f"\nMot de passe temporaire : {temp_password}"
-        password_html = _info_box(f"<strong>Mot de passe temporaire :</strong> {escape(temp_password)}")
-
-    plain = "\n".join(
-        [
-            f"Bonjour {full_name},",
-            "",
-            f"L'auto-école « {school_name} » vous invite sur CODAKIS en tant que moniteur.",
-            password_block,
-            "",
-            f"Connexion : {login_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    ).strip()
-
-    html = _base_layout(
-        preheader=f"Invitation moniteur — {school_name}",
-        body_html=f"""
-          {_heading("Invitation moniteur")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, l'auto-école <strong>« {escape(school_name)} »</strong> vous invite à rejoindre CODAKIS.")}
-          {password_html}
-          {_cta_button("Rejoindre CODAKIS", login_url)}
-        """,
-    )
-    return plain, html
-
-
 def render_school_validated_email(*, school_name: str, login_url: str) -> tuple[str, str]:
-    plain = "\n".join(
-        [
-            "Bonjour,",
-            "",
-            f"Votre auto-école « {school_name} » a été validée par CODAKIS.",
-            f"Connexion : {login_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    )
+    plain = "\n".join([
+        "Bonjour,",
+        "",
+        f"Votre auto-école \"{school_name}\" a été validée sur CODAKIS.",
+        "",
+        f"Connexion : {login_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
     html = _base_layout(
-        preheader=f"Auto-école validée — {school_name}",
+        preheader="Auto-école validée — CODAKIS",
         body_html=f"""
           {_heading("Auto-école validée")}
-          {_paragraph(f"Votre établissement <strong>« {escape(school_name)} »</strong> est maintenant actif. Vous pouvez inviter vos moniteurs.")}
+          {_paragraph(f"Votre établissement <strong>{escape(school_name)}</strong> a été approuvé et est désormais actif sur CODAKIS.")}
           {_cta_button("Accéder à mon espace", login_url)}
         """,
     )
@@ -462,80 +324,143 @@ def render_school_validated_email(*, school_name: str, login_url: str) -> tuple[
 
 
 def render_school_rejected_email(*, school_name: str, reason: str) -> tuple[str, str]:
-    reason_html = escape(reason.strip()).replace("\n", "<br>")
-    plain = "\n".join(
-        [
-            "Bonjour,",
-            "",
-            f"Votre demande pour « {school_name} » n'a pas été approuvée.",
-            "",
-            "Motif :",
-            reason.strip(),
-            "",
-            "contact@codakis.cm",
-        ]
-    )
+    plain = "\n".join([
+        "Bonjour,",
+        "",
+        f"Votre auto-école \"{school_name}\" n'a pas été approuvée sur CODAKIS.",
+        f"Motif : {reason}",
+        "",
+        "Contactez le support pour plus d'informations.",
+        "",
+        "— L'équipe CODAKIS",
+    ])
     html = _base_layout(
-        preheader=f"Inscription refusée — {school_name}",
+        preheader="Inscription auto-école non approuvée",
         body_html=f"""
           {_heading("Inscription non approuvée")}
-          {_paragraph(f"La demande pour <strong>« {escape(school_name)} »</strong> n'a pas été approuvée.")}
-          {_info_box(f"<strong>Motif :</strong><br>{reason_html}", danger=True)}
+          {_paragraph(f"Votre établissement <strong>{escape(school_name)}</strong> n'a pas été validé pour le moment.")}
+          {_info_box(f"<strong>Motif :</strong> {escape(reason)}", danger=True)}
+          {_cta_button("Contacter le support", "mailto:contact@codakis.cm")}
         """,
     )
     return plain, html
 
 
 def render_simple_notification_email(*, subject: str, body: str) -> tuple[str, str]:
-    plain = "\n".join(["Bonjour,", "", body, "", "— L'équipe CODAKIS"])
+    plain = body
     html = _base_layout(
         preheader=subject,
         body_html=f"""
           {_heading(subject)}
-          {_paragraph(escape(body))}
+          {_paragraph(body)}
         """,
     )
     return plain, html
 
 
-def render_payment_confirmation_email(
-    *,
-    full_name: str,
-    amount_fcfa: int,
-    reference: str,
-    receipt_number: str,
-    purpose_label: str,
-    dashboard_url: str,
-) -> tuple[str, str]:
-    amount = f"{amount_fcfa:,}".replace(",", " ")
-    plain = "\n".join(
-        [
-            f"Bonjour {full_name},",
-            "",
-            "Votre paiement CODAKIS a été confirmé.",
-            "",
-            f"Montant : {amount} FCFA",
-            f"Objet : {purpose_label}",
-            f"Référence : {reference}",
-            f"Reçu : {receipt_number}",
-            "",
-            f"Accédez à votre espace : {dashboard_url}",
-            "",
-            "— L'équipe CODAKIS",
-        ]
-    )
+def render_quiz_result_email(*, full_name: str, quiz_title: str, score: int, passed: bool, exams_url: str) -> tuple[str, str]:
+    status = "réussi" if passed else "non validé"
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Votre résultat pour le quiz \"{quiz_title}\" est : {score}.",
+        f"Statut : {status}",
+        "",
+        f"Consulter vos examens : {exams_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
     html = _base_layout(
-        preheader=f"Paiement confirmé — {amount} FCFA",
+        preheader=f"Résultat du quiz — {quiz_title}",
+        body_html=f"""
+          {_heading("Résultat du quiz")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre quiz <strong>{escape(quiz_title)}</strong> est terminé.")}
+          {_info_box(f"<strong>Score :</strong> {score} · <strong>Statut :</strong> {status}")}
+          {_cta_button("Voir mes examens", exams_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_examen_result_email(*, full_name: str, exam_title: str, score: int, passed: bool, exams_url: str) -> tuple[str, str]:
+    status = "réussi" if passed else "non validé"
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Votre résultat pour l'examen \"{exam_title}\" est : {score}.",
+        f"Statut : {status}",
+        "",
+        f"Consulter vos examens : {exams_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader=f"Résultat examen — {exam_title}",
+        body_html=f"""
+          {_heading("Résultat examen")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre examen <strong>{escape(exam_title)}</strong> est terminé.")}
+          {_info_box(f"<strong>Score :</strong> {score} · <strong>Statut :</strong> {status}")}
+          {_cta_button("Voir mes examens", exams_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_payment_confirmation_email(*, full_name: str, amount_fcfa: int, reference: str, receipt_number: str, purpose_label: str, dashboard_url: str) -> tuple[str, str]:
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Votre paiement de {amount_fcfa:,} FCFA a été confirmé.",
+        f"Référence : {reference}",
+        f"Reçu : {receipt_number}",
+        f"Objet : {purpose_label}",
+        "",
+        f"Voir mon tableau de bord : {dashboard_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader="Paiement confirmé — CODAKIS",
         body_html=f"""
           {_heading("Paiement confirmé")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre transaction a bien été enregistrée.")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement a bien été reçu.")}
           {_meta_panel([
-              ("Montant", f"{amount} FCFA"),
-              ("Objet", purpose_label),
+              ("Montant", f"{amount_fcfa:,} FCFA"),
               ("Référence", reference),
               ("Reçu", receipt_number),
+              ("Objet", purpose_label),
           ])}
-          {_cta_button("Accéder à mon espace", dashboard_url)}
+          {_cta_button("Voir mon tableau de bord", dashboard_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_moniteur_invite_email(*, full_name: str, school_name: str, login_url: str, temp_password: str | None = None) -> tuple[str, str]:
+    password_html = ""
+    password_block = ""
+    if temp_password:
+        password_block = f"\nMot de passe temporaire : {temp_password}"
+        password_html = _info_box(f"<strong>Mot de passe temporaire :</strong> {escape(temp_password)}")
+
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Vous avez été ajouté à l'équipe de l'auto-école \"{school_name}\" sur CODAKIS.",
+        password_block,
+        "",
+        f"Connexion : {login_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ]).strip()
+
+    html = _base_layout(
+        preheader="Invitation moniteur — CODAKIS",
+        body_html=f"""
+          {_heading("Invitation moniteur")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte moniteur a été créé pour <strong>{escape(school_name)}</strong>.")}
+          {password_html}
+          {_cta_button("Accéder à mon espace", login_url)}
         """,
     )
     return plain, html

@@ -10,7 +10,11 @@ from app.core.config import settings
 from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
 from app.services.enrollments import create_inscription
 from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
-from app.services.pawapay import is_configured as pawapay_configured, create_checkout as pawapay_create_checkout
+from app.services.pawapay import (
+    is_configured as pawapay_configured,
+    create_checkout as pawapay_create_checkout,
+    is_public_return_url,
+)
 from app.services.notifications import push_notification
 
 logger = logging.getLogger("codakis.payments")
@@ -84,9 +88,18 @@ def _calc_enrollment_split(amount_fcfa: int) -> tuple[int, int, int]:
     return rate, commission, payout
 
 
+def _return_base_url() -> str:
+    """Base URL HTTPS pour returnUrl PawaPay (override local via PAYMENT_RETURN_BASE_URL)."""
+    override = settings.payment_return_base_url.strip()
+    if override:
+        return override.rstrip("/")
+    return settings.frontend_url.rstrip("/")
+
+
 def get_payment_config() -> dict:
-    # PawaPay prime sur CinetPay
-    if pawapay_configured():
+    # PawaPay prime sur CinetPay, mais seulement si la returnUrl est publique/HTTPS.
+    public_return = is_public_return_url(_return_base_url())
+    if pawapay_configured() and public_return:
         return {
             "provider": "pawapay",
             "requires_phone": False,
@@ -196,45 +209,52 @@ def initiate_payment(
 
 
 def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = None) -> dict:
+    from sqlalchemy.orm import object_session
+
     channel_label = CHANNEL_LABELS.get(paiement.channel, paiement.channel)
     payment_url = None
     payment_token = None
     redirect_error = None
 
-    base = settings.frontend_url.rstrip("/")
-    return_url = f"{base}/paiement/retour?ref={paiement.reference}"
+    frontend_base = settings.frontend_url.rstrip("/")
+    return_base = _return_base_url()
+    return_url = f"{return_base}/paiement/retour?ref={paiement.reference}"
 
     # ── PawaPay (priorité) ─────────────────────────────────────────────────
+    pawa_error = None
     if pawapay_configured() and user is not None:
-        callback_url = f"{base}/api/v1/payments/pawapay/callback"
-        # customerMessage : max 22 chars, alphanumérique
-        raw_desc = paiement.message or "Paiement CODAKIS"
-        safe_desc = "".join(c for c in raw_desc if c.isalnum() or c == " ")
-        customer_message = safe_desc.strip()[:22] or "CODAKIS"
-        checkout_id = str(uuid.uuid4())
-        try:
-            result = pawapay_create_checkout(
-                checkout_id=checkout_id,
-                amount_fcfa=paiement.amount_fcfa,
-                currency="XAF",
-                description=customer_message,
-                phone=paiement.phone or user.telephone or "",
-                return_url=return_url,
-                callback_url=callback_url,
-                reason="CODAKIS",
-                language="fr",
-                client_reference_id=paiement.reference,
+        if not is_public_return_url(return_base):
+            pawa_error = (
+                "PawaPay nécessite une URL HTTPS publique. "
+                "Définissez PAYMENT_RETURN_BASE_URL dans .env "
+                "(ex. https://votredomaine.com ou un tunnel ngrok)."
             )
-            payment_url = result.get("redirect_url")
-            payment_token = result.get("checkout_id")
-            paiement.channel = "pawapay"
-            channel_label = "PawaPay"
-        except Exception as exc:
-            redirect_error = str(exc)
-            logger.warning("PawaPay checkout failed for %s: %s", paiement.reference, redirect_error)
+        else:
+            checkout_id = str(uuid.uuid4())
+            try:
+                result = pawapay_create_checkout(
+                    checkout_id=checkout_id,
+                    amount_fcfa=paiement.amount_fcfa,
+                    currency="XAF",
+                    country="CMR",
+                    description=paiement.message or "Paiement CODAKIS",
+                    phone=paiement.phone or user.telephone or "",
+                    return_url=return_url,
+                    # PawaPay sandbox currently rejects `reason` / `customerMessage` as unsupported.
+                    # Keep the payload minimal so the checkout can succeed.
+                    language="fr",
+                    client_reference_id=paiement.reference,
+                )
+                payment_url = result.get("redirect_url")
+                payment_token = result.get("checkout_id")
+                paiement.channel = "pawapay"
+                channel_label = "PawaPay"
+            except Exception as exc:
+                pawa_error = str(exc)
+                logger.warning("PawaPay checkout failed for %s: %s", paiement.reference, pawa_error)
 
-    # ── CinetPay (fallback si PawaPay non configuré) ───────────────────────
-    elif cinetpay_configured() and user is not None:
+    # ── CinetPay (fallback si PawaPay rejette ou est indisponible) ───────────────────────
+    if not payment_url and cinetpay_configured() and user is not None:
         try:
             checkout = cinetpay_create_checkout(
                 transaction_id=paiement.reference,
@@ -244,22 +264,34 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
                 customer_surname=user.nom or "CODAKIS",
                 customer_email=user.email,
                 customer_phone=paiement.phone,
-                notify_url=f"{base}/api/v1/payments/cinetpay/notify",
-                return_url=return_url,
+                notify_url=f"{frontend_base}/api/v1/payments/cinetpay/notify",
+                return_url=return_url if is_public_return_url(return_base) else f"{frontend_base}/paiement/retour?ref={paiement.reference}",
             )
             payment_url = checkout.get("payment_url")
             payment_token = checkout.get("payment_token")
             paiement.channel = "cinetpay"
             channel_label = "CinetPay"
+            redirect_error = None
         except Exception as exc:
             redirect_error = str(exc)
             logger.warning("CinetPay redirect failed for %s: %s", paiement.reference, redirect_error)
+            if pawa_error and not redirect_error:
+                redirect_error = pawa_error
+
+    if not payment_url and pawa_error and not redirect_error:
+        redirect_error = pawa_error
+
+    session = object_session(paiement)
+    if session is not None:
+        session.commit()
 
     provider_name = "PawaPay" if paiement.channel == "pawapay" else "CinetPay" if paiement.channel == "cinetpay" else channel_label
     message = (
         f"Paiement de {paiement.amount_fcfa:,} FCFA via {provider_name}."
         + (f" Validez sur la page de paiement." if payment_url else f" Validez sur {paiement.phone}.")
     ).replace(",", " ")
+    if not payment_url and redirect_error:
+        message = redirect_error
 
     return {
         "reference": paiement.reference,

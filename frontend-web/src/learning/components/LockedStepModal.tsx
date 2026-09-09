@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Lock, X } from "lucide-react";
+import { Link } from "react-router";
+import { Lock, Sparkles, X } from "lucide-react";
 
 type Props = {
   open: boolean;
@@ -9,7 +10,7 @@ type Props = {
   onContinue?: () => void;
 };
 
-export default function LockedStepModal({ open, title, onClose, onContinue }: Props) {
+export default function LockedStepModal({ open, title, onClose }: Props) {
   useEffect(() => {
     if (!open) return;
     const onKey = (event: KeyboardEvent) => {
@@ -35,23 +36,27 @@ export default function LockedStepModal({ open, title, onClose, onContinue }: Pr
         <div className="ck-locked-modal__badge" aria-hidden>
           <Lock size={28} strokeWidth={2.5} />
         </div>
-        <h2 id="ck-locked-title">Étape bloquée</h2>
+        <h2 id="ck-locked-title">Étape réservée</h2>
         <p className="ck-locked-modal__lead">
           {title
-            ? `« ${title} » n’est pas encore accessible.`
-            : "Cette étape n’est pas encore accessible."}
+            ? `« ${title} » fait partie des modules premium.`
+            : "Cette étape fait partie des modules premium."}
         </p>
         <p className="ck-locked-modal__hint">
-          Terminez d’abord l’étape en cours (étoile verte), puis réussissez le quiz pour débloquer la suite.
+          Débloquez l’accès illimité à tous les cours, quiz et examens blancs en souscrivant une formule CODAKIS Super.
         </p>
         <div className="ck-locked-modal__actions">
-          {onContinue ? (
-            <button type="button" className="ck-btn ck-btn--primary ck-btn--block" onClick={onContinue}>
-              Aller à l’étape en cours
-            </button>
-          ) : null}
-          <button type="button" className="ck-btn ck-btn--ghost ck-btn--block" onClick={onClose}>
-            Compris
+          <Link
+            to="/tarifs#abonnement"
+            className="ck-public-btn ck-public-btn--primary ck-btn--block"
+            onClick={onClose}
+            style={{ display: "inline-flex", width: "100%", justifyContent: "center", alignItems: "center", gap: "0.6rem" }}
+          >
+            <Sparkles size={18} />
+            <span>Voir les offres & S&apos;abonner</span>
+          </Link>
+          <button type="button" className="ck-public-btn ck-public-btn--ghost ck-btn--block" onClick={onClose} style={{ width: "100%" }}>
+            Plus tard
           </button>
         </div>
       </div>

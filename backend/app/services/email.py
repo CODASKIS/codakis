@@ -37,8 +37,15 @@ def _log_console(to: str, subject: str, body: str) -> None:
     print(f"\n=== EMAIL ===\nTo: {to}\nSubject: {subject}\n{body}\n=============\n")
 
 
-def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) -> None:
-    from_addr = _from_address()
+def _send_via_resend(
+    to: str,
+    subject: str,
+    body: str,
+    html_body: str | None,
+    *,
+    from_override: str | None = None,
+) -> None:
+    from_addr = from_override or _from_address()
     payload: dict = {
         "from": from_addr,
         "to": [to],
@@ -68,6 +75,27 @@ def _send_via_resend(to: str, subject: str, body: str, html_body: str | None) ->
             from_addr,
             to,
         )
+        # Domaine non vérifié → fallback sandbox Resend (dev / comptes sans domaine).
+        body_lower = response.text.lower()
+        using_resend_dev = "resend.dev" in from_addr.lower()
+        if (
+            response.status_code in {403, 422}
+            and not using_resend_dev
+            and ("not verified" in body_lower or "domain" in body_lower)
+        ):
+            fallback_from = (
+                f"{settings.email_from_name} <onboarding@resend.dev>"
+                if settings.email_from_name
+                else "CODAKIS <onboarding@resend.dev>"
+            )
+            logger.warning(
+                "Domaine Resend non vérifié pour %s — nouvel essai avec %s",
+                from_addr,
+                fallback_from,
+            )
+            return _send_via_resend(
+                to, subject, body, html_body, from_override=fallback_from
+            )
         raise RuntimeError(f"Resend {response.status_code}: {response.text}")
     logger.info("Resend → e-mail envoyé à %s (id=%s)", to, response.json().get("id", "?"))
 
@@ -127,6 +155,11 @@ def send_email(to: str, subject: str, body: str, html_body: str | None = None) -
         return True
 
     mode = settings.email_mode
+    if mode == "resend" and settings.smtp_from.lower().endswith("resend.dev"):
+        logger.warning(
+            "Resend configuré avec un expéditeur sandbox (%s). Les mails OTP peuvent ne pas arriver tant que le domaine n'est pas vérifié dans Resend.",
+            settings.smtp_from,
+        )
     try:
         if mode == "console":
             _log_console(to, subject, body)
@@ -205,7 +238,12 @@ def send_moniteur_invite_email(
 def send_otp_email(to: str, otp: str) -> bool:
     from app.services.email_templates import render_otp_email
 
-    plain, html = render_otp_email(otp=otp, expire_minutes=settings.otp_expire_minutes, login_url=login_url())
+    plain, html = render_otp_email(
+        otp=otp,
+        expire_minutes=settings.otp_expire_minutes,
+        login_url=f"{settings.frontend_url.rstrip('/')}/connexion/mot-de-passe",
+        email=to,
+    )
     return send_email(to, "Code de vérification CODAKIS", plain, html)
 
 

@@ -12,7 +12,10 @@ export function buildClientPlanPrices(
   return {
     essentiel: { monthly: pricing.essentiel, yearly: pricing.essentiel_yearly },
     pro: { monthly: pricing.pro, yearly: pricing.pro_yearly },
-    entreprise: { monthly: pricing.entreprise, yearly: pricing.entreprise },
+    entreprise: {
+      monthly: pricing.entreprise,
+      yearly: pricing.entreprise_yearly,
+    },
   };
 }
 
@@ -22,6 +25,11 @@ export const VITRINE_PLAN_PAYMENT_MAP: Record<string, VitrinePaymentPlanKey> = {
   clientEssentiel: "essentiel",
   clientPremium: "pro",
   clientEntreprise: "entreprise",
+  candidatGratuit: "essentiel",
+  candidatPremium: "pro",
+  candidatEntreprise: "entreprise",
+  autoEcolePremium: "pro",
+  autoEcolePartenaire: "essentiel",
   techCertification: "certification",
 };
 

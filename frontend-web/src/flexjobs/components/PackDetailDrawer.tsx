@@ -141,9 +141,10 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
     primaryAction = (
       <button
         type="button"
-        className="fj-pack-drawer__cta fj-pack-drawer__cta--primary"
+        className="ck-public-btn ck-public-btn--primary fj-pack-drawer__cta"
         onClick={handleStartPayment}
         disabled={paying}
+        style={{ width: "100%" }}
       >
         <span>{paying ? t("packs.checkout.redirecting") : t("packs.payMobileMoney")}</span>
         <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
@@ -154,16 +155,18 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
       <>
         <button
           type="button"
-          className="fj-pack-drawer__cta fj-pack-drawer__cta--primary"
+          className="ck-public-btn ck-public-btn--primary fj-pack-drawer__cta"
           onClick={() => handleRememberAndNavigate(buildRegisterUrlForPurchase(purchaseIntent))}
+          style={{ width: "100%" }}
         >
           <span>{t("packs.createFreeAccountAndPay")}</span>
           <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
         </button>
         <button
           type="button"
-          className="fj-pack-drawer__cta fj-pack-drawer__cta--secondary"
+          className="ck-public-btn ck-public-btn--ghost fj-pack-drawer__cta"
           onClick={() => handleRememberAndNavigate(buildLoginUrlForPurchase(purchaseIntent))}
+          style={{ width: "100%" }}
         >
           {t("packs.loginToPay")}
         </button>
@@ -171,7 +174,7 @@ export default function PackDetailDrawer({ open, onClose, type, forfait, school 
     );
   } else {
     primaryAction = (
-      <Link to={AUTH_PATHS.register.candidat} className="fj-pack-drawer__cta fj-pack-drawer__cta--primary">
+      <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--primary fj-pack-drawer__cta" style={{ width: "100%" }}>
         <span>{t("packs.createFreeAccount")}</span>
         <ArrowRight size={20} strokeWidth={1.5} aria-hidden />
       </Link>

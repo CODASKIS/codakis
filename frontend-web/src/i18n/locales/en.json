@@ -357,7 +357,7 @@
       "close": "Close",
       "bestOffer": "Best value offer",
       "includes": "This package includes",
-      "schoolNote": "Price offered by {{name}} — linked to your account after Mobile Money payment confirmation.",
+      "schoolNote": "Price offered by {{name}} — linked to your account after payment confirmation.",
       "features": {
         "codeSeul": {
           "salle1": "Highway code enrolment",
@@ -533,6 +533,7 @@
       "passwordSubtitle": "Code verified — choose a new password.",
       "hint": "If you don't receive the email, check your spam folder or contact support.",
       "emailFailedHint": "The email could not be sent. Try again later or contact support.",
+      "debugOtpHint": "Development code (email not delivered)",
       "submit": "Send code",
       "verifyOtp": "Verify code",
       "otpLabel": "OTP code",

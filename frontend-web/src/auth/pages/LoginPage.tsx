@@ -19,7 +19,11 @@ import {
   resolveAuthRedirect,
 } from "../authStore";
 import type { UserRole } from "../types";
-import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
+import {
+  parsePurchaseIntentFromSearch,
+  rememberAuthRedirect,
+  rememberPurchaseIntent,
+} from "../purchaseIntent";
 import { fetchPublicSchool } from "../../lib/publicSchoolsApi";
 
 export default function LoginPage() {
@@ -32,6 +36,10 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    rememberAuthRedirect(searchParams.get("redirect"));
+  }, [searchParams]);
 
   useEffect(() => {
     if (!purchaseIntent?.schoolId) {

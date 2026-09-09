@@ -1,4 +1,3 @@
-import { Search } from "lucide-react";
 import { Link, useSearchParams } from "react-router";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";

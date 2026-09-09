@@ -103,7 +103,7 @@ export const MOCK_VITRINE_PLANS: VitrinePlanItem[] = [
     sticker: "Auto-école",
     title: "Espace gérant",
     location: "Cameroun",
-    price_label: "Commission sur inscriptions",
+    price_label: "10 FCFA / an",
     highlight: "Espace moniteur, planning créneaux et statistiques de réussite",
     description:
       "Gestion des inscriptions, affectation moniteurs, calendrier partagé candidat/moniteur et tableau de bord pour auto-écoles multi-moniteurs. Aucun abonnement mensuel : commission sur les ventes uniquement.",

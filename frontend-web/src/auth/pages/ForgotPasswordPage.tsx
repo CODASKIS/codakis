@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useTranslation } from "react-i18next";
 import PageMeta from "../../components/common/PageMeta";
@@ -31,7 +31,38 @@ export default function ForgotPasswordPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [emailSent, setEmailSent] = useState<boolean | undefined>(undefined);
+  const [debugOtp, setDebugOtp] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const emailFromQuery = params.get("email")?.trim() ?? "";
+    const otpFromQuery = params.get("otp")?.trim() ?? "";
+
+    if (!emailFromQuery || !otpFromQuery) {
+      return;
+    }
+
+    const targetPath = `${AUTH_PATHS.forgotPassword}?${params.toString()}`;
+    if (window.location.pathname !== "/connexion/mot-de-passe") {
+      navigate(targetPath, { replace: true });
+      return;
+    }
+
+    setEmail(emailFromQuery);
+    setOtp(otpFromQuery);
+
+    void (async () => {
+      try {
+        const response = await verifyResetOtp(emailFromQuery, otpFromQuery);
+        setMessage(response.message);
+        setStep("password");
+      } catch (err) {
+        setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
+        setStep("otp");
+      }
+    })();
+  }, [navigate, t]);
 
   async function handleEmailSubmit(event: FormEvent) {
     event.preventDefault();
@@ -48,7 +79,10 @@ export default function ForgotPasswordPage() {
       const response = await requestPasswordReset(email.trim());
       setMessage(response.message);
       setEmailSent(response.emailSent);
-      if (response.debugOtp) setOtp(response.debugOtp);
+      setDebugOtp(response.debugOtp);
+      if (response.debugOtp) {
+        setOtp(response.debugOtp);
+      }
       setStep("otp");
     } catch (err) {
       setError(err instanceof AuthApiError ? err.message : t("auth.errors.generic"));
@@ -156,6 +190,11 @@ export default function ForgotPasswordPage() {
 
               {error ? <p className="codakis-auth-form__error">{error}</p> : null}
               {emailSent === false ? <p className="codakis-auth-form__error">{t("auth.forgot.emailFailedHint")}</p> : null}
+              {debugOtp ? (
+                <p className="codakis-auth-form__success">
+                  {t("auth.forgot.debugOtpHint", "Code de développement")} : <strong>{debugOtp}</strong>
+                </p>
+              ) : null}
               {message ? <p className="codakis-auth-form__success">{message}</p> : null}
 
               <button type="submit" className="codakis-auth-form__submit" disabled={loading || otp.length < 6}>

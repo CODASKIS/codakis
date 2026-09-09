@@ -77,14 +77,37 @@ export function buildLoginUrlForPurchase(intent: PurchaseIntent): string {
   return `${AUTH_PATHS.login}?${params.toString()}`;
 }
 
-/** Après connexion / inscription — reprend l'achat forfait ou espace par défaut. */
+const REDIRECT_KEY = "codakis-auth-redirect";
+
+export function rememberAuthRedirect(path: string | null | undefined): void {
+  const value = path?.trim();
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return;
+  sessionStorage.setItem(REDIRECT_KEY, value);
+}
+
+export function consumeAuthRedirect(): string | null {
+  const value = sessionStorage.getItem(REDIRECT_KEY);
+  sessionStorage.removeItem(REDIRECT_KEY);
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
+  return value;
+}
+
+/** Après connexion / inscription — reprend l'achat forfait, redirect ou espace par défaut. */
 export function resolveAuthRedirect(role: UserRole): string {
   const intent = getPurchaseIntent();
   if (role === "candidat" && intent?.schoolId && intent.forfaitId) {
     clearPurchaseIntent();
     return buildSchoolPurchaseUrl(intent);
   }
+  const redirect = consumeAuthRedirect();
+  if (redirect) return redirect;
   return getRoleDashboardPath(role);
+}
+
+export function buildLoginUrl(redirect?: string): string {
+  if (!redirect) return AUTH_PATHS.login;
+  const params = new URLSearchParams({ redirect });
+  return `${AUTH_PATHS.login}?${params.toString()}`;
 }
 
 export function purchaseIntentFromSchool(

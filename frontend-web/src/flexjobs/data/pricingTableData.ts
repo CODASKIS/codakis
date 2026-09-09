@@ -14,9 +14,11 @@ function normalizeSticker(sticker: string): string {
   const lower = sticker.trim().toLowerCase();
   if (
     CANDIDATE_STICKERS.has(lower) ||
+    lower.includes("candidat") ||
     lower.includes("particulier") ||
     lower.includes("ménage") ||
-    lower.includes("menage")
+    lower.includes("menage") ||
+    lower.includes("client")
   ) {
     return "Candidat";
   }
@@ -26,7 +28,8 @@ function normalizeSticker(sticker: string): string {
     lower.includes("école") ||
     lower.includes("ecole") ||
     lower.includes("technicien") ||
-    (lower.includes("pro") && !lower.includes("progress"))
+    lower.includes("gérant") ||
+    lower.includes("gerant")
   ) {
     return "Auto-école";
   }
@@ -59,6 +62,43 @@ export function isCustomPriceLabel(label: string): boolean {
 }
 
 const SCHOOL_PLAN_KEYS = new Set(["autoEcolePartenaire", "autoEcolePremium"]);
+const SCHOOL_PLAN_HINTS = [
+  "auto-",
+  "auto é",
+  "autoecole",
+  "auto-école",
+  "partenaire",
+  "gerant",
+  "gérant",
+  "moniteur",
+  "espace gérant",
+  "espace gestion",
+  "code seul",
+  "conduite seule",
+  "forfait complet",
+  "pack auto",
+];
+
+function matchesSchoolPlan(plan: VitrinePlanItem): boolean {
+  if (SCHOOL_PLAN_KEYS.has(plan.plan_key)) {
+    return true;
+  }
+  const haystack = [
+    plan.plan_key,
+    plan.title,
+    plan.sticker,
+    plan.price_label,
+    plan.description,
+    plan.highlight,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return SCHOOL_PLAN_HINTS.some((hint) => haystack.includes(hint));
+}
+
+export { matchesSchoolPlan };
 
 export function isSchoolPlan(planKey: string): boolean {
   return SCHOOL_PLAN_KEYS.has(planKey);
@@ -70,12 +110,40 @@ export function getSchoolPlanDisplayPrice(
 ): { current: string; compare?: string; suffix: string; isCustom: boolean; note?: string } {
   const rate = planPricing?.platform_commission_rate_pct ?? 10;
 
+  if (plan.price_label && /\d/.test(plan.price_label) && !["autoEcolePartenaire", "autoEcolePremium"].includes(plan.plan_key)) {
+    const normalized = plan.price_label.trim();
+    return {
+      current: normalized,
+      suffix: "",
+      isCustom: false,
+      note: "Forfait vendu par l'auto-école — paiement Mobile Money",
+    };
+  }
+
   if (plan.plan_key === "autoEcolePartenaire") {
     return {
       current: "Gratuit",
       suffix: "",
       isCustom: true,
       note: `${rate} % de commission sur les inscriptions payées via CODAKIS`,
+    };
+  }
+
+  if (plan.plan_key === "autoEcolePremium") {
+    return {
+      current: "10 FCFA",
+      suffix: "/ an",
+      isCustom: false,
+      note: "Le solde du forfait vous est reversé automatiquement",
+    };
+  }
+
+  if (matchesSchoolPlan(plan)) {
+    return {
+      current: "10 FCFA",
+      suffix: "/ an",
+      isCustom: false,
+      note: "Le solde du forfait vous est reversé automatiquement",
     };
   }
 
@@ -152,7 +220,7 @@ export function getVitrineDisplayPrice(
   billing: "monthly" | "yearly",
   planPricing?: PlanPricing | null,
 ): { current: string; compare?: string; suffix: string; isCustom: boolean; note?: string } {
-  if (isSchoolPlan(plan.plan_key)) {
+  if (isSchoolPlan(plan.plan_key) || matchesSchoolPlan(plan)) {
     return getSchoolPlanDisplayPrice(plan, planPricing);
   }
 

@@ -357,7 +357,7 @@
       "close": "Fermer",
       "bestOffer": "Offre la plus économique",
       "includes": "Ce forfait comprend",
-      "schoolNote": "Tarif proposé par {{name}} — rattaché à votre compte après confirmation du paiement Mobile Money.",
+      "schoolNote": "Tarif proposé par {{name}} — rattaché à votre compte après confirmation du paiement.",
       "features": {
         "codeSeul": {
           "salle1": "Inscription au code de la route",
@@ -533,6 +533,7 @@
       "passwordSubtitle": "Code validé — choisissez un nouveau mot de passe.",
       "hint": "Si vous ne recevez pas l'e-mail, vérifiez vos spams ou contactez le support.",
       "emailFailedHint": "L'e-mail n'a pas pu être envoyé. Réessayez plus tard ou contactez le support.",
+      "debugOtpHint": "Code de développement (e-mail non livré)",
       "submit": "Envoyer le code",
       "verifyOtp": "Valider le code",
       "otpLabel": "Code OTP",

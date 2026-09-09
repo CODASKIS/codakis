@@ -138,7 +138,7 @@ def forgot_password_route(payload: ForgotPasswordRequest, db: Session = Depends(
         if settings.app_env in {"development", "test"}:
             debug_otp = code
     return MessageResponse(
-        message="Si un compte existe pour cet e-mail, un code OTP a été envoyé.",
+        message="Un code OTP a été envoyé sur votre e-mail.",
         debug_otp=debug_otp,
         email_sent=email_sent if settings.app_env in {"development", "test"} or email_sent is False else None,
     )

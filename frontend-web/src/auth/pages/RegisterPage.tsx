@@ -21,7 +21,11 @@ import {
 } from "../authStore";
 import { ROLE_CONFIG } from "../roles";
 import { AUTH_PATHS } from "../../constants/authPaths";
-import { parsePurchaseIntentFromSearch, rememberPurchaseIntent } from "../purchaseIntent";
+import {
+  parsePurchaseIntentFromSearch,
+  rememberAuthRedirect,
+  rememberPurchaseIntent,
+} from "../purchaseIntent";
 import type { ParcoursSouhaite, TypePermis } from "../types";
 import { fetchPublicSchool } from "../../lib/publicSchoolsApi";
 
@@ -40,6 +44,10 @@ export default function RegisterPage({ role }: RegisterPageProps) {
   const config = ROLE_CONFIG[role];
   const purchaseIntent = useMemo(() => parsePurchaseIntentFromSearch(searchParams), [searchParams]);
   const [purchaseSchoolName, setPurchaseSchoolName] = useState<string | null>(null);
+
+  useEffect(() => {
+    rememberAuthRedirect(searchParams.get("redirect"));
+  }, [searchParams]);
 
   useEffect(() => {
     if (!purchaseIntent?.schoolId) {
