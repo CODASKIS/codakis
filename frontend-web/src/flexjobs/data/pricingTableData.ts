@@ -129,22 +129,20 @@ export function getSchoolPlanDisplayPrice(
     };
   }
 
-  if (plan.plan_key === "autoEcolePremium") {
-    return {
-      current: "10 FCFA",
-      suffix: "/ an",
-      isCustom: false,
-      note: "Le solde du forfait vous est reversé automatiquement",
-    };
-  }
-
-  if (matchesSchoolPlan(plan)) {
-    return {
-      current: "10 FCFA",
-      suffix: "/ an",
-      isCustom: false,
-      note: "Le solde du forfait vous est reversé automatiquement",
-    };
+  if (plan.plan_key === "autoEcolePremium" || matchesSchoolPlan(plan)) {
+    const apiAmounts = resolveVitrinePlanAmounts(
+      plan.plan_key === "autoEcolePremium" || SCHOOL_PLAN_KEYS.has(plan.plan_key) ? plan.plan_key : "autoEcolePremium",
+      "yearly",
+      planPricing,
+    );
+    if (apiAmounts && apiAmounts.amount > 0) {
+      return {
+        current: formatFcfa(apiAmounts.amount),
+        suffix: "/ an",
+        isCustom: false,
+        note: "Abonnement annuel — le montant facturé suit le pays choisi",
+      };
+    }
   }
 
   return {

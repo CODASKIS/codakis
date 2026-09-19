@@ -20,6 +20,7 @@ class InitiatePaymentRequest(BaseModel):
     phone: str = Field(default="", max_length=15)
     billing_period: str = "monthly"
     purpose: str = "subscription"
+    country_code: str = "CM"
 
 
 class PaymentInitiateResponse(BaseModel):
@@ -70,6 +71,10 @@ class PlanPricingResponse(BaseModel):
     deposit_min_fcfa: int = 10000
     certification_fee_fcfa: int = 25000
     platform_commission_rate_pct: int = 10
+    currency: str = "XAF"
+    symbol: str = "FCFA"
+    country: str = "CM"
+    pawapay_supported: bool = True
 
 
 class ClientSubscriptionResponse(BaseModel):

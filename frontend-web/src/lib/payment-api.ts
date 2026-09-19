@@ -9,6 +9,7 @@ export type InitiatePaymentPayload = {
   phone?: string;
   billing_period?: "monthly" | "yearly";
   purpose?: "subscription" | "escrow_deposit" | "certification" | "registration" | "enrollment";
+  country_code?: string;
 };
 
 export type InitiatePaymentResult = {
@@ -68,8 +69,9 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
   return apiFetch<PaymentConfig>("/api/v1/payments/config");
 }
 
-export async function getPlanPricing(): Promise<PlanPricing> {
-  return apiFetch<PlanPricing>("/api/v1/payments/plans/pricing");
+export async function getPlanPricing(country?: string): Promise<PlanPricing> {
+  const query = country ? `?country=${encodeURIComponent(country)}` : "";
+  return apiFetch<PlanPricing>(`/api/v1/payments/plans/pricing${query}`);
 }
 
 export type PlanPricing = {
@@ -84,6 +86,10 @@ export type PlanPricing = {
   deposit_min_fcfa: number;
   certification_fee_fcfa: number;
   platform_commission_rate_pct?: number;
+  currency?: string;
+  symbol?: string;
+  country?: string;
+  pawapay_supported?: boolean;
 };
 
 export type ClientSubscription = {
@@ -141,6 +147,7 @@ export async function initiatePayment(
       phone: payload.phone ?? null,
       billing_period: payload.billing_period ?? "monthly",
       purpose: payload.purpose ?? "subscription",
+      country_code: payload.country_code ?? "CM",
     }),
   });
 }

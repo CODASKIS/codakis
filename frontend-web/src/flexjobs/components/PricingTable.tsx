@@ -1,5 +1,5 @@
 import { ArrowRight, Check, Globe } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { VitrinePlanItem } from "../../lib/cms-api";
@@ -13,7 +13,7 @@ import { buildLoginUrl, rememberAuthRedirect } from "../../auth/purchaseIntent";
 import {
   useCurrencyRates,
 } from "../../hooks/useCurrencyConversion";
-import { initiatePayment } from "../../lib/payment-api";
+import { getPlanPricing, initiatePayment } from "../../lib/payment-api";
 import {
   filterVitrinePlans,
   getVitrineDisplayPrice,
@@ -59,9 +59,9 @@ function PricingCard({
   planPricing,
   payLabel,
   startLabel,
-  convertFromFcfa,
   onSelectPlan,
   paying,
+  currencySymbol,
 }: {
   plan: VitrinePlanItem;
   billing: BillingPeriod;
@@ -70,9 +70,9 @@ function PricingCard({
   planPricing?: PlanPricing | null;
   payLabel: string;
   startLabel: string;
-  convertFromFcfa: (amount: number) => { amountFormatted: string; symbol: string; rawAmount: number };
   onSelectPlan: (plan: VitrinePlanItem) => void;
   paying: boolean;
+  currencySymbol: string;
 }) {
   const price = getVitrineDisplayPrice(plan, billing, planPricing);
   const features = getVitrinePlanFeatures(plan);
@@ -87,7 +87,10 @@ function PricingCard({
     }
   }
 
-  const converted = convertFromFcfa(rawAmountFcfa);
+  const converted = {
+    amountFormatted: rawAmountFcfa.toLocaleString("fr-FR"),
+    symbol: currencySymbol,
+  };
   const isFree = price.isCustom && price.current.toLowerCase().includes("gratuit");
   const ctaLabel = (plan.cta_label?.trim() || (isFree ? startLabel : payLabel)).trim();
 
@@ -106,11 +109,6 @@ function PricingCard({
               {billing === "yearly" ? "/ an" : "/ mois"}
             </span>
           </div>
-        )}
-        {!price.isCustom && converted.symbol !== "FCFA" && (
-          <p className="fj-pricing-dark__price-note" style={{ fontSize: "1.2rem", marginTop: "0.4rem" }}>
-            ({price.current} FCFA {billing === "yearly" ? "/ an" : "/ mois"})
-          </p>
         )}
         {price.note ? <p className="fj-pricing-dark__price-note">{price.note}</p> : null}
         <p className="fj-pricing-dark__plan-name">{plan.title}</p>
@@ -171,7 +169,20 @@ export default function PricingTable({
   const [audience, setAudience] = useState<PricingAudience>("individual");
   const [payingKey, setPayingKey] = useState<string | null>(null);
 
-  const { selectedCountry, changeCountry, convertFromFcfa, supportedCountries } = useCurrencyRates();
+  const { selectedCountry, changeCountry, supportedCountries } = useCurrencyRates();
+  const [priced, setPriced] = useState<PlanPricing | null>(planPricing ?? null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getPlanPricing(selectedCountry.countryCode)
+      .then((next) => {
+        if (!cancelled) setPriced(next);
+      })
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedCountry.countryCode]);
 
   const visiblePlans = useMemo(() => filterVitrinePlans(plans, audience), [plans, audience]);
 
@@ -217,6 +228,7 @@ export default function PricingTable({
         billing_period: isSchoolAudience ? "yearly" : billing,
         payment_method: "orange",
         purpose: "subscription",
+        country_code: selectedCountry.countryCode,
       });
       if (result.payment_url) {
         window.location.href = result.payment_url;
@@ -351,10 +363,10 @@ export default function PricingTable({
                 billing={billing}
                 audience={audience}
                 featured={getVitrinePlanBadge(plan, index, visiblePlans.length) === "popular"}
-                planPricing={planPricing}
+                planPricing={priced}
+                currencySymbol={priced?.symbol || selectedCountry.symbol}
                 payLabel={t("pricingTable.ctaPay", "S'abonner via PawaPay")}
                 startLabel={t("pricingTable.ctaStart", "Commencer")}
-                convertFromFcfa={convertFromFcfa}
                 onSelectPlan={handleSelectPlan}
                 paying={payingKey === plan.plan_key}
               />

@@ -48,8 +48,8 @@ def payment_config():
 
 
 @router.get("/plans/pricing", response_model=PlanPricingResponse)
-def plan_pricing():
-    return PlanPricingResponse(**get_plan_pricing())
+def plan_pricing(country: str = Query(default="CM", min_length=2, max_length=2)):
+    return PlanPricingResponse(**get_plan_pricing(country))
 
 
 @router.get("/subscription/me", response_model=ClientSubscriptionResponse | None)
@@ -111,7 +111,7 @@ def payment_initiate(
         )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    return payment_to_initiate_response(paiement, user)
+    return payment_to_initiate_response(paiement, user, country_code=payload.country_code)
 
 
 @router.post("/cinetpay/notify")

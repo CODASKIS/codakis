@@ -15,6 +15,7 @@ from app.services.pawapay import (
     create_checkout as pawapay_create_checkout,
     is_public_return_url,
 )
+from app.services.fx import convert_from_xaf, resolve_country
 from app.services.notifications import push_notification
 
 logger = logging.getLogger("codakis.payments")
@@ -65,8 +66,9 @@ def _new_receipt() -> str:
     return f"RC-{datetime.now(UTC).strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
 
 
-def get_plan_pricing() -> dict:
-    return {
+def get_plan_pricing(country_code: str = "CM") -> dict:
+    quote = resolve_country(country_code)
+    base = {
         "essentiel": 0,
         "pro": SUBSCRIPTION_PRICING["pro"]["monthly"],
         "premium": SUBSCRIPTION_PRICING["premium"]["monthly"],
@@ -77,8 +79,14 @@ def get_plan_pricing() -> dict:
         "entreprise_yearly": SUBSCRIPTION_PRICING["entreprise"]["yearly"],
         "deposit_min_fcfa": 10000,
         "certification_fee_fcfa": 25000,
-        "platform_commission_rate_pct": settings.platform_commission_rate_pct,
     }
+    converted = {key: convert_from_xaf(value, quote.currency) for key, value in base.items()}
+    converted["platform_commission_rate_pct"] = settings.platform_commission_rate_pct
+    converted["currency"] = quote.currency
+    converted["symbol"] = quote.symbol
+    converted["country"] = quote.country
+    converted["pawapay_supported"] = quote.pawapay_country is not None
+    return converted
 
 
 def _calc_enrollment_split(amount_fcfa: int) -> tuple[int, int, int]:
@@ -208,7 +216,11 @@ def initiate_payment(
     return paiement
 
 
-def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = None) -> dict:
+def payment_to_initiate_response(
+    paiement: Paiement,
+    user: Utilisateur | None = None,
+    country_code: str = "CM",
+) -> dict:
     from sqlalchemy.orm import object_session
 
     channel_label = CHANNEL_LABELS.get(paiement.channel, paiement.channel)
@@ -231,27 +243,37 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
             )
         else:
             checkout_id = str(uuid.uuid4())
-            try:
-                result = pawapay_create_checkout(
-                    checkout_id=checkout_id,
-                    amount_fcfa=paiement.amount_fcfa,
-                    currency="XAF",
-                    country="CMR",
-                    description=paiement.message or "Paiement CODAKIS",
-                    phone=paiement.phone or user.telephone or "",
-                    return_url=return_url,
-                    # PawaPay sandbox currently rejects `reason` / `customerMessage` as unsupported.
-                    # Keep the payload minimal so the checkout can succeed.
-                    language="fr",
-                    client_reference_id=paiement.reference,
+            quote = resolve_country(country_code)
+            charge_amount = convert_from_xaf(paiement.amount_fcfa, quote.currency)
+            if quote.pawapay_country is None:
+                pawa_error = (
+                    f"PawaPay ne facture pas en {quote.currency} pour {quote.name}. "
+                    "Choisissez un pays Mobile Money (FCFA) pour payer."
                 )
-                payment_url = result.get("redirect_url")
-                payment_token = result.get("checkout_id")
-                paiement.channel = "pawapay"
-                channel_label = "PawaPay"
-            except Exception as exc:
-                pawa_error = str(exc)
-                logger.warning("PawaPay checkout failed for %s: %s", paiement.reference, pawa_error)
+            else:
+                try:
+                    result = pawapay_create_checkout(
+                        checkout_id=checkout_id,
+                        amount_fcfa=charge_amount,
+                        currency=quote.currency,
+                        country=quote.pawapay_country,
+                        description=paiement.message or "Paiement CODAKIS",
+                        phone=paiement.phone or user.telephone or "",
+                        return_url=return_url,
+                        language="fr",
+                        client_reference_id=paiement.reference,
+                    )
+                    payment_url = result.get("redirect_url")
+                    payment_token = result.get("checkout_id")
+                    paiement.channel = "pawapay"
+                    channel_label = f"PawaPay ({quote.symbol})"
+                    paiement.message = (
+                        f"{paiement.message or 'Paiement CODAKIS'} — "
+                        f"{charge_amount} {quote.currency}"
+                    )
+                except Exception as exc:
+                    pawa_error = str(exc)
+                    logger.warning("PawaPay checkout failed for %s: %s", paiement.reference, pawa_error)
 
     # ── CinetPay (fallback si PawaPay rejette ou est indisponible) ───────────────────────
     if not payment_url and cinetpay_configured() and user is not None:
@@ -285,9 +307,11 @@ def payment_to_initiate_response(paiement: Paiement, user: Utilisateur | None = 
     if session is not None:
         session.commit()
 
+    quote = resolve_country(country_code)
+    charge_amount = convert_from_xaf(paiement.amount_fcfa, quote.currency)
     provider_name = "PawaPay" if paiement.channel == "pawapay" else "CinetPay" if paiement.channel == "cinetpay" else channel_label
     message = (
-        f"Paiement de {paiement.amount_fcfa:,} FCFA via {provider_name}."
+        f"Paiement de {charge_amount:,} {quote.symbol} via {provider_name}."
         + (f" Validez sur la page de paiement." if payment_url else f" Validez sur {paiement.phone}.")
     ).replace(",", " ")
     if not payment_url and redirect_error:

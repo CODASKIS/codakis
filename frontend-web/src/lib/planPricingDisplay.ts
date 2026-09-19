@@ -19,7 +19,7 @@ export function buildClientPlanPrices(
   };
 }
 
-export type VitrinePaymentPlanKey = ClientPlanId | "certification";
+export type VitrinePaymentPlanKey = ClientPlanId | "premium" | "certification";
 
 export const VITRINE_PLAN_PAYMENT_MAP: Record<string, VitrinePaymentPlanKey> = {
   clientEssentiel: "essentiel",
@@ -28,7 +28,7 @@ export const VITRINE_PLAN_PAYMENT_MAP: Record<string, VitrinePaymentPlanKey> = {
   candidatGratuit: "essentiel",
   candidatPremium: "pro",
   candidatEntreprise: "entreprise",
-  autoEcolePremium: "pro",
+  autoEcolePremium: "premium",
   autoEcolePartenaire: "essentiel",
   techCertification: "certification",
 };
@@ -50,6 +50,7 @@ export function resolveVitrinePlanAmounts(
   if (billing === "monthly") {
     if (mapped === "essentiel") return { amount: planPricing.essentiel };
     if (mapped === "pro") return { amount: planPricing.pro };
+    if (mapped === "premium") return { amount: planPricing.premium };
     return { amount: planPricing.entreprise };
   }
 
@@ -59,5 +60,8 @@ export function resolveVitrinePlanAmounts(
   if (mapped === "pro") {
     return { amount: planPricing.pro_yearly, compare: planPricing.pro };
   }
-  return { amount: planPricing.entreprise };
+  if (mapped === "premium") {
+    return { amount: planPricing.premium_yearly ?? planPricing.premium, compare: planPricing.premium };
+  }
+  return { amount: planPricing.entreprise_yearly, compare: planPricing.entreprise };
 }
