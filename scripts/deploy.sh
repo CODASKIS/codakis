@@ -17,7 +17,8 @@ fi
 
 echo "==> Pull latest code"
 if [[ -d .git ]]; then
-  git pull --ff-only origin main
+  git fetch --depth 1 origin main
+  git reset --hard origin/main
 else
   echo "Pas de dépôt git — build du code déjà présent."
 fi

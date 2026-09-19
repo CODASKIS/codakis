@@ -324,6 +324,9 @@ export type CandidatDashboard = {
   questions_total?: number;
   correct_answers?: number;
   first_try_rate?: number;
+  streak_days?: number;
+  streak?: number;
+  study_minutes?: number;
 };
 
 export type Gamification = {

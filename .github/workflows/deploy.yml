@@ -22,5 +22,8 @@ jobs:
           command_timeout: 30m
           script: |
             set -euo pipefail
+            if [[ ! -d /root/codakis/.git ]]; then
+              git clone https://github.com/CODASKIS/codakis.git /root/codakis
+            fi
             cd /root/codakis
             ./scripts/deploy.sh
