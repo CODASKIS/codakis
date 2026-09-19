@@ -471,7 +471,7 @@ html.dark .codakis-auth__logo {
   border-radius: 1.2rem;
   background: var(--ck-surface-2);
   box-shadow: none;
-  color: #1f2937;
+  color: var(--ck-text);
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
@@ -481,9 +481,9 @@ html.dark .codakis-auth__logo {
 }
 
 .codakis-auth-google:hover {
-  border-color: #98a2b3;
-  background: #f9fafb;
-  box-shadow: 0 0.2rem 0.6rem rgba(0, 0, 0, 0.12);
+  border-color: var(--ck-line);
+  background: var(--ck-surface);
+  color: var(--ck-text);
 }
 
 .codakis-auth-google__icon {

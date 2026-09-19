@@ -156,6 +156,61 @@
   background: #f1f5f9;
 }
 
+html.dark .fj-lang-dd--auth .fj-lang-dd__trigger {
+  color: #9ca3af;
+}
+
+html.dark .fj-lang-dd--auth .fj-lang-dd__trigger:hover {
+  color: #f3f4f6;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ck-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin: 0;
+  padding: 0;
+  border: 0.2rem solid var(--ck-line, #e5e7eb);
+  border-bottom-width: 0.35rem;
+  border-radius: 999px;
+  background: var(--ck-surface-2, #fff);
+  color: var(--ck-text, #1f2937);
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: none;
+}
+
+.ck-theme-toggle:hover {
+  background: var(--ck-green-soft, rgba(0, 168, 89, 0.12));
+  color: var(--ck-green, #00a859);
+}
+
+.ck-theme-toggle:active {
+  border-bottom-width: 0.15rem;
+  transform: translateY(0.12rem);
+}
+
+.ck-theme-toggle:focus-visible {
+  outline: 0.2rem solid var(--ck-green, #00a859);
+  outline-offset: 0.2rem;
+}
+
+.ck-app-header {
+  border-bottom: 0.2rem solid var(--ck-line, #e5e7eb);
+  background: var(--ck-surface-2, #fff);
+  color: var(--ck-text, #1f2937);
+}
+
+.ck-public-topbar__lang--bar,
+.ck-public-drawer__lang {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 .fj-lang-dd--auth .fj-lang-dd__flag {
   width: 2.4rem;
   height: 2.4rem;

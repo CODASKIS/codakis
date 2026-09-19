@@ -5,7 +5,7 @@ import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession, hydrateSessionFromApi } from "../../auth/authStore";
 import UserMenuPanel from "../../components/prefs/UserMenuPanel";
 import { useDocumentTitle } from "../../components/common/PageMeta";
-import { useTheme } from "../../context/ThemeContext";
+import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import SchoolsRightRail, { type ProRole } from "../components/SchoolsRightRail";
 
@@ -87,7 +87,6 @@ export default function SchoolsShell({
 }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setTheme } = useTheme();
   const session = getSession();
   const [heading, setHeading] = useState(title || roleLabel);
   const [headerMenuOpen, setHeaderMenuOpen] = useState(false);
@@ -106,10 +105,6 @@ export default function SchoolsShell({
         : location.pathname === tab.to || location.pathname.startsWith(`${tab.to}/`),
     )?.label ?? title ?? roleLabel;
   useDocumentTitle(heading !== (title || roleLabel) ? heading : activeTabLabel);
-
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
 
   useEffect(() => {
     void hydrateSessionFromApi().catch(() => undefined);
@@ -238,6 +233,7 @@ export default function SchoolsShell({
             <h1>{heading}</h1>
           </div>
           <div className="ck-pro__top-actions">
+            <ThemeSwitcher />
             <div className="ck-schools__header-user" ref={headerMenuRef}>
               <button
                 type="button"

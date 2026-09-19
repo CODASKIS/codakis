@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { BookOpen, CarFront, Menu, Newspaper, X } from "lucide-react";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 import BrandLogo from "../components/BrandLogo";
 import { getSession } from "../../auth/authStore";
 import { getRoleDashboardPath } from "../../auth/roles";
@@ -62,6 +63,7 @@ export default function Header() {
 
         <div className="ck-public-topbar__right">
           <div className="ck-public-topbar__lang ck-public-topbar__lang--bar">
+            <ThemeSwitcher />
             <LanguageSwitcher />
           </div>
           {!session ? (
@@ -83,6 +85,7 @@ export default function Header() {
         <div className="ck-public-drawer__panel">
           <div className="ck-public-drawer__lang">
             <span className="ck-public-drawer__lang-label">{t("lang.switch")}</span>
+            <ThemeSwitcher />
             <LanguageSwitcher variant="mobile" />
           </div>
           {mobileNav.map((link) => (

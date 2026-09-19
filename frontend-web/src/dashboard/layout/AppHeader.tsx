@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Menu, X } from "lucide-react";
 import { CODAKIS_LOGO_ICON } from "../../flexjobs/components/BrandLogo";
+import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 import { useSidebar } from "../context/SidebarContext";
 import UserDropdown from "../header/UserDropdown";
 
@@ -22,7 +23,7 @@ export default function AppHeader({ title, spaceLabel, profileTo, preferencesTo 
   }
 
   return (
-    <header className="sticky top-0 z-30 flex w-full border-b border-[var(--ck-line)] bg-white">
+    <header className="ck-app-header sticky top-0 z-30 flex w-full">
       <div className="flex w-full items-center justify-between gap-3 px-4 py-3 sm:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <button type="button" className="ta-header-toggle shrink-0" onClick={handleToggle} aria-label="Menu">
@@ -45,6 +46,7 @@ export default function AppHeader({ title, spaceLabel, profileTo, preferencesTo 
           </div>
         </div>
 
+        <ThemeSwitcher />
         <UserDropdown profileTo={profileTo} preferencesTo={preferencesTo} />
       </div>
     </header>

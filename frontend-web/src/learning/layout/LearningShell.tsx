@@ -17,7 +17,7 @@ import { clearSession, getSession, hydrateSessionFromApi, setSession } from "../
 import type { AuthSession } from "../../auth/types";
 import UserMenuPanel from "../../components/prefs/UserMenuPanel";
 import { useDocumentTitle } from "../../components/common/PageMeta";
-import { useTheme } from "../../context/ThemeContext";
+import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import { fetchCandidatDashboard, fetchGamification, type CandidatDashboard, type Gamification } from "../../lib/pedagogyApi";
 import StickyWidgets from "../components/StickyWidgets";
@@ -93,7 +93,6 @@ function ProfilePhoto({ name, avatarUrl, size = 40 }: { name: string; avatarUrl?
 export default function LearningShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { setTheme } = useTheme();
   const [session, setLocalSession] = useState<AuthSession | null>(() => getSession());
   const [stats, setStats] = useState<Gamification | null>(null);
   const [dash, setDash] = useState<CandidatDashboard | null>(null);
@@ -104,10 +103,6 @@ export default function LearningShell() {
 
   const displayName = formatDisplayName(session?.name, session?.email);
   const avatarSeed = session?.email || session?.id || displayName;
-
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
 
   useEffect(() => {
     let cancelled = false;
@@ -185,6 +180,7 @@ export default function LearningShell() {
             </span>
             <span className="ck-topbar__stat ck-topbar__stat--pts">Points {points}</span>
             <span className="ck-topbar__stat ck-topbar__stat--ch">Chapitres {chapters}</span>
+            <ThemeSwitcher />
 
             <div className="ck-topbar__profile" ref={menuRef}>
               <button type="button" className="ck-topbar__avatar-btn" aria-expanded={menuOpen} aria-haspopup="menu" onClick={() => setMenuOpen((v) => !v)}>

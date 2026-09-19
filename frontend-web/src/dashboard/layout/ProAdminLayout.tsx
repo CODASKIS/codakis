@@ -2,7 +2,6 @@ import { useEffect, useMemo, type ReactNode } from "react";
 import { Outlet, useLocation } from "react-router";
 import type { LucideIcon } from "lucide-react";
 import { setDocumentTitle } from "../../components/common/PageMeta";
-import { useTheme } from "../../context/ThemeContext";
 import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import AppHeader from "./AppHeader";
 import AppSidebar, { type ProNavItem } from "./AppSidebar";
@@ -59,12 +58,7 @@ function ProAdminLayoutInner({
   navItems,
 }: Omit<Props, "role" | "children">) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-  const { setTheme } = useTheme();
   const location = useLocation();
-
-  useEffect(() => {
-    setTheme("light");
-  }, [setTheme]);
 
   const pageTitle = useMemo(
     () => matchPageTitle(location.pathname, navItems, title || roleLabel),

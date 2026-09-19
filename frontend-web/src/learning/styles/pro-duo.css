@@ -47,6 +47,27 @@ html.dark .ck-pro .ck-schools__dropdown {
   color-scheme: light;
 }
 
+html.dark .ck-pro {
+  --duo-bg: #151c27;
+  --duo-bg-soft: #0b1017;
+  --duo-text: #f3f4f6;
+  --duo-muted: #9ca3af;
+  --duo-line: #2d3643;
+  --duo-line-strong: #3d4756;
+  --ck-text: var(--duo-text);
+  --ck-muted: var(--duo-muted);
+  --ck-line: var(--duo-line);
+  --ck-surface: var(--duo-bg-soft);
+  --ck-surface-2: var(--duo-bg);
+  background: var(--duo-bg-soft) !important;
+  color: var(--duo-text);
+}
+
+html.dark .ck-pro,
+html.dark .ck-pro * {
+  color-scheme: dark;
+}
+
 /* Layout grid — Duo 3 columns */
 .ck-pro.ck-schools {
   min-height: 100vh;
