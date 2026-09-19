@@ -85,6 +85,13 @@ WHERE sp.inscription_id = i.id
   AND i.candidat_id = u.id
   AND u.email = 'candidat@demo.codakis.cm';
 
+UPDATE paiements p
+SET inscription_id = NULL
+FROM inscriptions i, utilisateurs u
+WHERE p.inscription_id = i.id
+  AND i.candidat_id = u.id
+  AND u.email = 'candidat@demo.codakis.cm';
+
 DELETE FROM inscriptions i
 USING utilisateurs u
 WHERE i.candidat_id = u.id
