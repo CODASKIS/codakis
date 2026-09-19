@@ -16,7 +16,11 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 echo "==> Pull latest code"
-git pull --ff-only origin main
+if [[ -d .git ]]; then
+  git pull --ff-only origin main
+else
+  echo "Pas de dépôt git — build du code déjà présent."
+fi
 
 echo "==> Build & start stack"
 docker compose up -d --build

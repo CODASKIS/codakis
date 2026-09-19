@@ -1,0 +1,26 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: codakis-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Déployer sur 194.163.171.109
+    runs-on: ubuntu-latest
+    steps:
+      - name: Déployer via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 194.163.171.109
+          username: root
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            cd /root/codakis
+            ./scripts/deploy.sh
