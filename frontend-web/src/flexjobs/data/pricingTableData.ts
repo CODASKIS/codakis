@@ -83,6 +83,9 @@ function matchesSchoolPlan(plan: VitrinePlanItem): boolean {
   if (SCHOOL_PLAN_KEYS.has(plan.plan_key)) {
     return true;
   }
+  if (/^(candidat|client)/i.test(plan.plan_key) || normalizeSticker(plan.sticker) === "Candidat") {
+    return false;
+  }
   const haystack = [
     plan.plan_key,
     plan.title,
@@ -224,6 +227,9 @@ export function getVitrineDisplayPrice(
 
   const apiAmounts = resolveVitrinePlanAmounts(plan.plan_key, billing, planPricing);
   if (apiAmounts) {
+    if (apiAmounts.amount <= 0) {
+      return { current: "Gratuit", suffix: "", isCustom: true };
+    }
     const suffix = extractPriceSuffix(plan.price_label);
     const isCertification = plan.plan_key === "techCertification";
     return {
