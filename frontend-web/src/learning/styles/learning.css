@@ -1776,7 +1776,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   background:
     radial-gradient(ellipse 70% 40% at 10% 0%, rgba(0, 168, 89, 0.08), transparent 55%),
     radial-gradient(ellipse 50% 30% at 100% 20%, rgba(56, 189, 248, 0.06), transparent 50%),
-    color-mix(in srgb, var(--ck-green) 4%, #f3faf6);
+    #d8f0e6;
   margin: -1.6rem -1.6rem 0;
   padding: 1.6rem 1.6rem 2rem;
   border-radius: 1.6rem;
@@ -1810,7 +1810,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 .ck-duo-map {
   position: relative;
   margin: 0 auto 4rem;
-  max-width: 56rem;
+  max-width: 68rem;
 }
 
 .ck-duo-map__decor {
@@ -1818,55 +1818,68 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   position: absolute;
   inset: -2rem -1rem;
   background-image:
-    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--ck-green) 10%, transparent) 0 2.2rem, transparent 2.4rem),
-    radial-gradient(circle at 92% 28%, color-mix(in srgb, #f59e0b 12%, transparent) 0 1.8rem, transparent 2rem),
-    radial-gradient(circle at 12% 68%, color-mix(in srgb, #0ea5e9 10%, transparent) 0 2rem, transparent 2.2rem),
-    radial-gradient(circle at 88% 78%, color-mix(in srgb, var(--ck-green) 8%, transparent) 0 2.4rem, transparent 2.6rem);
-  opacity: 0.9;
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--ck-green) 12%, transparent) 0 2.2rem, transparent 2.4rem),
+    radial-gradient(circle at 92% 28%, color-mix(in srgb, #f59e0b 14%, transparent) 0 1.8rem, transparent 2rem),
+    radial-gradient(circle at 12% 68%, color-mix(in srgb, #0ea5e9 12%, transparent) 0 2rem, transparent 2.2rem),
+    radial-gradient(circle at 88% 78%, color-mix(in srgb, var(--ck-green) 10%, transparent) 0 2.4rem, transparent 2.6rem),
+    /* silhouettes panneaux très légères (herbe) */
+    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--ck-green) 16%, transparent) 0 0.35rem, transparent 0.55rem),
+    radial-gradient(circle at 82% 62%, color-mix(in srgb, var(--ck-green) 14%, transparent) 0 0.4rem, transparent 0.6rem);
+  opacity: 0.95;
   z-index: 0;
 }
 
 .ck-duo-map__road-wrap {
   position: relative;
   z-index: 1;
-  padding: 2rem 0 4rem;
+  padding: 0.4rem 0 4rem;
+  overflow: visible;
 }
 
-.ck-duo-map__road {
+/* Route centre-droite, derrière les cartes unité (comme maquette) */
+.ck-duo-map__road-layer {
   position: absolute;
-  left: 50%;
   top: 0;
+  right: 2%;
   bottom: 0;
-  width: min(34rem, 70%);
-  height: 100%;
-  transform: translateX(-42%);
+  left: auto;
+  width: min(48rem, 58%);
   z-index: 0;
   pointer-events: none;
 }
 
+.ck-duo-map__road {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
 .ck-duo-map__car {
   position: absolute;
-  top: 1.2rem;
-  left: 58%;
-  width: 8.8rem;
+  top: 0.4%;
+  left: 52%;
+  width: 9.6rem;
   height: auto;
-  z-index: 2;
-  filter: drop-shadow(0 0.6rem 1rem rgba(0, 0, 0, 0.22));
+  z-index: 3;
+  transform: translateX(-30%);
+  filter: drop-shadow(0 0.6rem 1rem rgba(0, 0, 0, 0.28));
   animation: ck-car-bob 1.6s ease-in-out infinite;
   pointer-events: none;
 }
 
 .ck-duo-map__units {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 4.8rem;
-  padding: 4rem 0.8rem 2rem;
+  gap: 6.4rem;
+  padding: 2.4rem 0.4rem 2rem;
+  max-width: 36rem;
 }
 
 .ck-unit-card {
-  width: min(34rem, 100%);
+  width: min(36rem, 100%);
   border-radius: 2rem;
   background: var(--ck-surface-2, #fff);
   border: 0.22rem solid var(--ck-line, #e5e7eb);
@@ -1874,13 +1887,14 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   overflow: hidden;
 }
 
-.ck-unit-card.is-left {
+.ck-unit-card.is-left,
+.ck-unit-card.is-first {
   align-self: flex-start;
   margin-left: 0;
 }
 
 .ck-unit-card.is-right {
-  align-self: flex-end;
+  align-self: flex-start;
   margin-right: 0;
 }
 
@@ -2123,16 +2137,21 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 }
 
 @media (max-width: 720px) {
-  .ck-duo-map__road {
-    width: 55%;
-    transform: translateX(-50%);
-    opacity: 0.85;
+  .ck-duo-map__road-layer {
+    width: 78%;
+    right: -8%;
+    opacity: 0.9;
   }
 
   .ck-duo-map__car {
-    left: 50%;
-    transform: translateX(-30%);
-    width: 7.2rem;
+    left: 52%;
+    width: 7.4rem;
+  }
+
+  .ck-duo-map__units {
+    max-width: none;
+    gap: 3.6rem;
+    padding-top: 5.2rem;
   }
 
   .ck-unit-card {
@@ -2142,11 +2161,6 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 
   .ck-unit-card__steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .ck-duo-map__units {
-    gap: 3.2rem;
-    padding-top: 5.6rem;
   }
 }
 
