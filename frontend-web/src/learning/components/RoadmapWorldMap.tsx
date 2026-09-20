@@ -169,9 +169,8 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
               section.steps.find((s) => s.ref === currentRef) ??
               section.steps.find((s) => s.status === "current" || s.status === "failed") ??
               section.steps.find((s) => s.status !== "locked" && s.status !== "premium_locked");
-            const isUpcoming = status === "locked" || (sIdx > 0 && status !== "active" && status !== "done");
-            const layout =
-              sIdx === 0 ? "is-first" : isUpcoming || status === "locked" ? "is-upcoming" : "is-next";
+            const isUpcoming = status === "locked" || sIdx > 0;
+            const layout = sIdx === 0 ? "is-first" : isUpcoming ? "is-upcoming" : "is-next";
 
             return (
               <article
