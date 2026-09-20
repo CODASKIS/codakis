@@ -11,22 +11,21 @@ type Props = {
 };
 
 /**
- * Route « en carré » : segments droits à droite de l’unité 1,
- * jusqu’à l’unité 2 uniquement. Pas de pont / tunnel / croisement X.
- * viewBox 360×520 — largeur ~52.
+ * Route carrée large : démarre à droite de l’unité 1, s’arrête à l’unité 2.
+ * Pas de pont / tunnel.
  */
 const ROAD_D =
-  "M 210 36 " +
-  "H 300 " +
-  "V 150 " +
-  "H 110 " +
-  "V 300 " +
-  "H 270 " +
-  "V 460";
+  "M 80 48 " +
+  "H 260 " +
+  "V 200 " +
+  "H 80 " +
+  "V 360 " +
+  "H 240 " +
+  "V 500";
 
-const ROAD_W = 52;
-const ROAD_EDGE = 58;
-const ROAD_INNER = 46;
+const ROAD_W = 68;
+const ROAD_EDGE = 76;
+const ROAD_INNER = 60;
 
 function cleanTitle(title: string) {
   return title.replace(/\s*[—–−]+\s*/g, " ").trim();
@@ -58,84 +57,74 @@ function stepProgress(step: RoadmapStep): number {
 
 function RoadSvg() {
   return (
-    <svg className="ck-duo-map__road" viewBox="0 0 360 520" preserveAspectRatio="xMidYMin meet" aria-hidden>
-      {/* Silhouettes très légères */}
-      <g fill="none" stroke="#b7d4c8" strokeWidth="2" opacity="0.5">
-        <path d="M28 80 h28 v36 h-28 z" />
-        <path d="M320 220 l14 -22 l14 22 z" />
-        <circle cx="40" cy="360" r="12" />
-      </g>
-
-      {/* Bords */}
+    <svg className="ck-duo-map__road" viewBox="0 0 340 540" preserveAspectRatio="xMidYMin meet" aria-hidden>
       <path
         d={ROAD_D}
         fill="none"
         stroke="#c8ced6"
         strokeWidth={ROAD_EDGE}
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      {/* Asphalte */}
       <path
         d={ROAD_D}
         fill="none"
         stroke="#3a414d"
         strokeWidth={ROAD_W}
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
         d={ROAD_D}
         fill="none"
         stroke="#3a414d"
         strokeWidth={ROAD_INNER}
-        strokeLinecap="square"
-        strokeLinejoin="miter"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      {/* Ligne centrale pointillée */}
       <path
         d={ROAD_D}
         fill="none"
         stroke="#f8fafc"
-        strokeWidth="3"
+        strokeWidth="3.2"
         strokeLinecap="butt"
-        strokeLinejoin="miter"
-        strokeDasharray="12 14"
+        strokeLinejoin="round"
+        strokeDasharray="14 15"
       />
 
-      {/* Triangle danger — 1er virage */}
-      <g transform="translate(318 90)">
-        <line x1="0" y1="8" x2="0" y2="36" stroke="#64748b" strokeWidth="3" />
-        <polygon points="0,0 16,28 -16,28" fill="#fff" stroke="#e11d48" strokeWidth="3" />
-        <text x="0" y="22" textAnchor="middle" fill="#e11d48" fontSize="14" fontWeight="900">
+      {/* Triangle */}
+      <g transform="translate(278 110)">
+        <line x1="0" y1="8" x2="0" y2="38" stroke="#64748b" strokeWidth="3" />
+        <polygon points="0,0 17,30 -17,30" fill="#fff" stroke="#e11d48" strokeWidth="3" />
+        <text x="0" y="23" textAnchor="middle" fill="#e11d48" fontSize="15" fontWeight="900">
           !
         </text>
       </g>
 
-      {/* Feu — milieu du parcours */}
-      <g transform="translate(110 210)">
-        <rect x="-9" y="-24" width="18" height="42" rx="4" fill="#1e293b" />
-        <circle cx="0" cy="-12" r="4.5" fill="#ef4444" />
-        <circle cx="0" cy="0" r="4.5" fill="#fbbf24" />
-        <circle cx="0" cy="12" r="4.5" fill="#22c55e" />
-        <line x1="0" y1="18" x2="0" y2="36" stroke="#64748b" strokeWidth="3" />
+      {/* Feu */}
+      <g transform="translate(80 260)">
+        <rect x="-10" y="-26" width="20" height="46" rx="4" fill="#1e293b" />
+        <circle cx="0" cy="-13" r="5" fill="#ef4444" />
+        <circle cx="0" cy="0" r="5" fill="#fbbf24" />
+        <circle cx="0" cy="13" r="5" fill="#22c55e" />
+        <line x1="0" y1="20" x2="0" y2="40" stroke="#64748b" strokeWidth="3" />
       </g>
 
-      {/* Stop — vers unité 2 */}
-      <g transform="translate(290 380)">
-        <line x1="0" y1="12" x2="0" y2="40" stroke="#64748b" strokeWidth="3" />
+      {/* Stop */}
+      <g transform="translate(258 420)">
+        <line x1="0" y1="12" x2="0" y2="42" stroke="#64748b" strokeWidth="3" />
         <polygon
-          points="0,-14 12,-5 12,9 0,18 -12,9 -12,-5"
+          points="0,-15 13,-5 13,10 0,20 -13,10 -13,-5"
           fill="#dc2626"
           stroke="#fff"
           strokeWidth="2"
         />
         <text
           x="0"
-          y="5"
+          y="6"
           textAnchor="middle"
           fill="#fff"
-          fontSize="7"
+          fontSize="8"
           fontWeight="900"
           fontFamily="Nunito, system-ui, sans-serif"
         >
@@ -147,20 +136,20 @@ function RoadSvg() {
 }
 
 export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intro }: Props) {
-  const visible = useMemo(() => sections.slice(0, Math.max(2, sections.length)), [sections]);
-  const pathHeight = useMemo(() => Math.max(640, visible.length * 380 + 120), [visible.length]);
+  const pathHeight = useMemo(() => Math.max(720, sections.length * 360 + 160), [sections.length]);
 
   return (
     <div className="ck-duo-map">
       <div className="ck-duo-map__road-wrap" style={{ minHeight: pathHeight }}>
+        {/* Route uniquement entre unité 1 et 2 */}
         <div className="ck-duo-map__road-layer" aria-hidden>
           <RoadSvg />
           <img
             className="ck-duo-map__car"
             src="/images/auth/cartoon-red-car.png"
             alt=""
-            width={88}
-            height={64}
+            width={100}
+            height={74}
           />
         </div>
 
@@ -180,11 +169,14 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
               section.steps.find((s) => s.ref === currentRef) ??
               section.steps.find((s) => s.status === "current" || s.status === "failed") ??
               section.steps.find((s) => s.status !== "locked" && s.status !== "premium_locked");
+            const isUpcoming = status === "locked" || (sIdx > 0 && status !== "active" && status !== "done");
+            const layout =
+              sIdx === 0 ? "is-first" : isUpcoming || status === "locked" ? "is-upcoming" : "is-next";
 
             return (
               <article
                 key={section.theme_id}
-                className={`ck-unit-card is-${status} is-left${sIdx === 0 ? " is-first" : ""}${sIdx === 1 ? " is-second" : ""}`}
+                className={`ck-unit-card is-${status} ${layout}`}
                 style={{ ["--ck-unit-color" as string]: color }}
                 data-chapter-id={section.theme_id}
               >

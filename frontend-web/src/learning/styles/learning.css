@@ -1817,15 +1817,13 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   overflow: visible;
 }
 
-/* Route carrée : à droite de l’unité 1, s’arrête à l’unité 2 */
+/* Route large : à droite de l’unité 1 → jusqu’à l’unité 2 (pas de pont) */
 .ck-duo-map__road-layer {
   position: absolute;
-  top: 7.5rem;
-  left: auto;
-  right: 4%;
-  width: min(28rem, 42%);
-  height: min(52rem, 58%);
-  bottom: auto;
+  top: 5.5rem;
+  left: 32rem;
+  width: min(36rem, calc(100% - 30rem));
+  height: 58rem;
   z-index: 0;
   pointer-events: none;
 }
@@ -1834,19 +1832,19 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 0.2rem 0.3rem rgba(0, 0, 0, 0.14));
+  filter: drop-shadow(0 0.25rem 0.4rem rgba(0, 0, 0, 0.16));
 }
 
-/* Voiture au départ de la route (segment haut, à droite de l’unité 1) */
+/* Voiture sur le segment haut de la route */
 .ck-duo-map__car {
   position: absolute;
-  top: 2%;
-  left: 58%;
-  width: 7.6rem;
+  top: 1.5%;
+  left: 22%;
+  width: 9.2rem;
   height: auto;
   z-index: 3;
-  transform: translateX(-40%);
-  filter: drop-shadow(0 0.45rem 0.8rem rgba(0, 0, 0, 0.26));
+  transform: translateX(-20%);
+  filter: drop-shadow(0 0.5rem 0.9rem rgba(0, 0, 0, 0.28));
   animation: ck-car-bob 1.6s ease-in-out infinite;
   pointer-events: none;
 }
@@ -1883,9 +1881,10 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 4rem;
+  gap: 3.6rem;
   padding: 0.4rem 0.2rem 2rem;
-  max-width: 34rem;
+  max-width: 52rem;
+  width: 100%;
 }
 
 .ck-unit-card {
@@ -1897,19 +1896,20 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   overflow: hidden;
 }
 
-.ck-unit-card.is-left,
+/* Unité 1 : à gauche, route sur sa droite */
 .ck-unit-card.is-first {
   align-self: flex-start;
+  margin-top: 0.2rem;
   margin-left: 0;
+  width: min(34rem, 100%);
 }
 
-.ck-unit-card.is-first {
-  margin-top: 0.4rem;
-}
-
-.ck-unit-card.is-second {
-  margin-left: 1.2rem;
-  opacity: 0.95;
+/* Unités pas encore parcourues : centrées et plus larges */
+.ck-unit-card.is-upcoming,
+.ck-unit-card.is-locked.is-upcoming,
+.ck-unit-card.is-next {
+  align-self: center;
+  width: min(42rem, 100%);
 }
 
 .ck-unit-card.is-right {
@@ -2160,17 +2160,18 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 
 @media (max-width: 720px) {
   .ck-duo-map__road-layer {
-    top: 6rem;
-    right: -2%;
-    width: 55%;
-    height: 42%;
-    opacity: 0.85;
+    top: 5rem;
+    left: 42%;
+    right: auto;
+    width: 58%;
+    height: 48rem;
+    opacity: 0.88;
   }
 
   .ck-duo-map__car {
-    left: 55%;
-    width: 6.4rem;
-    top: 1.5%;
+    left: 18%;
+    width: 7rem;
+    top: 1%;
   }
 
   .ck-duo-map__intro {
@@ -2184,14 +2185,17 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
     padding-top: 1.2rem;
   }
 
-  .ck-unit-card {
+  .ck-unit-card,
+  .ck-unit-card.is-first,
+  .ck-unit-card.is-upcoming,
+  .ck-unit-card.is-next {
     width: 100%;
     align-self: stretch !important;
     margin-left: 0 !important;
   }
 
   .ck-unit-card.is-first {
-    margin-top: 0.8rem;
+    margin-top: 0.4rem;
   }
 
   .ck-unit-card__steps {
