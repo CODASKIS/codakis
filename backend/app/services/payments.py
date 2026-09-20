@@ -522,6 +522,13 @@ def confirm_payment(
             paiement.school_payout_fcfa = payout
         school = db.get(AutoEcole, paiement.auto_ecole_id) if paiement.auto_ecole_id else None
         forfait = db.get(Forfait, paiement.forfait_id) if paiement.forfait_id else None
+        if not (school and forfait):
+            logger.error(
+                "Forfait payé sans inscription possible pour %s (auto_ecole=%s forfait=%s)",
+                paiement.reference,
+                paiement.auto_ecole_id,
+                paiement.forfait_id,
+            )
         if school and forfait:
             inscription = create_inscription(
                 db,
@@ -673,6 +680,54 @@ def reconcile_pending_payments(db: Session, *, limit: int = 200) -> dict:
         note(paiement, provider_status, "en attente")
 
     return {**stats, "details": details}
+
+
+def repair_orphan_enrollments(db: Session, *, limit: int = 100) -> dict:
+    """Recrée l'inscription d'un forfait payé dont la confirmation s'est arrêtée en chemin."""
+    rows = (
+        db.query(Paiement)
+        .filter(
+            Paiement.status == "completed",
+            Paiement.purpose == "enrollment",
+            Paiement.inscription_id.is_(None),
+        )
+        .order_by(Paiement.completed_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    stats = {"checked": len(rows), "repaired": 0, "relinked": 0, "skipped": 0}
+    for paiement in rows:
+        user = db.get(Utilisateur, paiement.utilisateur_id)
+        school = db.get(AutoEcole, paiement.auto_ecole_id) if paiement.auto_ecole_id else None
+        forfait = db.get(Forfait, paiement.forfait_id) if paiement.forfait_id else None
+        if user is None or school is None or forfait is None:
+            logger.error("Inscription irréparable pour %s : référentiel incomplet", paiement.reference)
+            stats["skipped"] += 1
+            continue
+
+        inscription = (
+            db.query(Inscription).filter(Inscription.payment_ref == paiement.reference).first()
+        )
+        if inscription is None:
+            inscription = create_inscription(
+                db,
+                candidat=user,
+                school=school,
+                forfait=forfait,
+                forfait_type=forfait.type,
+                forfait_label=forfait.label_fr,
+                payment_ref=paiement.reference,
+            )
+            stats["repaired"] += 1
+            logger.info("Inscription recréée pour le paiement %s", paiement.reference)
+        else:
+            stats["relinked"] += 1
+
+        paiement.inscription_id = inscription.id
+        db.commit()
+
+    return stats
 
 
 def get_my_subscription(db: Session, user: Utilisateur) -> dict | None:

@@ -1,14 +1,18 @@
+from datetime import UTC, datetime
+
 import pytest
 
 from app.db.models import (
     AutoEcole,
     Forfait,
+    Paiement,
     StatutInscription,
     TypeForfait,
     Utilisateur,
     Ville,
 )
 from app.services.enrollments import create_inscription
+from app.services.payments import repair_orphan_enrollments
 from app.services.pedagogy import has_platform_access
 from tests.conftest import TestingSessionLocal
 
@@ -122,3 +126,37 @@ def test_cancelled_enrollment_revokes_access(db):
     db.commit()
 
     assert has_platform_access(db, candidat) is False
+
+
+def test_orphan_enrollment_payment_is_repaired(db):
+    """Un forfait payé dont la confirmation s'est arrêtée avant l'inscription est rattrapé."""
+    candidat = _candidat(db, "candidat-orphelin@test.cm")
+    school = _school(db)
+    forfait = _forfait(db, school, TypeForfait.complet.value)
+
+    paiement = Paiement(
+        reference="MM-ORPHELIN",
+        utilisateur_id=candidat.id,
+        auto_ecole_id=school.id,
+        forfait_id=forfait.id,
+        purpose="enrollment",
+        amount_fcfa=forfait.prix,
+        channel="pawapay",
+        phone="+237670000000",
+        status="completed",
+        completed_at=datetime.now(UTC),
+    )
+    db.add(paiement)
+    db.commit()
+
+    assert has_platform_access(db, candidat) is False
+
+    stats = repair_orphan_enrollments(db)
+    assert stats["repaired"] == 1
+
+    db.refresh(paiement)
+    assert paiement.inscription_id is not None
+    assert has_platform_access(db, candidat) is True
+
+    # Idempotent : un second passage ne duplique pas l'inscription.
+    assert repair_orphan_enrollments(db)["repaired"] == 0

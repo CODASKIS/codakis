@@ -89,19 +89,29 @@ async def _subscription_reminder_loop() -> None:
 
 
 async def _payment_reconcile_loop() -> None:
-    from app.services.payments import reconcile_pending_payments
+    from app.services.payments import reconcile_pending_payments, repair_orphan_enrollments
 
     def run() -> dict:
         db = db_session.SessionLocal()
         try:
-            return reconcile_pending_payments(db)
+            return {
+                **reconcile_pending_payments(db),
+                "enrollments": repair_orphan_enrollments(db),
+            }
         finally:
             db.close()
 
     while True:
         try:
             stats = await asyncio.to_thread(run)
-            if stats.get("completed") or stats.get("failed") or stats.get("abandoned"):
+            enrollments = stats.get("enrollments") or {}
+            if (
+                stats.get("completed")
+                or stats.get("failed")
+                or stats.get("abandoned")
+                or enrollments.get("repaired")
+                or enrollments.get("relinked")
+            ):
                 logger.info("Réconciliation paiements : %s", stats)
         except Exception:
             logger.exception("Boucle réconciliation paiements")
