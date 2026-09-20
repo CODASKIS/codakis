@@ -1767,189 +1767,302 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 }
 
-/* ─── Carte monde (style virtual-world) ─── */
-.ck-world {
-  position: relative;
-  width: 100%;
-  max-width: 92rem;
-  margin: 0 auto 4rem;
-  border-radius: 2rem;
-  overflow: visible;
-  border: 0.3rem solid #1f2937;
-  box-shadow:
-    0 1.6rem 3.2rem rgba(15, 23, 42, 0.22),
-    inset 0 0 0 0.15rem rgba(255, 255, 255, 0.12);
-  background: #3aaa3a;
-  isolation: isolate;
-  min-height: 48rem;
+/* ─── Feuille de route style OM Fidélité (ligne orange) ─── */
+.ck-om-head {
+  margin: 0 0 1.6rem;
 }
 
-.ck-world__canvas {
+.ck-om-head__title {
+  margin: 0 0 1.2rem;
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--ck-text);
+  letter-spacing: -0.02em;
+}
+
+.ck-om-head__stats {
+  display: flex;
+  align-items: stretch;
+  background: var(--ck-surface-2, #fff);
+  border: 0.15rem solid var(--ck-line, #e5e7eb);
+  border-radius: 1.4rem;
+  overflow: hidden;
+  margin-bottom: 1.2rem;
+}
+
+.ck-om-head__stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.4rem 1.6rem;
+}
+
+.ck-om-head__label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ck-muted);
+}
+
+.ck-om-head__stat strong {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--ck-text);
+}
+
+.ck-om-head__divider {
+  width: 0.12rem;
+  background: var(--ck-line, #e5e7eb);
+  align-self: stretch;
+}
+
+.ck-om-head__progress {
+  position: relative;
+  padding: 1.4rem 1.6rem 1.6rem;
+  border-radius: 1.4rem;
+  background: color-mix(in srgb, var(--ck-green) 14%, #fff);
+  border: 0.15rem solid color-mix(in srgb, var(--ck-green) 28%, transparent);
+}
+
+.ck-om-head__progress p {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ck-text);
+  line-height: 1.35;
+}
+
+.ck-om-head__bar {
+  height: 0.7rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ck-green) 22%, #fff);
+  overflow: hidden;
+}
+
+.ck-om-head__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ck-green);
+}
+
+.ck-om-head__progress small {
+  display: block;
+  margin-top: 0.55rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--ck-green);
+}
+
+.ck-om {
+  margin: 0 0 3.2rem;
+}
+
+.ck-om__hint {
+  margin: 0 0 1.6rem;
+  text-align: center;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--ck-text);
+  line-height: 1.35;
+}
+
+.ck-om__stage {
+  position: relative;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  border-radius: 2rem;
+  background:
+    radial-gradient(circle at 88% 6%, rgba(255, 193, 7, 0.35), transparent 18%),
+    linear-gradient(180deg, #fff5eb 0%, #ffe8d4 55%, #ffecd9 100%);
+  overflow: visible;
+  isolation: isolate;
+}
+
+html.dark .ck-om__stage {
+  background:
+    radial-gradient(circle at 88% 6%, rgba(255, 193, 7, 0.2), transparent 18%),
+    linear-gradient(180deg, #2a2118 0%, #1f1812 100%);
+}
+
+.ck-om__svg {
   display: block;
   width: 100%;
   height: auto;
-  vertical-align: top;
-  border-radius: 1.7rem;
 }
 
-.ck-world__chapter {
+.ck-om__chapter {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  max-width: min(28rem, 78%);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 0.12rem solid rgba(15, 23, 42, 0.08);
+  color: #1f2937;
+  font-size: 1.15rem;
+  font-weight: 800;
+  text-align: center;
+  line-height: 1.25;
+  pointer-events: none;
+  box-shadow: 0 0.25rem 0.8rem rgba(15, 23, 42, 0.08);
+}
+
+html.dark .ck-om__chapter {
+  background: rgba(30, 41, 59, 0.92);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ck-om__node {
   position: absolute;
   z-index: 4;
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
-  min-width: 16rem;
-  max-width: 26rem;
-  padding: 1rem 1.4rem;
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--ck-chapter-color, #00a859) 94%, #000);
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 0.45rem 0 color-mix(in srgb, var(--ck-chapter-color, #00a859) 65%, #000);
-  pointer-events: none;
-}
-
-.ck-world__chapter-flag {
-  font-size: 1.1rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  opacity: 0.9;
-}
-
-.ck-world__chapter strong {
-  font-size: 1.55rem;
-  font-weight: 900;
-  line-height: 1.25;
-}
-
-.ck-world__chapter-meta {
-  font-size: 1.2rem;
-  font-weight: 700;
-  opacity: 0.92;
-}
-
-.ck-world__sign {
-  position: absolute;
-  z-index: 5;
-  transform: translate(-50%, -50%);
-  width: min(19rem, 40vw);
-  padding: 1.1rem 1.2rem 1.2rem;
+  gap: 0.7rem;
+  width: 11.5rem;
   border: 0;
-  border-radius: 0.85rem;
-  background: linear-gradient(180deg, #00b35f 0%, #008f4c 100%);
-  color: #fff;
-  text-align: left;
+  padding: 0;
+  background: transparent;
   cursor: pointer;
   font-family: inherit;
-  box-shadow:
-    0 0.4rem 0 #006b39,
-    0 0.9rem 1.6rem rgba(0, 0, 0, 0.24);
-  transition: transform 0.15s ease;
+  color: inherit;
 }
 
-.ck-world__sign:hover {
-  transform: translate(-50%, -54%);
-}
-
-.ck-world__sign:active {
-  transform: translate(-50%, -48%);
-  box-shadow: 0 0.15rem 0 #006b39, 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
-}
-
-.ck-world__sign-flag {
-  position: absolute;
-  top: -1.15rem;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0.3rem 0.85rem;
-  border-radius: 0.45rem;
-  background: #f97316;
-  color: #fff;
-  font-size: 1.05rem;
-  font-weight: 900;
-  text-transform: uppercase;
-  white-space: nowrap;
-  box-shadow: 0 0.22rem 0 #c2410c;
-}
-
-.ck-world__sign-type {
-  display: block;
-  margin-bottom: 0.25rem;
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  opacity: 0.88;
-}
-
-.ck-world__sign-title {
-  display: block;
-  font-size: 1.4rem;
-  font-weight: 900;
-  line-height: 1.3;
-}
-
-.ck-world__sign-status {
+.ck-om__bubble {
+  width: 5.6rem;
+  height: 5.6rem;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.45rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  opacity: 0.95;
+  justify-content: center;
+  background: #fff;
+  border: 0.35rem solid #ff7900;
+  box-shadow: 0 0.35rem 0 rgba(255, 121, 0, 0.35);
+  font-size: 2rem;
+  font-weight: 900;
+  color: #111827;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ck-world__sign.is-locked,
-.ck-world__sign.is-premium_locked {
-  background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
-  box-shadow: 0 0.4rem 0 #4b5563, 0 0.9rem 1.6rem rgba(0, 0, 0, 0.18);
+.ck-om__node:hover .ck-om__bubble {
+  transform: translateY(-0.15rem);
 }
 
-.ck-world__sign.is-failed {
-  background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
-  box-shadow: 0 0.4rem 0 #be123c, 0 0.9rem 1.6rem rgba(0, 0, 0, 0.18);
+.ck-om__node:active .ck-om__bubble {
+  transform: translateY(0.12rem);
+  box-shadow: 0 0.12rem 0 rgba(255, 121, 0, 0.35);
 }
 
-.ck-world__sign.is-current {
-  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+.ck-om__node.is-done .ck-om__bubble {
+  border-color: #00a859;
+  box-shadow: 0 0.35rem 0 rgba(0, 168, 89, 0.3);
+  color: #00a859;
+}
+
+.ck-om__node.is-current .ck-om__bubble,
+.ck-om__node.is-focus .ck-om__bubble {
+  border-color: #ff7900;
+  box-shadow:
+    0 0 0 0.45rem rgba(255, 121, 0, 0.22),
+    0 0.35rem 0 rgba(255, 121, 0, 0.4);
+  animation: ck-om-pulse 1.6s ease-in-out infinite;
+}
+
+.ck-om__node.is-failed .ck-om__bubble {
+  border-color: #e11d48;
+  box-shadow: 0 0.35rem 0 rgba(225, 29, 72, 0.3);
+  color: #e11d48;
+}
+
+.ck-om__node.is-locked .ck-om__bubble,
+.ck-om__node.is-premium .ck-om__bubble {
+  border-color: #9ca3af;
+  box-shadow: 0 0.35rem 0 rgba(107, 114, 128, 0.35);
+  color: #6b7280;
+  background: #f3f4f6;
+}
+
+@keyframes ck-om-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.ck-om__caption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  max-width: 14rem;
+  text-align: center;
+}
+
+.ck-om__caption-type {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #ff7900;
+}
+
+.ck-om__caption-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.25;
   color: #1f2937;
-  box-shadow: 0 0.4rem 0 #b45309, 0 0.9rem 1.6rem rgba(0, 0, 0, 0.18);
 }
 
-.ck-world__sign.is-done {
-  background: linear-gradient(180deg, #00b35f 0%, #008f4c 100%);
+html.dark .ck-om__caption-title {
+  color: #f3f4f6;
+}
+
+.ck-om__node.is-locked .ck-om__caption-type,
+.ck-om__node.is-premium .ck-om__caption-type {
+  color: #9ca3af;
+}
+
+.ck-om__node.is-done .ck-om__caption-type {
+  color: #00a859;
+}
+
+.ck-om__node.is-side-left .ck-om__caption {
+  align-items: flex-start;
+  text-align: left;
+  margin-left: 0.4rem;
+}
+
+.ck-om__node.is-side-right .ck-om__caption {
+  align-items: flex-end;
+  text-align: right;
+  margin-right: 0.4rem;
 }
 
 @media (max-width: 720px) {
-  .ck-world {
+  .ck-om-head__title {
+    font-size: 2.3rem;
+  }
+
+  .ck-om__stage {
     max-width: none;
-    margin: 0 -0.4rem 3.2rem;
-    width: calc(100% + 0.8rem);
-    border-radius: 1.4rem;
-    border-width: 0.22rem;
-    min-height: 36rem;
+    border-radius: 1.6rem;
   }
 
-  .ck-world__sign {
-    width: min(16.5rem, 48vw);
-    padding: 0.9rem 1rem 1rem;
+  .ck-om__bubble {
+    width: 5.2rem;
+    height: 5.2rem;
+    font-size: 1.8rem;
   }
 
-  .ck-world__sign-title {
-    font-size: 1.2rem;
+  .ck-om__caption-title {
+    font-size: 1.15rem;
   }
 
-  .ck-world__chapter {
-    min-width: 13rem;
-    max-width: 18rem;
-    padding: 0.75rem 1rem;
-  }
-
-  .ck-world__chapter strong {
-    font-size: 1.3rem;
+  .ck-om__node {
+    width: 10.5rem;
   }
 }
 

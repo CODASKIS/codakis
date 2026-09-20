@@ -111,31 +111,43 @@ export default function RoadmapPage() {
     ? chapterBannerColor(activeChapter.theme_title, activeChapter.theme_index)
     : "#00a859";
 
+  const nextPts = gamification?.points_to_next_level ?? 0;
+  const pts = gamification?.points ?? 0;
+  const nextAt = gamification?.next_level_at ?? 150;
+  const progressPct = Math.min(100, Math.round((pts / Math.max(1, nextAt)) * 100));
+
   return (
     <div className="ck-roadmap">
       {error ? <p className="ck-empty">{error}</p> : null}
 
-      <header className="ck-roadmap__hero">
-        <div className="ck-roadmap__hero-copy">
-          <p className="ck-roadmap__hero-eyebrow">Feuille de route</p>
-          <h1>Votre parcours permis</h1>
-          <p>
-            Carte route serpentine : feux sur les bas-côtés, panneaux à gauche ou à droite.
-            Vert = validé, orange = en cours, rouge = à reprendre, éteint = bloqué.
-          </p>
-          {gamification ? (
-            <div className="ck-roadmap__hero-stats">
-              <span>Niveau {gamification.niveau}</span>
-              <span>{gamification.points} pts</span>
-              <span>
-                {gamification.chapters_read}/{gamification.chapters_total} chapitres
-              </span>
+      <header className="ck-om-head">
+        <h1 className="ck-om-head__title">Feuille de route</h1>
+        {gamification ? (
+          <div className="ck-om-head__stats">
+            <div className="ck-om-head__stat">
+              <span className="ck-om-head__label">Niveau</span>
+              <strong>{gamification.niveau}</strong>
             </div>
-          ) : null}
-        </div>
-        <div className="ck-roadmap__hero-art" aria-hidden>
-          <img src="/images/auth/cartoon-red-car.png" alt="" width={220} height={160} />
-        </div>
+            <div className="ck-om-head__divider" aria-hidden />
+            <div className="ck-om-head__stat">
+              <span className="ck-om-head__label">Points</span>
+              <strong>{gamification.points}</strong>
+            </div>
+          </div>
+        ) : null}
+        {gamification ? (
+          <div className="ck-om-head__progress">
+            <p>
+              {nextPts > 0
+                ? `Plus que ${nextPts} pts avant le niveau ${gamification.niveau + 1}`
+                : "Niveau max atteint pour l’instant"}
+            </p>
+            <div className="ck-om-head__bar" role="progressbar" aria-valuenow={progressPct} aria-valuemin={0} aria-valuemax={100}>
+              <span style={{ width: `${progressPct}%` }} />
+            </div>
+            <small>{progressPct}%</small>
+          </div>
+        ) : null}
       </header>
 
       {activeChapter ? (
