@@ -329,8 +329,10 @@ def render_welcome_email(*, full_name: str, login_url: str, temp_password: str |
     ).strip()
 
     html = _base_layout(
-        preheader="Votre parcours permis commence — 3 modules gratuits",
+        preheader="Votre parcours permis commence — 2 thèmes gratuits",
         body_html=f"""
+          {_hero_image("Bienvenue sur CODAKIS")}
+          {_icon_badge("🚗", "Votre compte est prêt")}
           {_heading("Bienvenue sur CODAKIS")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte est prêt. Vous pouvez apprendre tout de suite, même sans avoir payé.")}
           {_info_box("<strong>Inclus sans abonnement :</strong> signalisation et priorités — cours, quiz et lecture audio.")}
