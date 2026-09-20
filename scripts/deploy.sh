@@ -29,8 +29,23 @@ docker compose up -d --build
 echo "==> Status"
 docker compose ps
 
-echo "==> Health check"
-curl -sf "http://127.0.0.1:${WEB_PORT:-8080}/health" && echo
+echo "==> Health check (retry)"
+ok=0
+for i in $(seq 1 40); do
+  if body="$(curl -sf "http://127.0.0.1:${WEB_PORT:-8080}/health")"; then
+    echo "OK (${i}): ${body}"
+    ok=1
+    break
+  fi
+  echo "attempt ${i}: API pas prête"
+  sleep 3
+done
+if [[ "$ok" != "1" ]]; then
+  echo "==> Health check échoué — logs API"
+  docker compose logs --tail 200 api || docker logs --tail 200 codakis_api || true
+  docker compose ps -a || true
+  exit 1
+fi
 
 IP="$(hostname -I | awk '{print $1}')"
 echo "CODAKIS en ligne : http://${IP}:${WEB_PORT:-8080}"

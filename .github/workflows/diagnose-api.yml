@@ -1,0 +1,59 @@
+name: Diagnose API
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: codakis-production
+  cancel-in-progress: false
+
+jobs:
+  diagnose:
+    name: Logs API sur 194.163.171.109
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspecter et redémarrer l'API
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 194.163.171.109
+          username: root
+          key: ${{ secrets.SSH_DEPLOY_KEY }}
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            cd /root/codakis
+            echo "==> docker compose ps"
+            docker compose ps -a || true
+            echo "==> docker ps (codakis)"
+            docker ps -a --filter name=codakis --no-trunc || true
+            echo "==> api logs (tail 200)"
+            docker logs --tail 200 codakis_api 2>&1 || true
+            echo "==> web logs (tail 40)"
+            docker logs --tail 40 codakis_web 2>&1 || true
+            echo "==> restart api"
+            docker compose up -d --no-deps api
+            echo "==> wait health"
+            ok=0
+            for i in $(seq 1 40); do
+              if curl -sf "http://127.0.0.1:${WEB_PORT:-8080}/health" >/tmp/ck_health.json; then
+                echo "health ok after ${i}s: $(cat /tmp/ck_health.json)"
+                ok=1
+                break
+              fi
+              echo "attempt $i: not ready"
+              sleep 3
+            done
+            if [[ "$ok" != "1" ]]; then
+              echo "==> still failing — api logs"
+              docker logs --tail 300 codakis_api 2>&1 || true
+              docker compose ps -a || true
+              exit 1
+            fi
+            echo "==> localhost probes"
+            curl -sS -w "home=%{http_code}\n" -o /dev/null "http://127.0.0.1:${WEB_PORT:-8080}/"
+            curl -sS -w "health=%{http_code}\n" -o /tmp/ck_health2.txt "http://127.0.0.1:${WEB_PORT:-8080}/health" || true
+            head -c 200 /tmp/ck_health2.txt || true
+            echo
+            curl -sS -w "api_v1_health=%{http_code}\n" -o /tmp/ck_api.txt "http://127.0.0.1:${WEB_PORT:-8080}/api/v1/health" || true
+            head -c 200 /tmp/ck_api.txt || true
+            echo
