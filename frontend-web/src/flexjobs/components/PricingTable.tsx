@@ -1,4 +1,4 @@
-import { ArrowRight, Check, Globe } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
@@ -10,10 +10,7 @@ import { getSession } from "../../auth/authStore";
 import { AUTH_PATHS } from "../../constants/authPaths";
 import { getRoleDashboardPath } from "../../auth/roles";
 import { buildLoginUrl, rememberAuthRedirect } from "../../auth/purchaseIntent";
-import {
-  useCurrencyRates,
-} from "../../hooks/useCurrencyConversion";
-import { getPlanPricing, initiatePayment } from "../../lib/payment-api";
+import { detectVisitorCountry, getPlanPricing, initiatePayment } from "../../lib/payment-api";
 import {
   filterVitrinePlans,
   getVitrineDisplayPrice,
@@ -168,21 +165,29 @@ export default function PricingTable({
   const [billing, setBilling] = useState<BillingPeriod>("yearly");
   const [audience, setAudience] = useState<PricingAudience>("individual");
   const [payingKey, setPayingKey] = useState<string | null>(null);
-
-  const { selectedCountry, changeCountry, supportedCountries } = useCurrencyRates();
+  const [countryCode, setCountryCode] = useState("CM");
   const [priced, setPriced] = useState<PlanPricing | null>(planPricing ?? null);
+  const [pricingLoading, setPricingLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    void getPlanPricing(selectedCountry.countryCode)
-      .then((next) => {
+    void (async () => {
+      const country = await detectVisitorCountry();
+      if (cancelled) return;
+      setCountryCode(country);
+      try {
+        const next = await getPlanPricing(country);
         if (!cancelled) setPriced(next);
-      })
-      .catch(() => undefined);
+      } catch {
+        // On garde le barème déjà connu, ou le Cameroun par défaut.
+      } finally {
+        if (!cancelled) setPricingLoading(false);
+      }
+    })();
     return () => {
       cancelled = true;
     };
-  }, [selectedCountry.countryCode]);
+  }, []);
 
   const visiblePlans = useMemo(() => filterVitrinePlans(plans, audience), [plans, audience]);
 
@@ -228,7 +233,7 @@ export default function PricingTable({
         billing_period: isSchoolAudience ? "yearly" : billing,
         payment_method: "orange",
         purpose: "subscription",
-        country_code: selectedCountry.countryCode,
+        country_code: countryCode,
       });
       if (result.payment_url) {
         window.location.href = result.payment_url;
@@ -255,55 +260,6 @@ export default function PricingTable({
           <h1>{t("pricing.title")}</h1>
         </div>
       )}
-
-      {/* Sélecteur de pays et devise */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "1rem",
-          marginBottom: "2rem",
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.8rem",
-            background: "#fff",
-            padding: "0.6rem 1.4rem",
-            borderRadius: "999px",
-            border: "1px solid #e2e8f0",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <Globe size={18} style={{ color: "var(--ck-green, #158a4e)" }} />
-          <span style={{ fontSize: "1.35rem", fontWeight: 700, color: "#334155" }}>
-            Pays & Devise :
-          </span>
-          <select
-            value={selectedCountry.countryCode}
-            onChange={(e) => changeCountry(e.target.value)}
-            style={{
-              border: "none",
-              background: "transparent",
-              fontSize: "1.4rem",
-              fontWeight: 700,
-              color: "var(--ck-green-dark, #158a4e)",
-              cursor: "pointer",
-              outline: "none",
-            }}
-          >
-            {supportedCountries.map((c) => (
-              <option key={c.countryCode} value={c.countryCode}>
-                {c.flag} {c.countryName} ({c.symbol})
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
 
       <div className="fj-pricing-table__toolbar">
         <div className="fj-pricing-table__segments" role="tablist" aria-label={t("pricingTable.clientTypeAria")}>
@@ -349,7 +305,7 @@ export default function PricingTable({
         </div>
       </div>
 
-      {loading && visiblePlans.length === 0 ? (
+      {loading || pricingLoading ? (
         <Loader variant="inline" theme="flexjobs" message={t("pricingTable.loading")} />
       ) : visiblePlans.length === 0 ? (
         <p className="fj-pricing-table__empty">{t("pricing.empty")}</p>
@@ -364,7 +320,7 @@ export default function PricingTable({
                 audience={audience}
                 featured={getVitrinePlanBadge(plan, index, visiblePlans.length) === "popular"}
                 planPricing={priced}
-                currencySymbol={priced?.symbol || selectedCountry.symbol}
+                currencySymbol={priced?.symbol || "FCFA"}
                 payLabel={t("pricingTable.ctaPay", "S'abonner via PawaPay")}
                 startLabel={t("pricingTable.ctaStart", "Commencer")}
                 onSelectPlan={handleSelectPlan}

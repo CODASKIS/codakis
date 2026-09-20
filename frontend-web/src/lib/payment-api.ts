@@ -74,6 +74,17 @@ export async function getPlanPricing(country?: string): Promise<PlanPricing> {
   return apiFetch<PlanPricing>(`/api/v1/payments/plans/pricing${query}`);
 }
 
+export async function detectVisitorCountry(): Promise<string> {
+  try {
+    localStorage.removeItem("codakis_selected_currency_country");
+    const data = await apiFetch<{ country?: string }>("/api/v1/public/visitor");
+    const code = (data.country || "CM").toUpperCase();
+    return code.length === 2 ? code : "CM";
+  } catch {
+    return "CM";
+  }
+}
+
 export type PlanPricing = {
   essentiel: number;
   pro: number;

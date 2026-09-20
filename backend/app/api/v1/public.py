@@ -6,12 +6,31 @@ from sqlalchemy.orm import Session
 
 from app.db.session import get_db
 from app.schemas.enrollments import PublicSchoolDetail, PublicSchoolListItem
+from app.services.email_context import client_ip
 from app.services.enrollments import get_public_school, list_public_schools
+from app.services.fx import resolve_country
+from app.services.geo import lookup_country_from_ip
 from pathlib import Path
 
 router = APIRouter(prefix="/public", tags=["public"])
 
 DRIVING_QUIZ_IMAGES = Path(__file__).resolve().parents[3] / "assets" / "driving-quiz" / "images"
+
+
+@router.get("/visitor")
+def public_visitor(request: Request):
+    """Pays et devise déduits de l'adresse IP du visiteur."""
+    ip = client_ip(
+        request.headers.get("x-forwarded-for"),
+        request.client.host if request.client else None,
+    )
+    quote = resolve_country(lookup_country_from_ip(ip))
+    return {
+        "country": quote.country,
+        "currency": quote.currency,
+        "symbol": quote.symbol,
+        "pawapay_supported": quote.pawapay_country is not None,
+    }
 
 
 @router.get("/auto-ecoles", response_model=list[PublicSchoolListItem])
