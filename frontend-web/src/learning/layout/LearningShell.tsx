@@ -160,7 +160,7 @@ export default function LearningShell() {
       <header className="ck-topbar">
         <div className="ck-topbar__inner">
           <Link to="/espace/candidat" className="ck-topbar__brand" aria-label="CODAKIS">
-            <img src={CODAKIS_LOGO} alt="CODAKIS" className="ck-topbar__brand-img" />
+            <CodakisWordmark className="ck-topbar__brand-img" />
           </Link>
 
           <nav className="ck-topbar__nav" aria-label="Navigation principale">
