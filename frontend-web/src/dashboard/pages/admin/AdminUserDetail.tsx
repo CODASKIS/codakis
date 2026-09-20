@@ -9,6 +9,7 @@ import {
   fetchAdminUser,
   fetchAdminUserConsort,
   updateAdminUser,
+  validateAdminConsortPiece,
   type ApiUser,
   type ConsortDossier,
 } from "../../../lib/authApi";
@@ -51,6 +52,7 @@ export default function AdminUserDetail() {
   const [form, setForm] = useState<EditForm | null>(null);
   const [saving, setSaving] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [validatingKey, setValidatingKey] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -228,10 +230,53 @@ export default function AdminUserDetail() {
                 {consort.pieces.map((p) => (
                   <li key={p.key}>
                     <div>
-                      <strong>{p.key}</strong>
+                      <strong>
+                        {p.key === "id"
+                          ? "Pièce d'identité"
+                          : p.key === "birth"
+                            ? "Acte de naissance"
+                            : p.key === "medical"
+                              ? "Certificat médical"
+                              : p.key === "photos"
+                                ? "Photos d'identité"
+                                : p.key === "address"
+                                  ? "Justificatif de domicile"
+                                  : p.key === "stamps"
+                                    ? "Timbres fiscaux"
+                                    : p.key}
+                      </strong>
                       <span>
                         {p.status === "validated" ? "Validée" : p.status === "pending" ? "En attente" : "Manquante"}
+                        {p.file_name ? ` · ${p.file_name}` : ""}
                       </span>
+                      {p.file_url ? (
+                        <a href={p.file_url} target="_blank" rel="noreferrer" className="ck-link">
+                          Ouvrir le document
+                        </a>
+                      ) : null}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {p.status === "pending" ? (
+                        <Button
+                          size="sm"
+                          disabled={validatingKey === p.key}
+                          onClick={() => {
+                            void (async () => {
+                              if (!user) return;
+                              setValidatingKey(p.key);
+                              try {
+                                setConsort(await validateAdminConsortPiece(user.id, p.key));
+                              } catch (err) {
+                                setError(err instanceof Error ? err.message : "Validation impossible");
+                              } finally {
+                                setValidatingKey(null);
+                              }
+                            })();
+                          }}
+                        >
+                          {validatingKey === p.key ? "…" : "Valider"}
+                        </Button>
+                      ) : null}
                     </div>
                   </li>
                 ))}

@@ -18,6 +18,7 @@ from app.schemas.enrollments import (
     InscriptionDetail,
     InscriptionListItem,
     MoniteurSeancePublic,
+    SeanceParticipationRequest,
     SeancePublic,
     UpdateSeanceRequest,
 )
@@ -26,6 +27,7 @@ from app.services.enrollments import (
     candidat_get_inscription,
     candidat_list_inscriptions,
     candidat_list_seances,
+    candidat_respond_seance,
     create_inscription,
     forfait_to_admin,
     gerant_create_forfait,
@@ -199,6 +201,19 @@ def candidat_get_my_inscription(
 @candidat_router.get("/seances", response_model=list[CandidatSeancePublic])
 def candidat_list_my_seances(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     return candidat_list_seances(db, candidat)
+
+
+@candidat_router.post("/seances/{seance_id}/respond", response_model=CandidatSeancePublic)
+def candidat_respond_my_seance(
+    seance_id: uuid.UUID,
+    payload: SeanceParticipationRequest,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        return candidat_respond_seance(db, candidat, seance_id, payload.participation)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
 
 
 @moniteur_router.get("/seances", response_model=list[MoniteurSeancePublic])

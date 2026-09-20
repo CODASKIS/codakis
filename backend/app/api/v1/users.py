@@ -22,7 +22,7 @@ from app.schemas.auth import (
 )
 from app.schemas.admin_search import AdminSearchResponse
 from app.services.admin_search import admin_global_search
-from app.services.consort import dossier_to_public, get_or_create_dossier
+from app.services.consort import dossier_to_public, get_or_create_dossier, validate_consort_piece
 from app.services.users import (
     FRONT_TO_ROLE,
     ROLE_TO_FRONT,
@@ -87,6 +87,26 @@ def get_user_consort(user_id: uuid.UUID, _: AdminUser, db: Session = Depends(get
     if user.role != RoleUtilisateur.candidat.value:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dossier Consort indisponible pour ce compte")
     dossier = get_or_create_dossier(db, user)
+    return dossier_to_public(dossier)
+
+
+@admin_router.post("/users/{user_id}/consort/pieces/{piece_key}/validate", response_model=ConsortDossierPublic)
+def admin_validate_user_consort_piece(
+    user_id: uuid.UUID,
+    piece_key: str,
+    _: AdminUser,
+    db: Session = Depends(get_db),
+):
+    user = db.get(Utilisateur, user_id)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable")
+    if user.role != RoleUtilisateur.candidat.value:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Réservé aux candidats")
+    dossier = get_or_create_dossier(db, user)
+    try:
+        dossier = validate_consort_piece(db, dossier.id, piece_key)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     return dossier_to_public(dossier)
 
 

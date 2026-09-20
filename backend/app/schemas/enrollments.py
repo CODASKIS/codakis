@@ -66,6 +66,7 @@ class SeancePublic(BaseModel):
     starts_at: datetime
     ends_at: datetime
     statut: str
+    participation: str = "en_attente"
     lieu: str | None = None
     notes: str | None = None
 
@@ -93,6 +94,10 @@ class MoniteurSeancePublic(SeancePublic):
 class CandidatSeancePublic(SeancePublic):
     school_name: str | None = None
     forfait_label: str | None = None
+
+
+class SeanceParticipationRequest(BaseModel):
+    participation: str = Field(pattern="^(accepte|refuse)$")
 
 
 class CreateSeanceRequest(BaseModel):

@@ -29,6 +29,8 @@ export type ConsortPiece = {
   key: string;
   status: ConsortPieceStatus;
   validated_at: string | null;
+  file_url?: string | null;
+  file_name?: string | null;
 };
 
 export type ConsortDossier = {
@@ -196,7 +198,8 @@ export function clearTokens(): void {
 
 export async function authFetch<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {
   const headers = new Headers(init.headers);
-  if (!headers.has("Content-Type") && init.body) {
+  const isFormData = typeof FormData !== "undefined" && init.body instanceof FormData;
+  if (!headers.has("Content-Type") && init.body && !isFormData) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -413,8 +416,32 @@ export async function fetchConsortDossier(): Promise<ConsortDossier> {
   return authFetch<ConsortDossier>("/api/v1/candidat/consort");
 }
 
-export async function submitConsortPiece(pieceKey: string): Promise<ConsortDossier> {
-  return authFetch<ConsortDossier>(`/api/v1/candidat/consort/pieces/${pieceKey}/submit`, { method: "POST" });
+export async function uploadAuthDocument(file: File): Promise<{
+  url: string;
+  secure_url: string;
+  public_id: string;
+  resource_type: string;
+  size_bytes: number;
+}> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return authFetch("/api/v1/upload/document", { method: "POST", body: formData });
+}
+
+export async function submitConsortPiece(
+  pieceKey: string,
+  payload?: { file_url?: string; file_name?: string },
+): Promise<ConsortDossier> {
+  return authFetch<ConsortDossier>(`/api/v1/candidat/consort/pieces/${pieceKey}/submit`, {
+    method: "POST",
+    body: JSON.stringify(payload ?? {}),
+  });
+}
+
+export async function validateAdminConsortPiece(userId: string, pieceKey: string): Promise<ConsortDossier> {
+  return authFetch<ConsortDossier>(`/api/v1/admin/users/${userId}/consort/pieces/${pieceKey}/validate`, {
+    method: "POST",
+  });
 }
 
 export async function fetchGerantSchool(): Promise<GerantSchool> {

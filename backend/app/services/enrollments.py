@@ -175,6 +175,7 @@ def seance_to_public(db: Session, seance: SeancePratique) -> dict:
         "starts_at": seance.starts_at,
         "ends_at": seance.ends_at,
         "statut": seance.statut,
+        "participation": getattr(seance, "participation", None) or "en_attente",
         "lieu": seance.lieu,
         "notes": seance.notes,
     }
@@ -414,6 +415,34 @@ def candidat_list_seances(db: Session, candidat: Utilisateur) -> list[dict]:
             }
         )
     return results
+
+
+def candidat_respond_seance(db: Session, candidat: Utilisateur, seance_id: uuid.UUID, participation: str) -> dict:
+    choice = (participation or "").strip().lower()
+    if choice not in {"accepte", "refuse"}:
+        raise ValueError("Réponse invalide (accepte ou refuse)")
+
+    seance = db.get(SeancePratique, seance_id)
+    if seance is None or seance.candidat_id != candidat.id:
+        raise ValueError("Séance introuvable")
+    if seance.statut in {StatutSeance.terminee.value, StatutSeance.annulee.value}:
+        raise ValueError("Cette séance n'accepte plus de réponse")
+
+    seance.participation = choice
+    if choice == "accepte" and seance.statut == StatutSeance.planifiee.value:
+        seance.statut = StatutSeance.confirmee.value
+    if choice == "refuse" and seance.statut != StatutSeance.terminee.value:
+        seance.statut = StatutSeance.annulee.value
+
+    db.commit()
+    db.refresh(seance)
+    school = db.get(AutoEcole, seance.auto_ecole_id)
+    inscription = db.get(Inscription, seance.inscription_id)
+    return {
+        **seance_to_public(db, seance),
+        "school_name": school.raison_sociale if school else None,
+        "forfait_label": inscription.forfait_label if inscription else None,
+    }
 
 
 def moniteur_seance_to_public(db: Session, seance: SeancePratique) -> dict:

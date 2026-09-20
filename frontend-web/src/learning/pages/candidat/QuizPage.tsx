@@ -1,10 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { CheckCircle, Volume2, VolumeX, X, XCircle } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import MediaVideo from "../../../components/common/MediaVideo";
 import SpeakButton from "../../../components/prefs/SpeakButton";
 import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
+import { ChallengeTimerBadge, useChallengeTimer } from "../../components/ChallengeTimer";
 import {
   fetchCandidatQuizTake,
   submitCandidatQuiz,
@@ -28,6 +29,7 @@ export default function QuizPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
+  const [dureeMinutes, setDureeMinutes] = useState(0);
   const [questions, setQuestions] = useState<TakeQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -39,6 +41,7 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const startedAt = useMemo(() => Date.now(), [id]);
+  const submittingRef = useRef(false);
 
   // ── état TTS synchronisé avec les préférences utilisateur ──────────────────
   const [voiceOn, setVoiceOn] = useState<boolean>(() => isSpeakingEnabled());
@@ -60,6 +63,7 @@ export default function QuizPage() {
       .then((quiz) => {
         if (cancelled) return;
         setTitle(quiz.title);
+        setDureeMinutes(quiz.duree_minutes || 0);
         setQuestions(quiz.questions);
       })
       .catch((err) => {
@@ -114,18 +118,37 @@ export default function QuizPage() {
       setCheckResult(null);
       return;
     }
-    setSubmitting(true);
-    try {
-      const merged = current && selected ? { ...answers, [current.id]: selected } : answers;
-      const payload = Object.entries(merged).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
-      const result = await submitCandidatQuiz(id, payload, Math.round((Date.now() - startedAt) / 1000));
-      stopSpeaking();
-      navigate(`/espace/candidat/quiz/${id}/resultat`, { state: { result, title }, replace: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Envoi impossible");
-      setSubmitting(false);
-    }
+    await finishQuiz(false);
   }
+
+  const finishQuiz = useCallback(
+    async (timedOut: boolean) => {
+      if (submittingRef.current) return;
+      submittingRef.current = true;
+      setSubmitting(true);
+      try {
+        const merged = current && selected ? { ...answers, [current.id]: selected } : answers;
+        const payload = Object.entries(merged).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
+        const result = await submitCandidatQuiz(id, payload, Math.round((Date.now() - startedAt) / 1000));
+        stopSpeaking();
+        navigate(`/espace/candidat/quiz/${id}/resultat`, {
+          state: { result, title: timedOut ? `${title} (temps écoulé)` : title },
+          replace: true,
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Envoi impossible");
+        submittingRef.current = false;
+        setSubmitting(false);
+      }
+    },
+    [answers, current, id, navigate, selected, startedAt, title],
+  );
+
+  const timer = useChallengeTimer({
+    dureeMinutes,
+    enabled: !loading && questions.length > 0 && !submitting,
+    onExpire: () => void finishQuiz(true),
+  });
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -172,6 +195,7 @@ export default function QuizPage() {
         <div className="ck-quiz__progress" aria-hidden>
           <span style={{ width: `${progress}%` }} />
         </div>
+        <ChallengeTimerBadge label={timer.label} urgent={timer.urgent} active={timer.active} />
         {/* Toggle voix — toujours visible, même si la voix est désactivée */}
         <button
           type="button"

@@ -58,6 +58,13 @@ class ConsortPiecePublic(BaseModel):
     key: str
     status: str
     validated_at: datetime | None = None
+    file_url: str | None = None
+    file_name: str | None = None
+
+
+class ConsortPieceSubmitRequest(BaseModel):
+    file_url: str | None = None
+    file_name: str | None = None
 
 
 class ConsortDossierPublic(BaseModel):

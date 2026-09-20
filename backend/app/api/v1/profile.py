@@ -9,6 +9,7 @@ from app.db.session import get_db
 from app.schemas.auth import (
     ChangePasswordRequest,
     ConsortDossierPublic,
+    ConsortPieceSubmitRequest,
     GerantSchoolPublic,
     UpdateGerantSchoolRequest,
     UpdateProfileRequest,
@@ -70,11 +71,19 @@ def get_my_consort(
 @candidat_router.post("/consort/pieces/{piece_key}/submit", response_model=ConsortDossierPublic)
 def submit_piece(
     piece_key: str,
+    payload: ConsortPieceSubmitRequest | None = None,
     current_user: Utilisateur = Depends(CandidatUser),
     db: Session = Depends(get_db),
 ):
+    body = payload or ConsortPieceSubmitRequest()
     try:
-        dossier = submit_consort_piece(db, current_user, piece_key)
+        dossier = submit_consort_piece(
+            db,
+            current_user,
+            piece_key,
+            file_url=body.file_url,
+            file_name=body.file_name,
+        )
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     return dossier_to_public(dossier)

@@ -168,7 +168,13 @@ export default function GerantEleveDetailPage() {
                       : piece.status === "pending"
                         ? "En attente"
                         : "Manquante"}
+                    {piece.file_name ? ` · ${piece.file_name}` : ""}
                   </span>
+                  {piece.file_url ? (
+                    <a href={piece.file_url} target="_blank" rel="noreferrer" className="ck-link">
+                      Voir le document
+                    </a>
+                  ) : null}
                 </div>
                 {piece.status === "pending" ? (
                   <Button size="sm" disabled={validatingKey === piece.key} onClick={() => void onValidatePiece(piece.key)}>

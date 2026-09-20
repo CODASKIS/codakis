@@ -86,13 +86,22 @@ def dossier_to_public(dossier: DossierAdministratif) -> dict:
                 "key": piece.piece_key,
                 "status": piece.statut,
                 "validated_at": piece.validated_at,
+                "file_url": piece.file_url,
+                "file_name": piece.file_name,
             }
             for piece in pieces
         ],
     }
 
 
-def submit_consort_piece(db: Session, user: Utilisateur, piece_key: str) -> DossierAdministratif:
+def submit_consort_piece(
+    db: Session,
+    user: Utilisateur,
+    piece_key: str,
+    *,
+    file_url: str | None = None,
+    file_name: str | None = None,
+) -> DossierAdministratif:
     if user.role != RoleUtilisateur.candidat.value:
         raise ValueError("Réservé aux candidats")
     if piece_key not in CONSORT_PIECE_KEYS:
@@ -105,6 +114,13 @@ def submit_consort_piece(db: Session, user: Utilisateur, piece_key: str) -> Doss
     if piece.statut == StatutPieceConsort.validated.value:
         raise ValueError("Cette pièce est déjà validée")
 
+    url = (file_url or "").strip() or None
+    if not url and not piece.file_url:
+        raise ValueError("Ajoutez un fichier avant de soumettre la pièce")
+
+    if url:
+        piece.file_url = url
+        piece.file_name = (file_name or "").strip() or None
     piece.statut = StatutPieceConsort.pending.value
     piece.validated_at = None
     _sync_dossier_statut(dossier)

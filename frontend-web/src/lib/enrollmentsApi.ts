@@ -26,6 +26,7 @@ export type SeancePratique = {
   starts_at: string;
   ends_at: string;
   statut: string;
+  participation?: "en_attente" | "accepte" | "refuse" | string;
   lieu: string | null;
   notes: string | null;
 };
@@ -153,6 +154,16 @@ export type GerantInscriptionDetail = GerantInscription & {
 
 export async function fetchCandidatSeances(): Promise<CandidatSeance[]> {
   return authFetch<CandidatSeance[]>("/api/v1/candidat/seances");
+}
+
+export async function respondCandidatSeance(
+  seanceId: string,
+  participation: "accepte" | "refuse",
+): Promise<CandidatSeance> {
+  return authFetch<CandidatSeance>(`/api/v1/candidat/seances/${seanceId}/respond`, {
+    method: "POST",
+    body: JSON.stringify({ participation }),
+  });
 }
 
 export async function fetchCandidatInscriptions(): Promise<CandidatInscription[]> {

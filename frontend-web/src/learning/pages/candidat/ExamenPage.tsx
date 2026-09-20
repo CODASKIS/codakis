@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { X } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import MediaVideo from "../../../components/common/MediaVideo";
 import SpeakButton from "../../../components/prefs/SpeakButton";
 import SpeakPrompt from "../../../components/prefs/SpeakPrompt";
+import { ChallengeTimerBadge, useChallengeTimer } from "../../components/ChallengeTimer";
 import {
   fetchCandidatExamenTake,
   submitCandidatExamen,
@@ -16,6 +17,7 @@ export default function ExamenPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
+  const [dureeMinutes, setDureeMinutes] = useState(0);
   const [questions, setQuestions] = useState<TakeQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [index, setIndex] = useState(0);
@@ -23,6 +25,7 @@ export default function ExamenPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [started] = useState(() => Date.now());
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -30,6 +33,7 @@ export default function ExamenPage() {
       .then((exam) => {
         if (cancelled) return;
         setTitle(exam.title);
+        setDureeMinutes(exam.duree_minutes || 0);
         setQuestions(exam.questions);
       })
       .catch((err) => {
@@ -56,31 +60,43 @@ export default function ExamenPage() {
   const selected = current ? answers[current.id] : undefined;
   const progress = questions.length ? ((index + (selected ? 1 : 0)) / questions.length) * 100 : 0;
 
-  async function finish() {
-    setSubmitting(true);
-    try {
-      const payload = Object.entries(answers).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
-      const result = await submitCandidatExamen(id, payload, Math.round((Date.now() - started) / 1000));
-      stopSpeaking();
-      navigate(`/espace/candidat/quiz/${id}/resultat`, {
-        replace: true,
-        state: {
-          result: {
-            score: result.score,
-            nb_correctes: result.nb_total - result.nb_erreurs,
-            nb_total: result.nb_total,
-            reussi: result.reussi,
-            details: result.details,
-            points_earned: result.points_earned,
+  const finish = useCallback(
+    async (timedOut = false) => {
+      if (submittingRef.current) return;
+      submittingRef.current = true;
+      setSubmitting(true);
+      try {
+        const payload = Object.entries(answers).map(([question_id, reponse_id]) => ({ question_id, reponse_id }));
+        const result = await submitCandidatExamen(id, payload, Math.round((Date.now() - started) / 1000));
+        stopSpeaking();
+        navigate(`/espace/candidat/quiz/${id}/resultat`, {
+          replace: true,
+          state: {
+            result: {
+              score: result.score,
+              nb_correctes: result.nb_total - result.nb_erreurs,
+              nb_total: result.nb_total,
+              reussi: result.reussi,
+              details: result.details,
+              points_earned: result.points_earned,
+            },
+            title: timedOut ? `${title} (temps écoulé)` : title,
           },
-          title,
-        },
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Envoi impossible");
-      setSubmitting(false);
-    }
-  }
+        });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Envoi impossible");
+        submittingRef.current = false;
+        setSubmitting(false);
+      }
+    },
+    [answers, id, navigate, started, title],
+  );
+
+  const timer = useChallengeTimer({
+    dureeMinutes,
+    enabled: !loading && questions.length > 0 && !submitting,
+    onExpire: () => void finish(true),
+  });
 
   if (loading) return <Loader variant="page" />;
   if (!current) return <p className="ck-empty">{error || "Aucune question"}</p>;
@@ -100,11 +116,13 @@ export default function ExamenPage() {
         <div className="ck-quiz__progress" aria-hidden>
           <span style={{ width: `${progress}%` }} />
         </div>
+        <ChallengeTimerBadge label={timer.label} urgent={timer.urgent} active={timer.active} />
       </div>
 
       <div className="ck-challenge__body">
         <p className="ck-subtitle" style={{ marginBottom: "0.8rem" }}>
           {title} · {index + 1}/{questions.length}
+          {timer.active ? ` · ${timer.label}` : ""}
         </p>
         {current.video_url ? (
           <MediaVideo url={current.video_url} title={current.prompt} className="ck-challenge__media" />
@@ -151,7 +169,7 @@ export default function ExamenPage() {
               Continuer
             </button>
           ) : (
-            <button type="button" className="ck-btn ck-btn--primary" disabled={!selected || submitting} onClick={() => void finish()}>
+            <button type="button" className="ck-btn ck-btn--primary" disabled={!selected || submitting} onClick={() => void finish(false)}>
               {submitting ? "Envoi…" : "Terminer"}
             </button>
           )}

@@ -101,6 +101,15 @@ FRONTEND_URL=https://app.votredomaine.com
 CORS_ORIGINS=https://app.votredomaine.com
 ```
 
+Google OAuth (erreur `400: origin_mismatch`) :
+1. Ouvrir https://console.cloud.google.com/apis/credentials
+2. Client OAuth **Web** → Origines JavaScript autorisées — ajouter **exactement** :
+   - `https://codakis.efymotors.com`
+   - `https://codakis.etymotors.com` (si utilisé)
+   - `https://codakis.cm` / `https://www.codakis.cm`
+   - `http://localhost:5173` et `http://localhost:8080` pour le local
+3. Même Client ID dans `VITE_GOOGLE_CLIENT_ID` et `GOOGLE_CLIENT_ID`, puis rebuild (`./scripts/deploy.sh`)
+
 6. Redéployer : `./scripts/deploy.sh`
 
 ### 6. Mises à jour
