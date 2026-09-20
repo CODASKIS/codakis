@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router";
 import { Check, Clock3, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Loader from "../../components/common/Loader";
+import { CodakisWordmark } from "../components/BrandLogo";
 import { getSession } from "../../auth/authStore";
 import { getRoleDashboardPath } from "../../auth/roles";
 import { AUTH_PATHS } from "../../constants/authPaths";
@@ -87,49 +88,56 @@ export default function PaymentReturnPage() {
 
   return (
     <section className="ck-pay-result">
-      <article className={`ck-pay-result__card is-${status}`}>
-        <img src="/images/auth/cartoon-red-car.png" alt="" className="ck-pay-result__car" width={220} height={160} />
-        <span className="ck-pay-result__badge" aria-hidden>
-          <Icon size={28} strokeWidth={2.6} />
-        </span>
-        <p className="ck-pay-result__eyebrow">CODAKIS</p>
-        <h1>{title}</h1>
-        <p className="ck-pay-result__lead">{message}</p>
-        <dl className="ck-pay-result__meta">
-          {amount ? (
-            <div>
-              <dt>Montant</dt>
-              <dd>{amount}</dd>
-            </div>
-          ) : null}
-          {ref ? (
-            <div>
-              <dt>Référence</dt>
-              <dd>{ref}</dd>
-            </div>
-          ) : null}
-          {payment?.channel ? (
-            <div>
-              <dt>Canal</dt>
-              <dd>{payment.channel}</dd>
-            </div>
-          ) : null}
-        </dl>
-        <div className="ck-pay-result__actions">
-          {status === "success" ? (
-            <Link to={spaceHref} className="ck-public-btn ck-public-btn--primary">
-              Accéder à mon espace
+      <div className={`ck-pay-result__shell is-${status}`}>
+        <aside className="ck-pay-result__brand" aria-hidden>
+          <CodakisWordmark className="ck-pay-result__logo" />
+          <img src="/images/auth/cartoon-red-car.png" alt="" className="ck-pay-result__car" width={280} height={200} />
+          <p className="ck-pay-result__brand-text">Paiement sécurisé Mobile Money — CODAKIS</p>
+        </aside>
+
+        <article className="ck-pay-result__card">
+          <span className="ck-pay-result__badge" aria-hidden>
+            <Icon size={28} strokeWidth={2.6} />
+          </span>
+          <p className="ck-pay-result__eyebrow">CODAKIS</p>
+          <h1>{title}</h1>
+          <p className="ck-pay-result__lead">{message}</p>
+          <dl className="ck-pay-result__meta">
+            {amount ? (
+              <div>
+                <dt>Montant</dt>
+                <dd>{amount}</dd>
+              </div>
+            ) : null}
+            {ref ? (
+              <div>
+                <dt>Référence</dt>
+                <dd>{ref}</dd>
+              </div>
+            ) : null}
+            {payment?.channel ? (
+              <div>
+                <dt>Canal</dt>
+                <dd>{payment.channel}</dd>
+              </div>
+            ) : null}
+          </dl>
+          <div className="ck-pay-result__actions">
+            {status === "success" ? (
+              <Link to={spaceHref} className="ck-public-btn ck-public-btn--primary">
+                Accéder à mon espace
+              </Link>
+            ) : (
+              <Link to="/tarifs" className="ck-public-btn ck-public-btn--primary">
+                {status === "pending" ? "Retour aux tarifs" : "Réessayer le paiement"}
+              </Link>
+            )}
+            <Link to="/" className="ck-public-btn ck-public-btn--ghost">
+              Retour à l&apos;accueil
             </Link>
-          ) : (
-            <Link to="/tarifs" className="ck-public-btn ck-public-btn--primary">
-              {status === "pending" ? "Retour aux tarifs" : "Réessayer le paiement"}
-            </Link>
-          )}
-          <Link to="/" className="ck-public-btn ck-public-btn--ghost">
-            Retour à l&apos;accueil
-          </Link>
-        </div>
-      </article>
+          </div>
+        </article>
+      </div>
     </section>
   );
 }

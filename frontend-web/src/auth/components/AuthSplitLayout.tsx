@@ -5,6 +5,7 @@ import { ArrowLeft, BookOpen, Shield, Trophy } from "lucide-react";
 import { CodakisWordmark } from "../../flexjobs/components/BrandLogo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeSwitcher from "../../components/common/ThemeSwitcher";
+import { CODAKIS_APP_VERSION } from "../../constants/appVersion";
 
 type AuthSplitLayoutProps = {
   children: ReactNode;
@@ -50,6 +51,7 @@ export default function AuthSplitLayout({
         <aside className="codakis-auth__brand" aria-label="CODAKIS">
           <div className="codakis-auth__brand-copy">
             <p className="codakis-auth__eyebrow">{t("auth.brand.eyebrow", { defaultValue: "Espace permis" })}</p>
+            <p className="codakis-auth__version">CODAKIS v{CODAKIS_APP_VERSION}</p>
             <h2 className="codakis-auth__brand-title">
               {mood === "register"
                 ? t("auth.brand.registerTitle", { defaultValue: "Rejoins CODAKIS et lance ton parcours" })

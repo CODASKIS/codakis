@@ -172,10 +172,13 @@ export default function PricingTable({
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const country = await detectVisitorCountry();
-      if (cancelled) return;
-      setCountryCode(country);
       try {
+        const country = await Promise.race([
+          detectVisitorCountry().catch(() => "CM"),
+          new Promise<string>((resolve) => setTimeout(() => resolve("CM"), 2500)),
+        ]);
+        if (cancelled) return;
+        setCountryCode(country);
         const next = await getPlanPricing(country);
         if (!cancelled) setPriced(next);
       } catch {

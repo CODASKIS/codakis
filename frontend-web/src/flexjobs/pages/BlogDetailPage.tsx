@@ -100,7 +100,7 @@ export default function BlogDetailPage() {
     <>
       <PageMeta title={post.title} description={post.excerpt ?? post.title} />
 
-      <article className="ck-article">
+      <article className="ck-article ck-article--split">
         <nav className="fj-breadcrumb" aria-label={t("blogDetail.breadcrumbAria")}>
           <ol>
             <li>
@@ -115,47 +115,51 @@ export default function BlogDetailPage() {
           </ol>
         </nav>
 
-        <h1 className="ck-page-title">{post.title}</h1>
+        <div className="ck-article__layout">
+          <div className="ck-article__main">
+            <h1 className="ck-page-title">{post.title}</h1>
 
-        <div className="ck-article__meta">
-          <img
-            src={getIdenticonDataUrl(post.author_name || "BS", 40)}
-            alt=""
-            width={40}
-            height={40}
-            style={{ borderRadius: "999px" }}
-          />
-          <span>
-            {t("blogDetail.authorBefore")} {post.author_name}
-          </span>
-          {dateLabel ? <span>{t("blogDetail.updated", { date: dateLabel })}</span> : null}
+            <div className="ck-article__meta">
+              <img
+                src={getIdenticonDataUrl(post.author_name || "BS", 40)}
+                alt=""
+                width={40}
+                height={40}
+                style={{ borderRadius: "999px" }}
+              />
+              <span>
+                {t("blogDetail.authorBefore")} {post.author_name}
+              </span>
+              {dateLabel ? <span>{t("blogDetail.updated", { date: dateLabel })}</span> : null}
+            </div>
+
+            <CmsCoverImage url={post.cover_image_url} loading="eager" className="ck-article__cover" />
+            <BlogArticleShare title={post.title} url={shareUrl} />
+            <div className="ck-article__body fj-prose fj-wysiwyg" dangerouslySetInnerHTML={{ __html: html }} />
+          </div>
+
+          <aside className="ck-article__aside">
+            <BlogInlineCta />
+            {relatedPosts.length > 0 ? (
+              <section className="ck-article__related">
+                <h2>{t("blogArticle.asideTitle")}</h2>
+                <ul className="ck-blog-list">
+                  {relatedPosts.map((item) => (
+                    <li key={item.slug}>
+                      <Link to={`/blog/${item.slug}`} className="ck-blog-item">
+                        <CmsCoverImage url={item.cover_image_url} loading="lazy" className="ck-blog-item__thumb" />
+                        <div>
+                          <h2>{item.title}</h2>
+                          {item.excerpt ? <p>{item.excerpt}</p> : null}
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </aside>
         </div>
-
-        <CmsCoverImage url={post.cover_image_url} loading="eager" className="ck-article__cover" />
-
-        <BlogArticleShare title={post.title} url={shareUrl} />
-        <BlogInlineCta />
-
-        <div className="ck-article__body fj-prose fj-wysiwyg" dangerouslySetInnerHTML={{ __html: html }} />
-
-        {relatedPosts.length > 0 ? (
-          <section className="ck-article__related">
-            <h2>{t("blogArticle.asideTitle")}</h2>
-            <ul className="ck-blog-list">
-              {relatedPosts.map((item) => (
-                <li key={item.slug}>
-                  <Link to={`/blog/${item.slug}`} className="ck-blog-item">
-                    <CmsCoverImage url={item.cover_image_url} loading="lazy" className="ck-blog-item__thumb" />
-                    <div>
-                      <h2>{item.title}</h2>
-                      {item.excerpt ? <p>{item.excerpt}</p> : null}
-                    </div>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
       </article>
     </>
   );
