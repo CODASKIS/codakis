@@ -177,7 +177,7 @@
     justify-content: center;
   }
 
-  /* Route large + visible */
+  /* Route large + visible (legacy highway) */
   .ck-highway {
     margin-inline: -0.4rem;
     max-width: none !important;
@@ -185,6 +185,11 @@
     padding: 1.6rem 0.4rem 3.2rem !important;
     border-radius: 1.6rem !important;
     overflow: visible !important;
+  }
+
+  .ck-world {
+    margin-inline: -0.6rem !important;
+    width: calc(100% + 1.2rem) !important;
   }
 
   .ck-highway__asphalt {

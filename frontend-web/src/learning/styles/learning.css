@@ -1742,7 +1742,196 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 }
 
-/* ─── Route unique serpentine (asphalte réel) ─── */
+/* ─── Carte monde (style virtual-world) ─── */
+.ck-world {
+  position: relative;
+  width: 100%;
+  max-width: 72rem;
+  margin: 0 auto 3.2rem;
+  border-radius: 2rem;
+  overflow: hidden;
+  border: 0.25rem solid #1f2937;
+  box-shadow:
+    0 1.2rem 2.8rem rgba(15, 23, 42, 0.2),
+    inset 0 0 0 0.15rem rgba(255, 255, 255, 0.15);
+  background: #3aaa3a;
+  isolation: isolate;
+}
+
+.ck-world__canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+.ck-world__player-car {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+  animation: ck-car-bob 1.6s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.ck-world__chapter {
+  position: absolute;
+  z-index: 4;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 14rem;
+  max-width: 22rem;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--ck-chapter-color, #00a859) 94%, #000);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0.35rem 0 color-mix(in srgb, var(--ck-chapter-color, #00a859) 65%, #000);
+  pointer-events: none;
+}
+
+.ck-world__chapter-flag {
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.ck-world__chapter strong {
+  font-size: 1.35rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.ck-world__chapter-meta {
+  font-size: 1.1rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
+.ck-world__sign {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  width: min(17rem, 42vw);
+  padding: 0.85rem 1rem 0.95rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: linear-gradient(180deg, #00b35f 0%, #008f4c 100%);
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow:
+    0 0.35rem 0 #006b39,
+    0 0.7rem 1.4rem rgba(0, 0, 0, 0.22);
+  transition: transform 0.15s ease;
+}
+
+.ck-world__sign:hover {
+  transform: translate(-50%, -52%);
+}
+
+.ck-world__sign:active {
+  transform: translate(-50%, -48%);
+  box-shadow: 0 0.15rem 0 #006b39, 0 0.4rem 0.8rem rgba(0, 0, 0, 0.2);
+}
+
+.ck-world__sign-flag {
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.25rem 0.7rem;
+  border-radius: 0.4rem;
+  background: #f97316;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 0.2rem 0 #c2410c;
+}
+
+.ck-world__sign-type {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.ck-world__sign-title {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.ck-world__sign-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  opacity: 0.95;
+}
+
+.ck-world__sign.is-locked,
+.ck-world__sign.is-premium_locked {
+  background: linear-gradient(180deg, #9ca3af 0%, #6b7280 100%);
+  box-shadow: 0 0.35rem 0 #4b5563, 0 0.7rem 1.4rem rgba(0, 0, 0, 0.18);
+}
+
+.ck-world__sign.is-failed {
+  background: linear-gradient(180deg, #fb7185 0%, #e11d48 100%);
+  box-shadow: 0 0.35rem 0 #be123c, 0 0.7rem 1.4rem rgba(0, 0, 0, 0.18);
+}
+
+.ck-world__sign.is-current {
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+  color: #1f2937;
+  box-shadow: 0 0.35rem 0 #b45309, 0 0.7rem 1.4rem rgba(0, 0, 0, 0.18);
+}
+
+.ck-world__sign.is-done {
+  background: linear-gradient(180deg, #00b35f 0%, #008f4c 100%);
+}
+
+@media (max-width: 720px) {
+  .ck-world {
+    max-width: none;
+    margin-inline: -0.4rem;
+    width: calc(100% + 0.8rem);
+    border-radius: 1.4rem;
+    border-width: 0.2rem;
+  }
+
+  .ck-world__sign {
+    width: min(15.5rem, 46vw);
+    padding: 0.7rem 0.85rem 0.8rem;
+  }
+
+  .ck-world__sign-title {
+    font-size: 1.15rem;
+  }
+
+  .ck-world__chapter {
+    min-width: 11rem;
+    max-width: 16rem;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .ck-world__chapter strong {
+    font-size: 1.2rem;
+  }
+}
+
+/* ─── Route unique serpentine (asphalte réel) — legacy fallback ─── */
 .ck-highway {
   position: relative;
   margin: 0 auto 3.2rem;
