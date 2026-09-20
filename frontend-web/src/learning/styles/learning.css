@@ -1767,303 +1767,402 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 }
 
-/* ─── Feuille de route style OM Fidélité (ligne orange) ─── */
-.ck-om-head {
-  margin: 0 0 1.6rem;
+/* ─── Feuille de route style Duolingo / Code de la route (couleurs CODAKIS) ─── */
+.ck-roadmap--duo {
+  position: relative;
 }
 
-.ck-om-head__title {
-  margin: 0 0 1.2rem;
-  font-size: 2.6rem;
+.ck-learn__feed:has(.ck-roadmap--duo) {
+  background:
+    radial-gradient(ellipse 70% 40% at 10% 0%, rgba(0, 168, 89, 0.08), transparent 55%),
+    radial-gradient(ellipse 50% 30% at 100% 20%, rgba(56, 189, 248, 0.06), transparent 50%),
+    color-mix(in srgb, var(--ck-green) 4%, #f3faf6);
+  margin: -1.6rem -1.6rem 0;
+  padding: 1.6rem 1.6rem 2rem;
+  border-radius: 1.6rem;
+}
+
+.ck-roadmap__intro {
+  max-width: 32rem;
+  margin: 0 0 2rem;
+  padding: 1.8rem 1.8rem 1.6rem;
+  border-radius: 1.8rem;
+  background: var(--ck-surface-2, #fff);
+  border: 0.2rem solid var(--ck-line, #e5e7eb);
+  box-shadow: 0 0.6rem 0 color-mix(in srgb, var(--ck-line, #e5e7eb) 85%, #000 15%);
+}
+
+.ck-roadmap__intro h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.9rem;
   font-weight: 900;
   color: var(--ck-text);
-  letter-spacing: -0.02em;
 }
 
-.ck-om-head__stats {
-  display: flex;
-  align-items: stretch;
-  background: var(--ck-surface-2, #fff);
-  border: 0.15rem solid var(--ck-line, #e5e7eb);
-  border-radius: 1.4rem;
-  overflow: hidden;
-  margin-bottom: 1.2rem;
-}
-
-.ck-om-head__stat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 1.4rem 1.6rem;
-}
-
-.ck-om-head__label {
-  font-size: 1.25rem;
-  font-weight: 700;
+.ck-roadmap__intro p {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 650;
+  line-height: 1.45;
   color: var(--ck-muted);
 }
 
-.ck-om-head__stat strong {
-  font-size: 2rem;
-  font-weight: 900;
-  color: var(--ck-text);
-}
-
-.ck-om-head__divider {
-  width: 0.12rem;
-  background: var(--ck-line, #e5e7eb);
-  align-self: stretch;
-}
-
-.ck-om-head__progress {
+.ck-duo-map {
   position: relative;
-  padding: 1.4rem 1.6rem 1.6rem;
-  border-radius: 1.4rem;
-  background: color-mix(in srgb, var(--ck-green) 14%, #fff);
-  border: 0.15rem solid color-mix(in srgb, var(--ck-green) 28%, transparent);
+  margin: 0 auto 4rem;
+  max-width: 56rem;
 }
 
-.ck-om-head__progress p {
-  margin: 0 0 1rem;
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: var(--ck-text);
-  line-height: 1.35;
+.ck-duo-map__decor {
+  pointer-events: none;
+  position: absolute;
+  inset: -2rem -1rem;
+  background-image:
+    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--ck-green) 10%, transparent) 0 2.2rem, transparent 2.4rem),
+    radial-gradient(circle at 92% 28%, color-mix(in srgb, #f59e0b 12%, transparent) 0 1.8rem, transparent 2rem),
+    radial-gradient(circle at 12% 68%, color-mix(in srgb, #0ea5e9 10%, transparent) 0 2rem, transparent 2.2rem),
+    radial-gradient(circle at 88% 78%, color-mix(in srgb, var(--ck-green) 8%, transparent) 0 2.4rem, transparent 2.6rem);
+  opacity: 0.9;
+  z-index: 0;
 }
 
-.ck-om-head__bar {
-  height: 0.7rem;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--ck-green) 22%, #fff);
+.ck-duo-map__road-wrap {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 0 4rem;
+}
+
+.ck-duo-map__road {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: min(34rem, 70%);
+  height: 100%;
+  transform: translateX(-42%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ck-duo-map__car {
+  position: absolute;
+  top: 1.2rem;
+  left: 58%;
+  width: 8.8rem;
+  height: auto;
+  z-index: 2;
+  filter: drop-shadow(0 0.6rem 1rem rgba(0, 0, 0, 0.22));
+  animation: ck-car-bob 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ck-duo-map__units {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4.8rem;
+  padding: 4rem 0.8rem 2rem;
+}
+
+.ck-unit-card {
+  width: min(34rem, 100%);
+  border-radius: 2rem;
+  background: var(--ck-surface-2, #fff);
+  border: 0.22rem solid var(--ck-line, #e5e7eb);
+  box-shadow: 0 0.7rem 0 color-mix(in srgb, var(--ck-line, #e5e7eb) 80%, #000 20%);
   overflow: hidden;
 }
 
-.ck-om-head__bar > span {
+.ck-unit-card.is-left {
+  align-self: flex-start;
+  margin-left: 0;
+}
+
+.ck-unit-card.is-right {
+  align-self: flex-end;
+  margin-right: 0;
+}
+
+.ck-unit-card__head {
+  padding: 1.2rem 1.6rem 1.3rem;
+  background: color-mix(in srgb, var(--ck-unit-color, var(--ck-green)) 88%, #fff);
+  color: #fff;
+}
+
+.ck-unit-card.is-done .ck-unit-card__head {
+  background: linear-gradient(90deg, #00a859, #008f4c);
+}
+
+.ck-unit-card__head span {
   display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--ck-green);
-}
-
-.ck-om-head__progress small {
-  display: block;
-  margin-top: 0.55rem;
-  font-size: 1.2rem;
-  font-weight: 800;
-  color: var(--ck-green);
-}
-
-.ck-om {
-  margin: 0 0 3.2rem;
-}
-
-.ck-om__hint {
-  margin: 0 0 1.6rem;
-  text-align: center;
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: var(--ck-text);
-  line-height: 1.35;
-}
-
-.ck-om__stage {
-  position: relative;
-  width: 100%;
-  max-width: 48rem;
-  margin: 0 auto;
-  border-radius: 2rem;
-  background:
-    radial-gradient(circle at 88% 6%, rgba(255, 193, 7, 0.35), transparent 18%),
-    linear-gradient(180deg, #fff5eb 0%, #ffe8d4 55%, #ffecd9 100%);
-  overflow: visible;
-  isolation: isolate;
-}
-
-html.dark .ck-om__stage {
-  background:
-    radial-gradient(circle at 88% 6%, rgba(255, 193, 7, 0.2), transparent 18%),
-    linear-gradient(180deg, #2a2118 0%, #1f1812 100%);
-}
-
-.ck-om__svg {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-.ck-om__chapter {
-  position: absolute;
-  z-index: 3;
-  transform: translate(-50%, -50%);
-  max-width: min(28rem, 78%);
-  padding: 0.55rem 1.1rem;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.92);
-  border: 0.12rem solid rgba(15, 23, 42, 0.08);
-  color: #1f2937;
   font-size: 1.15rem;
-  font-weight: 800;
-  text-align: center;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.92;
+  margin-bottom: 0.25rem;
+}
+
+.ck-unit-card__head strong {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 900;
   line-height: 1.25;
-  pointer-events: none;
-  box-shadow: 0 0.25rem 0.8rem rgba(15, 23, 42, 0.08);
 }
 
-html.dark .ck-om__chapter {
-  background: rgba(30, 41, 59, 0.92);
-  color: #f8fafc;
-  border-color: rgba(255, 255, 255, 0.1);
+.ck-unit-card__hero {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 1.8rem 1rem 0.6rem;
 }
 
-.ck-om__node {
+.ck-unit-card__hero-ring {
+  width: 8.4rem;
+  height: 8.4rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--ck-unit-color, var(--ck-green)) 14%, #fff);
+  border: 0.45rem solid color-mix(in srgb, #fbbf24 70%, #f59e0b);
+  color: var(--ck-unit-color, var(--ck-green));
+  box-shadow: 0 0.35rem 0 color-mix(in srgb, #f59e0b 55%, #b45309);
+}
+
+.ck-unit-card__star {
   position: absolute;
-  z-index: 4;
-  transform: translate(-50%, -50%);
+  top: 1.4rem;
+  right: calc(50% - 5.2rem);
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fbbf24;
+  color: #fff;
+  box-shadow: 0 0.2rem 0 #d97706;
+}
+
+.ck-unit-card__steps {
+  list-style: none;
+  margin: 0;
+  padding: 1.2rem 1.2rem 0.4rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ck-unit-step {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  width: 11.5rem;
+  gap: 0.45rem;
   border: 0;
-  padding: 0;
   background: transparent;
+  padding: 0.4rem 0.2rem;
   cursor: pointer;
   font-family: inherit;
   color: inherit;
+  position: relative;
 }
 
-.ck-om__bubble {
-  width: 5.6rem;
-  height: 5.6rem;
+.ck-unit-step__circle {
+  width: 5.2rem;
+  height: 5.2rem;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 0.35rem solid #ff7900;
-  box-shadow: 0 0.35rem 0 rgba(255, 121, 0, 0.35);
-  font-size: 2rem;
+  border: 0.28rem solid var(--ck-green);
+  box-shadow: 0 0.35rem 0 color-mix(in srgb, var(--ck-green) 55%, #000);
+  color: var(--ck-green);
+  font-size: 1.5rem;
   font-weight: 900;
-  color: #111827;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.ck-om__node:hover .ck-om__bubble {
-  transform: translateY(-0.15rem);
+.ck-unit-step.is-done .ck-unit-step__circle {
+  background: var(--ck-green);
+  color: #fff;
+  border-color: var(--ck-green-dark, #008f4c);
 }
 
-.ck-om__node:active .ck-om__bubble {
-  transform: translateY(0.12rem);
-  box-shadow: 0 0.12rem 0 rgba(255, 121, 0, 0.35);
+.ck-unit-step.is-current .ck-unit-step__circle,
+.ck-unit-step.is-focus .ck-unit-step__circle {
+  border-color: #f59e0b;
+  color: #b45309;
+  box-shadow: 0 0 0 0.35rem rgba(245, 158, 11, 0.22), 0 0.35rem 0 #d97706;
 }
 
-.ck-om__node.is-done .ck-om__bubble {
-  border-color: #00a859;
-  box-shadow: 0 0.35rem 0 rgba(0, 168, 89, 0.3);
-  color: #00a859;
-}
-
-.ck-om__node.is-current .ck-om__bubble,
-.ck-om__node.is-focus .ck-om__bubble {
-  border-color: #ff7900;
-  box-shadow:
-    0 0 0 0.45rem rgba(255, 121, 0, 0.22),
-    0 0.35rem 0 rgba(255, 121, 0, 0.4);
-  animation: ck-om-pulse 1.6s ease-in-out infinite;
-}
-
-.ck-om__node.is-failed .ck-om__bubble {
+.ck-unit-step.is-failed .ck-unit-step__circle {
   border-color: #e11d48;
-  box-shadow: 0 0.35rem 0 rgba(225, 29, 72, 0.3);
   color: #e11d48;
+  box-shadow: 0 0.35rem 0 #be123c;
 }
 
-.ck-om__node.is-locked .ck-om__bubble,
-.ck-om__node.is-premium .ck-om__bubble {
-  border-color: #9ca3af;
-  box-shadow: 0 0.35rem 0 rgba(107, 114, 128, 0.35);
-  color: #6b7280;
-  background: #f3f4f6;
+.ck-unit-step.is-locked .ck-unit-step__circle,
+.ck-unit-step.is-premium_locked .ck-unit-step__circle {
+  border-color: #cbd5e1;
+  color: #94a3b8;
+  background: #f1f5f9;
+  box-shadow: 0 0.35rem 0 #94a3b8;
 }
 
-@keyframes ck-om-pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+.ck-unit-step__label {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--ck-text);
+  max-width: 9rem;
 }
 
-.ck-om__caption {
+.ck-unit-step__bar {
+  display: block;
+  width: 4.8rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.ck-unit-step__bar > i {
+  display: block;
+  height: 100%;
+  background: var(--ck-green);
+  border-radius: inherit;
+}
+
+.ck-unit-step__star {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.6rem;
+  color: #fbbf24;
+}
+
+.ck-unit-card__checkpoint {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
-  max-width: 14rem;
+  gap: 0.7rem;
+  padding: 1.2rem 1.4rem 1.8rem;
+}
+
+.ck-unit-card__checkpoint > span {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ck-muted);
+}
+
+.ck-unit-card__unlock {
+  min-width: 14rem;
+  min-height: 4.4rem;
+  padding: 0.8rem 1.8rem;
+  border: 0.2rem solid var(--ck-green-dark, #008f4c);
+  border-bottom-width: 0.45rem;
+  border-radius: 1.4rem;
+  background: var(--ck-green);
+  color: #fff;
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.ck-unit-card__unlock:active {
+  border-bottom-width: 0.2rem;
+  transform: translateY(0.2rem);
+}
+
+.ck-unit-card.is-locked {
+  opacity: 0.92;
+}
+
+.ck-unit-card.is-locked .ck-unit-card__head {
+  background: #94a3b8;
+}
+
+.ck-unit-card__locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 3.2rem 1.6rem 3.6rem;
   text-align: center;
 }
 
-.ck-om__caption-type {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #ff7900;
+.ck-unit-card__lock {
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #64748b;
+  border: 0.25rem solid #cbd5e1;
+  border-bottom-width: 0.45rem;
 }
 
-.ck-om__caption-title {
+.ck-unit-card__locked p {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--ck-text);
+}
+
+.ck-unit-card__locked small {
   font-size: 1.25rem;
-  font-weight: 800;
-  line-height: 1.25;
-  color: #1f2937;
-}
-
-html.dark .ck-om__caption-title {
-  color: #f3f4f6;
-}
-
-.ck-om__node.is-locked .ck-om__caption-type,
-.ck-om__node.is-premium .ck-om__caption-type {
-  color: #9ca3af;
-}
-
-.ck-om__node.is-done .ck-om__caption-type {
-  color: #00a859;
-}
-
-.ck-om__node.is-side-left .ck-om__caption {
-  align-items: flex-start;
-  text-align: left;
-  margin-left: 0.4rem;
-}
-
-.ck-om__node.is-side-right .ck-om__caption {
-  align-items: flex-end;
-  text-align: right;
-  margin-right: 0.4rem;
+  font-weight: 650;
+  color: var(--ck-muted);
 }
 
 @media (max-width: 720px) {
-  .ck-om-head__title {
-    font-size: 2.3rem;
+  .ck-duo-map__road {
+    width: 55%;
+    transform: translateX(-50%);
+    opacity: 0.85;
   }
 
-  .ck-om__stage {
-    max-width: none;
-    border-radius: 1.6rem;
+  .ck-duo-map__car {
+    left: 50%;
+    transform: translateX(-30%);
+    width: 7.2rem;
   }
 
-  .ck-om__bubble {
-    width: 5.2rem;
-    height: 5.2rem;
-    font-size: 1.8rem;
+  .ck-unit-card {
+    width: 100%;
+    align-self: stretch !important;
   }
 
-  .ck-om__caption-title {
-    font-size: 1.15rem;
+  .ck-unit-card__steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .ck-om__node {
-    width: 10.5rem;
+  .ck-duo-map__units {
+    gap: 3.2rem;
+    padding-top: 5.6rem;
   }
+}
+
+html.dark .ck-roadmap__intro,
+html.dark .ck-unit-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 0.7rem 0 rgba(0, 0, 0, 0.35);
+}
+
+html.dark .ck-unit-step__circle {
+  background: #0f172a;
+}
+
+html.dark .ck-unit-step__label {
+  color: #f8fafc;
 }
 
 /* ─── Route unique serpentine (asphalte réel) — legacy fallback ─── */
