@@ -263,10 +263,10 @@
     min-height: 4.4rem !important;
   }
 
-  .ck-world {
-    margin-inline: -0.4rem !important;
-    width: calc(100% + 0.8rem) !important;
-    margin-bottom: 3.2rem !important;
+  .ck-om__stage {
+    margin-inline: 0 !important;
+    width: 100% !important;
+    margin-bottom: 2.4rem !important;
   }
 
   /* Route large + visible (legacy highway) */
