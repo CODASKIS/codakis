@@ -1,3 +1,4 @@
+import threading
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -35,18 +36,28 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 def _notify_login(user: Utilisateur, request: Request) -> None:
+    """N'bloque pas la connexion : un SMTP lent ne doit pas renvoyer une 502."""
     ip = client_ip(
         request.headers.get("x-forwarded-for"),
         request.client.host if request.client else None,
     )
     full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
-    send_login_notification_email(
-        user.email,
-        full_name,
-        device=parse_user_agent(request.headers.get("user-agent")),
-        location=format_location_hint(ip),
-        ip_address=ip,
-    )
+    device = parse_user_agent(request.headers.get("user-agent"))
+    location = format_location_hint(ip)
+
+    def _send() -> None:
+        try:
+            send_login_notification_email(
+                user.email,
+                full_name,
+                device=device,
+                location=location,
+                ip_address=ip,
+            )
+        except Exception:
+            return
+
+    threading.Thread(target=_send, daemon=True).start()
 
 
 @router.post("/register/candidat", response_model=TokenResponse)

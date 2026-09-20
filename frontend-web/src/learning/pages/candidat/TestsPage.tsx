@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Ban, Clock, Hexagon, Shuffle, Star, Undo2, X, XCircle } from "lucide-react";
+import { Ban, Clock, Hexagon, Lock, Shuffle, Star, Undo2, X, XCircle } from "lucide-react";
 import Loader from "../../../components/common/Loader";
 import {
   fetchCandidatExamens,
@@ -16,22 +16,23 @@ export default function TestsPage() {
   const [examens, setExamens] = useState<PedagogyExamen[]>([]);
   const [loading, setLoading] = useState(true);
   const [alertMsg, setAlertMsg] = useState<string | null>(null);
+  const [paywall, setPaywall] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-    void Promise.all([fetchCandidatQuizList(), fetchCandidatExamens()])
-      .then(([q, e]) => {
-        if (cancelled) return;
-        setQuizzes(q);
-        setExamens(e);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : "Chargement impossible");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    void Promise.allSettled([fetchCandidatQuizList(), fetchCandidatExamens()]).then((results) => {
+      if (cancelled) return;
+      const [quizResult, examResult] = results;
+      if (quizResult.status === "fulfilled") setQuizzes(quizResult.value);
+      if (examResult.status === "fulfilled") setExamens(examResult.value);
+      if (quizResult.status === "rejected" && examResult.status === "rejected") {
+        const reason = quizResult.reason;
+        setError(reason instanceof Error ? reason.message : "Chargement impossible");
+      }
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
     return () => {
       cancelled = true;
     };
@@ -86,22 +87,56 @@ export default function TestsPage() {
 
       <h2 className="ck-stats-block__title">Mode examen</h2>
       <div className="ck-list">
-        {examens.map((exam, i) => (
-          <Link key={exam.id} to={`/espace/candidat/examen/${exam.id}`} className="ck-list__row">
-            <span className="ck-list__icon ck-list__icon--solid" style={{ background: i % 2 === 0 ? "#2563eb" : "#00a859" }}>
-              {i % 2 === 0 ? <Clock size={20} color="#fff" /> : <Hexagon size={20} color="#fff" />}
-            </span>
-            <span style={{ flex: 1 }}>
-              <strong>{exam.title}</strong>
-              <small>
-                {exam.nb_questions || exam.linked_count} questions · max {exam.max_erreurs} erreurs
-              </small>
-            </span>
-          </Link>
-        ))}
+        {examens.map((exam, i) => {
+          const inner = (
+            <>
+              <span className="ck-list__icon ck-list__icon--solid" style={{ background: exam.locked ? "#9ca3af" : i % 2 === 0 ? "#2563eb" : "#00a859" }}>
+                {exam.locked ? <Lock size={20} color="#fff" /> : i % 2 === 0 ? <Clock size={20} color="#fff" /> : <Hexagon size={20} color="#fff" />}
+              </span>
+              <span style={{ flex: 1 }}>
+                <strong>{exam.title}</strong>
+                <small>
+                  {exam.locked
+                    ? "Examen blanc — inclus dans l'abonnement"
+                    : `${exam.nb_questions || exam.linked_count} questions · max ${exam.max_erreurs} erreurs`}
+                </small>
+              </span>
+            </>
+          );
+          if (exam.locked) {
+            return (
+              <button key={exam.id} type="button" className="ck-list__row" onClick={() => setPaywall(true)}>
+                {inner}
+              </button>
+            );
+          }
+          return (
+            <Link key={exam.id} to={`/espace/candidat/examen/${exam.id}`} className="ck-list__row">
+              {inner}
+            </Link>
+          );
+        })}
         {!examens.length ? <p className="ck-empty">Aucun examen disponible.</p> : null}
       </div>
 
+      {paywall ? (
+        <div className="ck-paywall" role="dialog" aria-modal="true" aria-labelledby="ck-exam-paywall-title">
+          <div className="ck-paywall__card">
+            <button type="button" className="ck-paywall__close" onClick={() => setPaywall(false)} aria-label="Fermer">
+              <X size={20} />
+            </button>
+            <h2 id="ck-exam-paywall-title" style={{ fontWeight: 800, fontSize: "2.2rem", marginTop: "0.8rem" }}>
+              Examen réservé
+            </h2>
+            <p className="ck-subtitle" style={{ marginBottom: "2rem" }}>
+              Les cours et quiz des trois premiers thèmes restent ouverts. Les examens blancs s&apos;ouvrent avec un abonnement.
+            </p>
+            <Link to="/espace/candidat/super" className="ck-btn ck-btn--primary ck-btn--block ck-btn--pill" onClick={() => setPaywall(false)}>
+              Voir les offres
+            </Link>
+          </div>
+        </div>
+      ) : null}
       {alertMsg ? (
         <div className="ck-paywall" role="dialog" aria-modal="true" aria-labelledby="ck-alert-title">
           <div className="ck-paywall__card">

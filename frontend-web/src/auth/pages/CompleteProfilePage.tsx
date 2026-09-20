@@ -10,12 +10,12 @@ import {
   AuthSelect,
 } from "../components/AuthFormControls";
 import AuthSplitLayout from "../components/AuthSplitLayout";
+import LicenseTypePicker from "../components/LicenseTypePicker";
 import { AuthApiError, resolveAuthRedirect, getSession, setSession } from "../authStore";
 import { updateProfile, userToSession, fetchMe, type ApiUser } from "../../lib/authApi";
 import type { ParcoursSouhaite, TypePermis } from "../types";
 import { AUTH_PATHS } from "../../constants/authPaths";
 
-const LICENSE_OPTIONS: TypePermis[] = ["B", "A", "A1", "C", "D", "BE"];
 const COURSE_OPTIONS: ParcoursSouhaite[] = ["code", "conduite", "complet"];
 
 // ── types d'étapes possibles ──────────────────────────────────────────────────
@@ -201,28 +201,7 @@ export default function CompleteProfilePage() {
             <div className="codakis-auth-step">
               <h1 className="codakis-auth__title">{t("auth.register.steps.selectLicense")}</h1>
               <p className="codakis-auth__subtitle">{t("auth.register.licenseSubtitle")}</p>
-              <div
-                className="codakis-auth-choice-list"
-                role="radiogroup"
-                aria-label={t("auth.register.steps.selectLicense")}
-              >
-                {LICENSE_OPTIONS.map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    role="radio"
-                    aria-checked={typePermis === code}
-                    className={`codakis-auth-box codakis-auth-choice${typePermis === code ? " is-selected" : ""}`}
-                    onClick={() => setTypePermis(code)}
-                  >
-                    <span className="codakis-auth-choice__text">
-                      <strong>{t(`auth.register.licenses.${code}.label`)}</strong>
-                      <small>{t(`auth.register.licenses.${code}.hint`)}</small>
-                    </span>
-                    <span className="codakis-auth-choice__radio" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
+              <LicenseTypePicker value={typePermis} onChange={setTypePermis} />
               <div className="codakis-auth-step__actions" style={{ marginTop: "2rem" }}>
                 <button type="button" className="codakis-auth-form__secondary" onClick={handleSkip}>
                   {t("auth.completeProfile.skip")}

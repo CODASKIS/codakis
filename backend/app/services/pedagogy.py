@@ -59,7 +59,8 @@ THEME_SEED: list[tuple[str, str, str, int, bool]] = [
 
 def seed_themes(db: Session) -> None:
     for code, title_fr, title_en, sort_order, is_premium in THEME_SEED:
-        if db.query(Theme).filter(Theme.code == code).first() is None:
+        existing = db.query(Theme).filter(Theme.code == code).first()
+        if existing is None:
             db.add(
                 Theme(
                     code=code,
@@ -69,6 +70,10 @@ def seed_themes(db: Session) -> None:
                     is_premium=is_premium,
                 )
             )
+        else:
+            # Garde les titres édités, mais aligne l'accès gratuit / premium.
+            existing.is_premium = is_premium
+            existing.sort_order = sort_order
     db.commit()
 
 
@@ -749,10 +754,27 @@ def award_points(db: Session, candidat: Utilisateur, amount: int) -> int:
     if amount <= 0:
         return 0
     current = int(getattr(candidat, "points", 0) or 0)
+    previous_level = niveau_from_points(current)
     candidat.points = current + amount
     db.add(candidat)
     db.commit()
     db.refresh(candidat)
+    new_level = niveau_from_points(int(candidat.points or 0))
+    if new_level > previous_level:
+        try:
+            from app.services.email import send_level_badge_email
+
+            full_name = f"{candidat.prenom or ''} {candidat.nom or ''}".strip() or candidat.email
+            send_level_badge_email(
+                candidat.email,
+                full_name,
+                level=new_level,
+                points=int(candidat.points or 0),
+            )
+        except Exception:
+            import logging
+
+            logging.getLogger("codakis").exception("E-mail de badge non envoyé")
     return amount
 
 

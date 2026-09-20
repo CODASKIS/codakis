@@ -258,6 +258,48 @@
   transform: translateY(0.1rem);
 }
 
+html.dark .cookiepolicy__panel,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__panel {
+  background: #0b1017;
+  border-color: #2d3643;
+  box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.45);
+}
+
+html.dark .cookiepolicy__message,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__message {
+  color: #f3f4f6;
+}
+
+html.dark .cookiepolicy__links,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__links {
+  color: #9ca3af;
+}
+
+html.dark .cookiepolicy__links a,
+html.dark .cookiepolicy__learn-more,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__links a,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__learn-more {
+  color: #e5e7eb;
+}
+
+html.dark .cookiepolicy__sep,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__sep {
+  color: #6b7280;
+}
+
+html.dark .cookiepolicy__refuse,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__refuse {
+  background: #151c27;
+  border-color: #3b4553;
+  color: #f3f4f6;
+}
+
+html.dark .cookiepolicy__refuse:hover,
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__refuse:hover {
+  background: #1c2533;
+  border-color: #4b5563;
+}
+
 @media (max-width: 767px) {
   .cookiepolicy {
     /* Reste en bas-gauche à taille fixe, même sur mobile */

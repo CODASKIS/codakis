@@ -22,6 +22,7 @@ from app.services.payments import (
     admin_list_payments,
     admin_payment_stats,
     confirm_payment,
+    fail_payment,
     get_my_subscription,
     get_payment,
     get_payment_config,
@@ -148,6 +149,10 @@ async def cinetpay_notify(request: Request, db: Session = Depends(get_db)):
         user = db.get(Utilisateur, paiement.utilisateur_id)
         if user:
             confirm_payment(db, user, paiement.reference)
+    else:
+        result = str(body.get("cpm_result") or body.get("status") or "").upper()
+        if result in {"01", "02", "03", "FAILED", "REFUSED", "CANCELLED", "CANCELED"}:
+            fail_payment(db, paiement, "Paiement refusé par l'opérateur")
 
     return {"status": "ok"}
 
@@ -199,9 +204,7 @@ async def pawapay_callback(request: Request, db: Session = Depends(get_db)):
             except Exception:
                 cb_logger.exception("PawaPay: erreur lors de la confirmation de %s", paiement.reference)
     elif checkout_status in {"FAILED", "EXPIRED", "CANCELLED"}:
-        paiement.status = "failed"
-        paiement.message = (paiement.message or "") + f" [PawaPay: {checkout_status}]"
-        db.commit()
+        fail_payment(db, paiement, f"PawaPay: {checkout_status}")
         cb_logger.info("PawaPay: paiement %s marqué échoué (status=%s)", paiement.reference, checkout_status)
 
     return {"status": "ok"}

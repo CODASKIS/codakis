@@ -4,6 +4,7 @@ import {
   Award,
   BookOpen,
   Clock,
+  Download,
   Flame,
   Lock,
   Medal,
@@ -15,6 +16,7 @@ import {
   Zap,
 } from "lucide-react";
 import Loader from "../../../components/common/Loader";
+import { downloadBadge } from "../../lib/badgeCard";
 import {
   fetchCandidatDashboard,
   fetchRoadmap,
@@ -337,7 +339,44 @@ export default function StatsPage() {
           <div className="ck-quests-panel__head">
             <h2 className="ck-quests-panel__title">Badges</h2>
           </div>
+          <p className="ck-subtitle">Chaque niveau réussi donne un badge à télécharger. Il reste sur ton compte, même sans abonnement.</p>
           <div className="ck-duo-achievements">
+            {Array.from({ length: Math.max(niveau, 1) + 1 }, (_, index) => {
+              const level = index + 1;
+              const locked = level > niveau;
+              return (
+                <article key={`niveau-${level}`} className={`ck-duo-achievement ${locked ? "is-locked" : ""}`}>
+                  <span className="ck-duo-achievement__icon" style={{ background: locked ? "#d1d5db" : "#58CC02" }}>
+                    <Medal size={28} color="#fff" strokeWidth={2.3} aria-hidden />
+                    {!locked ? <small>OK</small> : null}
+                  </span>
+                  <div className="ck-duo-achievement__body">
+                    <div className="ck-duo-achievement__top">
+                      <strong>Niveau {level}</strong>
+                      <span>{locked ? "à venir" : "atteint"}</span>
+                    </div>
+                    <p>{locked ? "Encore un peu de parcours pour débloquer ce badge." : `${points} points cumulés.`}</p>
+                    {!locked ? (
+                      <button
+                        type="button"
+                        className="ck-btn ck-btn--primary ck-btn--sm"
+                        onClick={() =>
+                          downloadBadge({
+                            id: `niveau-${level}`,
+                            title: `Niveau ${level}`,
+                            subtitle: `${points} points`,
+                            color: "#58CC02",
+                          })
+                        }
+                      >
+                        <Download size={14} /> Télécharger
+                      </button>
+                    ) : null}
+                  </div>
+                  {locked ? <Lock size={16} color="var(--ck-muted)" aria-label="Verrouillé" /> : <Trophy size={16} color="#58CC02" aria-label="Débloqué" />}
+                </article>
+              );
+            })}
             {BADGES.map((badge) => {
               const current = badgeProgress[badge.id] ?? 0;
               const pct = Math.min(100, Math.round((current / badge.goal) * 100));
@@ -376,6 +415,22 @@ export default function StatsPage() {
                       />
                     </div>
                     <p>{badge.desc}</p>
+                    {!locked ? (
+                      <button
+                        type="button"
+                        className="ck-btn ck-btn--primary ck-btn--sm"
+                        onClick={() =>
+                          downloadBadge({
+                            id: badge.id,
+                            title: badge.title,
+                            subtitle: badge.desc,
+                            color: badge.color,
+                          })
+                        }
+                      >
+                        <Download size={14} /> Télécharger
+                      </button>
+                    ) : null}
                   </div>
                   {locked ? (
                     <Lock

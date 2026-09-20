@@ -196,33 +196,21 @@ export default function PricingTable({
     const token = getAccessToken();
     const isSchoolAudience = audience === "business";
     const paymentPlanId = mapPlanToPaymentId(plan);
+    const schoolHref = plan.cta_href?.startsWith("/") ? plan.cta_href : AUTH_PATHS.register.autoEcole;
 
-    // Onglet Auto-écoles — plans sans paiement (partenaire / gratuit)
-    if (isSchoolAudience && (!paymentPlanId || plan.plan_key === "autoEcolePartenaire")) {
-      window.location.href = freePlanHref("business");
+    if (isSchoolAudience) {
+      if (!paymentPlanId || plan.plan_key === "autoEcolePartenaire" || !token || session?.role !== "gerant") {
+        window.location.href = schoolHref;
+        return;
+      }
+    } else if (!token || session?.role !== "candidat") {
+      rememberAuthRedirect("/tarifs");
+      window.location.href = AUTH_PATHS.register.candidat;
       return;
     }
 
-    // Onglet Auto-écoles — abonnement payant → compte gérant
-    if (isSchoolAudience) {
-      if (!token || session?.role !== "gerant") {
-        rememberAuthRedirect("/tarifs");
-        window.location.href = token
-          ? AUTH_PATHS.register.autoEcole
-          : buildLoginUrl("/tarifs");
-        return;
-      }
-    } else {
-      // Onglet Candidats — abonnement payant → compte candidat
-      if (!token || session?.role !== "candidat") {
-        rememberAuthRedirect("/tarifs");
-        window.location.href = buildLoginUrl("/tarifs");
-        return;
-      }
-    }
-
     if (!paymentPlanId) {
-      alert("Cette formule ne nécessite pas de paiement ou n'est pas disponible pour l'achat direct.");
+      window.location.href = isSchoolAudience ? schoolHref : freePlanHref("individual");
       return;
     }
 

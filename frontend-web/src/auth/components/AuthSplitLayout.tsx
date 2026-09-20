@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, BookOpen, Shield, Trophy } from "lucide-react";
-import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
+import { CodakisWordmark } from "../../flexjobs/components/BrandLogo";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 
@@ -32,7 +32,7 @@ export default function AuthSplitLayout({
     <div className={`codakis-auth codakis-auth--${mood}`}>
       <header className="codakis-auth__top">
         <Link to="/" className="codakis-auth__logo-link" aria-label="CODAKIS">
-          <img src={CODAKIS_LOGO} alt="CODAKIS" className="codakis-auth__logo" />
+          <CodakisWordmark className="codakis-auth__logo" />
         </Link>
         <div className="codakis-auth__top-actions">
           <ThemeSwitcher />

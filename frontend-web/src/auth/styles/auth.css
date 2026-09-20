@@ -5,18 +5,18 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth {
-  --ck-green: #00a859;
-  --ck-green-dark: #008f4c;
-  --ck-green-soft: rgba(0, 168, 89, 0.12);
-  --ck-sky: #38bdf8;
-  --ck-text: #1f2937;
-  --ck-muted: #6b7280;
-  --ck-line: #e5e7eb;
-  --ck-surface: #f3f4f6;
+  --ck-green: #58cc02;
+  --ck-green-dark: #58a700;
+  --ck-green-soft: #d7ffb8;
+  --ck-sky: #1cb0f6;
+  --ck-text: #3c3c3c;
+  --ck-muted: #777777;
+  --ck-line: #e5e5e5;
+  --ck-surface: #ddf4ff;
   --ck-surface-2: #ffffff;
-  --ck-shadow: 0 0.8rem 2.4rem rgba(15, 23, 42, 0.08);
-  --fj-cta-bg: var(--ck-green);
-  --fj-cta-hover: var(--ck-green-dark);
+  --ck-shadow: 0 0.2rem 0 #e5e5e5;
+  --fj-cta-bg: #58cc02;
+  --fj-cta-hover: #58a700;
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.6rem;
   line-height: 1.5;
@@ -26,23 +26,23 @@ html:has(.codakis-auth) {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(0, 168, 89, 0.1), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(56, 189, 248, 0.08), transparent 50%),
-    var(--ck-surface);
+    radial-gradient(circle at 12% 18%, rgba(88, 204, 2, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 0%, rgba(28, 176, 246, 0.22), transparent 32%),
+    #ddf4ff;
 }
 
 html.dark .codakis-auth {
-  --ck-green-soft: rgba(0, 168, 89, 0.22);
-  --ck-text: #f3f4f6;
-  --ck-muted: #9ca3af;
-  --ck-line: #2d3643;
-  --ck-surface: #0b1017;
-  --ck-surface-2: #151c27;
-  --ck-shadow: 0 1.2rem 3.2rem rgba(0, 0, 0, 0.45);
+  --ck-green-soft: rgba(88, 204, 2, 0.16);
+  --ck-text: #f1f7fb;
+  --ck-muted: #afafaf;
+  --ck-line: #37464f;
+  --ck-surface: #131f24;
+  --ck-surface-2: #202f36;
+  --ck-shadow: 0 0.2rem 0 #37464f;
   background:
-    radial-gradient(ellipse 70% 45% at 0% 0%, rgba(0, 168, 89, 0.16), transparent 55%),
-    radial-gradient(ellipse 50% 35% at 100% 0%, rgba(14, 165, 233, 0.1), transparent 50%),
-    var(--ck-surface);
+    radial-gradient(circle at 8% 0%, rgba(88, 204, 2, 0.14), transparent 30%),
+    radial-gradient(circle at 100% 8%, rgba(28, 176, 246, 0.12), transparent 28%),
+    #131f24;
 }
 
 .codakis-auth__top {
@@ -72,7 +72,7 @@ html.dark .codakis-auth {
 }
 
 html.dark .codakis-auth__logo {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 .codakis-auth__top-actions {
@@ -149,10 +149,11 @@ html.dark .codakis-auth__logo {
 }
 
 .codakis-auth__brand-visual {
+  position: relative;
   display: grid;
   place-items: center;
   margin: 0.8rem -1.2rem -1.6rem;
-  padding: 0;
+  padding: 1.6rem 0 0;
   overflow: visible;
   background: transparent;
   border: 0;
@@ -160,7 +161,20 @@ html.dark .codakis-auth__logo {
   line-height: 0;
 }
 
+.codakis-auth__brand-visual::before {
+  content: "";
+  position: absolute;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  background: #58cc02;
+  box-shadow: 0 0.6rem 0 #58a700;
+  z-index: 0;
+}
+
 .codakis-auth__brand-car {
+  position: relative;
+  z-index: 1;
   display: block;
   width: min(112%, 42rem);
   max-width: none;
@@ -194,8 +208,8 @@ html.dark .codakis-auth__logo {
 
 .codakis-auth__eyebrow {
   margin: 0 0 0.8rem;
-  color: var(--ck-green);
-  font-size: 1.2rem;
+  color: #58a700;
+  font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -258,10 +272,11 @@ html.dark .codakis-auth__logo {
   width: 100%;
   max-width: 46rem;
   padding: 2.4rem 2rem;
-  border-radius: 2rem;
+  border-radius: 1.6rem;
   border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.4rem;
   background: var(--ck-surface-2);
-  box-shadow: var(--ck-shadow);
+  box-shadow: none;
 }
 
 @media (min-width: 480px) {

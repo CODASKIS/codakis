@@ -77,8 +77,9 @@ export type PedagogyExamen = {
   duree_minutes: number;
   nb_questions: number;
   max_erreurs: number;
-  est_actif: boolean;
+  est_actif?: boolean;
   linked_count: number;
+  locked?: boolean;
   question_ids?: string[];
   created_at: string;
   updated_at: string;

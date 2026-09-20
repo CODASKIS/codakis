@@ -84,9 +84,8 @@ html.dark .ck-learn {
   width: auto;
 }
 
-/* Flat monochrome wordmark in dark theme (no green/person detail) */
 html.dark .ck-topbar__brand-img {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 

@@ -13,6 +13,7 @@ import {
 } from "../components/AuthFormControls";
 import GoogleSignInButton, { isGoogleAuthEnabled } from "../components/GoogleSignInButton";
 import AuthSplitLayout from "../components/AuthSplitLayout";
+import LicenseTypePicker from "../components/LicenseTypePicker";
 import {
   AuthApiError,
   loginWithGoogle,
@@ -33,7 +34,6 @@ type RegisterPageProps = {
   role: "candidat";
 };
 
-const LICENSE_OPTIONS: TypePermis[] = ["B", "A", "A1", "C", "D", "BE"];
 const COURSE_OPTIONS: ParcoursSouhaite[] = ["code", "conduite", "complet"];
 const TOTAL_STEPS = 4;
 
@@ -198,24 +198,7 @@ export default function RegisterPage({ role }: RegisterPageProps) {
             <div className="codakis-auth-step">
               <h1 className="codakis-auth__title">{t("auth.register.steps.selectLicense")}</h1>
               <p className="codakis-auth__subtitle">{t("auth.register.licenseSubtitle")}</p>
-              <div className="codakis-auth-choice-list" role="radiogroup" aria-label={t("auth.register.steps.selectLicense")}>
-                {LICENSE_OPTIONS.map((code) => (
-                  <button
-                    key={code}
-                    type="button"
-                    role="radio"
-                    aria-checked={typePermis === code}
-                    className={`codakis-auth-box codakis-auth-choice${typePermis === code ? " is-selected" : ""}`}
-                    onClick={() => setTypePermis(code)}
-                  >
-                    <span className="codakis-auth-choice__text">
-                      <strong>{t(`auth.register.licenses.${code}.label`)}</strong>
-                      <small>{t(`auth.register.licenses.${code}.hint`)}</small>
-                    </span>
-                    <span className="codakis-auth-choice__radio" aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
+              <LicenseTypePicker value={typePermis} onChange={setTypePermis} />
               <button type="button" className="codakis-auth-form__submit" onClick={() => setStep(2)}>
                 {t("auth.register.continue")}
               </button>

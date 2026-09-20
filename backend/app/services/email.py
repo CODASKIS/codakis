@@ -1,14 +1,42 @@
-import logging
+import base64
 import logging
 import secrets
 import smtplib
 from email.message import EmailMessage
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from pathlib import Path
 
 import httpx
 
 from app.core.config import settings
 
 logger = logging.getLogger("codakis.email")
+_LOGO_PATH = Path(__file__).resolve().parents[2] / "assets" / "logo.png"
+
+
+def _logo_bytes() -> bytes | None:
+    try:
+        data = _LOGO_PATH.read_bytes()
+    except OSError:
+        logger.warning("Logo e-mail introuvable : %s", _LOGO_PATH)
+        return None
+    return data or None
+
+
+def _public_logo_url() -> str:
+    from app.services.email_templates import _logo_url
+
+    return _logo_url()
+
+
+def _prepare_html(html_body: str | None) -> str | None:
+    if not html_body or "cid:codakis-logo" not in html_body:
+        return html_body
+    if _logo_bytes():
+        return html_body
+    return html_body.replace("cid:codakis-logo", _public_logo_url())
 
 
 def login_url() -> str:
@@ -18,12 +46,17 @@ def login_url() -> str:
 
 def courses_url() -> str:
     base = settings.frontend_url.rstrip("/")
-    return f"{base}/espace/candidat/cours"
+    return f"{base}/espace/candidat"
 
 
 def exams_url() -> str:
     base = settings.frontend_url.rstrip("/")
-    return f"{base}/espace/candidat/examens"
+    return f"{base}/espace/candidat/tests"
+
+
+def badges_url() -> str:
+    base = settings.frontend_url.rstrip("/")
+    return f"{base}/espace/candidat/statistiques"
 
 
 def _from_address() -> str:
@@ -54,6 +87,15 @@ def _send_via_resend(
     }
     if html_body:
         payload["html"] = html_body
+    logo = _logo_bytes()
+    if logo and html_body and "cid:codakis-logo" in html_body:
+        payload["attachments"] = [
+            {
+                "filename": "logo.png",
+                "content": base64.b64encode(logo).decode("ascii"),
+                "content_id": "codakis-logo",
+            }
+        ]
 
     logger.debug(
         "Resend → from=%s to=%s subject=%s",
@@ -100,6 +142,34 @@ def _send_via_resend(
     logger.info("Resend → e-mail envoyé à %s (id=%s)", to, response.json().get("id", "?"))
 
 
+def _build_message(to: str, subject: str, body: str, html_body: str | None):
+    html_body = _prepare_html(html_body)
+    logo = _logo_bytes() if html_body and "cid:codakis-logo" in html_body else None
+    if logo and html_body:
+        root = MIMEMultipart("related")
+        root["From"] = _from_address()
+        root["To"] = to
+        root["Subject"] = subject
+        alternative = MIMEMultipart("alternative")
+        alternative.attach(MIMEText(body, "plain", "utf-8"))
+        alternative.attach(MIMEText(html_body, "html", "utf-8"))
+        root.attach(alternative)
+        image = MIMEImage(logo, _subtype="png")
+        image.add_header("Content-ID", "<codakis-logo>")
+        image.add_header("Content-Disposition", "inline", filename="logo.png")
+        root.attach(image)
+        return root
+
+    message = EmailMessage()
+    message["From"] = _from_address()
+    message["To"] = to
+    message["Subject"] = subject
+    message.set_content(body)
+    if html_body:
+        message.add_alternative(html_body, subtype="html")
+    return message
+
+
 def _send_via_smtp(
     to: str,
     subject: str,
@@ -119,13 +189,7 @@ def _send_via_smtp(
     if not smtp_host:
         raise RuntimeError("SMTP_HOST non configuré")
 
-    message = EmailMessage()
-    message["From"] = _from_address()
-    message["To"] = to
-    message["Subject"] = subject
-    message.set_content(body)
-    if html_body:
-        message.add_alternative(html_body, subtype="html")
+    message = _build_message(to, subject, body, html_body)
 
     with smtplib.SMTP(smtp_host, smtp_port, timeout=30) as server:
         if smtp_port != 25:
@@ -150,6 +214,7 @@ def _try_smtp_fallback(to: str, subject: str, body: str, html_body: str | None) 
 
 
 def send_email(to: str, subject: str, body: str, html_body: str | None = None) -> bool:
+    html_body = _prepare_html(html_body)
     if settings.app_env == "test":
         _log_console(to, subject, body)
         return True
@@ -349,6 +414,39 @@ def send_payment_confirmation_email(
         dashboard_url=dashboard_url,
     )
     send_email(to, f"Paiement confirmé — {reference}", plain, html)
+
+
+def send_payment_failed_email(
+    to: str,
+    full_name: str,
+    *,
+    amount_fcfa: int,
+    reference: str,
+    reason: str,
+) -> None:
+    from app.services.email_templates import render_payment_failed_email
+
+    retry_url = f"{settings.frontend_url.rstrip('/')}/tarifs"
+    plain, html = render_payment_failed_email(
+        full_name=full_name,
+        amount_fcfa=amount_fcfa,
+        reference=reference,
+        reason=reason,
+        retry_url=retry_url,
+    )
+    send_email(to, f"Paiement non abouti — {reference}", plain, html)
+
+
+def send_level_badge_email(to: str, full_name: str, *, level: int, points: int) -> None:
+    from app.services.email_templates import render_level_badge_email
+
+    plain, html = render_level_badge_email(
+        full_name=full_name,
+        level=level,
+        points=points,
+        badges_url=badges_url(),
+    )
+    send_email(to, f"Badge niveau {level} — CODAKIS", plain, html)
 
 
 def generate_temp_password() -> str:

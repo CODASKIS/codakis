@@ -12,7 +12,7 @@ import {
   Trophy,
   User,
 } from "lucide-react";
-import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
+import { CodakisWordmark } from "../../flexjobs/components/BrandLogo";
 import { clearSession, getSession, hydrateSessionFromApi, setSession } from "../../auth/authStore";
 import type { AuthSession } from "../../auth/types";
 import UserMenuPanel from "../../components/prefs/UserMenuPanel";

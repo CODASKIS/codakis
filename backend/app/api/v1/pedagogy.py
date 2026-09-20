@@ -445,12 +445,9 @@ def candidat_theme_checkpoint(
 def candidat_text_to_speech(
     payload: TtsRequest,
     candidat: Utilisateur = Depends(CandidatUser),
-    db: Session = Depends(get_db),
+    _db: Session = Depends(get_db),
 ):
-    try:
-        ensure_platform_access(db, candidat)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    # La lecture à voix haute fait partie des leçons gratuites. Le tuteur IA reste payant.
     try:
         language = payload.language or candidat.langue or "fr"
         audio = synthesize_speech(payload.text, language, payload.voice_id)
@@ -621,10 +618,8 @@ def candidat_submit_quiz(
 
 @candidat_router.get("/examens", response_model=list[ExamenPublic])
 def candidat_list_examens(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
-    try:
-        ensure_platform_access(db, candidat)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(exc)) from exc
+    """Liste visible sans abonnement. Le passage de l'examen reste réservé aux comptes payants."""
+    locked = not has_platform_access(db, candidat)
     examens = db.query(Examen).filter(Examen.est_actif.is_(True)).order_by(Examen.title.asc()).all()
     linked_counts = _count_linked_questions_for_examens(db, [examen.id for examen in examens])
     return [
@@ -636,6 +631,7 @@ def candidat_list_examens(candidat: Utilisateur = Depends(CandidatUser), db: Ses
             "nb_questions": examen.nb_questions,
             "max_erreurs": examen.max_erreurs,
             "linked_count": linked_counts.get(examen.id, 0),
+            "locked": locked,
         }
         for examen in examens
     ]

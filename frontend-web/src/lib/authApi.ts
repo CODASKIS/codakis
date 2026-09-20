@@ -170,6 +170,9 @@ async function parseError(response: Response): Promise<string> {
   } catch {
     /* ignore */
   }
+  if (response.status >= 502) {
+    return `Le serveur est momentanément indisponible (${response.status}). Réessayez dans un instant.`;
+  }
   return `Erreur API (${response.status})`;
 }
 

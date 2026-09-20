@@ -26,20 +26,18 @@ WARN_TEXT = "#867251"
 DANGER = "#DC2626"
 
 def _logo_url() -> str:
-    """
-    Retourne l'URL absolue du logo PNG pour les e-mails.
-    On force une URL publique pour que le logo s'affiche dans Gmail.
-    """
+    """URL publique de secours si le logo inline ne peut pas être joint."""
     base = settings.frontend_url.strip().rstrip("/")
-    if not base or "localhost" in base or "127.0.0.1" in base:
-        return "https://www.codakis.cm/images/logo.png"
-    return f"{base}/images/logo.png"
+    if base.startswith("https://") and "localhost" not in base and "127.0.0.1" not in base:
+        return f"{base}/images/logo.png"
+    return "https://codakis.efymotors.com/images/logo.png"
+
 
 def _logo_block() -> str:
-    """Bloc logo intégré via URL pour éviter les problèmes de rendu."""
+    """Logo inline (cid) — le service e-mail joint le PNG. URL publique en secours alt."""
     return (
-        f'<img src="{_logo_url()}" alt="CODAKIS" width="140" height="40" '
-        f'style="display:block;border:0;max-width:140px;height:auto;" />'
+        f'<img src="cid:codakis-logo" alt="CODAKIS" width="168" height="42" '
+        f'style="display:block;border:0;outline:none;text-decoration:none;max-width:168px;height:auto;" />'
     )
 
 def _fonts_head() -> str:
@@ -106,6 +104,14 @@ def _paragraph(text: str, *, center: bool = False) -> str:
         {text}
       </p>
     """
+
+def _text_link(label: str, url: str) -> str:
+    return (
+        f'<p style="margin:0 0 16px;font-size:15px;line-height:150%;font-weight:600;font-family:{FONT_SANS};">'
+        f'<a href="{escape(url)}" style="color:{BRAND_GREEN_DARK};text-decoration:underline;">{escape(label)}</a>'
+        f"</p>"
+    )
+
 
 def _cta_button(label: str, url: str) -> str:
     return f"""
@@ -211,7 +217,7 @@ def render_login_notification_email(
               ("Adresse IP", ip_address),
               ("Date", time_label),
           ])}
-          {_cta_button("Vérifier cette connexion", login_url)}
+          {_text_link("Ce n'était pas vous ? Sécuriser le compte", login_url)}
           {_warning_box(
               "Si vous n'êtes pas à l'origine de cette connexion, votre compte peut être compromis. "
               f'<a href="{escape(login_url)}" style="color:{WARN_TEXT};text-decoration:underline;">Sécuriser mon compte →</a>'
@@ -282,22 +288,27 @@ def render_welcome_email(*, full_name: str, login_url: str, temp_password: str |
         [
             f"Bonjour {full_name},",
             "",
-            "Votre compte CODAKIS a été créé avec succès.",
+            "Votre compte CODAKIS est prêt. Vous pouvez commencer tout de suite, même sans abonnement.",
+            "Gratuit : signalisation, priorités et règles de circulation (cours, quiz et lecture audio).",
+            "Avec un abonnement : le reste des modules, les examens blancs et le tuteur.",
+            "Chaque niveau réussi débloque un badge téléchargeable dans Statistiques.",
             password_block,
             "",
-            f"Connexion : {login_url}",
+            f"Commencer : {login_url}",
             "",
             "— L'équipe CODAKIS",
         ]
     ).strip()
 
     html = _base_layout(
-        preheader="Bienvenue sur CODAKIS",
+        preheader="Votre parcours permis commence — 3 modules gratuits",
         body_html=f"""
           {_heading("Bienvenue sur CODAKIS")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte est prêt. Commencez votre préparation au permis dès maintenant.")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte est prêt. Vous pouvez apprendre tout de suite, même sans avoir payé.")}
+          {_info_box("<strong>Inclus sans abonnement :</strong> signalisation, priorités et règles de circulation — cours, quiz et lecture audio.")}
+          {_info_box("Les autres modules, les examens blancs et le tuteur s'ouvrent avec un abonnement. Chaque niveau réussi débloque un badge à télécharger.")}
           {password_html}
-          {_cta_button("Commencer", login_url)}
+          {_cta_button("Commencer mon parcours", login_url)}
         """,
     )
     return plain, html
@@ -340,7 +351,7 @@ def render_school_rejected_email(*, school_name: str, reason: str) -> tuple[str,
           {_heading("Inscription non approuvée")}
           {_paragraph(f"Votre établissement <strong>{escape(school_name)}</strong> n'a pas été validé pour le moment.")}
           {_info_box(f"<strong>Motif :</strong> {escape(reason)}", danger=True)}
-          {_cta_button("Contacter le support", "mailto:contact@codakis.cm")}
+          {_text_link("Écrire au support", "mailto:contact@codakis.cm")}
         """,
     )
     return plain, html
@@ -359,24 +370,29 @@ def render_simple_notification_email(*, subject: str, body: str) -> tuple[str, s
 
 
 def render_quiz_result_email(*, full_name: str, quiz_title: str, score: int, passed: bool, exams_url: str) -> tuple[str, str]:
-    status = "réussi" if passed else "non validé"
+    status = "réussi" if passed else "à reprendre"
+    next_step = (
+        "Ce quiz est validé. Passez à l'étape suivante de votre feuille de route."
+        if passed
+        else "Il faut au moins 70 % pour valider. Relancez le quiz : vos erreurs sont expliquées à la fin."
+    )
     plain = "\n".join([
         f"Bonjour {full_name},",
         "",
-        f"Votre résultat pour le quiz \"{quiz_title}\" est : {score}.",
-        f"Statut : {status}",
+        f"Quiz « {quiz_title} » : {score} % — {status}.",
+        next_step,
         "",
-        f"Consulter vos examens : {exams_url}",
+        f"Continuer : {exams_url}",
         "",
         "— L'équipe CODAKIS",
     ])
     html = _base_layout(
-        preheader=f"Résultat du quiz — {quiz_title}",
+        preheader=f"Quiz {status} — {score} %",
         body_html=f"""
           {_heading("Résultat du quiz")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre quiz <strong>{escape(quiz_title)}</strong> est terminé.")}
-          {_info_box(f"<strong>Score :</strong> {score} · <strong>Statut :</strong> {status}")}
-          {_cta_button("Voir mes examens", exams_url)}
+          {_info_box(f"<strong>Score :</strong> {score} % · <strong>{escape(status)}</strong><br>{escape(next_step)}")}
+          {_cta_button("Continuer le parcours", exams_url)}
         """,
     )
     return plain, html
@@ -384,23 +400,28 @@ def render_quiz_result_email(*, full_name: str, quiz_title: str, score: int, pas
 
 def render_examen_result_email(*, full_name: str, exam_title: str, score: int, passed: bool, exams_url: str) -> tuple[str, str]:
     status = "réussi" if passed else "non validé"
+    next_step = (
+        "Examen blanc validé. Vous pouvez le refaire pour consolider, ou revenir au parcours."
+        if passed
+        else "Le nombre d'erreurs dépasse le maximum autorisé. Relisez les corrections, puis retentez l'examen."
+    )
     plain = "\n".join([
         f"Bonjour {full_name},",
         "",
-        f"Votre résultat pour l'examen \"{exam_title}\" est : {score}.",
-        f"Statut : {status}",
+        f"Examen blanc « {exam_title} » : {score} % — {status}.",
+        next_step,
         "",
-        f"Consulter vos examens : {exams_url}",
+        f"Examens : {exams_url}",
         "",
         "— L'équipe CODAKIS",
     ])
     html = _base_layout(
-        preheader=f"Résultat examen — {exam_title}",
+        preheader=f"Examen {status} — {score} %",
         body_html=f"""
-          {_heading("Résultat examen")}
+          {_heading("Résultat de l'examen blanc")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre examen <strong>{escape(exam_title)}</strong> est terminé.")}
-          {_info_box(f"<strong>Score :</strong> {score} · <strong>Statut :</strong> {status}")}
-          {_cta_button("Voir mes examens", exams_url)}
+          {_info_box(f"<strong>Score :</strong> {score} % · <strong>{escape(status)}</strong><br>{escape(next_step)}")}
+          {_cta_button("Voir les examens", exams_url)}
         """,
     )
     return plain, html
@@ -461,6 +482,100 @@ def render_moniteur_invite_email(*, full_name: str, school_name: str, login_url:
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte moniteur a été créé pour <strong>{escape(school_name)}</strong>.")}
           {password_html}
           {_cta_button("Accéder à mon espace", login_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_lesson_complete_email(
+    *,
+    full_name: str,
+    lesson_title: str,
+    theme_title: str,
+    progress_percent: int,
+    courses_url: str,
+) -> tuple[str, str]:
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Leçon terminée : « {lesson_title} » ({theme_title}).",
+        f"Progression du parcours : {progress_percent} %.",
+        "Les trois premiers thèmes restent accessibles sans abonnement.",
+        "Un badge est à télécharger dans Statistiques à chaque niveau atteint.",
+        "",
+        f"Continuer : {courses_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader=f"Leçon terminée — {progress_percent} % du parcours",
+        body_html=f"""
+          {_heading("Leçon terminée")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, vous avez terminé <strong>{escape(lesson_title)}</strong> ({escape(theme_title)}).")}
+          {_info_box(f"<strong>Progression :</strong> {progress_percent} %. Continuez la feuille de route : la prochaine étape est déjà débloquée si elle fait partie des modules gratuits.")}
+          {_cta_button("Continuer le parcours", courses_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_payment_failed_email(
+    *,
+    full_name: str,
+    amount_fcfa: int,
+    reference: str,
+    reason: str,
+    retry_url: str,
+) -> tuple[str, str]:
+    amount = f"{amount_fcfa:,} FCFA".replace(",", " ")
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Votre paiement de {amount} n'a pas abouti.",
+        f"Référence : {reference}",
+        f"Détail : {reason}",
+        "",
+        f"Réessayer : {retry_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader="Paiement non abouti — CODAKIS",
+        body_html=f"""
+          {_heading("Paiement non abouti")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, le règlement n'a pas été confirmé. Aucun accès n'a été activé.")}
+          {_meta_panel([
+              ("Montant", amount),
+              ("Référence", reference),
+              ("Détail", reason),
+          ])}
+          {_cta_button("Réessayer le paiement", retry_url)}
+        """,
+    )
+    return plain, html
+
+
+def render_level_badge_email(*, full_name: str, level: int, points: int, badges_url: str) -> tuple[str, str]:
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Vous atteignez le niveau {level} ({points} points).",
+        "Téléchargez votre badge depuis Statistiques. Il reste sur votre compte, même sans abonnement.",
+        "",
+        f"Mes badges : {badges_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader=f"Badge niveau {level} débloqué",
+        body_html=f"""
+          {_heading(f"Badge niveau {level}")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, vous venez de passer un niveau. Ce badge est à vous, abonnement ou non.")}
+          {_meta_panel([
+              ("Niveau", str(level)),
+              ("Points", str(points)),
+          ])}
+          {_cta_button("Télécharger mon badge", badges_url)}
         """,
     )
     return plain, html

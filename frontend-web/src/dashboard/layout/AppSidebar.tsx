@@ -1,7 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Link, NavLink } from "react-router";
 import { X } from "lucide-react";
-import { CODAKIS_LOGO, CODAKIS_LOGO_ICON } from "../../flexjobs/components/BrandLogo";
+import { CODAKIS_LOGO_ICON, CodakisWordmark } from "../../flexjobs/components/BrandLogo";
 import { useSidebar } from "../context/SidebarContext";
 
 export type ProNavItem = {
@@ -32,7 +32,7 @@ export default function AppSidebar({ roleLabel, homeTo, items }: Props) {
       {wide ? (
         <div className="ta-sidebar__brand-wide">
           <Link to={homeTo} className="ta-sidebar__wordmark" onClick={closeMobile}>
-            <img src={CODAKIS_LOGO} alt="CODAKIS" />
+            <CodakisWordmark />
           </Link>
           {isMobileOpen ? (
             <button type="button" className="ta-sidebar__close" onClick={closeMobile} aria-label="Fermer">

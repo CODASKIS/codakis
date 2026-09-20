@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router";
-import { CODAKIS_LOGO } from "../../flexjobs/components/BrandLogo";
+import { CodakisWordmark } from "../../flexjobs/components/BrandLogo";
 
 type NavItem = { to: string; label: string; end?: boolean };
 
@@ -14,14 +14,14 @@ export default function WorkspaceShell({ title, homeTo, links }: Props) {
     <div className="ck-learn">
       <div className="ck-learn__mobile-bar">
         <Link to={homeTo} className="ck-learn__mobile-brand">
-          <img src={CODAKIS_LOGO} alt="CODAKIS" />
+          <CodakisWordmark />
         </Link>
         <strong style={{ fontSize: "1.4rem", textTransform: "uppercase" }}>{title}</strong>
       </div>
 
       <aside className="ck-learn__sidebar" aria-label={title}>
         <Link to={homeTo} className="ck-learn__brand" aria-label={`CODAKIS — ${title}`}>
-          <img src={CODAKIS_LOGO} alt="CODAKIS" />
+          <CodakisWordmark />
         </Link>
         <nav className="ck-learn__side-nav">
           {links.map((item) => (

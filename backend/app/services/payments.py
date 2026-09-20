@@ -354,6 +354,38 @@ def payment_to_status_response(paiement: Paiement) -> dict:
     }
 
 
+def fail_payment(db: Session, paiement: Paiement, reason: str) -> Paiement:
+    """Marque un paiement refusé et prévient l'utilisateur par e-mail."""
+    if paiement.status == "completed":
+        return paiement
+    if paiement.status != "failed":
+        paiement.status = "failed"
+        detail = reason.strip() or "Paiement refusé"
+        if detail not in (paiement.message or ""):
+            paiement.message = f"{paiement.message or 'Paiement CODAKIS'} — {detail}".strip()
+        db.commit()
+        db.refresh(paiement)
+    else:
+        return paiement
+    user = db.get(Utilisateur, paiement.utilisateur_id)
+    if user is None:
+        return paiement
+    try:
+        from app.services.email import send_payment_failed_email
+
+        full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
+        send_payment_failed_email(
+            user.email,
+            full_name,
+            amount_fcfa=paiement.amount_fcfa,
+            reference=paiement.reference,
+            reason=reason.strip() or "Paiement refusé",
+        )
+    except Exception:
+        logger.exception("E-mail refus paiement non envoyé pour %s", paiement.reference)
+    return paiement
+
+
 def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
     paiement = get_payment(db, user, reference)
     if paiement is None:

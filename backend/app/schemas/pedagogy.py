@@ -246,6 +246,7 @@ class ExamenPublic(BaseModel):
     nb_questions: int
     max_erreurs: int
     linked_count: int
+    locked: bool = False
 
 
 class QuizTakePublic(BaseModel):
