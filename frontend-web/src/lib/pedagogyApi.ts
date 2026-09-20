@@ -403,10 +403,14 @@ export type CoursePathStep = {
   title: string;
   sort_order: number;
   status?: string | null;
+  locked?: boolean;
+  is_premium?: boolean;
 };
 
 export type CoursePath = {
   theme_id: string;
+  theme_locked?: boolean;
+  is_premium?: boolean;
   steps: CoursePathStep[];
   completed_lecon_ids: string[];
   passed_quiz_ids: string[];

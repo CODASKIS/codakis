@@ -1256,10 +1256,18 @@ def build_theme_course_steps(
 
 
 def get_theme_course_path(db: Session, theme_id: uuid.UUID, candidat: Utilisateur) -> dict:
+    theme = db.get(Theme, theme_id)
     steps = build_theme_course_steps(db, theme_id, include_drafts=False, active_only=True)
     progress = get_candidat_progress(db, candidat)
+    platform_ok = has_platform_access(db, candidat)
+    theme_locked = bool(theme is not None and theme.is_premium and not platform_ok)
+    for step in steps:
+        step["locked"] = theme_locked
+        step["is_premium"] = bool(theme.is_premium) if theme is not None else False
     return {
         "theme_id": str(theme_id),
+        "theme_locked": theme_locked,
+        "is_premium": bool(theme.is_premium) if theme is not None else False,
         "steps": steps,
         "completed_lecon_ids": progress["completed_lecon_ids"],
         "passed_quiz_ids": progress["passed_quiz_ids"],

@@ -48,7 +48,8 @@ export default function LessonPage() {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const [lecon, setLecon] = useState<PedagogyLecon | null>(null);
-  const [nextStep, setNextStep] = useState<{ type: string; id: string } | null>(null);
+  const [nextStep, setNextStep] = useState<{ type: string; id: string; locked?: boolean; title?: string } | null>(null);
+  const [themeLocked, setThemeLocked] = useState(false);
   const [passedQuizIds, setPassedQuizIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -61,11 +62,25 @@ export default function LessonPage() {
         const lesson = await fetchCandidatLecon(id);
         if (cancelled) return;
         setLecon(lesson);
+        if (lesson.locked) {
+          navigate("/espace/candidat/super", { replace: true });
+          return;
+        }
         const path = await fetchCandidatCoursePath(lesson.theme_id);
         if (cancelled) return;
+        setThemeLocked(Boolean(path.theme_locked));
         const idx = path.steps.findIndex((s) => s.type === "lecon" && s.id === id);
         const next = idx >= 0 ? path.steps[idx + 1] : undefined;
-        setNextStep(next ?? null);
+        setNextStep(
+          next
+            ? {
+                type: next.type,
+                id: next.id,
+                locked: Boolean(next.locked || path.theme_locked),
+                title: next.title,
+              }
+            : null,
+        );
         setPassedQuizIds(path.passed_quiz_ids ?? []);
       } catch (err) {
         if (cancelled) return;
@@ -100,6 +115,10 @@ export default function LessonPage() {
         navigate("/espace/candidat");
         return;
       }
+      if (next.locked || themeLocked) {
+        navigate("/espace/candidat/super");
+        return;
+      }
       if (next.type === "quiz") {
         if (passedQuizIds.includes(next.id)) {
           navigate("/espace/candidat");
@@ -110,7 +129,12 @@ export default function LessonPage() {
       }
       navigate(`/espace/candidat/lecon/${next.id}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Impossible de valider la leçon");
+      const msg = err instanceof Error ? err.message : "Impossible de valider la leçon";
+      if (/abonnement/i.test(msg)) {
+        navigate("/espace/candidat/super");
+        return;
+      }
+      setError(msg);
     } finally {
       setSaving(false);
     }
@@ -129,7 +153,7 @@ export default function LessonPage() {
           <p className="ck-subtitle">{error || "Leçon introuvable"}</p>
           {needsSub ? (
             <p className="ck-locked-modal__hint">
-              Les premiers chapitres (signalisation, priorités, circulation) sont gratuits. Les modules premium
+              Les deux premiers thèmes (signalisation et priorités) restent gratuits. Les modules premium
               nécessitent un abonnement CODAKIS.
             </p>
           ) : null}
@@ -200,28 +224,34 @@ export default function LessonPage() {
         <div className="ck-challenge__footer-inner">
           <div>
             <strong style={{ fontSize: "1.6rem" }}>
-              {nextStep?.type === "quiz"
-                ? "Prêt pour le test ?"
-                : nextStep?.type === "lecon"
-                  ? "Leçon suivante"
-                  : "Fin de ce chapitre"}
+              {nextStep?.locked || themeLocked
+                ? "Leçon terminée — suite premium"
+                : nextStep?.type === "quiz"
+                  ? "Prêt pour le test ?"
+                  : nextStep?.type === "lecon"
+                    ? "Leçon suivante"
+                    : "Fin de ce chapitre"}
             </strong>
             <p className="ck-subtitle" style={{ margin: "0.4rem 0 0" }}>
-              {nextStep?.type === "quiz"
-                ? "Validez cette leçon puis lancez le quiz du thème."
-                : nextStep?.type === "lecon"
-                  ? "Validez pour enchaîner sur la prochaine leçon du parcours."
-                  : "Marquez la leçon comme lue pour débloquer la suite."}
+              {nextStep?.locked || themeLocked
+                ? "Validez cette leçon. La suite du parcours nécessite un abonnement CODAKIS."
+                : nextStep?.type === "quiz"
+                  ? "Validez cette leçon puis lancez le quiz du thème."
+                  : nextStep?.type === "lecon"
+                    ? "Validez pour enchaîner sur la prochaine leçon du parcours."
+                    : "Marquez la leçon comme lue pour débloquer la suite."}
             </p>
           </div>
           <button type="button" className="ck-btn ck-btn--primary" disabled={saving} onClick={() => void handleCompleteAndContinue()}>
             {saving
               ? "Validation…"
-              : nextStep?.type === "quiz"
-                ? "Commencer le quiz"
-                : nextStep?.type === "lecon"
-                  ? "Leçon suivante"
-                  : "Terminer"}
+              : nextStep?.locked || themeLocked
+                ? "Terminer · Voir Super"
+                : nextStep?.type === "quiz"
+                  ? "Commencer le quiz"
+                  : nextStep?.type === "lecon"
+                    ? "Leçon suivante"
+                    : "Terminer"}
           </button>
         </div>
       </footer>

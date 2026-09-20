@@ -111,6 +111,10 @@ class Settings(BaseSettings):
     # PawaPay — Mobile Money Afrique Subsaharienne
     pawapay_token: str = Field(default="", validation_alias=AliasChoices("PAWAPAY_TOKEN"))
     pawapay_sandbox: bool = Field(default=True, validation_alias=AliasChoices("PAWAPAY_SANDBOX"))
+    pawapay_customer_message: str = Field(
+        default="CODAKIS",
+        validation_alias=AliasChoices("PAWAPAY_CUSTOMER_MESSAGE", "PAWAPAY_MERCHANT_NAME"),
+    )
 
     @staticmethod
     def _url_has_password(url: str) -> bool:

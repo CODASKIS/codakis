@@ -6,6 +6,12 @@
   --codakis-loader-gap: 16px;
   --codakis-loader-accent: #00a859;
   --codakis-loader-text-color: #158a4e;
+  --codakis-loader-overlay-bg: rgba(255, 255, 255, 0.92);
+}
+
+html.dark {
+  --codakis-loader-text-color: #86efac;
+  --codakis-loader-overlay-bg: rgba(11, 16, 23, 0.92);
 }
 
 .codakis-loader-panel {
@@ -40,7 +46,7 @@
   margin: 0;
   font-size: var(--codakis-loader-text-size);
   color: var(--codakis-loader-text-color);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .codakis-loader-overlay {
@@ -51,13 +57,17 @@
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  background: rgba(255, 255, 255, 0.92);
+  background: var(--codakis-loader-overlay-bg);
   backdrop-filter: blur(2px);
   pointer-events: all;
 }
 
 .codakis-loader-overlay--admin {
-  background: rgba(248, 250, 252, 0.88);
+  background: color-mix(in srgb, var(--codakis-loader-overlay-bg) 88%, #f8fafc);
+}
+
+html.dark .codakis-loader-overlay--admin {
+  background: var(--codakis-loader-overlay-bg);
 }
 
 .codakis-loader-inline {

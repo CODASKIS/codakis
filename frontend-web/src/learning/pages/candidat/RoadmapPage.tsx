@@ -308,7 +308,12 @@ export default function RoadmapPage() {
                   const isFailed = step.status === "failed";
                   const isDone = step.status === "done";
                   const isLocked = step.status === "locked" || step.status === "premium_locked";
-                  const showCar = Boolean(currentGlobal && currentGlobal.ref === step.ref);
+                  const showCar = Boolean(
+                    currentGlobal &&
+                      currentGlobal.ref === step.ref &&
+                      step.status !== "locked" &&
+                      step.status !== "premium_locked",
+                  );
                   const Icon = isFailed ? X : isDone ? Check : step.type === "quiz" ? Crown : Star;
                   return (
                     <button

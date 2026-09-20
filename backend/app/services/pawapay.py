@@ -10,11 +10,17 @@ Flow :
 
 Sandbox : https://api.sandbox.pawapay.io
 Production : https://api.pawapay.io
+
+Note branding : le libellé « Payment to … » vient du nom commerçant
+enregistré sur le compte PawaPay (nameDisplayedToCustomer). À renommer
+en CODAKIS dans le dashboard PawaPay. On envoie aussi customerMessage/reason
+« CODAKIS » pour l'SMS / la page hébergée.
 """
 
 from __future__ import annotations
 
 import logging
+import re
 import uuid
 from typing import Any
 from urllib.parse import urlparse
@@ -27,6 +33,9 @@ logger = logging.getLogger("codakis.pawapay")
 
 SANDBOX_BASE = "https://api.sandbox.pawapay.io"
 PROD_BASE = "https://api.pawapay.io"
+
+# customerMessage PawaPay : 4–22 caractères, lettres/chiffres/espaces
+_CUSTOMER_MESSAGE_RE = re.compile(r"^[a-zA-Z0-9 ]{4,22}$")
 
 
 def _base_url() -> str:
@@ -48,6 +57,16 @@ def _headers() -> dict[str, str]:
 
 def _truncate(s: str, max_len: int) -> str:
     return s[:max_len] if len(s) > max_len else s
+
+
+def _customer_message(raw: str | None = None) -> str:
+    """Narration courte affichée côté client / SMS (défaut CODAKIS)."""
+    candidate = (raw or settings.pawapay_customer_message or "CODAKIS").strip()
+    cleaned = re.sub(r"[^a-zA-Z0-9 ]+", " ", candidate)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if not _CUSTOMER_MESSAGE_RE.match(cleaned):
+        return "CODAKIS"
+    return cleaned
 
 
 def is_public_return_url(return_url: str) -> bool:
@@ -84,27 +103,23 @@ def create_checkout(
     """
     Crée un Checkout PawaPay v2 et retourne { checkout_id, redirect_url }.
 
-    IMPORTANT: la sandbox PawaPay rejette actuellement les champs `reason` et
-    `customerMessage` comme paramètres non supportés, même si la documentation
-    les présente comme requis. Le payload réellement accepté par le provider est
-    le plus minimal possible : checkoutId + returnUrl + returnMethod + amounts.
+    Envoie d'abord un payload enrichi (reason + customerMessage = CODAKIS).
+    Si la sandbox rejette ces champs, retente avec le payload minimal.
     """
     if not is_configured():
         raise RuntimeError(
             "PawaPay non configuré (PAWAPAY_TOKEN requis dans .env)"
         )
 
-    # PawaPay rejects localhost / HTTP return URLs. Fail fast before sending the request
-    # so the app can switch to the CinetPay fallback instead of producing a broken checkout.
     _validate_return_url(return_url)
 
     cid = checkout_id or str(uuid.uuid4())
+    msg = _customer_message(reason if reason and reason != "CODAKIS" else None)
+    reason_label = _truncate(re.sub(r"[^a-zA-Z0-9 ]+", " ", description or "CODAKIS").strip() or "CODAKIS", 22)
+    if not _CUSTOMER_MESSAGE_RE.match(reason_label):
+        reason_label = "CODAKIS"
 
-    # Les champs `reason` / `customerMessage` / `defaultLanguage` / `callbackUrl`
-    # et même `payer.type` sont rejetés par la sandbox PawaPay actuelle comme
-    # "unsupported parameter" / "invalid parameter".
-    # On envoie uniquement le payload minimal validé par l’API live.
-    payload: dict[str, Any] = {
+    base_payload: dict[str, Any] = {
         "checkoutId": cid,
         "returnUrl": return_url,
         "returnMethod": "COUNTDOWN",
@@ -117,31 +132,26 @@ def create_checkout(
         ],
     }
 
-    logger.info("PawaPay create_checkout payload for %s: %s", cid, payload)
+    enriched = {
+        **base_payload,
+        "customerMessage": msg,
+        "reason": {"en": reason_label, "fr": reason_label},
+        "metadata": [{"brand": "CODAKIS"}, {"product": _truncate(description, 40)}],
+    }
 
-    # NOTE: Some live PawaPay sandbox responses reject `payer`, `reason`,
-    # `customerMessage`, `defaultLanguage`, `expiresAfter`, and callback-related
-    # fields even when the docs describe them as valid. Keep the request minimal.
-    # The phone can be passed separately in the app flow, but it must not be
-    # included inside the `payer` object for the live sandbox.
-
-    try:
-        resp = httpx.post(
-            f"{_base_url()}/v2/checkouts",
-            json=payload,
-            headers=_headers(),
-            timeout=30.0,
+    data = _post_checkout(enriched)
+    if _is_rejected_unsupported(data):
+        logger.warning(
+            "PawaPay a rejeté reason/customerMessage — nouvel essai payload minimal (checkoutId=%s)",
+            cid,
         )
-        data = resp.json()
-    except Exception as exc:
-        logger.exception("PawaPay checkout request failed")
-        raise RuntimeError(f"PawaPay indisponible : {exc}") from exc
+        data = _post_checkout(base_payload)
 
     status = data.get("status")
     if status == "REJECTED":
-        reason_fail = (data.get("failureReason") or {})
-        msg = reason_fail.get("failureMessage") or str(data)
-        raise RuntimeError(f"PawaPay checkout rejeté : {msg}")
+        reason_fail = data.get("failureReason") or {}
+        fail_msg = reason_fail.get("failureMessage") or str(data)
+        raise RuntimeError(f"PawaPay checkout rejeté : {fail_msg}")
 
     redirect_url = data.get("redirectUrl")
     if not redirect_url:
@@ -159,6 +169,32 @@ def create_checkout(
         "status": status,
         "raw": data,
     }
+
+
+def _is_rejected_unsupported(data: dict[str, Any]) -> bool:
+    if data.get("status") != "REJECTED":
+        return False
+    reason_fail = data.get("failureReason") or {}
+    msg = str(reason_fail.get("failureMessage") or data).lower()
+    return any(
+        token in msg
+        for token in ("unsupported", "invalid parameter", "customerMessage", "reason", "metadata")
+    )
+
+
+def _post_checkout(payload: dict[str, Any]) -> dict[str, Any]:
+    logger.info("PawaPay create_checkout payload for %s: %s", payload.get("checkoutId"), payload)
+    try:
+        resp = httpx.post(
+            f"{_base_url()}/v2/checkouts",
+            json=payload,
+            headers=_headers(),
+            timeout=30.0,
+        )
+        return resp.json()
+    except Exception as exc:
+        logger.exception("PawaPay checkout request failed")
+        raise RuntimeError(f"PawaPay indisponible : {exc}") from exc
 
 
 def get_checkout_status(checkout_id: str) -> dict[str, Any]:
@@ -185,8 +221,6 @@ def get_checkout_status(checkout_id: str) -> dict[str, Any]:
 
 def _normalize_msisdn(phone: str) -> str:
     """Normalise un numéro en format international +237XXXXXXXXX."""
-    import re
-
     digits = re.sub(r"\D", "", phone.strip())
     if phone.strip().startswith("+"):
         return phone.strip()

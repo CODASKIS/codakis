@@ -165,11 +165,39 @@ def _warning_box(html: str) -> str:
       </table>
     """
 
+def _hero_image(alt: str = "CODAKIS") -> str:
+    """Illustration voiture mascotte (URL publique)."""
+    src = "https://codakis.efymotors.com/images/auth/cartoon-red-car.png"
+    return f"""
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;">
+        <tr><td align="center">
+          <img src="{src}" alt="{escape(alt)}" width="180" height="128"
+            style="display:block;border:0;outline:none;max-width:180px;height:auto;" />
+        </td></tr>
+      </table>
+    """
+
+
+def _icon_badge(emoji: str, label: str) -> str:
+    return f"""
+      <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 16px;">
+        <tr>
+          <td style="width:44px;height:44px;border-radius:12px;background:#F0FDF4;text-align:center;vertical-align:middle;font-size:22px;line-height:44px;">
+            {emoji}
+          </td>
+          <td style="padding-left:12px;font-size:15px;font-weight:700;color:{TEXT};font-family:{FONT_SANS};">
+            {escape(label)}
+          </td>
+        </tr>
+      </table>
+    """
+
+
 def _info_box(html: str, *, danger: bool = False) -> str:
     bg = "#FEF2F2" if danger else "#F0FDF4"
     border = DANGER if danger else BRAND_GREEN
     return f"""
-      <p style="margin:16px 0;padding:14px 16px;background:{bg};border-left:4px solid {border};font-size:14px;line-height:150%;">
+      <p style="margin:16px 0;padding:14px 16px;background:{bg};border-left:4px solid {border};font-size:14px;line-height:150%;border-radius:0 8px 8px 0;">
         {html}
       </p>
     """
@@ -443,8 +471,10 @@ def render_payment_confirmation_email(*, full_name: str, amount_fcfa: int, refer
     html = _base_layout(
         preheader="Paiement confirmé — CODAKIS",
         body_html=f"""
+          {_hero_image("Paiement validé")}
+          {_icon_badge("💳", "Paiement confirmé")}
           {_heading("Paiement validé")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement CODAKIS a bien été reçu. Voici le détail de votre commande.")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement <strong>CODAKIS</strong> a bien été reçu. Voici le détail de votre commande.")}
           {_meta_panel([
               ("Montant", f"{amount_fcfa:,} FCFA"),
               ("Référence", reference),
@@ -511,9 +541,11 @@ def render_lesson_complete_email(
     html = _base_layout(
         preheader=f"Leçon terminée — {progress_percent} % du parcours",
         body_html=f"""
+          {_hero_image("Leçon terminée")}
+          {_icon_badge("✅", "Bravo — leçon validée")}
           {_heading("Leçon terminée")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, vous avez terminé <strong>{escape(lesson_title)}</strong> ({escape(theme_title)}).")}
-          {_info_box(f"<strong>Progression :</strong> {progress_percent} %. Continuez la feuille de route : la prochaine étape est déjà débloquée si elle fait partie des modules gratuits.")}
+          {_info_box(f"<strong>📈 Progression :</strong> {progress_percent} %.<br/>Continuez la feuille de route : la prochaine étape est déjà débloquée si elle fait partie des modules gratuits. Les thèmes premium restent verrouillés sans abonnement.")}
           {_cta_button("Continuer le parcours", courses_url)}
         """,
     )

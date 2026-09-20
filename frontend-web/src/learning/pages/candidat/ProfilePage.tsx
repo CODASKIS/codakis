@@ -1,12 +1,15 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 import Loader from "../../../components/common/Loader";
 import { clearSession, getSession, setSession } from "../../../auth/authStore";
 import { fetchMe, updateProfile, userToSession } from "../../../lib/authApi";
+import { changePassword } from "../../../lib/pedagogyApi";
 
 type Tab = "compte" | "securite";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>("compte");
   const [firstName, setFirstName] = useState("");
@@ -14,10 +17,17 @@ export default function ProfilePage() {
   const [phone, setPhone] = useState("");
   const [typePermis, setTypePermis] = useState("");
   const [parcours, setParcours] = useState("");
+  const [hasPassword, setHasPassword] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [pwdSaving, setPwdSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [pwdMessage, setPwdMessage] = useState("");
+  const [pwdError, setPwdError] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -29,6 +39,7 @@ export default function ProfilePage() {
         setPhone(user.phone ?? "");
         setTypePermis(user.type_permis ?? "");
         setParcours(user.parcours_souhaite ?? "");
+        setHasPassword(user.has_password !== false);
       })
       .catch((err) => {
         if (!cancelled) setError(err instanceof Error ? err.message : "Profil indisponible");
@@ -58,6 +69,32 @@ export default function ProfilePage() {
       setError(err instanceof Error ? err.message : "Enregistrement impossible");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function onPasswordSubmit(event: FormEvent) {
+    event.preventDefault();
+    setPwdMessage("");
+    setPwdError("");
+    if (newPassword.length < 8) {
+      setPwdError(t("account.passwordTooShort", "Le mot de passe doit contenir au moins 8 caractères."));
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPwdError(t("account.passwordMismatch", "Les mots de passe ne correspondent pas."));
+      return;
+    }
+    setPwdSaving(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setPwdMessage(t("account.passwordSuccess", "Mot de passe mis à jour."));
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err) {
+      setPwdError(err instanceof Error ? err.message : t("account.passwordError", "Impossible de modifier le mot de passe."));
+    } finally {
+      setPwdSaving(false);
     }
   }
 
@@ -151,15 +188,71 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <h1 className="ck-title">Mot de passe</h1>
-            <p className="ck-subtitle">Sécurité de votre compte.</p>
+            <h1 className="ck-title">{t("account.passwordTitle", "Mot de passe")}</h1>
+            <p className="ck-subtitle">
+              {t("account.passwordHint", "Utilisez au moins 8 caractères. Votre session reste active après le changement.")}
+            </p>
 
-            <div className="ck-settings__section">
-              <h2>Sécurité</h2>
-              <Link to="/mot-de-passe-oublie" className="ck-settings__link">
-                Changer le mot de passe
-              </Link>
-            </div>
+            {!hasPassword ? (
+              <div className="ck-settings__section">
+                <p className="ck-subtitle">
+                  {t(
+                    "account.passwordGoogleHint",
+                    "Ce compte utilise la connexion Google. Utilisez « Mot de passe oublié » pour définir un mot de passe local si besoin.",
+                  )}
+                </p>
+                <Link to="/mot-de-passe-oublie" className="ck-btn ck-btn--primary">
+                  Définir un mot de passe
+                </Link>
+              </div>
+            ) : (
+              <form className="ck-form ck-settings__section" onSubmit={(e) => void onPasswordSubmit(e)}>
+                <h2>Sécurité</h2>
+                <label>
+                  {t("account.currentPassword", "Mot de passe actuel")}
+                  <input
+                    type="password"
+                    autoComplete="current-password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    required
+                  />
+                </label>
+                <label>
+                  {t("account.newPassword", "Nouveau mot de passe")}
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={8}
+                  />
+                </label>
+                <label>
+                  {t("account.confirmPassword", "Confirmer le mot de passe")}
+                  <input
+                    type="password"
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={8}
+                  />
+                </label>
+                {pwdError ? <p className="ck-empty">{pwdError}</p> : null}
+                {pwdMessage ? (
+                  <p className="ck-empty" style={{ color: "var(--ck-green)" }} role="status">
+                    {pwdMessage}
+                  </p>
+                ) : null}
+                <button type="submit" className="ck-btn ck-btn--primary" disabled={pwdSaving}>
+                  {pwdSaving
+                    ? t("account.passwordSaving", "Mise à jour…")
+                    : t("account.passwordSave", "Mettre à jour le mot de passe")}
+                </button>
+              </form>
+            )}
           </>
         )}
       </div>

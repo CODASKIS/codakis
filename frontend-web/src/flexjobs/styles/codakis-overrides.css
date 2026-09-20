@@ -1845,8 +1845,15 @@ html.dark .fj-pricing-dark__header {
 }
 
 .fj-school-pack-card__secondary {
-  border-color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
-  color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
+  border-color: #00a859 !important;
+  color: #00a859 !important;
+  background: transparent !important;
+}
+
+.fj-school-pack-card__secondary:hover {
+  background: rgba(0, 168, 89, 0.1) !important;
+  border-color: #008f4c !important;
+  color: #008f4c !important;
 }
 
 /* Tiroir détail forfait — style Stych */
@@ -5090,8 +5097,16 @@ html.dark .ck-footer .fj-brand__logo {
 
 .ck-public .fj-school-pack-card__secondary,
 .fj-root .fj-school-pack-card__secondary {
-  border-color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
-  color: var(--fj-pack-accent-dark, var(--fj-nav-bg)) !important;
+  border-color: #00a859 !important;
+  color: #00a859 !important;
+  background: transparent !important;
+}
+
+.ck-public .fj-school-pack-card__secondary:hover,
+.fj-root .fj-school-pack-card__secondary:hover {
+  background: rgba(0, 168, 89, 0.1) !important;
+  border-color: #008f4c !important;
+  color: #008f4c !important;
 }
 
 .ck-public .fj-pricing-dark__btn,
@@ -5449,31 +5464,47 @@ html.dark .ck-checkout__status p {
   font: inherit;
   font-size: 1.45rem;
   font-weight: 800;
-  text-decoration: none;
+  text-decoration: none !important;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .ck-checkout__btn--primary {
-  background: #00a859;
-  color: #fff;
-  border: 0.2rem solid #008f4c;
-  border-bottom-width: 0.45rem;
+  background: #00a859 !important;
+  color: #ffffff !important;
+  border: 0.2rem solid #008f4c !important;
+  border-bottom-width: 0.45rem !important;
+  box-shadow: 0 0.35rem 0 #008f4c;
 }
 
 .ck-checkout__btn--primary:hover {
   filter: brightness(1.04);
+  color: #ffffff !important;
 }
 
 .ck-checkout__btn--ghost {
-  background: #fff;
-  color: #00a859;
-  border: 0.2rem solid #d1d5db;
+  background: transparent !important;
+  color: #00a859 !important;
+  border: 0.2rem solid #d1d5db !important;
+}
+
+.ck-checkout__btn--ghost:hover {
+  border-color: #00a859 !important;
+  background: rgba(0, 168, 89, 0.08) !important;
 }
 
 html.dark .ck-checkout__btn--ghost {
-  background: #0b1017;
-  border-color: #2d3643;
+  background: transparent !important;
+  border-color: #3b4553 !important;
+  color: #f3f4f6 !important;
+}
+
+html.dark .ck-checkout__btn--ghost:hover {
+  border-color: #00a859 !important;
+  color: #86efac !important;
+  background: rgba(0, 168, 89, 0.12) !important;
 }
 
 .ck-checkout__aside {
