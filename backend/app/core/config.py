@@ -63,6 +63,7 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("PAYMENT_RETURN_BASE_URL"),
     )
     app_env: str = "development"
+    seed_demo: bool = Field(default=False, validation_alias=AliasChoices("SEED_DEMO"))
     cms_upload_dir: str = Field(default="uploads/cms", validation_alias=AliasChoices("CMS_UPLOAD_DIR"))
     cms_max_upload_bytes: int = Field(default=5_242_880, validation_alias=AliasChoices("CMS_MAX_UPLOAD_BYTES"))
 

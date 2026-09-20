@@ -32,6 +32,7 @@ from app.services.payments import (
     payment_to_initiate_response,
     payment_to_status_response,
 )
+from app.services.subscription_lifecycle import process_subscription_reminders
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 admin_router = APIRouter(prefix="/admin/payments", tags=["admin-payments"])
@@ -55,6 +56,11 @@ def plan_pricing(country: str = Query(default="CM", min_length=2, max_length=2))
 
 @router.get("/subscription/me", response_model=ClientSubscriptionResponse | None)
 def my_subscription(user: Utilisateur = Depends(AuthUser), db: Session = Depends(get_db)):
+    # Déclenche les rappels J-7 / J-3 au passage (léger, idempotent).
+    try:
+        process_subscription_reminders(db)
+    except Exception:
+        pass
     return get_my_subscription(db, user)
 
 
@@ -117,7 +123,7 @@ def payment_initiate(
 
 @router.post("/cinetpay/notify")
 async def cinetpay_notify(request: Request, db: Session = Depends(get_db)):
-    """Webhook CinetPay — confirmation automatique du paiement."""
+    """Webhook CinetPay — confirmation uniquement après vérif API opérateur."""
     from app.db.models import Paiement, Utilisateur
     from app.services.cinetpay import verify_transaction
 
@@ -137,18 +143,21 @@ async def cinetpay_notify(request: Request, db: Session = Depends(get_db)):
     if paiement.status == "completed":
         return {"status": "already_done"}
 
-    status_ok = body.get("cpm_result") == "00" or body.get("status") == "ACCEPTED"
-    if not status_ok:
-        try:
-            check = verify_transaction(str(transaction_id))
-            status_ok = (check.get("data") or {}).get("status") in {"ACCEPTED", "SUCCESS", "00"}
-        except Exception:
-            status_ok = False
+    status_ok = False
+    try:
+        check = verify_transaction(str(transaction_id))
+        status_ok = str((check.get("data") or {}).get("status") or "").upper() in {
+            "ACCEPTED",
+            "SUCCESS",
+            "00",
+        }
+    except Exception:
+        status_ok = False
 
     if status_ok:
         user = db.get(Utilisateur, paiement.utilisateur_id)
         if user:
-            confirm_payment(db, user, paiement.reference)
+            confirm_payment(db, user, paiement.reference, skip_provider_check=True)
     else:
         result = str(body.get("cpm_result") or body.get("status") or "").upper()
         if result in {"01", "02", "03", "FAILED", "REFUSED", "CANCELLED", "CANCELED"}:
@@ -159,16 +168,11 @@ async def cinetpay_notify(request: Request, db: Session = Depends(get_db)):
 
 @router.post("/pawapay/callback")
 async def pawapay_callback(request: Request, db: Session = Depends(get_db)):
-    """
-    Callback asynchrone PawaPay — confirmation automatique d'un Checkout.
-
-    PawaPay envoie un POST avec le corps JSON du Checkout une fois son statut final atteint.
-    Statuts finaux : COMPLETED (succès), FAILED, EXPIRED, CANCELLED.
-
-    On retrouve le paiement via le champ `clientReferenceId` qui contient notre `reference`.
-    """
+    """Callback PawaPay — confirmation uniquement après get_checkout_status."""
     import logging as _logging
+
     from app.db.models import Paiement, Utilisateur
+    from app.services.pawapay import get_checkout_status
 
     cb_logger = _logging.getLogger("codakis.pawapay.callback")
 
@@ -177,33 +181,51 @@ async def pawapay_callback(request: Request, db: Session = Depends(get_db)):
     except Exception:
         return {"status": "parse_error"}
 
-    cb_logger.info("PawaPay callback reçu: %s", body)
+    checkout_id = body.get("checkoutId")
+    client_ref = body.get("clientReferenceId")
+    cb_logger.info(
+        "PawaPay callback reçu checkoutId=%s clientReferenceId=%s status=%s",
+        checkout_id,
+        client_ref,
+        body.get("status"),
+    )
 
-    checkout_status = body.get("status", "")
-    # Retrouver via clientReferenceId (notre référence interne) ou checkoutId
-    client_ref = body.get("clientReferenceId") or body.get("checkoutId")
-    if not client_ref:
-        cb_logger.warning("PawaPay callback sans clientReferenceId ni checkoutId")
-        return {"status": "ignored"}
-
-    # Cherche d'abord par référence interne (clientReferenceId = paiement.reference)
-    paiement = db.query(Paiement).filter(Paiement.reference == str(client_ref)).first()
+    paiement = None
+    if client_ref:
+        paiement = db.query(Paiement).filter(Paiement.reference == str(client_ref)).first()
+    if paiement is None and checkout_id:
+        paiement = db.query(Paiement).filter(Paiement.provider_checkout_id == str(checkout_id)).first()
     if paiement is None:
-        cb_logger.warning("PawaPay callback: paiement introuvable pour ref=%s", client_ref)
+        cb_logger.warning("PawaPay callback: paiement introuvable")
         return {"status": "not_found"}
 
     if paiement.status == "completed":
         return {"status": "already_done"}
 
+    if checkout_id and not paiement.provider_checkout_id:
+        paiement.provider_checkout_id = str(checkout_id)
+        db.commit()
+
+    lookup_id = paiement.provider_checkout_id or checkout_id
+    if not lookup_id:
+        return {"status": "ignored"}
+
+    try:
+        check = get_checkout_status(str(lookup_id))
+        checkout_status = str(check.get("status") or "").upper()
+    except Exception:
+        cb_logger.exception("PawaPay: vérif statut impossible pour %s", paiement.reference)
+        return {"status": "verify_error"}
+
     if checkout_status == "COMPLETED":
         user = db.get(Utilisateur, paiement.utilisateur_id)
         if user:
             try:
-                confirm_payment(db, user, paiement.reference)
+                confirm_payment(db, user, paiement.reference, skip_provider_check=True)
                 cb_logger.info("PawaPay: paiement %s confirmé via callback", paiement.reference)
             except Exception:
                 cb_logger.exception("PawaPay: erreur lors de la confirmation de %s", paiement.reference)
-    elif checkout_status in {"FAILED", "EXPIRED", "CANCELLED"}:
+    elif checkout_status in {"FAILED", "EXPIRED", "CANCELLED", "CANCELED"}:
         fail_payment(db, paiement, f"PawaPay: {checkout_status}")
         cb_logger.info("PawaPay: paiement %s marqué échoué (status=%s)", paiement.reference, checkout_status)
 
@@ -223,7 +245,12 @@ def payment_confirm(reference: str, user: Utilisateur = Depends(AuthUser), db: S
     try:
         paiement = confirm_payment(db, user, reference)
     except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+        detail = str(exc)
+        if "en cours" in detail.lower():
+            paiement = get_payment(db, user, reference)
+            if paiement is not None:
+                return payment_to_status_response(paiement)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from exc
     return payment_to_status_response(paiement)
 
 

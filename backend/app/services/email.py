@@ -67,6 +67,9 @@ def _from_address() -> str:
 
 def _log_console(to: str, subject: str, body: str) -> None:
     logger.info("[EMAIL:console] To: %s | Subject: %s", to, subject)
+    if settings.app_env.lower() in {"production", "prod"}:
+        # Ne jamais imprimer OTP / mots de passe dans les logs prod.
+        return
     print(f"\n=== EMAIL ===\nTo: {to}\nSubject: {subject}\n{body}\n=============\n")
 
 
@@ -401,6 +404,11 @@ def send_payment_confirmation_email(
     reference: str,
     receipt_number: str,
     purpose_label: str,
+    channel: str | None = None,
+    phone: str | None = None,
+    billing_period_label: str | None = None,
+    expires_at_label: str | None = None,
+    paid_at_label: str | None = None,
 ) -> None:
     from app.services.email_templates import render_payment_confirmation_email
 
@@ -412,8 +420,39 @@ def send_payment_confirmation_email(
         receipt_number=receipt_number,
         purpose_label=purpose_label,
         dashboard_url=dashboard_url,
+        channel=channel,
+        phone=phone,
+        billing_period_label=billing_period_label,
+        expires_at_label=expires_at_label,
+        paid_at_label=paid_at_label,
     )
     send_email(to, f"Paiement confirmé — {reference}", plain, html)
+
+
+def send_subscription_expiry_reminder_email(
+    to: str,
+    full_name: str,
+    *,
+    plan_label: str,
+    days_left: int,
+    expires_at_label: str,
+    reminder_kind: str,
+) -> None:
+    from app.services.email_templates import render_subscription_expiry_reminder_email
+
+    renew_url = f"{settings.frontend_url.rstrip('/')}/tarifs"
+    plain, html = render_subscription_expiry_reminder_email(
+        full_name=full_name,
+        plan_label=plan_label,
+        days_left=days_left,
+        expires_at_label=expires_at_label,
+        renew_url=renew_url,
+        reminder_kind=reminder_kind,
+    )
+    subject = (
+        f"Votre abonnement {plan_label} expire dans {days_left} jour{'s' if days_left > 1 else ''}"
+    )
+    send_email(to, subject, plain, html)
 
 
 def send_payment_failed_email(

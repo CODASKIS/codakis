@@ -156,6 +156,8 @@ def has_premium_access(db: Session, user: Utilisateur) -> bool:
 
 
 def has_platform_access(db: Session, user: Utilisateur) -> bool:
+    from app.services.payments import subscription_is_active
+
     row = (
         db.query(Paiement)
         .filter(
@@ -167,6 +169,8 @@ def has_platform_access(db: Session, user: Utilisateur) -> bool:
         .first()
     )
     if row is None:
+        return False
+    if not subscription_is_active(row):
         return False
     if (row.amount_fcfa or 0) > 0:
         return True

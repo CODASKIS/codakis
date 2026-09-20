@@ -42,6 +42,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-codakis_db}
       SECRET_KEY: ${SECRET_KEY:?Définissez SECRET_KEY dans .env}
       APP_ENV: production
+      SEED_DEMO: ${SEED_DEMO:-true}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
       GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}

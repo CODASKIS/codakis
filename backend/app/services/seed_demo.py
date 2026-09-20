@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
 
@@ -408,11 +408,15 @@ def _ensure_demo_subscription(db: Session, user: Utilisateur, plan_id: str) -> N
         .first()
     )
     amount = 15000 if plan_id == "premium" else 5000
+    now = datetime.now(UTC)
+    expires = now + timedelta(days=365)
     if existing:
         existing.plan_id = plan_id
         existing.amount_fcfa = amount
         existing.status = "completed"
-        existing.completed_at = existing.completed_at or datetime.now(UTC)
+        existing.completed_at = existing.completed_at or now
+        existing.billing_period = "yearly"
+        existing.expires_at = expires
         existing.message = f"Abonnement {plan_id} de démonstration (accès plateforme CODAKIS)"
         return
     db.add(
@@ -425,7 +429,9 @@ def _ensure_demo_subscription(db: Session, user: Utilisateur, plan_id: str) -> N
             channel="demo",
             phone="+237600000000",
             status="completed",
-            completed_at=datetime.now(UTC),
+            completed_at=now,
+            billing_period="yearly",
+            expires_at=expires,
             message=f"Abonnement {plan_id} de démonstration (accès plateforme CODAKIS)",
         )
     )

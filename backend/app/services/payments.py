@@ -194,6 +194,9 @@ def initiate_payment(
         raise ValueError("Paramètres de paiement invalides")
 
     reference = _new_reference()
+    period = "yearly" if billing_period == "yearly" else "monthly"
+    if purpose != "subscription":
+        period = billing_period if billing_period in {"monthly", "yearly"} else None
     paiement = Paiement(
         reference=reference,
         utilisateur_id=user.id,
@@ -209,6 +212,7 @@ def initiate_payment(
         phone=normalized_phone,
         status="pending",
         message=label_fr,
+        billing_period=period if purpose == "subscription" else None,
     )
     db.add(paiement)
     db.commit()
@@ -266,6 +270,7 @@ def payment_to_initiate_response(
                     payment_url = result.get("redirect_url")
                     payment_token = result.get("checkout_id")
                     paiement.channel = "pawapay"
+                    paiement.provider_checkout_id = payment_token
                     channel_label = f"PawaPay ({quote.symbol})"
                     paiement.message = (
                         f"{paiement.message or 'Paiement CODAKIS'} — "
@@ -386,7 +391,98 @@ def fail_payment(db: Session, paiement: Paiement, reason: str) -> Paiement:
     return paiement
 
 
-def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
+def _yearly_amounts() -> set[int]:
+    return {
+        SUBSCRIPTION_PRICING["pro"]["yearly"],
+        SUBSCRIPTION_PRICING["premium"]["yearly"],
+        SUBSCRIPTION_PRICING["entreprise"]["yearly"],
+    }
+
+
+def subscription_duration_days(paiement: Paiement) -> int:
+    if (paiement.billing_period or "").lower() == "yearly":
+        return 365
+    if (paiement.billing_period or "").lower() == "monthly":
+        return 30
+    return 365 if paiement.amount_fcfa in _yearly_amounts() else 30
+
+
+def compute_subscription_expires_at(paiement: Paiement, *, paid_at: datetime | None = None) -> datetime:
+    start = paid_at or paiement.completed_at or paiement.created_at or datetime.now(UTC)
+    if start.tzinfo is None:
+        start = start.replace(tzinfo=UTC)
+    return start + timedelta(days=subscription_duration_days(paiement))
+
+
+def subscription_is_active(paiement: Paiement, *, now: datetime | None = None) -> bool:
+    if paiement.purpose != "subscription" or paiement.status != "completed":
+        return False
+    moment = now or datetime.now(UTC)
+    expires = paiement.expires_at
+    if expires is None:
+        expires = compute_subscription_expires_at(paiement)
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=UTC)
+    return expires > moment
+
+
+def _verify_provider_payment(paiement: Paiement) -> str:
+    """
+    Vérifie le paiement côté opérateur.
+    Retourne 'completed' | 'failed' | 'pending'.
+    """
+    channel = (paiement.channel or "").lower()
+
+    if channel == "cinetpay":
+        from app.services.cinetpay import verify_transaction
+
+        try:
+            check = verify_transaction(paiement.reference)
+            status = str((check.get("data") or {}).get("status") or "").upper()
+            if status in {"ACCEPTED", "SUCCESS", "00"}:
+                return "completed"
+            if status in {"REFUSED", "FAILED", "CANCELED", "CANCELLED", "01", "02", "03"}:
+                return "failed"
+            return "pending"
+        except Exception:
+            logger.exception("Vérification CinetPay impossible pour %s", paiement.reference)
+            return "pending"
+
+    if channel == "pawapay":
+        from app.services.pawapay import get_checkout_status
+
+        checkout_id = paiement.provider_checkout_id
+        if not checkout_id:
+            logger.warning("PawaPay: pas de checkout_id stocké pour %s", paiement.reference)
+            return "pending"
+        try:
+            check = get_checkout_status(checkout_id)
+            status = str(check.get("status") or "").upper()
+            if status == "COMPLETED":
+                return "completed"
+            if status in {"FAILED", "EXPIRED", "CANCELLED", "CANCELED"}:
+                return "failed"
+            return "pending"
+        except Exception:
+            logger.exception("Vérification PawaPay impossible pour %s", paiement.reference)
+            return "pending"
+
+    # Sandbox Mobile Money local : autorisé hors production uniquement
+    if channel in {"demo", "orange", "mtn", "moov", "legacy"}:
+        if settings.app_env.lower() in {"production", "prod"}:
+            return "pending"
+        return "completed"
+
+    return "pending"
+
+
+def confirm_payment(
+    db: Session,
+    user: Utilisateur,
+    reference: str,
+    *,
+    skip_provider_check: bool = False,
+) -> Paiement:
     paiement = get_payment(db, user, reference)
     if paiement is None:
         raise ValueError("Paiement introuvable")
@@ -395,9 +491,21 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
     if paiement.status == "failed":
         raise ValueError("Ce paiement a échoué")
 
+    if not skip_provider_check:
+        provider_status = _verify_provider_payment(paiement)
+        if provider_status == "failed":
+            fail_payment(db, paiement, "Paiement refusé par l'opérateur")
+            raise ValueError("Ce paiement a échoué")
+        if provider_status != "completed":
+            raise ValueError("Paiement encore en cours de validation chez l'opérateur")
+
     paiement.status = "completed"
     paiement.completed_at = datetime.now(UTC)
     paiement.receipt_number = _new_receipt()
+    if paiement.purpose == "subscription":
+        if not paiement.billing_period:
+            paiement.billing_period = "yearly" if paiement.amount_fcfa in _yearly_amounts() else "monthly"
+        paiement.expires_at = compute_subscription_expires_at(paiement, paid_at=paiement.completed_at)
 
     inscription = None
     if paiement.purpose == "enrollment" and paiement.inscription_id is None:
@@ -457,6 +565,12 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
         from app.services.email import send_payment_confirmation_email
 
         full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
+        period_label = None
+        expires_label = None
+        if paiement.purpose == "subscription":
+            period_label = "Annuel" if (paiement.billing_period or "") == "yearly" else "Mensuel"
+            if paiement.expires_at:
+                expires_label = paiement.expires_at.strftime("%d/%m/%Y")
         send_payment_confirmation_email(
             user.email,
             full_name,
@@ -464,6 +578,11 @@ def confirm_payment(db: Session, user: Utilisateur, reference: str) -> Paiement:
             reference=paiement.reference,
             receipt_number=paiement.receipt_number or paiement.reference,
             purpose_label=purpose_label,
+            channel=CHANNEL_LABELS.get(paiement.channel, paiement.channel),
+            phone=paiement.phone,
+            billing_period_label=period_label,
+            expires_at_label=expires_label,
+            paid_at_label=(paiement.completed_at or datetime.now(UTC)).strftime("%d/%m/%Y %H:%M UTC"),
         )
     except Exception:
         logger.exception("E-mail confirmation paiement non envoyé pour %s", paiement.reference)
@@ -487,26 +606,28 @@ def get_my_subscription(db: Session, user: Utilisateur) -> dict | None:
     if row is None:
         return None
 
-    paid_at = row.completed_at or row.created_at
-    # Durée indicative : 30 jours (mensuel) ou 365 jours (annuel) selon le montant
-    yearly_amounts = {
-        SUBSCRIPTION_PRICING["pro"]["yearly"],
-        SUBSCRIPTION_PRICING["premium"]["yearly"],
-        SUBSCRIPTION_PRICING["entreprise"]["yearly"],
-    }
-    duration_days = 365 if row.amount_fcfa in yearly_amounts else 30
-    expires_at = paid_at + timedelta(days=duration_days)
+    if row.expires_at is None:
+        row.expires_at = compute_subscription_expires_at(row)
+        if not row.billing_period:
+            row.billing_period = "yearly" if row.amount_fcfa in _yearly_amounts() else "monthly"
+        db.commit()
+        db.refresh(row)
+
+    expires_at = row.expires_at
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=UTC)
     now = datetime.now(UTC)
     remaining = max(0, int((expires_at - now).total_seconds()))
     days_remaining = max(0, (expires_at.date() - now.date()).days)
+    active = remaining > 0
 
     return {
         "plan_id": row.plan_id,
         "plan_name": PLAN_LABELS.get(row.plan_id or "", row.plan_id or "CODAKIS"),
-        "billing_label": "Annuel" if row.amount_fcfa in yearly_amounts else "Mensuel",
-        "status": "active" if remaining > 0 else "expired",
+        "billing_label": "Annuel" if (row.billing_period or "") == "yearly" or row.amount_fcfa in _yearly_amounts() else "Mensuel",
+        "status": "active" if active else "expired",
         "expires_at": expires_at.isoformat(),
-        "is_active": remaining > 0,
+        "is_active": active,
         "seconds_remaining": remaining,
         "days_remaining": days_remaining,
         "hours_remaining": remaining // 3600,

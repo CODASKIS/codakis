@@ -268,12 +268,12 @@ def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = N
             "— L'équipe CODAKIS",
         ]
     )
-    if login_url and (email or otp):
-        reset_url = f"{login_url}?{urlencode({k: v for k, v in {'email': email or '', 'otp': otp or ''}.items() if v})}"
+    if login_url and email:
+        reset_url = f"{login_url}?{urlencode({'email': email})}"
     elif login_url:
         reset_url = login_url
     else:
-        reset_url = build_reset_password_url(email=email, otp=otp)
+        reset_url = build_reset_password_url(email=email)
     html = _base_layout(
         preheader="Code de vérification CODAKIS",
         body_html=f"""
@@ -291,18 +291,16 @@ def render_otp_email(*, otp: str, expire_minutes: int, login_url: str | None = N
     return plain, html
 
 def build_reset_password_url(*, email: str | None = None, otp: str | None = None) -> str:
-    """Build the exact password-reset route used by the frontend app."""
+    """Build the exact password-reset route used by the frontend app.
+
+    L'OTP n'est jamais placé dans l'URL (fuite via historique / referrer).
+    """
     base = settings.frontend_url.strip().rstrip("/")
     if not base:
         base = "https://www.codakis.cm"
     reset_url = f"{base}/connexion/mot-de-passe"
-    params = {}
     if email:
-        params["email"] = email
-    if otp:
-        params["otp"] = otp
-    if params:
-        reset_url = f"{reset_url}?{urlencode(params)}"
+        reset_url = f"{reset_url}?{urlencode({'email': email})}"
     return reset_url
 
 def render_welcome_email(*, full_name: str, login_url: str, temp_password: str | None = None) -> tuple[str, str]:
@@ -457,19 +455,69 @@ def render_examen_result_email(*, full_name: str, exam_title: str, score: int, p
     return plain, html
 
 
-def render_payment_confirmation_email(*, full_name: str, amount_fcfa: int, reference: str, receipt_number: str, purpose_label: str, dashboard_url: str) -> tuple[str, str]:
-    plain = "\n".join([
+def render_payment_confirmation_email(
+    *,
+    full_name: str,
+    amount_fcfa: int,
+    reference: str,
+    receipt_number: str,
+    purpose_label: str,
+    dashboard_url: str,
+    channel: str | None = None,
+    phone: str | None = None,
+    billing_period_label: str | None = None,
+    expires_at_label: str | None = None,
+    paid_at_label: str | None = None,
+) -> tuple[str, str]:
+    amount = f"{amount_fcfa:,} FCFA".replace(",", " ")
+    rows: list[tuple[str, str]] = [
+        ("Objet", purpose_label),
+        ("Montant", amount),
+        ("Référence", reference),
+        ("N° de reçu", receipt_number),
+    ]
+    if paid_at_label:
+        rows.append(("Date", paid_at_label))
+    if channel:
+        rows.append(("Canal", channel))
+    if phone:
+        rows.append(("Téléphone", phone))
+    if billing_period_label:
+        rows.append(("Période", billing_period_label))
+    if expires_at_label:
+        rows.append(("Valable jusqu'au", expires_at_label))
+
+    plain_lines = [
         f"Bonjour {full_name},",
         "",
-        f"Votre paiement de {amount_fcfa:,} FCFA a été confirmé.",
-        f"Référence : {reference}",
-        f"Reçu : {receipt_number}",
-        f"Objet : {purpose_label}",
+        "Votre paiement CODAKIS a été confirmé. Récapitulatif :",
         "",
-        f"Voir mon tableau de bord : {dashboard_url}",
-        "",
-        "— L'équipe CODAKIS",
-    ])
+    ]
+    for label, value in rows:
+        plain_lines.append(f"- {label} : {value}")
+    plain_lines.extend(["", f"Voir mon tableau de bord : {dashboard_url}", "", "— L'équipe CODAKIS"])
+    plain = "\n".join(plain_lines)
+
+    table_rows = "".join(
+        f"""
+          <tr>
+            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:13px;font-weight:700;color:{TEXT_MUTED};text-transform:uppercase;font-family:{FONT_SANS};">{escape(label)}</td>
+            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:15px;font-weight:600;color:{TEXT};text-align:right;font-family:{FONT_MONO};">{escape(value)}</td>
+          </tr>
+        """
+        for label, value in rows
+    )
+    receipt_table = f"""
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-collapse:separate;border:1px solid {BORDER_SOFT};border-radius:12px;overflow:hidden;background:#fff;">
+        <tr>
+          <td colspan="2" style="padding:14px 16px;background:{BG_MUTED};font-size:14px;font-weight:800;color:{TEXT};font-family:{FONT_SANS};text-transform:uppercase;letter-spacing:0.04em;">
+            Récapitulatif du paiement
+          </td>
+        </tr>
+        {table_rows}
+      </table>
+    """
+
     html = _base_layout(
         preheader="Paiement confirmé — CODAKIS",
         body_html=f"""
@@ -477,14 +525,50 @@ def render_payment_confirmation_email(*, full_name: str, amount_fcfa: int, refer
           {_icon_badge("💳", "Paiement confirmé")}
           {_heading("Paiement validé")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement <strong>CODAKIS</strong> a bien été reçu. Voici le détail de votre commande.")}
-          {_meta_panel([
-              ("Montant", f"{amount_fcfa:,} FCFA"),
-              ("Référence", reference),
-              ("Reçu", receipt_number),
-              ("Objet", purpose_label),
-          ])}
+          {receipt_table}
           {_cta_button("Accéder à mon espace", dashboard_url)}
           {_paragraph("Un suivi de votre parcours est disponible dès maintenant dans votre feuille de route.")}
+        """,
+    )
+    return plain, html
+
+
+def render_subscription_expiry_reminder_email(
+    *,
+    full_name: str,
+    plan_label: str,
+    days_left: int,
+    expires_at_label: str,
+    renew_url: str,
+    reminder_kind: str,
+) -> tuple[str, str]:
+    day_word = "jour" if days_left == 1 else "jours"
+    urgency = "dernier rappel" if reminder_kind == "3d" else "rappel"
+    plain = "\n".join([
+        f"Bonjour {full_name},",
+        "",
+        f"Votre {plan_label} expire dans {days_left} {day_word} ({expires_at_label}).",
+        "Sans renouvellement, les modules premium, examens blancs et le tuteur seront verrouillés.",
+        "Les deux thèmes gratuits (signalisation et priorités) resteront accessibles.",
+        "",
+        f"Renouveler : {renew_url}",
+        "",
+        "— L'équipe CODAKIS",
+    ])
+    html = _base_layout(
+        preheader=f"Abonnement : expire dans {days_left} {day_word}",
+        body_html=f"""
+          {_hero_image("Renouvellement abonnement")}
+          {_icon_badge("⏰", urgency.title())}
+          {_heading(f"Votre abonnement expire bientôt")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre <strong>{escape(plan_label)}</strong> se termine dans <strong>{days_left} {day_word}</strong>.")}
+          {_meta_panel([
+              ("Forfait", plan_label),
+              ("Expire le", expires_at_label),
+              ("Jours restants", str(days_left)),
+          ])}
+          {_info_box("Sans renouvellement, les thèmes premium, examens blancs et le tuteur se verrouillent automatiquement. Les modules gratuits restent ouverts.")}
+          {_cta_button("Renouveler mon abonnement", renew_url)}
         """,
     )
     return plain, html
