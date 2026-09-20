@@ -7,7 +7,6 @@ import {
   CreditCard,
   FileText,
   Hash,
-  Mail,
   RefreshCw,
   ShieldCheck,
   Wallet,
@@ -18,7 +17,6 @@ import { CodakisWordmark } from "../components/BrandLogo";
 import { getSession } from "../../auth/authStore";
 import { getRoleDashboardPath } from "../../auth/roles";
 import { AUTH_PATHS } from "../../constants/authPaths";
-import { CODAKIS_APP_VERSION } from "../../constants/appVersion";
 import { getAccessToken } from "../../lib/authApi";
 import { confirmPaymentWithRetry, getPaymentStatus, type PaymentStatusResult } from "../../lib/payment-api";
 
@@ -122,9 +120,7 @@ export default function PaymentReturnPage() {
   const rows = [
     amount ? { icon: Wallet, label: "Montant", value: amount } : null,
     ref ? { icon: Hash, label: "Référence", value: ref } : null,
-    payment?.receipt_number
-      ? { icon: FileText, label: "Reçu", value: payment.receipt_number }
-      : null,
+    payment?.receipt_number ? { icon: FileText, label: "Reçu", value: payment.receipt_number } : null,
     payment?.channel ? { icon: CreditCard, label: "Canal", value: payment.channel } : null,
     {
       icon: ShieldCheck,
@@ -134,75 +130,68 @@ export default function PaymentReturnPage() {
   ].filter(Boolean) as { icon: typeof Wallet; label: string; value: string }[];
 
   return (
-    <section className="ck-pay-result">
-      <div className={`ck-pay-result__shell is-${status}`}>
-        <aside className="ck-pay-result__brand">
-          <CodakisWordmark className="ck-pay-result__logo" />
-          <span className="ck-pay-result__version">v{CODAKIS_APP_VERSION}</span>
-          <img
-            src="/images/auth/cartoon-red-car.png"
-            alt=""
-            className="ck-pay-result__car"
-            width={280}
-            height={200}
-          />
-          <ul className="ck-pay-result__points">
-            <li>
-              <ShieldCheck size={18} aria-hidden />
-              Paiement sécurisé Mobile Money
-            </li>
-            <li>
-              <Mail size={18} aria-hidden />
-              Confirmation par e-mail CODAKIS
-            </li>
-            <li>
-              <BadgeCheck size={18} aria-hidden />
-              Accès immédiat après validation
-            </li>
-          </ul>
-        </aside>
+    <section className={`ck-checkout ck-checkout--${status}`}>
+      <header className="ck-checkout__top">
+        <Link to="/" className="ck-checkout__brand" aria-label="CODAKIS">
+          <CodakisWordmark className="ck-checkout__logo" />
+        </Link>
+      </header>
 
-        <article className="ck-pay-result__card">
-          <span className={`ck-pay-result__badge is-${status}`} aria-hidden>
-            <Icon size={32} strokeWidth={2.4} />
-          </span>
-          <p className="ck-pay-result__eyebrow">CODAKIS</p>
-          <h1>{copy.title}</h1>
-          <p className="ck-pay-result__lead">{message || copy.lead}</p>
-
-          <div className="ck-pay-result__info">
-            {rows.map(({ icon: RowIcon, label, value }) => (
-              <div key={label} className="ck-pay-result__info-row">
-                <span className="ck-pay-result__info-icon" aria-hidden>
-                  <RowIcon size={18} strokeWidth={2.3} />
-                </span>
-                <div>
-                  <span className="ck-pay-result__info-label">{label}</span>
-                  <strong className="ck-pay-result__info-value">{value}</strong>
-                </div>
-              </div>
-            ))}
+      <div className="ck-checkout__layout">
+        <article className="ck-checkout__main">
+          <div className={`ck-checkout__status is-${status}`}>
+            <span className="ck-checkout__status-icon" aria-hidden>
+              <Icon size={36} strokeWidth={2.4} />
+            </span>
+            <img
+              src="/images/auth/cartoon-red-car.png"
+              alt=""
+              className="ck-checkout__car"
+              width={160}
+              height={114}
+            />
+            <h1>{copy.title}</h1>
+            <p>{message || copy.lead}</p>
           </div>
 
-          <div className="ck-pay-result__actions">
+          <div className="ck-checkout__actions">
             {status === "success" ? (
-              <Link to={spaceHref} className="ck-public-btn ck-public-btn--primary">
+              <Link to={spaceHref} className="ck-checkout__btn ck-checkout__btn--primary">
                 Accéder à mon espace
               </Link>
             ) : (
-              <Link to="/tarifs" className="ck-public-btn ck-public-btn--primary">
+              <Link to="/tarifs" className="ck-checkout__btn ck-checkout__btn--primary">
                 <RefreshCw size={18} aria-hidden />
                 {status === "pending" ? "Retour aux tarifs" : "Réessayer le paiement"}
               </Link>
             )}
             <Link
               to={status === "rejected" && !token ? AUTH_PATHS.login : "/"}
-              className="ck-public-btn ck-public-btn--ghost"
+              className="ck-checkout__btn ck-checkout__btn--ghost"
             >
               {status === "rejected" && !token ? "Se connecter" : "Retour à l'accueil"}
             </Link>
           </div>
         </article>
+
+        <aside className="ck-checkout__aside">
+          <h2>Détails de la commande</h2>
+          <ul className="ck-checkout__lines">
+            {rows.map(({ icon: RowIcon, label, value }) => (
+              <li key={label}>
+                <span className="ck-checkout__line-label">
+                  <RowIcon size={16} aria-hidden />
+                  {label}
+                </span>
+                <strong>{value}</strong>
+              </li>
+            ))}
+          </ul>
+          <div className="ck-checkout__total">
+            <span>Total</span>
+            <strong>{amount || "—"}</strong>
+          </div>
+        </aside>
       </div>
     </section>
   );

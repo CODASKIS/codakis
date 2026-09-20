@@ -9,20 +9,20 @@ from zoneinfo import ZoneInfo
 
 from app.core.config import settings
 
-# Palette CODAKIS (alignée inputs / dashboard)
-BRAND_GREEN = "#1DB96A"
-BRAND_GREEN_DARK = "#158A4E"
-BG_PAGE = "#F7F7F7"
+# Palette CODAKIS (charte plateforme)
+BRAND_GREEN = "#00A859"
+BRAND_GREEN_DARK = "#008F4C"
+BG_PAGE = "#F5F5F5"
 BG_CARD = "#FFFFFF"
-BG_MUTED = "#FAFAF9"
-BORDER = "#EBEBEB"
-BORDER_SOFT = "#F0F0EE"
-TEXT = "#353535"
-TEXT_MUTED = "#999999"
-TEXT_BODY = "rgba(53,53,53,0.8)"
-WARN_BG = "#FFFCF7"
-WARN_BORDER = "#F9ECE3"
-WARN_TEXT = "#867251"
+BG_MUTED = "#FAFAFA"
+BORDER = "#E5E7EB"
+BORDER_SOFT = "#EEF2F6"
+TEXT = "#1F2937"
+TEXT_MUTED = "#6B7280"
+TEXT_BODY = "rgba(31,41,55,0.82)"
+WARN_BG = "#FFF7ED"
+WARN_BORDER = "#FED7AA"
+WARN_TEXT = "#9A3412"
 DANGER = "#DC2626"
 
 def _logo_url() -> str:
@@ -115,9 +115,9 @@ def _text_link(label: str, url: str) -> str:
 
 def _cta_button(label: str, url: str) -> str:
     return f"""
-      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;">
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin:8px 0 28px;">
         <tr><td align="center">
-          <a href="{escape(url)}" target="_blank" style="display:inline-block;width:100%;max-width:100%;box-sizing:border-box;padding:12px 32px;border-radius:8px;background:{BRAND_GREEN};color:#fff;font-size:17px;font-weight:600;line-height:24px;text-decoration:none;text-align:center;font-family:{FONT_SANS};">
+          <a href="{escape(url)}" target="_blank" style="display:inline-block;width:100%;max-width:100%;box-sizing:border-box;padding:16px 32px;border-radius:16px;background:{BRAND_GREEN};border-bottom:4px solid {BRAND_GREEN_DARK};color:#fff;font-size:17px;font-weight:700;line-height:24px;text-decoration:none;text-align:center;font-family:{FONT_SANS};text-transform:uppercase;letter-spacing:0.04em;">
             {escape(label)}
           </a>
         </td></tr>
@@ -443,15 +443,16 @@ def render_payment_confirmation_email(*, full_name: str, amount_fcfa: int, refer
     html = _base_layout(
         preheader="Paiement confirmé — CODAKIS",
         body_html=f"""
-          {_heading("Paiement confirmé")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement a bien été reçu.")}
+          {_heading("Paiement validé")}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement CODAKIS a bien été reçu. Voici le détail de votre commande.")}
           {_meta_panel([
               ("Montant", f"{amount_fcfa:,} FCFA"),
               ("Référence", reference),
               ("Reçu", receipt_number),
               ("Objet", purpose_label),
           ])}
-          {_cta_button("Voir mon tableau de bord", dashboard_url)}
+          {_cta_button("Accéder à mon espace", dashboard_url)}
+          {_paragraph("Un suivi de votre parcours est disponible dès maintenant dans votre feuille de route.")}
         """,
     )
     return plain, html

@@ -1363,9 +1363,83 @@ html.dark .ck-widget__medal.is-bronze {
   font-size: 1.5rem;
 }
 
-/* Unit banner (Duolingo green strip) */
+/* Unit banner + road trip roadmap */
 .ck-roadmap {
   position: relative;
+}
+
+.ck-roadmap__hero {
+  display: grid;
+  gap: 1.6rem;
+  margin: 0 0 2rem;
+  padding: 2rem 1.8rem;
+  border-radius: 2rem;
+  border: 0.2rem solid var(--ck-line);
+  background:
+    radial-gradient(ellipse 80% 70% at 90% 20%, rgba(0, 168, 89, 0.16), transparent 55%),
+    var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+}
+
+@media (min-width: 720px) {
+  .ck-roadmap__hero {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    align-items: center;
+  }
+}
+
+.ck-roadmap__hero-eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--ck-green);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ck-roadmap__hero h1 {
+  margin: 0 0 0.6rem;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--ck-text);
+}
+
+.ck-roadmap__hero-copy > p:not(.ck-roadmap__hero-eyebrow) {
+  margin: 0;
+  max-width: 42rem;
+  color: var(--ck-muted);
+  font-size: 1.45rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.ck-roadmap__hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.ck-roadmap__hero-stats span {
+  display: inline-flex;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: var(--ck-green-soft);
+  color: var(--ck-green-dark, var(--ck-green));
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.ck-roadmap__hero-art {
+  display: flex;
+  justify-content: center;
+}
+
+.ck-roadmap__hero-art img {
+  width: min(22rem, 100%);
+  height: auto;
+  filter: drop-shadow(0 0.8rem 1.6rem rgba(0, 0, 0, 0.18));
 }
 
 /* Sticky chapter name (Duolingo-style) */
@@ -1668,7 +1742,77 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 }
 
-/* ─── Zigzag learning path ─── */
+/* ─── Road trip learning path ─── */
+.ck-road {
+  position: relative;
+  margin: 0 auto;
+  max-width: 42rem;
+  padding: 1.2rem 0 2rem;
+  border-radius: 2.4rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 168, 89, 0.12), transparent 28%),
+    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.12), transparent 30%),
+    linear-gradient(180deg, #e8f7ef 0%, #f3f4f6 45%, #efe7d6 100%);
+}
+
+html.dark .ck-road {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(0, 168, 89, 0.18), transparent 28%),
+    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.1), transparent 30%),
+    linear-gradient(180deg, #121a14 0%, #151c27 50%, #1a1712 100%);
+}
+
+.ck-road__asphalt {
+  position: absolute;
+  left: 50%;
+  top: 1.2rem;
+  bottom: 1.2rem;
+  width: 7.2rem;
+  transform: translateX(-50%);
+  border-radius: 3.6rem;
+  background:
+    linear-gradient(90deg, #fbbf24 0 0.35rem, transparent 0.35rem calc(100% - 0.35rem), #fbbf24 calc(100% - 0.35rem)),
+    repeating-linear-gradient(
+      180deg,
+      #3f4654 0 1.1rem,
+      #3f4654 1.1rem 1.8rem,
+      transparent 1.8rem 2.6rem
+    ),
+    #2b303b;
+  box-shadow: inset 0 0 0 0.22rem #1f232c;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.ck-road__decor {
+  position: absolute;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 40% 55% 45% 60%;
+  background: #c4c9d2;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+html.dark .ck-road__decor {
+  background: #3a4454;
+}
+
+.ck-road__decor--left {
+  left: 1.4rem;
+  top: 18%;
+  box-shadow: 0 7rem 0 0.2rem #b8bec8, 0 16rem 0 -0.15rem #cbd0d8;
+}
+
+.ck-road__decor--right {
+  right: 1.6rem;
+  top: 36%;
+  width: 1.8rem;
+  height: 1.8rem;
+  box-shadow: 0 9rem 0 0.1rem #b7bdc7, 0 18rem 0 0.25rem #c9ced6;
+}
+
 .ck-path {
   position: relative;
   display: flex;
@@ -1676,6 +1820,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   align-items: center;
   padding: 1.2rem 0 4rem;
   overflow: visible;
+  z-index: 1;
 }
 
 .ck-path__item {
@@ -1689,14 +1834,53 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   z-index: 1;
 }
 
+.ck-path__car {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.35rem);
+  width: 7.2rem;
+  height: auto;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0.4rem 0.8rem rgba(0, 0, 0, 0.25));
+  animation: ck-car-bob 1.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 4;
+}
+
+@keyframes ck-car-bob {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-0.35rem);
+  }
+}
+
 @media (max-width: 640px) {
   .ck-path__item {
     transform: translateX(calc(var(--ck-path-x, 0rem) * -0.45));
+  }
+
+  .ck-road__asphalt {
+    width: 5.6rem;
+  }
+
+  .ck-path__car {
+    width: 5.8rem;
   }
 }
 
 .ck-path__item:first-child {
   margin-top: 2.4rem;
+}
+
+.ck-path__item.has-car {
+  margin-top: 6.4rem;
+}
+
+.ck-path__item.has-car .ck-path__tip {
+  bottom: calc(100% + 5.8rem);
 }
 
 .ck-path__item:disabled {
