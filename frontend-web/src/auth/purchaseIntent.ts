@@ -101,6 +101,7 @@ export function resolveAuthRedirect(role: UserRole): string {
   }
   const redirect = consumeAuthRedirect();
   if (redirect) return redirect;
+  if (role === "candidat") return "/tarifs";
   return getRoleDashboardPath(role);
 }
 

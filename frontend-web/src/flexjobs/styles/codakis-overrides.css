@@ -1682,6 +1682,24 @@ html.dark .fj-lang-dd--auth .fj-lang-dd__trigger:hover {
   display: none;
 }
 
+html.dark .fj-pricing-table__segments button {
+  background: var(--ck-surface-2);
+  color: var(--ck-text);
+  border-color: var(--ck-line);
+}
+
+html.dark .fj-pricing-dark__card,
+html.dark .fj-pricing-dark__card.is-featured {
+  background: var(--ck-surface-2);
+  border-color: var(--ck-line);
+  box-shadow: none;
+  color: var(--ck-text);
+}
+
+html.dark .fj-pricing-dark__header {
+  border-bottom-color: var(--ck-line);
+}
+
 /* Cartes forfaits — accents par type */
 .fj-school-pack-card {
   border-top: 0.4rem solid var(--fj-pack-accent, var(--fj-cta-bg));
@@ -2659,7 +2677,7 @@ html.dark .ck-public {
 }
 
 html.dark .ck-public-topbar .fj-brand__logo {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 .ck-public-topbar__nav {
@@ -3029,7 +3047,7 @@ html.dark .ck-public-topbar .fj-brand__logo {
 }
 
 html.dark .ck-public .fj-home-hero--codakis .fj-home-hero__wordmark {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 .ck-public .fj-home-hero--codakis h1 {
@@ -3892,7 +3910,7 @@ html.dark .ck-public .fj-home-hero--codakis .fj-home-hero__wordmark {
 }
 
 html.dark .ck-footer .fj-brand__logo {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 /* Home destination */
@@ -4899,5 +4917,117 @@ html.dark .ck-footer .fj-brand__logo {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.ck-pay-result {
+  display: grid;
+  place-items: center;
+  padding: 3.2rem 1.6rem 6rem;
+}
+
+.ck-pay-result__card {
+  width: min(52rem, 100%);
+  padding: 2.4rem 2rem 2.2rem;
+  border: 0.2rem solid var(--ck-line);
+  border-bottom-width: 0.55rem;
+  border-radius: 2rem;
+  background: var(--ck-surface-2);
+  box-shadow: var(--ck-shadow);
+  text-align: center;
+  color: var(--ck-text);
+}
+
+.ck-pay-result__car {
+  width: min(22rem, 70%);
+  height: auto;
+  margin: 0 auto 0.4rem;
+  display: block;
+}
+
+.ck-pay-result__badge {
+  display: inline-grid;
+  place-items: center;
+  width: 5.2rem;
+  height: 5.2rem;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  background: var(--ck-green-soft);
+  color: var(--ck-green-dark);
+}
+
+.ck-pay-result__card.is-pending .ck-pay-result__badge {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.ck-pay-result__card.is-rejected .ck-pay-result__badge {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+html.dark .ck-pay-result__card.is-pending .ck-pay-result__badge,
+html.dark .ck-pay-result__card.is-rejected .ck-pay-result__badge {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ck-pay-result__eyebrow {
+  margin: 0 0 0.4rem;
+  color: var(--ck-green);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ck-pay-result__card h1 {
+  margin: 0 0 0.8rem;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: var(--ck-text);
+}
+
+.ck-pay-result__lead {
+  margin: 0 auto 1.6rem;
+  max-width: 38rem;
+  color: var(--ck-muted);
+  font-size: 1.5rem;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.ck-pay-result__meta {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0 0 1.8rem;
+  padding: 1.2rem;
+  border-radius: 1.4rem;
+  background: var(--ck-surface);
+  text-align: left;
+}
+
+.ck-pay-result__meta div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ck-pay-result__meta dt {
+  color: var(--ck-muted);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.ck-pay-result__meta dd {
+  margin: 0;
+  color: var(--ck-text);
+  font-size: 1.3rem;
+  font-weight: 800;
+  word-break: break-all;
+}
+
+.ck-pay-result__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
 }
 

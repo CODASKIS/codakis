@@ -22,7 +22,7 @@ export default function PricingPage() {
     <>
       <PageMeta title={t("pricing.pageTitle")} description={t("pricing.pageDescription")} />
 
-      <div className="ck-page" style={{ background: "linear-gradient(180deg, #f5faf7 0%, #f7f9fb 100%)" }}>
+      <div className="ck-page">
         <PublicPageHeader title={t("pricing.pageTitle")} lead={t("pricing.pageLead")} />
 
         <section id="abonnement" className="ck-page-section" style={{ paddingTop: 0 }}>

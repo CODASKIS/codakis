@@ -6782,7 +6782,7 @@ img.fj-tech-avatar {
   margin: 0;
   font-size: 3.2rem;
   font-weight: 700;
-  color: #000;
+  color: var(--ck-text);
   line-height: 1.25;
 }
 
@@ -6837,7 +6837,7 @@ img.fj-tech-avatar {
 }
 
 .fj-pricing-table__billing span.is-active {
-  color: #000;
+  color: var(--ck-text);
   font-weight: 600;
 }
 
@@ -6999,7 +6999,7 @@ img.fj-tech-avatar {
   font-size: 4.8rem;
   font-weight: 600;
   line-height: 1;
-  color: var(--fj-nav-bg);
+  color: var(--ck-text);
 }
 
 .fj-pricing-dark__period {
