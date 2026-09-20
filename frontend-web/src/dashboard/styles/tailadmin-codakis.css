@@ -5,13 +5,13 @@ html:has(.ta-shell) {
 
 @media (max-width: 767px) {
   html:has(.ta-shell) {
-    font-size: 81.25%;
+    font-size: 100%;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
   html:has(.ta-shell) {
-    font-size: 75%;
+    font-size: 87.5%;
   }
 }
 

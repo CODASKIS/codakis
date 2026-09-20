@@ -10,6 +10,7 @@ layer(base);
 @import "./auth/styles/auth.css";
 @import "./learning/styles/learning.css";
 @import "./learning/styles/pro-duo.css";
+@import "./styles/mobile-ui.css";
 
 @custom-variant dark (&:is(.dark *));
 

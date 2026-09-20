@@ -1,0 +1,124 @@
+/* Mobile UI — taille « vraie » type Duolingo (base 16px), interfaces pleine largeur */
+
+@media (max-width: 767px) {
+  html:has(.fj-root),
+  html:has(.ck-learn),
+  html:has(.codakis-auth),
+  html:has(.ta-shell) {
+    font-size: 100% !important; /* 16px — comme Duolingo */
+  }
+
+  .fj-root {
+    font-size: 1.6rem !important;
+  }
+
+  .fj-container {
+    padding-left: 1.6rem !important;
+    padding-right: 1.6rem !important;
+  }
+
+  /* Auth : carte qui remplit l’écran */
+  .codakis-auth__body {
+    padding: 1.2rem 1.2rem 2.4rem !important;
+    gap: 1.2rem !important;
+    align-items: stretch !important;
+  }
+
+  .codakis-auth__card {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 2rem 1.6rem !important;
+    border-radius: 1.6rem !important;
+  }
+
+  .codakis-auth__title {
+    font-size: 3.2rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  .codakis-auth__lead,
+  .codakis-auth__panel > p {
+    font-size: 1.55rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .codakis-auth__top {
+    padding: 1rem 1.2rem !important;
+  }
+
+  .codakis-auth__top .fj-brand__logo,
+  .codakis-auth__logo {
+    height: 3.2rem !important;
+  }
+
+  .codakis-auth-form input,
+  .codakis-auth-form select,
+  .codakis-auth input[type="email"],
+  .codakis-auth input[type="password"],
+  .codakis-auth input[type="text"] {
+    min-height: 5.2rem !important;
+    font-size: 1.7rem !important;
+    padding: 1.2rem 1.4rem !important;
+  }
+
+  .codakis-auth-form__submit,
+  .codakis-auth .ck-btn,
+  .codakis-auth button[type="submit"] {
+    min-height: 5.2rem !important;
+    font-size: 1.55rem !important;
+    width: 100% !important;
+  }
+
+  /* Accueil : cartes & listes plus confortables */
+  .fj-feature-card {
+    padding: 2rem 1.6rem !important;
+  }
+
+  .fj-feature-card h3 {
+    font-size: 2.2rem !important;
+  }
+
+  .fj-feature-card p {
+    font-size: 1.55rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .ck-home-schools__list a,
+  .fj-root.ck-public .ck-home-schools__list a {
+    padding: 1.6rem 1.6rem !important;
+    font-size: 1.6rem !important;
+    border-radius: 1.4rem !important;
+  }
+
+  .ck-page-section__head h2,
+  .ck-public h2 {
+    font-size: clamp(2.4rem, 7vw, 3rem) !important;
+  }
+
+  .ck-page-section__head p,
+  .ck-public .fj-featured__lead {
+    font-size: 1.55rem !important;
+  }
+
+  .fj-btn,
+  .ck-public-btn {
+    min-height: 4.8rem !important;
+    font-size: 1.45rem !important;
+  }
+
+  .fj-header-mobile .fj-btn,
+  .fj-header-mobile .ck-public-btn {
+    min-height: 4rem !important;
+    font-size: 1.25rem !important;
+    padding-inline: 1.2rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html:has(.fj-root),
+  html:has(.ck-learn),
+  html:has(.codakis-auth),
+  html:has(.ta-shell) {
+    font-size: 87.5% !important; /* 14px tablette */
+  }
+}
