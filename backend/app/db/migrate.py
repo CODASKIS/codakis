@@ -17,8 +17,12 @@ def apply_sql_migrations() -> None:
         if not sql:
             continue
         logger.info("Migration SQL : %s", sql_file.name)
-        with engine.begin() as conn:
-            # Exécution DBAPI directe : évite que psycopg interprète % dans LIKE/regexp
-            raw = conn.connection.dbapi_connection
-            with raw.cursor() as cur:
-                cur.execute(sql)
+        try:
+            with engine.begin() as conn:
+                # Exécution DBAPI directe : évite que psycopg interprète % dans LIKE/regexp
+                raw = conn.connection.dbapi_connection
+                with raw.cursor() as cur:
+                    cur.execute(sql)
+        except Exception:
+            logger.exception("Migration SQL échouée : %s", sql_file.name)
+            raise
