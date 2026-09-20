@@ -1826,7 +1826,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 .ck-duo-map__road-layer {
   position: absolute;
   top: 0.8rem;
-  left: calc(55% + 0.8rem);
+  left: 55%;
   right: 0;
   z-index: 1;
   pointer-events: none;
@@ -2081,6 +2081,43 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   color: var(--ck-muted);
 }
 
+/* Unités bouclées : repliées en pastilles, cliquables pour y revenir */
+.ck-duo-map__done {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.ck-duo-map__done-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  border: 0.18rem solid var(--ck-green);
+  border-bottom-width: 0.32rem;
+  background: color-mix(in srgb, var(--ck-green) 12%, #fff);
+  color: var(--ck-green-dark, #008f4c);
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.ck-duo-map__done-chip small {
+  font-size: 1.05rem;
+  font-weight: 750;
+  opacity: 0.8;
+}
+
+.ck-duo-map__done-chip:active {
+  border-bottom-width: 0.18rem;
+  transform: translateY(0.14rem);
+}
+
 .ck-duo-map__units {
   position: relative;
   z-index: 2;
@@ -2289,12 +2326,25 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 }
 
 .ck-unit-step__label {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  min-height: 2.7rem;
+  width: 100%;
+  max-width: 10rem;
   font-size: 1.1rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.25;
   text-align: center;
   color: var(--ck-text);
-  max-width: 9rem;
+  overflow-wrap: anywhere;
+}
+
+.ck-unit-step {
+  align-self: stretch;
+  justify-content: flex-start;
 }
 
 .ck-unit-step__bar {
@@ -2407,7 +2457,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 
   .ck-duo-map__road-layer {
-    left: calc(60% + 0.6rem);
+    left: 60%;
   }
 
   .ck-unit-card.is-first {
@@ -2434,6 +2484,62 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   .ck-unit-card__steps {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+/* Thème sombre : fond, cartes, navigation et route restent lisibles */
+html.dark .ck-learn__feed:has(.ck-roadmap--duo) {
+  background: #0f172a;
+}
+
+html.dark .ck-duo-map__nav {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 0.55rem 0 rgba(0, 0, 0, 0.35);
+}
+
+html.dark .ck-duo-map__nav-label strong {
+  color: #f8fafc;
+}
+
+html.dark .ck-duo-map__nav-btn:disabled {
+  background: #334155;
+  border-color: #475569;
+  color: #64748b;
+}
+
+html.dark .ck-duo-map__done-chip {
+  background: color-mix(in srgb, var(--ck-green) 22%, #0f172a);
+  color: #d1fae5;
+}
+
+html.dark .ck-unit-card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 0.7rem 0 rgba(0, 0, 0, 0.35);
+}
+
+html.dark .ck-unit-card.is-locked {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: #334155;
+  box-shadow: 0 0.7rem 0 rgba(0, 0, 0, 0.35);
+}
+
+html.dark .ck-unit-card__lock {
+  background: #334155;
+  border-color: #475569;
+  color: #cbd5e1;
+}
+
+html.dark .ck-unit-card__locked p {
+  color: #f8fafc;
+}
+
+html.dark .ck-unit-step__bar {
+  background: #334155;
+}
+
+html.dark .ck-duo-map__road {
+  filter: drop-shadow(0 0.25rem 0.4rem rgba(0, 0, 0, 0.5));
 }
 
 html.dark .ck-roadmap__intro,

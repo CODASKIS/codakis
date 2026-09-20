@@ -8,14 +8,17 @@ type Props = {
   currentRef?: string | null;
   onOpenStep: (step: RoadmapStep) => void;
   intro?: { title: string; body: string };
+  /** Un abonné ne voit aucune mention « Premium » sur le parcours. */
+  isPremium?: boolean;
 };
 
 /**
- * Tracé rectiligne à virages arrondis : la route démarre juste à droite de
- * la carte de l’unité en cours puis descend en zigzag jusqu’à l’unité 2.
+ * Tracé rectiligne à virages arrondis. Le premier segment part en dehors du
+ * viewBox (x négatif) pour venir se glisser sous la carte de l’unité en cours ;
+ * le reste du zigzag garde ses distances.
  */
 const ROAD_D =
-  "M 40 30 " +
+  "M -60 30 " +
   "H 112 Q 152 30, 152 70 " +
   "V 110 Q 152 150, 112 150 " +
   "H 88 Q 48 150, 48 190 " +
@@ -33,9 +36,29 @@ function cleanTitle(title: string) {
   return title.replace(/\s*[—–−]+\s*/g, " ").trim();
 }
 
-function shortTitle(title: string, max = 18) {
-  const t = cleanTitle(title);
-  return t.length > max ? `${t.slice(0, max - 1)}…` : t;
+function normalize(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+/**
+ * Libellé d’étape homogène : on retire le nom du thème déjà porté par
+ * l’en-tête de la carte, puis on ramène tout au même gabarit court.
+ */
+function stepLabel(title: string, themeTitle: string, max = 22) {
+  const clean = cleanTitle(title);
+  const themeWords = normalize(themeTitle)
+    .split(/[\s'’-]+/)
+    .filter((w) => w.length > 3);
+
+  const kept = clean
+    .split(/\s+/)
+    .filter((word, idx) => idx === 0 || !themeWords.includes(normalize(word).replace(/[^a-z]/g, "")));
+
+  const label = (kept.join(" ") || clean).replace(/\s*[:–-]\s*$/, "").trim();
+  return label.length > max ? `${label.slice(0, max - 1).trimEnd()}…` : label;
 }
 
 function unitStatus(section: RoadmapSection): "active" | "done" | "locked" {
@@ -128,15 +151,26 @@ function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDir
   );
 }
 
-/** Unité mise en avant par défaut : celle de l’étape en cours. */
+/**
+ * Unité mise en avant par défaut : la première non terminée, pour que l’unité
+ * bouclée laisse sa place à la suivante.
+ */
 function defaultActiveIndex(sections: RoadmapSection[], currentRef?: string | null) {
+  const byProgress = sections.findIndex((s) => unitStatus(s) === "active");
+  if (byProgress >= 0) return byProgress;
   const byRef = sections.findIndex((s) => s.steps.some((step) => step.ref === currentRef));
   if (byRef >= 0) return byRef;
-  const byProgress = sections.findIndex((s) => unitStatus(s) === "active");
-  return byProgress >= 0 ? byProgress : 0;
+  const firstOpen = sections.findIndex((s) => unitStatus(s) !== "done");
+  return firstOpen >= 0 ? firstOpen : 0;
 }
 
-export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intro }: Props) {
+export default function RoadmapWorldMap({
+  sections,
+  currentRef,
+  onOpenStep,
+  intro,
+  isPremium = false,
+}: Props) {
   const minHeight = useMemo(() => Math.max(680, sections.length * 340 + 180), [sections.length]);
   const [activeIndex, setActiveIndex] = useState(() => defaultActiveIndex(sections, currentRef));
   const [drive, setDrive] = useState<{ dir: DriveDirection; n: number } | null>(null);
@@ -153,6 +187,15 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
   }
 
   const activeSection = sections[activeIndex];
+
+  /** Les unités bouclées sortent de la pile et se replient en pastilles. */
+  const doneChips = sections
+    .map((section, index) => ({ section, index }))
+    .filter(({ section, index }) => index !== activeIndex && unitStatus(section) === "done");
+
+  const stackedSections = sections
+    .map((section, index) => ({ section, index }))
+    .filter(({ section, index }) => index === activeIndex || unitStatus(section) !== "done");
 
   return (
     <div className="ck-duo-map">
@@ -200,8 +243,26 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
             <RoadSvg driveKey={drive?.n ?? 0} driveDir={drive?.dir} />
           </div>
 
+          {doneChips.length ? (
+            <div className="ck-duo-map__done" role="list">
+              {doneChips.map(({ section, index }) => (
+                <button
+                  key={section.theme_id}
+                  type="button"
+                  role="listitem"
+                  className="ck-duo-map__done-chip"
+                  onClick={() => goToUnit(index)}
+                >
+                  <Check size={14} strokeWidth={3} />
+                  <span>Unité {section.theme_index}</span>
+                  <small>terminée</small>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <div className="ck-duo-map__units">
-            {sections.map((section, sIdx) => {
+            {stackedSections.map(({ section, index: sIdx }) => {
               const status = unitStatus(section);
               const color = chapterBannerColor(section.theme_title, section.theme_index);
               const doneCount = section.steps.filter((s) => s.status === "done").length;
@@ -239,7 +300,7 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
                       <span className="ck-unit-card__lock">
                         <Lock size={28} strokeWidth={2.5} />
                       </span>
-                      <p>{section.is_premium ? "Contenu Premium" : "Unité verrouillée"}</p>
+                      <p>{section.is_premium && !isPremium ? "Contenu Premium" : "Unité verrouillée"}</p>
                       <small>Terminez l’unité précédente pour débloquer</small>
                     </div>
                   ) : (
@@ -284,7 +345,9 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
                                     <span>{step.type === "quiz" ? "Q" : "C"}</span>
                                   )}
                                 </span>
-                                <span className="ck-unit-step__label">{shortTitle(step.title)}</span>
+                                <span className="ck-unit-step__label">
+                                  {stepLabel(step.title, section.theme_title)}
+                                </span>
                                 <span className="ck-unit-step__bar" aria-hidden>
                                   <i style={{ width: `${pct}%` }} />
                                 </span>

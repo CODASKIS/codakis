@@ -4,6 +4,7 @@ import LockedStepModal from "../../components/LockedStepModal";
 import RoadmapWorldMap from "../../components/RoadmapWorldMap";
 import { fetchRoadmap, type RoadmapResponse, type RoadmapStep } from "../../../lib/pedagogyApi";
 import Loader from "../../../components/common/Loader";
+import { isPremiumUser } from "../../../auth/authStore";
 
 export default function RoadmapPage() {
   const navigate = useNavigate();
@@ -29,6 +30,7 @@ export default function RoadmapPage() {
     };
   }, []);
 
+  const premium = useMemo(() => isPremiumUser(), []);
   const flatSteps = useMemo(() => data?.sections.flatMap((s) => s.steps) ?? [], [data]);
   const gamification = data?.gamification;
   const currentGlobal =
@@ -46,7 +48,7 @@ export default function RoadmapPage() {
   }, [flatSteps]);
 
   function openStep(step: RoadmapStep) {
-    if (step.status === "premium_locked") {
+    if (step.status === "premium_locked" && !premium) {
       navigate("/espace/candidat/super");
       return;
     }
@@ -74,6 +76,7 @@ export default function RoadmapPage() {
           sections={data.sections}
           currentRef={currentGlobal?.ref ?? null}
           onOpenStep={openStep}
+          isPremium={premium}
           intro={{
             title: "Intro au code",
             body: [
