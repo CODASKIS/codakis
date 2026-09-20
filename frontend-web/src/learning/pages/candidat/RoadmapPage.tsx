@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
-import { BookOpen, Lock, Star, X } from "lucide-react";
+import { BookOpen, Lock, Star } from "lucide-react";
 import LockedStepModal from "../../components/LockedStepModal";
 import { chapterBannerColor } from "../../../lib/chapterColors";
 import { fetchRoadmap, type RoadmapResponse, type RoadmapSection, type RoadmapStep } from "../../../lib/pedagogyApi";
