@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session, joinedload, load_only
 from app.db.models import (
     Examen,
     ExamenQuestion,
+    Inscription,
     Lecon,
     LeconProgress,
     Paiement,
@@ -17,9 +18,11 @@ from app.db.models import (
     Reponse,
     RoleUtilisateur,
     StatutArticleBlog,
+    StatutInscription,
     TentativeExamen,
     TentativeQuiz,
     Theme,
+    TypeForfait,
     Utilisateur,
 )
 from app.services.media import slugify
@@ -151,11 +154,15 @@ def _validate_reponses(reponses: list) -> None:
 
 
 def has_premium_access(db: Session, user: Utilisateur) -> bool:
-    """Accès plateforme : abonnement CODAKIS payé et confirmé (cours, quiz, examens)."""
+    """Accès plateforme : abonnement CODAKIS ou forfait auto-école incluant le code."""
     return has_platform_access(db, user)
 
 
 def has_platform_access(db: Session, user: Utilisateur) -> bool:
+    return _has_active_subscription(db, user) or has_code_forfait(db, user)
+
+
+def _has_active_subscription(db: Session, user: Utilisateur) -> bool:
     from app.services.payments import subscription_is_active
 
     row = (
@@ -177,10 +184,27 @@ def has_platform_access(db: Session, user: Utilisateur) -> bool:
     return row.plan_id in {"pro", "premium", "entreprise"}
 
 
+def has_code_forfait(db: Session, user: Utilisateur) -> bool:
+    """Forfait auto-école incluant le code : l'accès plateforme suit l'inscription."""
+    return (
+        db.query(Inscription.id)
+        .filter(
+            Inscription.candidat_id == user.id,
+            Inscription.statut == StatutInscription.confirmee.value,
+            Inscription.forfait_type.in_(
+                (TypeForfait.code_seul.value, TypeForfait.complet.value)
+            ),
+        )
+        .first()
+        is not None
+    )
+
+
 def ensure_platform_access(db: Session, user: Utilisateur) -> None:
     if not has_platform_access(db, user):
         raise ValueError(
-            "Abonnement CODAKIS requis pour accéder aux cours, quiz et examens. "
+            "Abonnement CODAKIS ou forfait auto-école incluant le code requis pour "
+            "accéder aux cours, quiz et examens. "
             "Souscrivez via Mobile Money depuis votre espace candidat."
         )
 
