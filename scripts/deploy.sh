@@ -16,11 +16,13 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 echo "==> Pull latest code"
-if [[ -d .git ]]; then
+if [[ -d .git ]] && [[ "${CODAKIS_SKIP_GIT_PULL:-}" != "1" ]]; then
   git fetch --depth 1 origin main
   git reset --hard origin/main
-else
-  echo "Pas de dépôt git — build du code déjà présent."
+  # Re-exec the freshly pulled script so health-check changes are not skipped
+  # (bash can mis-seek when the running file is rewritten under its feet).
+  export CODAKIS_SKIP_GIT_PULL=1
+  exec bash "$ROOT/scripts/deploy.sh"
 fi
 
 echo "==> Build & start stack"

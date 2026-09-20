@@ -26,4 +26,8 @@ jobs:
               git clone https://github.com/CODASKIS/codakis.git /root/codakis
             fi
             cd /root/codakis
-            ./scripts/deploy.sh
+            # Pull before invoking deploy.sh so the running script is never
+            # rewritten mid-execution (that skipped the health check → false green).
+            git fetch --depth 1 origin main
+            git reset --hard origin/main
+            CODAKIS_SKIP_GIT_PULL=1 ./scripts/deploy.sh
