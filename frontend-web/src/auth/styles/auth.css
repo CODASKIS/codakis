@@ -5,18 +5,18 @@ html:has(.codakis-auth) {
 }
 
 .codakis-auth {
-  --ck-green: #58cc02;
-  --ck-green-dark: #58a700;
-  --ck-green-soft: #d7ffb8;
+  --ck-green: #00a859;
+  --ck-green-dark: #008f4c;
+  --ck-green-soft: rgba(0, 168, 89, 0.14);
   --ck-sky: #1cb0f6;
   --ck-text: #3c3c3c;
   --ck-muted: #777777;
   --ck-line: #e5e5e5;
-  --ck-surface: #ddf4ff;
+  --ck-surface: #e8f7ef;
   --ck-surface-2: #ffffff;
   --ck-shadow: 0 0.2rem 0 #e5e5e5;
-  --fj-cta-bg: #58cc02;
-  --fj-cta-hover: #58a700;
+  --fj-cta-bg: #00a859;
+  --fj-cta-hover: #008f4c;
   font-family: Nunito, system-ui, sans-serif;
   font-size: 1.6rem;
   line-height: 1.5;
@@ -26,13 +26,13 @@ html:has(.codakis-auth) {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(circle at 12% 18%, rgba(88, 204, 2, 0.18), transparent 28%),
-    radial-gradient(circle at 88% 0%, rgba(28, 176, 246, 0.22), transparent 32%),
-    #ddf4ff;
+    radial-gradient(circle at 12% 18%, rgba(0, 168, 89, 0.16), transparent 28%),
+    radial-gradient(circle at 88% 0%, rgba(28, 176, 246, 0.14), transparent 32%),
+    #e8f7ef;
 }
 
 html.dark .codakis-auth {
-  --ck-green-soft: rgba(88, 204, 2, 0.16);
+  --ck-green-soft: rgba(0, 168, 89, 0.18);
   --ck-text: #f1f7fb;
   --ck-muted: #afafaf;
   --ck-line: #37464f;
@@ -40,8 +40,8 @@ html.dark .codakis-auth {
   --ck-surface-2: #202f36;
   --ck-shadow: 0 0.2rem 0 #37464f;
   background:
-    radial-gradient(circle at 8% 0%, rgba(88, 204, 2, 0.14), transparent 30%),
-    radial-gradient(circle at 100% 8%, rgba(28, 176, 246, 0.12), transparent 28%),
+    radial-gradient(circle at 8% 0%, rgba(0, 168, 89, 0.14), transparent 30%),
+    radial-gradient(circle at 100% 8%, rgba(28, 176, 246, 0.1), transparent 28%),
     #131f24;
 }
 
@@ -167,8 +167,8 @@ html.dark .codakis-auth__logo {
   width: 22rem;
   height: 22rem;
   border-radius: 50%;
-  background: #58cc02;
-  box-shadow: 0 0.6rem 0 #58a700;
+  background: #00a859;
+  box-shadow: 0 0.6rem 0 #008f4c;
   z-index: 0;
 }
 
@@ -208,7 +208,7 @@ html.dark .codakis-auth__logo {
 
 .codakis-auth__eyebrow {
   margin: 0 0 0.8rem;
-  color: #58a700;
+  color: #008f4c;
   font-size: 1.3rem;
   font-weight: 800;
   letter-spacing: 0.08em;

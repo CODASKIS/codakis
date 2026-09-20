@@ -5075,7 +5075,7 @@ html.dark .ck-schools-table tbody tr.is-selected {
   margin: 0 auto 1.4rem;
   padding: 0.45rem 1rem;
   border-radius: 999px;
-  background: linear-gradient(90deg, #58cc02, #1cb0f6, #ce82ff);
+  background: linear-gradient(90deg, #00a859, #1cb0f6, #ce82ff);
   font-size: 1.2rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -5090,7 +5090,7 @@ html.dark .ck-schools-table tbody tr.is-selected {
 }
 
 .ck-super__hero h1 span {
-  color: #58cc02;
+  color: #00a859;
 }
 
 .ck-super__hero > p {
