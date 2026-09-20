@@ -11,27 +11,21 @@ type Props = {
 };
 
 /**
- * Serpentine calquée sur la maquette : la route occupe la colonne à droite
- * de l’unité 1 et descend jusqu’au croisement placé sur l’unité 2.
+ * Tracé rectiligne à virages arrondis : la route démarre juste à droite de
+ * la carte de l’unité en cours puis descend en zigzag jusqu’à l’unité 2.
  */
 const ROAD_D =
-  "M 100 16 " +
-  "C 160 32, 176 70, 140 100 " +
-  "C 104 130, 46 146, 40 182 " +
-  "C 34 218, 96 236, 136 262 " +
-  "C 170 284, 176 320, 140 346 " +
-  "C 104 372, 46 388, 42 422 " +
-  "C 39 454, 100 472, 128 496 " +
-  "C 150 514, 150 538, 140 560";
+  "M 40 30 " +
+  "H 112 Q 152 30, 152 70 " +
+  "V 110 Q 152 150, 112 150 " +
+  "H 88 Q 48 150, 48 190 " +
+  "V 230 Q 48 270, 88 270 " +
+  "H 112 Q 152 270, 152 310 " +
+  "V 350 Q 152 390, 112 390 " +
+  "H 88 Q 48 390, 48 430";
 
-const ROAD_W = 50;
-const ROAD_EDGE = 58;
-
-const DIAMONDS: ReadonlyArray<readonly [number, number]> = [
-  [172, 74],
-  [170, 330],
-  [22, 452],
-];
+const ROAD_W = 46;
+const ROAD_EDGE = 54;
 
 function cleanTitle(title: string) {
   return title.replace(/\s*[—–−]+\s*/g, " ").trim();
@@ -63,7 +57,7 @@ function stepProgress(step: RoadmapStep): number {
 
 function RoadSvg() {
   return (
-    <svg className="ck-duo-map__road" viewBox="0 0 200 600" preserveAspectRatio="xMidYMid meet" aria-hidden>
+    <svg className="ck-duo-map__road" viewBox="0 0 200 460" preserveAspectRatio="xMinYMin meet" aria-hidden>
       {/* Bords clairs */}
       <path
         d={ROAD_D}
@@ -87,60 +81,41 @@ function RoadSvg() {
         d={ROAD_D}
         fill="none"
         stroke="#f8fafc"
-        strokeWidth="2.8"
+        strokeWidth="2.6"
         strokeLinecap="butt"
-        strokeDasharray="12 14"
+        strokeDasharray="11 13"
       />
 
-      {/* Losanges dorés le long du tracé */}
-      {DIAMONDS.map(([x, y], i) => (
-        <g key={i} transform={`translate(${x} ${y}) rotate(45)`}>
-          <rect x={-8} y={-8} width={16} height={16} rx={2} fill="#fbbf24" stroke="#d97706" strokeWidth="1.4" />
-        </g>
-      ))}
+      {/* Losange doré dans le premier virage */}
+      <g transform="translate(85 90) rotate(45)">
+        <rect x={-8} y={-8} width={16} height={16} rx={2} fill="#fbbf24" stroke="#d97706" strokeWidth="1.4" />
+      </g>
 
-      {/* Panneau danger (gauche) */}
-      <g transform="translate(20 198)">
-        <line x1="0" y1="6" x2="0" y2="30" stroke="#64748b" strokeWidth="2.6" />
-        <polygon points="0,-10 13,12 -13,12" fill="#fff" stroke="#e11d48" strokeWidth="2.6" />
-        <text x="0" y="9" textAnchor="middle" fill="#e11d48" fontSize="11" fontWeight="900">
+      {/* Panneau bleu dans le deuxième virage */}
+      <g transform="translate(125 210)">
+        <line x1="0" y1="10" x2="0" y2="30" stroke="#64748b" strokeWidth="2.4" />
+        <circle cx="0" cy="0" r="10" fill="#2563eb" stroke="#fff" strokeWidth="2.4" />
+        <circle cx="0" cy="0" r="3.6" fill="#fff" />
+      </g>
+
+      {/* Panneau danger dans le troisième virage */}
+      <g transform="translate(80 330)">
+        <line x1="0" y1="8" x2="0" y2="28" stroke="#64748b" strokeWidth="2.4" />
+        <polygon points="0,-11 12,10 -12,10" fill="#fff" stroke="#e11d48" strokeWidth="2.4" />
+        <text x="0" y="8" textAnchor="middle" fill="#e11d48" fontSize="10" fontWeight="900">
           !
         </text>
       </g>
 
-      {/* Panneau bleu (droite) */}
-      <g transform="translate(180 250)">
-        <line x1="0" y1="10" x2="0" y2="34" stroke="#64748b" strokeWidth="2.6" />
-        <circle cx="0" cy="0" r="11" fill="#2563eb" stroke="#fff" strokeWidth="2.6" />
-        <circle cx="0" cy="0" r="4" fill="#fff" />
-      </g>
-
-      {/* Panneau stop (bas) */}
-      <g transform="translate(24 512)">
-        <line x1="0" y1="10" x2="0" y2="34" stroke="#64748b" strokeWidth="2.6" />
-        <polygon points="0,-12 11,-4 11,8 0,16 -11,8 -11,-4" fill="#dc2626" stroke="#fff" strokeWidth="2" />
-      </g>
-    </svg>
-  );
-}
-
-/** Croisement en X posé au niveau de l’unité 2, comme sur la maquette. */
-function CrossingSvg() {
-  return (
-    <svg className="ck-duo-map__crossing" viewBox="0 0 220 160" preserveAspectRatio="xMidYMid meet" aria-hidden>
-      <path
-        d="M 20 20 L 200 140 M 200 20 L 20 140"
-        fill="none"
-        stroke="#c6ccd4"
-        strokeWidth="34"
-        strokeLinecap="round"
-      />
-      <path
-        d="M 20 20 L 200 140 M 200 20 L 20 140"
-        fill="none"
-        stroke="#b9c0c9"
-        strokeWidth="26"
-        strokeLinecap="round"
+      {/* Voiture posée au départ de la route */}
+      <image
+        className="ck-duo-map__car"
+        href="/images/auth/cartoon-red-car.png"
+        x="22"
+        y="2"
+        width="76"
+        height="56"
+        preserveAspectRatio="xMidYMid meet"
       />
     </svg>
   );
@@ -162,17 +137,6 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
         <div className="ck-duo-map__path" style={{ minHeight }}>
           <div className="ck-duo-map__road-layer" aria-hidden>
             <RoadSvg />
-            <img
-              className="ck-duo-map__car"
-              src="/images/auth/cartoon-red-car.png"
-              alt=""
-              width={96}
-              height={70}
-            />
-          </div>
-
-          <div className="ck-duo-map__crossing-layer" aria-hidden>
-            <CrossingSvg />
           </div>
 
           <div className="ck-duo-map__units">
