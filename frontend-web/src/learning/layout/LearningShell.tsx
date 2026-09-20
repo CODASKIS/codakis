@@ -198,6 +198,8 @@ export default function LearningShell() {
                     preferencesTo="/espace/candidat/preferences"
                     onClose={() => setMenuOpen(false)}
                     onLogout={logout}
+                    niveau={niveau}
+                    points={points}
                     extraLinks={[
                       {
                         to: "/espace/candidat/statistiques",

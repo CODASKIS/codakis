@@ -330,6 +330,22 @@ class GamificationResponse(BaseModel):
     points_to_next_level: int
 
 
+class LeaderboardEntry(BaseModel):
+    rank: int
+    user_id: str
+    display_name: str
+    avatar_url: str | None = None
+    points: int
+    niveau: int
+    is_you: bool = False
+
+
+class LeaderboardResponse(BaseModel):
+    entries: list[LeaderboardEntry] = Field(default_factory=list)
+    your_rank: int | None = None
+    total_players: int = 0
+
+
 class RoadmapStep(BaseModel):
     type: str
     id: str

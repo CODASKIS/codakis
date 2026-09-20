@@ -339,6 +339,22 @@ export type Gamification = {
   points_to_next_level: number;
 };
 
+export type LeaderboardEntry = {
+  rank: number;
+  user_id: string;
+  display_name: string;
+  avatar_url?: string | null;
+  points: number;
+  niveau: number;
+  is_you: boolean;
+};
+
+export type LeaderboardResponse = {
+  entries: LeaderboardEntry[];
+  your_rank: number | null;
+  total_players: number;
+};
+
 export type RoadmapStep = {
   type: "lecon" | "quiz";
   id: string;
@@ -370,6 +386,10 @@ export type RoadmapResponse = {
 
 export async function fetchGamification(): Promise<Gamification> {
   return authFetch<Gamification>("/api/v1/candidat/pedagogy/gamification");
+}
+
+export async function fetchLeaderboard(limit = 8): Promise<LeaderboardResponse> {
+  return authFetch<LeaderboardResponse>(`/api/v1/candidat/pedagogy/leaderboard?limit=${limit}`);
 }
 
 export async function fetchRoadmap(): Promise<RoadmapResponse> {

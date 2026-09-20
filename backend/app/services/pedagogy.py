@@ -15,6 +15,7 @@ from app.db.models import (
     Quiz,
     QuizQuestion,
     Reponse,
+    RoleUtilisateur,
     StatutArticleBlog,
     TentativeExamen,
     TentativeQuiz,
@@ -993,6 +994,76 @@ def get_gamification(db: Session, candidat: Utilisateur) -> dict:
         "chapters_total": progress["total_lecons"],
         "next_level_at": next_at,
         "points_to_next_level": max(0, next_at - points),
+    }
+
+
+def _display_name(user: Utilisateur) -> str:
+    full = f"{(user.prenom or '').strip()} {(user.nom or '').strip()}".strip()
+    if full:
+        return full
+    email = (user.email or "").strip()
+    return email.split("@")[0] if email else "Candidat"
+
+
+def get_leaderboard(db: Session, candidat: Utilisateur, *, limit: int = 8) -> dict:
+    limit = max(3, min(int(limit or 8), 20))
+    rows = (
+        db.query(Utilisateur)
+        .filter(Utilisateur.role == RoleUtilisateur.candidat)
+        .order_by(Utilisateur.points.desc(), Utilisateur.created_at.asc())
+        .limit(limit)
+        .all()
+    )
+    total_players = (
+        db.query(func.count(Utilisateur.id)).filter(Utilisateur.role == RoleUtilisateur.candidat).scalar() or 0
+    )
+    your_points = int(getattr(candidat, "points", 0) or 0)
+    ahead = (
+        db.query(func.count(Utilisateur.id))
+        .filter(
+            Utilisateur.role == RoleUtilisateur.candidat,
+            Utilisateur.points > your_points,
+        )
+        .scalar()
+        or 0
+    )
+    your_rank = int(ahead) + 1 if total_players else None
+
+    seen_you = False
+    entries: list[dict] = []
+    for index, row in enumerate(rows, start=1):
+        is_you = str(row.id) == str(candidat.id)
+        if is_you:
+            seen_you = True
+        entries.append(
+            {
+                "rank": index,
+                "user_id": str(row.id),
+                "display_name": "Vous" if is_you else _display_name(row),
+                "avatar_url": row.avatar_url,
+                "points": int(getattr(row, "points", 0) or 0),
+                "niveau": niveau_from_points(int(getattr(row, "points", 0) or 0)),
+                "is_you": is_you,
+            }
+        )
+
+    if your_rank and not seen_you and total_players:
+        entries.append(
+            {
+                "rank": your_rank,
+                "user_id": str(candidat.id),
+                "display_name": "Vous",
+                "avatar_url": candidat.avatar_url,
+                "points": your_points,
+                "niveau": niveau_from_points(your_points),
+                "is_you": True,
+            }
+        )
+
+    return {
+        "entries": entries,
+        "your_rank": your_rank,
+        "total_players": int(total_players),
     }
 
 

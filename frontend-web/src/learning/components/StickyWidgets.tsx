@@ -1,7 +1,23 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { Award, BookOpen, Car, Medal, Shield, Star, Target, Trophy } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  Car,
+  Crown,
+  Medal,
+  Shield,
+  Star,
+  Target,
+  Trophy,
+} from "lucide-react";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
-import type { Gamification } from "../../lib/pedagogyApi";
+import {
+  fetchLeaderboard,
+  type Gamification,
+  type LeaderboardEntry,
+  type LeaderboardResponse,
+} from "../../lib/pedagogyApi";
 
 type Props = {
   stats: Gamification | null;
@@ -24,11 +40,13 @@ type CollectionItem = {
   Icon: typeof Car;
 };
 
+const LEVEL_STEP = 150;
+
 const VEHICLES = [
   { id: "citadine", unlockedAt: 0, label: "Citadine", color: "#e11d48" },
-  { id: "berline", unlockedAt: 80, label: "Berline", color: "#0ea5e9" },
-  { id: "suv", unlockedAt: 200, label: "SUV", color: "#00a859" },
-  { id: "sport", unlockedAt: 400, label: "Sport", color: "#f59e0b" },
+  { id: "berline", unlockedAt: LEVEL_STEP, label: "Berline", color: "#0ea5e9" },
+  { id: "suv", unlockedAt: LEVEL_STEP * 2, label: "SUV", color: "#00a859" },
+  { id: "sport", unlockedAt: LEVEL_STEP * 3, label: "Sport", color: "#f59e0b" },
 ] as const;
 
 function buildCollection(input: {
@@ -44,7 +62,7 @@ function buildCollection(input: {
   const vehicles: CollectionItem[] = VEHICLES.map((v) => ({
     id: v.id,
     label: v.label,
-    hint: v.unlockedAt === 0 ? "Véhicule de départ" : `${v.unlockedAt} points`,
+    hint: v.unlockedAt === 0 ? "Véhicule de départ" : `Niveau ${1 + v.unlockedAt / LEVEL_STEP}`,
     color: v.color,
     unlocked: points >= v.unlockedAt,
     Icon: Car,
@@ -96,12 +114,19 @@ function buildCollection(input: {
       label: "Champion",
       hint: "Niveau 3",
       color: "#f97316",
-      unlocked: points >= 300,
+      unlocked: points >= LEVEL_STEP * 2,
       Icon: Trophy,
     },
   ];
 
   return [...vehicles, ...badges];
+}
+
+function rankMedal(rank: number) {
+  if (rank === 1) return { Icon: Crown, tone: "gold" as const };
+  if (rank === 2) return { Icon: Medal, tone: "silver" as const };
+  if (rank === 3) return { Icon: Medal, tone: "bronze" as const };
+  return { Icon: Medal, tone: "plain" as const };
 }
 
 export default function StickyWidgets({
@@ -116,13 +141,15 @@ export default function StickyWidgets({
   avatarUrl,
 }: Props) {
   const points = stats?.points ?? 0;
-  const nextAt = stats?.next_level_at ?? 150;
+  const niveau = stats?.niveau ?? 1;
+  const nextAt = stats?.next_level_at ?? LEVEL_STEP;
   const toNext = stats?.points_to_next_level ?? Math.max(0, nextAt - points);
-  const levelProgress = nextAt > 0 ? Math.min(100, Math.round(((nextAt - toNext) / nextAt) * 100)) : 0;
+  const levelFloor = Math.max(0, (niveau - 1) * LEVEL_STEP);
+  const levelSpan = Math.max(1, nextAt - levelFloor);
+  const levelProgress = Math.min(100, Math.round(((points - levelFloor) / levelSpan) * 100));
   const ring = Math.max(0, Math.min(100, successRate));
   const chaptersRead = stats?.chapters_read ?? 0;
   const currentVehicle = [...VEHICLES].reverse().find((v) => points >= v.unlockedAt) ?? VEHICLES[0];
-  const ringColor = "#00a859";
   const collection = buildCollection({
     points,
     chaptersRead,
@@ -133,20 +160,64 @@ export default function StickyWidgets({
   });
   const unlockedCount = collection.filter((item) => item.unlocked).length;
 
+  const [board, setBoard] = useState<LeaderboardResponse | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void fetchLeaderboard(6)
+      .then((data) => {
+        if (!cancelled) setBoard(data);
+      })
+      .catch(() => {
+        if (!cancelled) setBoard(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [points, niveau]);
+
+  const fallbackRow: LeaderboardEntry = {
+    rank: board?.your_rank ?? 1,
+    user_id: "you",
+    display_name: "Vous",
+    avatar_url: avatarUrl,
+    points,
+    niveau,
+    is_you: true,
+  };
+  const rows = board?.entries?.length ? board.entries : [fallbackRow];
+
   return (
     <aside className="ck-sticky" aria-label="Progression">
-      <section className="ck-widget">
-        <h2 className="ck-widget__title">Véhicule</h2>
+      <section className="ck-widget ck-widget--level">
+        <div className="ck-widget__level-head">
+          <span className="ck-widget__level-pill">
+            <Trophy size={14} aria-hidden />
+            Niveau {niveau}
+          </span>
+          <strong className="ck-widget__level-pts">{points} pts</strong>
+        </div>
+
         <div className="ck-widget__vehicle">
           <div
             className="ck-widget__car"
             style={{ background: `${currentVehicle.color}22`, color: currentVehicle.color }}
             aria-hidden
           >
-            <Car size={56} strokeWidth={1.5} />
+            <Car size={52} strokeWidth={1.6} />
           </div>
-          <p className="ck-widget__hint">{toNext} points pour changer de niveau</p>
-          <div className="ck-widget__bar" aria-hidden>
+          <p className="ck-widget__car-name">{currentVehicle.label}</p>
+          <p className="ck-widget__hint">
+            {toNext > 0 ? `${toNext} pts pour le niveau ${niveau + 1}` : "Niveau maximum atteint"}
+          </p>
+          <div
+            className="ck-widget__bar"
+            role="progressbar"
+            aria-valuenow={levelProgress}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Progression niveau ${niveau}`}
+          >
             <span
               style={{
                 width: `${levelProgress}%`,
@@ -154,7 +225,12 @@ export default function StickyWidgets({
               }}
             />
           </div>
+          <div className="ck-widget__bar-meta">
+            <span>{points - levelFloor} / {levelSpan}</span>
+            <span>{levelProgress}%</span>
+          </div>
         </div>
+
         <div className="ck-widget__collection">
           <span className="ck-widget__label">
             Collection · {unlockedCount}/{collection.length}
@@ -175,7 +251,7 @@ export default function StickyWidgets({
                   }
                   title={item.unlocked ? `${item.label} — ${item.hint}` : `Verrouillé · ${item.hint}`}
                 >
-                  {item.unlocked ? <Icon size={20} strokeWidth={2.4} /> : "?"}
+                  {item.unlocked ? <Icon size={18} strokeWidth={2.4} /> : "?"}
                 </span>
               );
             })}
@@ -197,15 +273,13 @@ export default function StickyWidgets({
             <path
               d="M10 60 A50 50 0 0 1 110 60"
               fill="none"
-              stroke={ringColor}
+              stroke="var(--ck-green)"
               strokeWidth="12"
               strokeLinecap="round"
               strokeDasharray={`${(ring / 100) * 157} 157`}
             />
           </svg>
-          <strong className="ck-widget__ring-value" style={{ color: ringColor }}>
-            {ring}%
-          </strong>
+          <strong className="ck-widget__ring-value">{ring}%</strong>
           <span className="ck-widget__ring-caption">Correct au 1er essai</span>
         </div>
         <div className="ck-widget__split">
@@ -225,33 +299,49 @@ export default function StickyWidgets({
         </Link>
       </section>
 
-      <section className="ck-widget">
-        <h2 className="ck-widget__title">Classement</h2>
-        <div className="ck-widget__rank is-you">
-          <Medal size={22} className="ck-widget__medal" />
-          <img
-            src={getUserAvatarUrl(userName, 32, avatarUrl)}
-            alt=""
-            className="ck-avatar-photo"
-            width={32}
-            height={32}
-          />
-          <span className="ck-widget__rank-name">Vous</span>
-          <Car size={18} style={{ color: currentVehicle.color }} aria-hidden />
-          <strong className="ck-widget__rank-pts">{points}</strong>
+      <section className="ck-widget ck-widget--rank">
+        <div className="ck-widget__rank-head">
+          <h2 className="ck-widget__title">Classement</h2>
+          {board?.your_rank ? (
+            <span className="ck-widget__rank-chip">#{board.your_rank}</span>
+          ) : null}
         </div>
-        <p className="ck-empty" style={{ padding: "1.2rem 0 0", fontSize: "1.3rem" }}>
-          Invitez des amis pour monter au classement.
-        </p>
-      </section>
 
-      <section className="ck-widget ck-widget--soft">
-        <div className="ck-widget__level-row">
-          <Trophy size={20} />
-          <span>
-            Niveau {stats?.niveau ?? 1} · {points} pts
-          </span>
-        </div>
+        <ul className="ck-widget__rank-list">
+          {rows.map((row) => {
+            const { Icon, tone } = rankMedal(row.rank);
+            return (
+              <li
+                key={`${row.user_id}-${row.rank}`}
+                className={`ck-widget__rank${row.is_you ? " is-you" : ""}`}
+              >
+                <span className={`ck-widget__medal is-${tone}`} aria-hidden>
+                  {row.rank <= 3 ? <Icon size={16} /> : <span>{row.rank}</span>}
+                </span>
+                <img
+                  src={getUserAvatarUrl(row.is_you ? userName : row.display_name, 32, row.avatar_url)}
+                  alt=""
+                  className="ck-avatar-photo"
+                  width={32}
+                  height={32}
+                />
+                <div className="ck-widget__rank-meta">
+                  <span className="ck-widget__rank-name">{row.display_name}</span>
+                  <small>Niv. {row.niveau}</small>
+                </div>
+                <strong className="ck-widget__rank-pts">{row.points}</strong>
+              </li>
+            );
+          })}
+        </ul>
+
+        {board && board.total_players > 1 ? (
+          <p className="ck-widget__rank-foot">
+            {board.total_players} candidats · continuez pour monter
+          </p>
+        ) : (
+          <p className="ck-widget__rank-foot">Invitez des amis pour monter au classement.</p>
+        )}
       </section>
     </aside>
   );

@@ -14,6 +14,7 @@ from app.schemas.pedagogy import (
     CheckpointValidateResponse,
     CoursePathResponse,
     GamificationResponse,
+    LeaderboardResponse,
     RoadmapResponse,
     QuestionPublic,
     TtsRequest,
@@ -57,6 +58,7 @@ from app.services.pedagogy import (
     get_examen_questions,
     get_gamification,
     get_global_roadmap,
+    get_leaderboard,
     get_quiz_questions,
     get_theme_checkpoint,
     get_theme_course_path,
@@ -352,6 +354,15 @@ def candidat_dashboard(candidat: Utilisateur = Depends(CandidatUser), db: Sessio
 @candidat_router.get("/gamification", response_model=GamificationResponse)
 def candidat_gamification(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     return get_gamification(db, candidat)
+
+
+@candidat_router.get("/leaderboard", response_model=LeaderboardResponse)
+def candidat_leaderboard(
+    limit: int = Query(8, ge=3, le=20),
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    return get_leaderboard(db, candidat, limit=limit)
 
 
 @candidat_router.get("/roadmap", response_model=RoadmapResponse)
