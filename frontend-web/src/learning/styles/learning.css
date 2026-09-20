@@ -2081,14 +2081,13 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   color: var(--ck-muted);
 }
 
-/* Unités bouclées : repliées en pastilles, cliquables pour y revenir */
+/* Unités dépassées : repliées en pastilles, cliquables pour y revenir */
 .ck-duo-map__done {
   position: relative;
   z-index: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
-  margin-bottom: 1.2rem;
 }
 
 .ck-duo-map__done-chip {
@@ -2105,6 +2104,13 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   font-size: 1.2rem;
   font-weight: 900;
   cursor: pointer;
+}
+
+/* Unité dépassée sans être terminée : pastille neutre pour y revenir */
+.ck-duo-map__done-chip.is-todo {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: var(--ck-muted);
 }
 
 .ck-duo-map__done-chip small {

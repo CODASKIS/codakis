@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Check, ChevronDown, ChevronUp, Lock, Star, TrafficCone } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Check, ChevronDown, ChevronUp, Lock, RotateCcw, Star, TrafficCone } from "lucide-react";
 import { chapterBannerColor } from "../../lib/chapterColors";
 import type { RoadmapSection, RoadmapStep } from "../../lib/pedagogyApi";
 
@@ -171,7 +171,6 @@ export default function RoadmapWorldMap({
   intro,
   isPremium = false,
 }: Props) {
-  const minHeight = useMemo(() => Math.max(680, sections.length * 340 + 180), [sections.length]);
   const [activeIndex, setActiveIndex] = useState(() => defaultActiveIndex(sections, currentRef));
   const [drive, setDrive] = useState<{ dir: DriveDirection; n: number } | null>(null);
 
@@ -188,14 +187,17 @@ export default function RoadmapWorldMap({
 
   const activeSection = sections[activeIndex];
 
-  /** Les unités bouclées sortent de la pile et se replient en pastilles. */
-  const doneChips = sections
+  /** Les unités dépassées sortent de la pile et se replient en pastilles dans la colonne de gauche. */
+  const passedChips = sections
     .map((section, index) => ({ section, index }))
-    .filter(({ section, index }) => index !== activeIndex && unitStatus(section) === "done");
+    .filter(({ index }) => index < activeIndex);
 
+  /** L’unité en cours occupe toujours le premier emplacement, la suite se décale sous elle. */
   const stackedSections = sections
     .map((section, index) => ({ section, index }))
-    .filter(({ section, index }) => index === activeIndex || unitStatus(section) !== "done");
+    .filter(({ index }) => index >= activeIndex);
+
+  const minHeight = Math.max(680, stackedSections.length * 340 + 180);
 
   return (
     <div className="ck-duo-map">
@@ -236,30 +238,37 @@ export default function RoadmapWorldMap({
               </button>
             </nav>
           ) : null}
+
+          {passedChips.length ? (
+            <div className="ck-duo-map__done" role="list">
+              {passedChips.map(({ section, index }) => {
+                const done = unitStatus(section) === "done";
+                return (
+                  <button
+                    key={section.theme_id}
+                    type="button"
+                    role="listitem"
+                    className={`ck-duo-map__done-chip${done ? "" : " is-todo"}`}
+                    onClick={() => goToUnit(index)}
+                  >
+                    {done ? (
+                      <Check size={14} strokeWidth={3} />
+                    ) : (
+                      <RotateCcw size={14} strokeWidth={3} />
+                    )}
+                    <span>Unité {section.theme_index}</span>
+                    <small>{done ? "terminée" : "à reprendre"}</small>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
 
         <div className="ck-duo-map__path" style={{ minHeight }}>
           <div className="ck-duo-map__road-layer" aria-hidden>
             <RoadSvg driveKey={drive?.n ?? 0} driveDir={drive?.dir} />
           </div>
-
-          {doneChips.length ? (
-            <div className="ck-duo-map__done" role="list">
-              {doneChips.map(({ section, index }) => (
-                <button
-                  key={section.theme_id}
-                  type="button"
-                  role="listitem"
-                  className="ck-duo-map__done-chip"
-                  onClick={() => goToUnit(index)}
-                >
-                  <Check size={14} strokeWidth={3} />
-                  <span>Unité {section.theme_index}</span>
-                  <small>terminée</small>
-                </button>
-              ))}
-            </div>
-          ) : null}
 
           <div className="ck-duo-map__units">
             {stackedSections.map(({ section, index: sIdx }) => {

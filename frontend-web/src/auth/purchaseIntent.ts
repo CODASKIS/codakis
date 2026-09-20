@@ -2,6 +2,7 @@ import type { SchoolForfaitType } from "../data/mockDrivingSchools";
 import { AUTH_PATHS } from "../constants/authPaths";
 import type { UserRole } from "./types";
 import { getRoleDashboardPath } from "./roles";
+import { getSession } from "./authStore";
 
 const STORAGE_KEY = "codakis-purchase-intent";
 
@@ -92,6 +93,15 @@ export function consumeAuthRedirect(): string | null {
   return value;
 }
 
+/** Abonnement CODAKIS actif ou forfait auto-école déjà payé (ou en cours de confirmation). */
+function candidatHasPaid(): boolean {
+  const session = getSession();
+  if (session?.role !== "candidat") return false;
+  if ((session.plan ?? "free") === "premium") return true;
+  const status = session.enrollment?.status;
+  return status === "confirmed" || status === "pending";
+}
+
 /** Après connexion / inscription — reprend l'achat forfait, redirect ou espace par défaut. */
 export function resolveAuthRedirect(role: UserRole): string {
   const intent = getPurchaseIntent();
@@ -101,7 +111,7 @@ export function resolveAuthRedirect(role: UserRole): string {
   }
   const redirect = consumeAuthRedirect();
   if (redirect) return redirect;
-  if (role === "candidat") return "/tarifs";
+  if (role === "candidat" && !candidatHasPaid()) return "/tarifs";
   return getRoleDashboardPath(role);
 }
 
