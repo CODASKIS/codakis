@@ -429,7 +429,10 @@ def subscription_is_active(paiement: Paiement, *, now: datetime | None = None) -
 def _verify_provider_payment(paiement: Paiement) -> str:
     """
     Vérifie le paiement côté opérateur.
-    Retourne 'completed' | 'failed' | 'pending'.
+    Retourne 'completed' | 'failed' | 'pending' | 'unknown'.
+
+    'unknown' signale que l'opérateur n'a pas pu être interrogé : un tel paiement
+    ne doit jamais être abandonné automatiquement.
     """
     channel = (paiement.channel or "").lower()
 
@@ -446,7 +449,7 @@ def _verify_provider_payment(paiement: Paiement) -> str:
             return "pending"
         except Exception:
             logger.exception("Vérification CinetPay impossible pour %s", paiement.reference)
-            return "pending"
+            return "unknown"
 
     if channel == "pawapay":
         from app.services.pawapay import get_checkout_status
@@ -454,18 +457,21 @@ def _verify_provider_payment(paiement: Paiement) -> str:
         checkout_id = paiement.provider_checkout_id
         if not checkout_id:
             logger.warning("PawaPay: pas de checkout_id stocké pour %s", paiement.reference)
-            return "pending"
+            return "unknown"
         try:
             check = get_checkout_status(checkout_id)
             status = str(check.get("status") or "").upper()
+            logger.info("PawaPay statut %s pour %s", status or "?", paiement.reference)
             if status == "COMPLETED":
                 return "completed"
             if status in {"FAILED", "EXPIRED", "CANCELLED", "CANCELED"}:
                 return "failed"
+            if not status:
+                return "unknown"
             return "pending"
         except Exception:
             logger.exception("Vérification PawaPay impossible pour %s", paiement.reference)
-            return "pending"
+            return "unknown"
 
     # Sandbox Mobile Money local : autorisé hors production uniquement
     if channel in {"demo", "orange", "mtn", "moov", "legacy"}:
@@ -609,7 +615,19 @@ def reconcile_pending_payments(db: Session, *, limit: int = 200) -> dict:
         .all()
     )
 
-    stats = {"checked": 0, "completed": 0, "failed": 0, "abandoned": 0, "pending": 0}
+    stats = {"checked": 0, "completed": 0, "failed": 0, "abandoned": 0, "pending": 0, "unknown": 0}
+    details: list[dict] = []
+
+    def note(paiement: Paiement, provider_status: str, outcome: str) -> None:
+        details.append(
+            {
+                "reference": paiement.reference,
+                "channel": paiement.channel,
+                "provider_status": provider_status,
+                "outcome": outcome,
+            }
+        )
+
     for paiement in rows:
         stats["checked"] += 1
         provider_status = _verify_provider_payment(paiement)
@@ -617,19 +635,29 @@ def reconcile_pending_payments(db: Session, *, limit: int = 200) -> dict:
         if provider_status == "completed":
             user = db.get(Utilisateur, paiement.utilisateur_id)
             if user is None:
+                note(paiement, provider_status, "utilisateur_introuvable")
                 continue
             try:
                 confirm_payment(db, user, paiement.reference, skip_provider_check=True)
             except ValueError:
                 logger.exception("Réconciliation impossible pour %s", paiement.reference)
+                note(paiement, provider_status, "erreur")
                 continue
             logger.info("Paiement %s confirmé par réconciliation", paiement.reference)
             stats["completed"] += 1
+            note(paiement, provider_status, "confirmé")
             continue
 
         if provider_status == "failed":
             fail_payment(db, paiement, "Paiement refusé ou expiré chez l'opérateur")
             stats["failed"] += 1
+            note(paiement, provider_status, "échoué")
+            continue
+
+        if provider_status == "unknown":
+            # Opérateur injoignable : on laisse le paiement en attente pour le prochain passage.
+            stats["unknown"] += 1
+            note(paiement, provider_status, "à revérifier")
             continue
 
         created = paiement.created_at
@@ -638,11 +666,13 @@ def reconcile_pending_payments(db: Session, *, limit: int = 200) -> dict:
         if created is not None and now - created > ABANDON_AFTER:
             fail_payment(db, paiement, "Paiement abandonné : aucune confirmation de l'opérateur")
             stats["abandoned"] += 1
+            note(paiement, provider_status, "abandonné")
             continue
 
         stats["pending"] += 1
+        note(paiement, provider_status, "en attente")
 
-    return stats
+    return {**stats, "details": details}
 
 
 def get_my_subscription(db: Session, user: Utilisateur) -> dict | None:

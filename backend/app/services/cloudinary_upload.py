@@ -71,8 +71,9 @@ def _configure() -> None:
     if settings.cloudinary_url.strip():
         cloudinary.config(cloudinary_url=settings.cloudinary_url.strip())
     else:
+        # Cloudinary n'accepte que des cloud_name en minuscules : « Codakis » est rejeté.
         cloudinary.config(
-            cloud_name=settings.cloudinary_cloud_name.strip(),
+            cloud_name=settings.cloudinary_cloud_name.strip().lower(),
             api_key=settings.cloudinary_api_key.strip(),
             api_secret=settings.cloudinary_api_secret.strip(),
             secure=True,
