@@ -223,7 +223,7 @@ export default function StatsPage() {
                         <span
                           style={{
                             width: `${pct}%`,
-                            background: done ? "#58CC02" : q.color,
+                            background: done ? "#00a859" : q.color,
                           }}
                         />
                       </div>
@@ -279,7 +279,7 @@ export default function StatsPage() {
             <article className="ck-kpi">
               <span
                 className="ck-kpi__icon"
-                style={{ background: "#E5F9EF", color: "#58CC02" }}
+                style={{ background: "#E5F9EF", color: "#00a859" }}
               >
                 <Trophy size={26} strokeWidth={2.3} />
               </span>
@@ -346,7 +346,7 @@ export default function StatsPage() {
               const locked = level > niveau;
               return (
                 <article key={`niveau-${level}`} className={`ck-duo-achievement ${locked ? "is-locked" : ""}`}>
-                  <span className="ck-duo-achievement__icon" style={{ background: locked ? "#d1d5db" : "#58CC02" }}>
+                  <span className="ck-duo-achievement__icon" style={{ background: locked ? "#d1d5db" : "#00a859" }}>
                     <Medal size={28} color="#fff" strokeWidth={2.3} aria-hidden />
                     {!locked ? <small>OK</small> : null}
                   </span>
@@ -365,7 +365,7 @@ export default function StatsPage() {
                             id: `niveau-${level}`,
                             title: `Niveau ${level}`,
                             subtitle: `${points} points`,
-                            color: "#58CC02",
+                            color: "#00a859",
                           })
                         }
                       >
@@ -373,7 +373,7 @@ export default function StatsPage() {
                       </button>
                     ) : null}
                   </div>
-                  {locked ? <Lock size={16} color="var(--ck-muted)" aria-label="Verrouillé" /> : <Trophy size={16} color="#58CC02" aria-label="Débloqué" />}
+                  {locked ? <Lock size={16} color="var(--ck-muted)" aria-label="Verrouillé" /> : <Trophy size={16} color="#00a859" aria-label="Débloqué" />}
                 </article>
               );
             })}
@@ -441,7 +441,7 @@ export default function StatsPage() {
                   ) : (
                     <Trophy
                       size={16}
-                      color="#58CC02"
+                      color="#00a859"
                       aria-label="Débloqué"
                     />
                   )}

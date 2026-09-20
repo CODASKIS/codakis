@@ -47,7 +47,7 @@ def strip_simulation_markup(html: str | None) -> str:
 THEME_SEED: list[tuple[str, str, str, int, bool]] = [
     ("signalisation", "Signalisation routière", "Road signs", 1, False),
     ("priorites", "Priorités & intersections", "Priorities & intersections", 2, False),
-    ("circulation", "Règles de circulation", "Traffic rules", 3, False),
+    ("circulation", "Règles de circulation", "Traffic rules", 3, True),
     ("vitesse", "Vitesse & distances de sécurité", "Speed & safety distances", 4, True),
     ("stationnement", "Arrêt & stationnement", "Stopping & parking", 5, True),
     ("vehicule", "Véhicule, éclairage & équipements", "Vehicle, lighting & equipment", 6, True),

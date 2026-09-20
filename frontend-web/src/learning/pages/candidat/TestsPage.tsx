@@ -129,7 +129,7 @@ export default function TestsPage() {
               Examen réservé
             </h2>
             <p className="ck-subtitle" style={{ marginBottom: "2rem" }}>
-              Les cours et quiz des trois premiers thèmes restent ouverts. Les examens blancs s&apos;ouvrent avec un abonnement.
+              Les cours et quiz des deux premiers thèmes restent ouverts. Les examens blancs s&apos;ouvrent avec un abonnement.
             </p>
             <Link to="/espace/candidat/super" className="ck-btn ck-btn--primary ck-btn--block ck-btn--pill" onClick={() => setPaywall(false)}>
               Voir les offres

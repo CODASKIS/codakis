@@ -196,7 +196,7 @@ DEMO_CANDIDATS: list[dict] = [
         "email": "candidat@demo.codakis.cm",
         "prenom": "Luc",
         "nom": "Ngono",
-        "subscription_plan": "pro",
+        "subscription_plan": None,
         "school_enrollment": False,
     },
     {
@@ -431,6 +431,23 @@ def _ensure_demo_subscription(db: Session, user: Utilisateur, plan_id: str) -> N
     )
 
 
+def _clear_demo_subscription(db: Session, user: Utilisateur) -> None:
+    """Retire l'abonnement démo pour simuler un compte gratuit."""
+    payments = (
+        db.query(Paiement)
+        .filter(
+            Paiement.utilisateur_id == user.id,
+            Paiement.purpose == "subscription",
+            Paiement.status == "completed",
+        )
+        .all()
+    )
+    for payment in payments:
+        payment.status = "failed"
+        payment.message = "Abonnement démo retiré — compte gratuit (2 thèmes CEMAC)"
+    db.flush()
+
+
 def _clear_candidat_enrollments(db: Session, candidat: Utilisateur) -> None:
     inscriptions = db.query(Inscription).filter(Inscription.candidat_id == candidat.id).all()
     for inscription in inscriptions:
@@ -448,7 +465,11 @@ def _seed_demo_candidats(db: Session) -> None:
             nom=item["nom"],
             role=RoleUtilisateur.candidat,
         )
-        _ensure_demo_subscription(db, user, item["subscription_plan"])
+        plan = item.get("subscription_plan")
+        if plan:
+            _ensure_demo_subscription(db, user, plan)
+        else:
+            _clear_demo_subscription(db, user)
         if not item["school_enrollment"]:
             _clear_candidat_enrollments(db, user)
     db.commit()

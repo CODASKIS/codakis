@@ -56,7 +56,7 @@ Espace moniteur : `/espace/moniteur`
 
 | E-mail                     | Mot de passe | Abonnement CODAKIS                        | Auto-école                                | Usage                                                                           |
 | -------------------------- | ------------ | ----------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------- |
-| `candidat@demo.codakis.cm` | `Demo123!`   | **Pro** (payé — accès cours/quiz/examens) | Aucune                                    | Candidat « code seul » : plateforme débloquée, pas encore inscrit en auto-école |
+| `candidat@demo.codakis.cm` | `Demo123!`   | **Gratuit** (pas d’abonnement — 2 thèmes CEMAC) | Aucune                                    | Compte gratuit : thèmes premium verrouillés, examens blancs bloqués             |
 | `premium@demo.codakis.cm`  | `Demo123!`   | **Premium** (payé)                        | **Auto-École Volant Vert** (forfait démo) | Parcours complet : plateforme + inscription auto-école + dossier Consort        |
 
 
@@ -64,8 +64,9 @@ Espace candidat : `/espace/candidat`
 
 > **Distinction importante**
 >
-> - **Abonnement CODAKIS** = paiement plateforme (cours, quiz, examens blancs) — requis pour tous.
+> - **Abonnement CODAKIS** = paiement plateforme (cours, quiz, examens blancs) — requis pour les thèmes premium.
 > - **Inscription auto-école** = paiement séparé (forfait code/conduite) — seulement pour `premium@demo.codakis.cm` en démo.
+> - En gratuit : seuls **Signalisation** et **Priorités** sont ouverts ; le reste est verrouillé jusqu’à l’abonnement.
 
 
 

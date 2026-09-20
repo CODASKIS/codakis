@@ -1001,8 +1001,9 @@ html.dark .fj-lang-dd--auth .fj-lang-dd__trigger:hover {
   object-fit: cover;
 }
 
-/* Bandeau cookies — panneau blanc style Duo (bas-gauche) */
+/* Bandeau cookies — panneau blanc style Duo (bas-gauche), fermable */
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__panel {
+  position: relative;
   background-color: #ffffff;
   border: 0.2rem solid #e5e7eb;
   border-bottom-width: 0.4rem;
@@ -1011,7 +1012,31 @@ html.dark .fj-lang-dd--auth .fj-lang-dd__trigger:hover {
   flex-direction: column;
   align-items: stretch;
   gap: 1rem;
-  padding: 1.2rem 1.4rem;
+  padding: 1.4rem 1.4rem 1.2rem;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__close {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  display: inline-grid;
+  place-items: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__close:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.cookiepolicy.cookiepolicy--codakis .cookiepolicy__copy-block {
+  padding-right: 2.8rem;
 }
 
 .cookiepolicy.cookiepolicy--codakis .cookiepolicy__message {
@@ -1105,6 +1130,15 @@ html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__panel {
   background-color: #0b1017 !important;
   border-color: #2d3643 !important;
   box-shadow: 0 1.2rem 2.8rem rgba(0, 0, 0, 0.55) !important;
+}
+
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__close {
+  color: #9ca3af;
+}
+
+html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f3f4f6;
 }
 
 html.dark .cookiepolicy.cookiepolicy--codakis .cookiepolicy__message {
@@ -1854,7 +1888,7 @@ html.dark .fj-pricing-dark__header {
 }
 
 .fj-pack-drawer--codeSeul {
-  --fj-drawer-accent: #1db96a;
+  --fj-drawer-accent: #00a859;
   --fj-drawer-accent-dark: #158a4e;
   --fj-drawer-badge: #7c3aed;
 }
@@ -3953,7 +3987,19 @@ html.dark .ck-footer .fj-brand__logo {
 
 /* Home destination */
 .ck-home-hero {
-  padding: 2.4rem 0 1.6rem;
+  padding: 3.2rem 0 2.4rem;
+  background:
+    radial-gradient(ellipse 70% 55% at 85% 20%, rgba(0, 168, 89, 0.18), transparent 60%),
+    radial-gradient(ellipse 50% 40% at 10% 80%, rgba(0, 168, 89, 0.08), transparent 55%);
+}
+
+.ck-home-hero__eyebrow {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #00a859;
 }
 
 .ck-home-hero__grid {
@@ -4021,6 +4067,21 @@ html.dark .ck-footer .fj-brand__logo {
   object-fit: contain;
 }
 
+.ck-home-hero__photo--car {
+  width: min(100%, 32rem);
+  animation: ck-home-car-float 4.8s ease-in-out infinite;
+}
+
+@keyframes ck-home-car-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.8rem);
+  }
+}
+
 .ck-home-hero__kori,
 .ck-home-hero .ck-kori {
   position: relative;
@@ -4029,6 +4090,32 @@ html.dark .ck-footer .fj-brand__logo {
   max-width: 44rem;
   height: min(42rem, 56vw);
   min-height: 28rem;
+}
+
+.ck-home-step__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 4.4rem;
+  height: 4.4rem;
+  flex-shrink: 0;
+  border-radius: 1.2rem;
+  background: rgba(0, 168, 89, 0.12);
+  color: #00a859;
+}
+
+.ck-home-cta-band .ck-page-banner {
+  background: linear-gradient(135deg, #00a859 0%, #008f4c 100%);
+  border: 0;
+  color: #fff;
+}
+
+.ck-home-cta-band .ck-page-banner h2,
+.ck-home-cta-band .ck-page-banner p {
+  color: #fff;
+}
+
+.ck-home-cta-band .ck-page-banner p {
+  opacity: 0.92;
 }
 
 .ck-kori {

@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { X } from "lucide-react";
 import {
   acceptCookiePolicy,
   isCookiePolicyAccepted,
@@ -41,6 +42,15 @@ export default function CookieConsentBanner() {
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="cookiepolicy__panel">
+            <button
+              type="button"
+              className="cookiepolicy__close"
+              aria-label={t("cookies.close", { defaultValue: "Fermer" })}
+              onClick={handleRefuse}
+            >
+              <X size={18} strokeWidth={2.5} aria-hidden />
+            </button>
+
             <div className="cookiepolicy__copy-block">
               <p className="cookiepolicy__message">{t("cookies.message")}</p>
               <p className="cookiepolicy__links">

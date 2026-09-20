@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useTranslation } from "react-i18next";
+import { BookOpen, Shield, Trophy } from "lucide-react";
 import PageMeta from "../../components/common/PageMeta";
 import RevealOnScroll from "../../components/motion/RevealOnScroll";
-import { FJ_IMG } from "../assets/online-images";
 import HeaderSearch from "../components/HeaderSearch";
 import PricingTable from "../components/PricingTable";
 import {
@@ -37,9 +37,24 @@ export default function HomePage() {
 
   const steps = useMemo(
     () => [
-      { num: "1", title: t("home.pillar3Title"), text: t("auth.brand.highlights.lessons", { defaultValue: "Créez votre compte candidat" }) },
-      { num: "2", title: t("home.pillar1Title"), text: t("home.pillar1Text") },
-      { num: "3", title: t("home.pillar2Title"), text: t("home.pillar2Text") },
+      {
+        num: "1",
+        Icon: BookOpen,
+        title: t("home.pillar3Title"),
+        text: t("auth.brand.highlights.lessons", { defaultValue: "Créez votre compte candidat" }),
+      },
+      {
+        num: "2",
+        Icon: Shield,
+        title: t("home.pillar1Title"),
+        text: t("home.pillar1Text"),
+      },
+      {
+        num: "3",
+        Icon: Trophy,
+        title: t("home.pillar2Title"),
+        text: t("home.pillar2Text"),
+      },
     ],
     [t],
   );
@@ -58,6 +73,7 @@ export default function HomePage() {
         <div className="fj-container">
           <div className="ck-home-hero__grid">
             <div>
+              <p className="ck-home-hero__eyebrow">CODAKIS</p>
               <h1>{t("home.heroTitle")}</h1>
               <p className="ck-home-hero__lead">{t("home.heroLead")}</p>
               <div className="ck-public-search ck-public-search--hero">
@@ -67,17 +83,25 @@ export default function HomePage() {
                 <Link to={AUTH_PATHS.register.candidat} className="ck-public-btn ck-public-btn--primary ck-public-btn--lg">
                   {t("home.heroCta")}
                 </Link>
+                <Link to="/tarifs" className="ck-public-btn ck-public-btn--ghost ck-public-btn--lg">
+                  {t("nav.subscription")}
+                </Link>
               </div>
             </div>
             <div className="ck-home-hero__visual" aria-hidden>
               <div className="ck-home-hero__glow" />
-              <img src={FJ_IMG.hero} alt="" className="ck-home-hero__photo" fetchPriority="high" />
+              <img
+                src="/images/auth/cartoon-red-car.png"
+                alt=""
+                className="ck-home-hero__photo ck-home-hero__photo--car"
+                fetchPriority="high"
+              />
             </div>
           </div>
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="ck-page-section">
+      <RevealOnScroll as="section" className="ck-page-section ck-home-pillars">
         <div className="fj-container">
           <div className="ck-page-section__head">
             <h2>{t("home.pillarsTitle")}</h2>
@@ -86,8 +110,8 @@ export default function HomePage() {
           <div className="ck-home-steps">
             {steps.map((step) => (
               <article key={step.num} className="ck-home-step">
-                <span className="ck-home-step__num" aria-hidden>
-                  {step.num}
+                <span className="ck-home-step__icon" aria-hidden>
+                  <step.Icon size={22} strokeWidth={2.4} />
                 </span>
                 <div>
                   <h3>{step.title}</h3>
@@ -124,7 +148,7 @@ export default function HomePage() {
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="ck-page-section">
+      <RevealOnScroll as="section" className="ck-page-section ck-home-themes-section">
         <div className="fj-container">
           <div className="ck-page-section__head">
             <h2>{t("home.themesTitle")}</h2>
@@ -152,13 +176,10 @@ export default function HomePage() {
             <p>{t("domains.pagePurpose")}</p>
           </div>
           <PricingTable plans={plans} loading={plansLoading} planPricing={planPricing} />
-          <div className="ck-home-schools__cta" style={{ marginTop: "2rem" }}>
-            
-          </div>
         </div>
       </RevealOnScroll>
 
-      <RevealOnScroll as="section" className="ck-page-section">
+      <RevealOnScroll as="section" className="ck-page-section ck-home-cta-band">
         <div className="fj-container">
           <div className="ck-page-banner">
             <div>

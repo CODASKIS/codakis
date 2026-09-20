@@ -5110,7 +5110,7 @@ html.dark .ck-schools-table tbody tr.is-selected {
   height: 8rem;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
-  color: #58cc02;
+  color: #00a859;
 }
 
 .ck-super__wave {
@@ -5558,7 +5558,7 @@ html.dark .ck-quest {
 }
 
 .ck-quest.is-done {
-  background: color-mix(in srgb, #58CC02 7%, var(--ck-surface, #fff));
+  background: color-mix(in srgb, #00a859 7%, var(--ck-surface, #fff));
 }
 
 /* Icon tile (colored circle/square tile) */

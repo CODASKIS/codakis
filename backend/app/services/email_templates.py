@@ -289,7 +289,7 @@ def render_welcome_email(*, full_name: str, login_url: str, temp_password: str |
             f"Bonjour {full_name},",
             "",
             "Votre compte CODAKIS est prêt. Vous pouvez commencer tout de suite, même sans abonnement.",
-            "Gratuit : signalisation, priorités et règles de circulation (cours, quiz et lecture audio).",
+            "Gratuit : signalisation et priorités (cours, quiz et lecture audio).",
             "Avec un abonnement : le reste des modules, les examens blancs et le tuteur.",
             "Chaque niveau réussi débloque un badge téléchargeable dans Statistiques.",
             password_block,
@@ -305,7 +305,7 @@ def render_welcome_email(*, full_name: str, login_url: str, temp_password: str |
         body_html=f"""
           {_heading("Bienvenue sur CODAKIS")}
           {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre compte est prêt. Vous pouvez apprendre tout de suite, même sans avoir payé.")}
-          {_info_box("<strong>Inclus sans abonnement :</strong> signalisation, priorités et règles de circulation — cours, quiz et lecture audio.")}
+          {_info_box("<strong>Inclus sans abonnement :</strong> signalisation et priorités — cours, quiz et lecture audio.")}
           {_info_box("Les autres modules, les examens blancs et le tuteur s'ouvrent avec un abonnement. Chaque niveau réussi débloque un badge à télécharger.")}
           {password_html}
           {_cta_button("Commencer mon parcours", login_url)}
@@ -501,7 +501,7 @@ def render_lesson_complete_email(
         "",
         f"Leçon terminée : « {lesson_title} » ({theme_title}).",
         f"Progression du parcours : {progress_percent} %.",
-        "Les trois premiers thèmes restent accessibles sans abonnement.",
+        "Les deux premiers thèmes restent accessibles sans abonnement.",
         "Un badge est à télécharger dans Statistiques à chaque niveau atteint.",
         "",
         f"Continuer : {courses_url}",
