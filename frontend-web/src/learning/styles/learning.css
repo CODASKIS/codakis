@@ -6302,6 +6302,24 @@ html.dark .ck-schools-table tbody tr.is-selected {
   border-color: #1899d6 !important;
 }
 
+.ck-super__error {
+  margin: 1.2rem auto 0;
+  max-width: 42rem;
+  padding: 1rem 1.4rem;
+  border: 0.15rem solid #fca5a5;
+  border-radius: 1.2rem;
+  background: #fef2f2;
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.ck-super__cta:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
+
 .ck-super__skip {
   display: block;
   width: 100%;
@@ -6365,6 +6383,12 @@ html.dark .ck-super__rows li {
 html.dark .ck-super__feature,
 html.dark .ck-super__price strong {
   color: #f8fafc;
+}
+
+html.dark .ck-super__error {
+  border-color: #7f1d1d;
+  background: color-mix(in srgb, #ef4444 16%, #1e293b);
+  color: #fca5a5;
 }
 
 html.dark .ck-super__cell.is-highlight {

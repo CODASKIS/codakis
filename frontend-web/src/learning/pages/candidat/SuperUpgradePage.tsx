@@ -1,5 +1,15 @@
-import { Link, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { Check, Minus, Sparkles, X } from "lucide-react";
+import { AuthApiError, clearTokens, getAccessToken } from "../../../lib/authApi";
+import { buildLoginUrl, rememberAuthRedirect } from "../../../auth/purchaseIntent";
+import {
+  detectVisitorCountry,
+  getPlanPricing,
+  initiatePayment,
+  type PlanPricing,
+} from "../../../lib/payment-api";
+import { formatFcfa } from "../../../lib/planPricingDisplay";
 
 const FREE_FEATURES = [
   { label: "3 premiers chapitres (Signalisation, Priorités, Circulation)", free: true, super: true },
@@ -10,12 +20,78 @@ const FREE_FEATURES = [
   { label: "Mode hors-ligne & révision ciblée", free: false, super: true },
 ] as const;
 
+/** CODAKIS Super = abonnement candidat « pro » facturé au mois. */
+const SUPER_PLAN_ID = "pro";
+const SUPER_PATH = "/espace/candidat/super";
+
 type Props = {
   embedded?: boolean;
 };
 
 export default function SuperUpgradePage({ embedded }: Props) {
   const navigate = useNavigate();
+  const [pricing, setPricing] = useState<PlanPricing | null>(null);
+  const [countryCode, setCountryCode] = useState("CM");
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const country = await detectVisitorCountry().catch(() => "CM");
+      if (cancelled) return;
+      setCountryCode(country);
+      try {
+        const next = await getPlanPricing(country);
+        if (!cancelled) setPricing(next);
+      } catch {
+        // Sans barème, on affiche le moyen de paiement sans le montant.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  function goToLogin() {
+    rememberAuthRedirect(SUPER_PATH);
+    window.location.href = buildLoginUrl(SUPER_PATH);
+  }
+
+  /** Envoie directement sur la page de paiement de l’opérateur. */
+  async function goToPayment() {
+    const token = getAccessToken();
+    if (!token) {
+      goToLogin();
+      return;
+    }
+
+    setPaying(true);
+    setError("");
+    try {
+      const result = await initiatePayment(token, {
+        plan_id: SUPER_PLAN_ID,
+        billing_period: "monthly",
+        payment_method: "orange",
+        purpose: "subscription",
+        country_code: countryCode,
+      });
+      if (result.payment_url) {
+        window.location.href = result.payment_url;
+        return;
+      }
+      setError(result.redirect_error || result.message || "Paiement indisponible pour le moment.");
+    } catch (err) {
+      if (err instanceof AuthApiError && err.status === 401) {
+        clearTokens();
+        goToLogin();
+        return;
+      }
+      setError(err instanceof Error ? err.message : "Erreur de connexion");
+    } finally {
+      setPaying(false);
+    }
+  }
 
   return (
     <div className={`ck-super${embedded ? " is-embedded" : ""}`}>
@@ -58,11 +134,29 @@ export default function SuperUpgradePage({ embedded }: Props) {
           ))}
         </ul>
         <p className="ck-super__price">
-          À partir de <strong>2 500 FCFA / mois</strong> — Orange Money & MTN MoMo
+          {pricing ? (
+            <>
+              <strong>
+                {formatFcfa(pricing.pro)} {pricing.symbol ?? "FCFA"} / mois
+              </strong>{" "}
+              —{" "}
+            </>
+          ) : null}
+          Orange Money & MTN MoMo
         </p>
-        <Link to="/tarifs#abonnement" className="ck-btn ck-btn--primary ck-btn--block ck-super__cta">
-          Passer à Super
-        </Link>
+        <button
+          type="button"
+          className="ck-btn ck-btn--primary ck-btn--block ck-super__cta"
+          onClick={() => void goToPayment()}
+          disabled={paying}
+        >
+          {paying ? "Redirection vers le paiement…" : "Passer à Super"}
+        </button>
+        {error ? (
+          <p className="ck-super__error" role="alert">
+            {error}
+          </p>
+        ) : null}
         <button type="button" className="ck-super__skip" onClick={() => navigate("/espace/candidat")}>
           Non merci
         </button>

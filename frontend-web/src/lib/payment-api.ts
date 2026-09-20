@@ -158,8 +158,9 @@ export async function initiatePayment(
       plan_id: payload.plan_id ?? null,
       forfait_id: payload.forfait_id ?? null,
       auto_ecole_id: payload.auto_ecole_id ?? null,
-      payment_method: payload.payment_method ?? null,
-      phone: payload.phone ?? null,
+      // Le backend typé `str` refuse un null (422 « Input should be a valid string »).
+      payment_method: payload.payment_method ?? "orange",
+      phone: payload.phone ?? "",
       billing_period: payload.billing_period ?? "monthly",
       purpose: payload.purpose ?? "subscription",
       country_code: payload.country_code ?? "CM",

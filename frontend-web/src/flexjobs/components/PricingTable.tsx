@@ -168,6 +168,7 @@ export default function PricingTable({
   const [countryCode, setCountryCode] = useState("CM");
   const [priced, setPriced] = useState<PlanPricing | null>(planPricing ?? null);
   const [pricingLoading, setPricingLoading] = useState(true);
+  const [payError, setPayError] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -218,6 +219,7 @@ export default function PricingTable({
     }
 
     setPayingKey(plan.plan_key);
+    setPayError("");
     try {
       const result = await initiatePayment(token!, {
         plan_id: paymentPlanId,
@@ -230,7 +232,7 @@ export default function PricingTable({
         window.location.href = result.payment_url;
         return;
       }
-      alert(result.redirect_error || result.message || "Erreur lors de la redirection PawaPay");
+      setPayError(result.redirect_error || result.message || "Erreur lors de la redirection PawaPay");
     } catch (err) {
       if (err instanceof AuthApiError && err.status === 401) {
         clearTokens();
@@ -238,7 +240,7 @@ export default function PricingTable({
         window.location.href = buildLoginUrl("/tarifs");
         return;
       }
-      alert(err instanceof Error ? err.message : "Erreur de connexion");
+      setPayError(err instanceof Error ? err.message : "Erreur de connexion");
     } finally {
       setPayingKey(null);
     }
@@ -321,6 +323,12 @@ export default function PricingTable({
           </div>
         </div>
       )}
+
+      {payError ? (
+        <p className="fj-pricing-table__error" role="alert">
+          {payError}
+        </p>
+      ) : null}
 
       <p className="fj-pricing-table__footnote">{t("pricing.footnote")}</p>
     </section>
