@@ -4,6 +4,19 @@ html:has(.fj-root) {
   font-size: 62.5%;
 }
 
+/* Mobile : agrandir toute l'échelle rem (sinon l'UI paraît « desktop miniaturisé ») */
+@media (max-width: 767px) {
+  html:has(.fj-root) {
+    font-size: 81.25%; /* 13px → +30 % vs desktop */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html:has(.fj-root) {
+    font-size: 75%; /* 12px tablette */
+  }
+}
+
 .fj-root {
   font-family: Nunito, "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 1.6rem;
@@ -12,9 +25,9 @@ html:has(.fj-root) {
   color: var(--fj-text, #3e3d3f);
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 767px) {
   .fj-root {
-    font-size: 1.4rem;
+    font-size: 1.7rem;
   }
 }
 

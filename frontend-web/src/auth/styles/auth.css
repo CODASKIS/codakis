@@ -4,6 +4,18 @@ html:has(.codakis-auth) {
   font-size: 62.5%;
 }
 
+@media (max-width: 767px) {
+  html:has(.codakis-auth) {
+    font-size: 81.25%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html:has(.codakis-auth) {
+    font-size: 75%;
+  }
+}
+
 .codakis-auth {
   --ck-green: #00a859;
   --ck-green-dark: #008f4c;

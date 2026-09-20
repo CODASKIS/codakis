@@ -3,6 +3,18 @@ html:has(.ta-shell) {
   font-size: 62.5%;
 }
 
+@media (max-width: 767px) {
+  html:has(.ta-shell) {
+    font-size: 81.25%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html:has(.ta-shell) {
+    font-size: 75%;
+  }
+}
+
 .ta-shell.ck-learn.ck-pro {
   --ck-schools-accent: var(--ck-green);
   --duo-bg: #ffffff;

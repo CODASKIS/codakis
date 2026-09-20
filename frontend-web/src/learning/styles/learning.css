@@ -4,6 +4,18 @@ html:has(.ck-learn) {
   font-size: 62.5%;
 }
 
+@media (max-width: 767px) {
+  html:has(.ck-learn) {
+    font-size: 81.25%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  html:has(.ck-learn) {
+    font-size: 75%;
+  }
+}
+
 
 .ck-learn {
   --ck-green: #00a859;
