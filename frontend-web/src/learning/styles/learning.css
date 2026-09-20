@@ -3590,6 +3590,13 @@ a.ck-skill-card:hover {
   margin-bottom: 2.4rem;
 }
 
+.ck-settings__mfa {
+  padding: 1.6rem 1.6rem 1.2rem;
+  border: 0.2rem solid var(--ck-line, #e5e7eb);
+  border-radius: 1.4rem;
+  background: var(--ck-surface-2, #fff);
+}
+
 .ck-settings__section h2 {
   margin: 0 0 1.2rem;
   font-size: 1.4rem;
