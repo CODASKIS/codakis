@@ -1,75 +1,28 @@
-/* Mobile UI — taille « vraie » type Duolingo (base 16px), interfaces pleine largeur */
+/* Mobile UI — base rem 62.5% (1rem = 10px) partout.
+   Le texte « 16px » vient de font-size: 1.6rem sur les shells, pas d’un html à 100%
+   (qui gonflait toute l’UI ×1.6 et cassait la feuille de route). */
 
 @media (max-width: 767px) {
   html:has(.fj-root),
   html:has(.ck-learn),
   html:has(.codakis-auth),
   html:has(.ta-shell) {
-    font-size: 100% !important; /* 16px — comme Duolingo */
+    font-size: 62.5% !important;
   }
 
-  .fj-root {
-    font-size: 1.6rem !important;
-  }
-
+  /* Accueil / public */
   .fj-container {
     padding-left: 1.6rem !important;
     padding-right: 1.6rem !important;
-  }
-
-  /* Auth : carte qui remplit l’écran */
-  .codakis-auth__body {
-    padding: 1.2rem 1.2rem 2.4rem !important;
-    gap: 1.2rem !important;
-    align-items: stretch !important;
-  }
-
-  .codakis-auth__card {
-    max-width: none !important;
     width: 100% !important;
-    padding: 2rem 1.6rem !important;
-    border-radius: 1.6rem !important;
+    max-width: 100% !important;
   }
 
-  .codakis-auth__title {
-    font-size: 3.2rem !important;
-    margin-bottom: 0.6rem !important;
+  .fj-root {
+    width: 100%;
+    overflow-x: clip;
   }
 
-  .codakis-auth__lead,
-  .codakis-auth__panel > p {
-    font-size: 1.55rem !important;
-    line-height: 1.45 !important;
-  }
-
-  .codakis-auth__top {
-    padding: 1rem 1.2rem !important;
-  }
-
-  .codakis-auth__top .fj-brand__logo,
-  .codakis-auth__logo {
-    height: 3.2rem !important;
-  }
-
-  .codakis-auth-form input,
-  .codakis-auth-form select,
-  .codakis-auth input[type="email"],
-  .codakis-auth input[type="password"],
-  .codakis-auth input[type="text"] {
-    min-height: 5.2rem !important;
-    font-size: 1.7rem !important;
-    padding: 1.2rem 1.4rem !important;
-  }
-
-  .codakis-auth-form__submit,
-  .codakis-auth .ck-btn,
-  .codakis-auth button[type="submit"] {
-    min-height: 5.2rem !important;
-    font-size: 1.55rem !important;
-    width: 100% !important;
-  }
-
-  /* Accueil : cartes & listes plus confortables */
   .fj-feature-card {
     padding: 2rem 1.6rem !important;
   }
@@ -112,6 +65,197 @@
     font-size: 1.25rem !important;
     padding-inline: 1.2rem !important;
   }
+
+  /* Auth */
+  .codakis-auth {
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  .codakis-auth__body {
+    padding: 1.2rem 1.2rem 2.4rem !important;
+    gap: 1.2rem !important;
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  .codakis-auth__card {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 2.4rem 1.8rem !important;
+    border-radius: 1.6rem !important;
+  }
+
+  .codakis-auth__title {
+    font-size: 2.8rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  .codakis-auth__lead,
+  .codakis-auth__panel > p {
+    font-size: 1.5rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .codakis-auth__top {
+    padding: 1rem 1.2rem !important;
+  }
+
+  .codakis-auth__top .fj-brand__logo,
+  .codakis-auth__logo {
+    height: 3.2rem !important;
+  }
+
+  .codakis-auth-form input,
+  .codakis-auth-form select,
+  .codakis-auth input[type="email"],
+  .codakis-auth input[type="password"],
+  .codakis-auth input[type="text"] {
+    min-height: 5.2rem !important;
+    font-size: 1.6rem !important;
+    padding: 1.2rem 1.4rem !important;
+  }
+
+  .codakis-auth-form__submit,
+  .codakis-auth .ck-btn,
+  .codakis-auth button[type="submit"] {
+    min-height: 5.2rem !important;
+    font-size: 1.55rem !important;
+    width: 100% !important;
+  }
+
+  /* Espace candidat / learning */
+  .ck-learn {
+    width: 100%;
+    overflow-x: clip;
+  }
+
+  .ck-learn__main {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+  }
+
+  .ck-learn__topbar-inner {
+    padding-left: 1.2rem !important;
+    padding-right: 1.2rem !important;
+  }
+
+  /* Feuille de route — hero compact pour laisser place à la route */
+  .ck-roadmap__hero {
+    margin-bottom: 1.2rem !important;
+    padding: 1.4rem 1.4rem 1.2rem !important;
+    gap: 1rem !important;
+  }
+
+  .ck-roadmap__hero h1 {
+    font-size: 2.2rem !important;
+  }
+
+  .ck-roadmap__hero-copy > p:not(.ck-roadmap__hero-eyebrow) {
+    font-size: 1.35rem !important;
+  }
+
+  .ck-roadmap__hero-art img {
+    width: min(14rem, 42vw) !important;
+  }
+
+  .ck-chapter-sticky {
+    top: 5.6rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+    margin-bottom: 1rem !important;
+    padding: 1.1rem 1.2rem !important;
+  }
+
+  .ck-chapter-sticky__title {
+    font-size: 1.55rem !important;
+  }
+
+  .ck-chapter-sticky__guide {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Route large + visible */
+  .ck-highway {
+    margin-inline: -0.4rem;
+    max-width: none !important;
+    width: calc(100% + 0.8rem);
+    padding: 1.6rem 0.4rem 3.2rem !important;
+    border-radius: 1.6rem !important;
+    overflow: visible !important;
+  }
+
+  .ck-highway__asphalt {
+    width: 12rem !important;
+  }
+
+  .ck-highway__edges {
+    width: 10.4rem !important;
+  }
+
+  .ck-highway__mile {
+    width: min(32rem, 94%) !important;
+    margin-top: 2rem !important;
+  }
+
+  .ck-path__item {
+    width: 100% !important;
+    min-height: 11rem;
+    margin-top: 3.6rem !important;
+    transform: translateX(calc(var(--ck-path-x, 0rem) * -0.28)) !important;
+  }
+
+  .ck-path__item.has-car {
+    margin-top: 6.4rem !important;
+  }
+
+  .ck-path__item:first-of-type {
+    margin-top: 1.2rem !important;
+  }
+
+  /* Panneaux au-dessus du feu (évite le débordement latéral) */
+  .ck-path__sign {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    width: min(28rem, 86%) !important;
+    margin: 0 auto 0.8rem;
+    clip-path: none !important;
+    border-radius: 1rem !important;
+    text-align: center !important;
+  }
+
+  .ck-path__sign--left,
+  .ck-path__sign--right {
+    left: auto !important;
+    right: auto !important;
+    clip-path: none !important;
+    text-align: center !important;
+  }
+
+  .ck-path__flag {
+    top: -1.4rem;
+  }
+
+  .ck-path__feu {
+    margin: 0 !important;
+  }
+
+  .ck-path__car {
+    width: 7.2rem !important;
+  }
+
+  /* Stats / tests / profil */
+  .ck-card {
+    padding: 1.6rem !important;
+  }
+
+  .ck-title {
+    font-size: 2.2rem !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1024px) {
@@ -119,6 +263,6 @@
   html:has(.ck-learn),
   html:has(.codakis-auth),
   html:has(.ta-shell) {
-    font-size: 87.5% !important; /* 14px tablette */
+    font-size: 62.5% !important;
   }
 }

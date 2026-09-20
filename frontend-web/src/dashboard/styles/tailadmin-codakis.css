@@ -1,18 +1,6 @@
 /* Layout TailAdmin — typo/boutons/inputs = classes site (.ck-learn, .ck-pro, .ck-btn, .ck-schools-*) */
 html:has(.ta-shell) {
-  font-size: 62.5%;
-}
-
-@media (max-width: 767px) {
-  html:has(.ta-shell) {
-    font-size: 100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  html:has(.ta-shell) {
-    font-size: 87.5%;
-  }
+  font-size: 62.5%; /* 1rem = 10px — stable mobile/desktop */
 }
 
 .ta-shell.ck-learn.ck-pro {

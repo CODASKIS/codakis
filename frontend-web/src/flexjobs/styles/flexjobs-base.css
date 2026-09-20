@@ -1,20 +1,7 @@
 /* Typographie vitrine — Nunito + échelle html 62.5% → 1rem = 10px */
 
 html:has(.fj-root) {
-  font-size: 62.5%;
-}
-
-/* Mobile : base 16px (Duolingo) — tout le rem grossit d’un coup */
-@media (max-width: 767px) {
-  html:has(.fj-root) {
-    font-size: 100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  html:has(.fj-root) {
-    font-size: 87.5%;
-  }
+  font-size: 62.5%; /* 1rem = 10px — 1.6rem = 16px texte (type Duolingo) */
 }
 
 .fj-root {
@@ -27,7 +14,7 @@ html:has(.fj-root) {
 
 @media screen and (max-width: 767px) {
   .fj-root {
-    font-size: 1.7rem;
+    font-size: 1.6rem;
   }
 }
 

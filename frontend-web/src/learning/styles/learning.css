@@ -1,19 +1,7 @@
 /* CODAKIS learning — Zutobi layout + Duolingo path/buttons, brand greens */
 
 html:has(.ck-learn) {
-  font-size: 62.5%;
-}
-
-@media (max-width: 767px) {
-  html:has(.ck-learn) {
-    font-size: 100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  html:has(.ck-learn) {
-    font-size: 87.5%;
-  }
+  font-size: 62.5%; /* 1rem = 10px — ne pas monter à 100% sur mobile */
 }
 
 
@@ -1761,7 +1749,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   max-width: 56rem;
   padding: 2.4rem 0.8rem 4rem;
   border-radius: 2.8rem;
-  overflow: hidden;
+  overflow: visible;
   background:
     radial-gradient(ellipse 70% 40% at 20% 10%, rgba(34, 197, 94, 0.14), transparent 55%),
     radial-gradient(ellipse 60% 35% at 85% 70%, rgba(251, 191, 36, 0.12), transparent 50%),
@@ -1779,9 +1767,9 @@ html.dark .ck-highway {
   left: 50%;
   top: 1.6rem;
   bottom: 1.6rem;
-  width: 14rem;
+  width: 16rem;
   transform: translateX(-50%);
-  border-radius: 7rem;
+  border-radius: 8rem;
   background:
     repeating-linear-gradient(
       90deg,
@@ -1810,11 +1798,11 @@ html.dark .ck-highway {
   left: 50%;
   top: 2.2rem;
   bottom: 2.2rem;
-  width: 12.4rem;
+  width: 14.2rem;
   transform: translateX(-50%);
   border-left: 0.45rem solid #f8fafc;
   border-right: 0.45rem solid #f8fafc;
-  border-radius: 6.2rem;
+  border-radius: 7.1rem;
   opacity: 0.92;
   pointer-events: none;
   z-index: 0;
@@ -2028,11 +2016,11 @@ html.dark .ck-highway {
 }
 
 .ck-path__feu--left {
-  margin-right: 0.2rem;
+  transform: translateX(-5.6rem);
 }
 
 .ck-path__feu--right {
-  margin-left: 0.2rem;
+  transform: translateX(5.6rem);
 }
 
 .ck-path__feu-box {
@@ -2159,42 +2147,120 @@ html.dark .ck-highway {
 
 @media (max-width: 720px) {
   .ck-highway {
-    padding-inline: 0.2rem;
+    padding: 1.6rem 0.2rem 3.2rem;
     border-radius: 1.6rem;
+    overflow: visible;
   }
 
   .ck-highway__asphalt {
-    width: 9.2rem;
+    width: 12.5rem;
   }
 
   .ck-highway__edges {
-    width: 7.8rem;
+    width: 10.8rem;
   }
 
   .ck-path__item {
-    transform: translateX(calc(var(--ck-path-x, 0rem) * -0.4));
-    width: min(100%, 30rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 11rem;
+    margin-top: 3.6rem;
+    transform: translateX(calc(var(--ck-path-x, 0rem) * -0.28));
+  }
+
+  .ck-path__item.has-car {
+    margin-top: 6.4rem;
   }
 
   .ck-path__sign {
-    width: min(13.5rem, 42vw);
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    width: min(28rem, 86%);
+    margin: 0 auto 0.85rem;
+    clip-path: none;
+    border-radius: 1rem;
+    text-align: center;
   }
 
-  .ck-path__sign--left {
-    right: calc(50% + 3.8rem);
-  }
-
+  .ck-path__sign--left,
   .ck-path__sign--right {
-    left: calc(50% + 3.8rem);
+    left: auto;
+    right: auto;
+    clip-path: none;
+    text-align: center;
+  }
+
+  .ck-path__feu--left,
+  .ck-path__feu--right {
+    margin: 0;
+    transform: none;
   }
 
   .ck-path__car {
-    width: 6.4rem;
+    width: 7.2rem;
   }
 
   .ck-path__lamp {
-    width: 2rem;
-    height: 2rem;
+    width: 2.1rem;
+    height: 2.1rem;
+  }
+
+  .ck-roadmap__hero {
+    padding: 1.4rem 1.4rem 1.2rem;
+    gap: 1rem;
+  }
+
+  .ck-roadmap__hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .ck-roadmap__hero-art img {
+    width: min(14rem, 42vw);
+  }
+
+  .ck-chapter-sticky {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    padding: 1.1rem 1.2rem;
+  }
+
+  .ck-chapter-sticky__title {
+    font-size: 1.55rem;
+  }
+}
+
+/* Desktop : panneaux de part et d'autre + route encore plus large */
+@media (min-width: 721px) {
+  .ck-highway {
+    max-width: 64rem;
+  }
+
+  .ck-highway__asphalt {
+    width: 18rem;
+  }
+
+  .ck-highway__edges {
+    width: 16rem;
+  }
+
+  .ck-path__sign--left {
+    right: calc(50% + 8.2rem);
+  }
+
+  .ck-path__sign--right {
+    left: calc(50% + 8.2rem);
+  }
+
+  .ck-path__feu--left {
+    transform: translateX(-7.2rem);
+  }
+
+  .ck-path__feu--right {
+    transform: translateX(7.2rem);
   }
 }
 

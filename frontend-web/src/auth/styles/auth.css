@@ -1,19 +1,7 @@
 /* Auth — aligné espace candidat (tokens ck, carte widget, boutons 3D) */
 
 html:has(.codakis-auth) {
-  font-size: 62.5%;
-}
-
-@media (max-width: 767px) {
-  html:has(.codakis-auth) {
-    font-size: 100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  html:has(.codakis-auth) {
-    font-size: 87.5%;
-  }
+  font-size: 62.5%; /* 1rem = 10px — stable mobile/desktop */
 }
 
 .codakis-auth {
