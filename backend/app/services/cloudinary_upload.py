@@ -6,7 +6,8 @@ Prend en charge :
 - Vidéos (MP4, WebM, MOV) → resource_type="video"
 - Documents (PDF, DOCX, etc.) → resource_type="raw"
 
-Si Cloudinary n'est pas configuré, bascule sur le stockage local (compatibilité).
+Si Cloudinary n'est pas configuré ou refuse l'upload, bascule sur le volume média
+local servi par /api/v1/public/media.
 """
 
 from __future__ import annotations
@@ -110,14 +111,8 @@ def upload_file(
     - max_bytes : limite en octets ; None = pas de limite explicite
 
     Lève HTTPException 400 si le type ou la taille est invalide.
-    Lève HTTPException 503 si Cloudinary n'est pas configuré.
+    Si Cloudinary est indisponible, bascule sur le volume média local.
     """
-    if not _is_configured():
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Stockage cloud non configuré. Veuillez contacter l'administrateur.",
-        )
-
     content_type = (file.content_type or "").lower()
 
     if allowed_types is not None and content_type not in allowed_types:
@@ -145,6 +140,10 @@ def upload_file(
     else:
         resource_type = "image"
 
+    if not _is_configured():
+        logger.warning("Cloudinary non configuré — stockage local de repli")
+        return _save_locally(data, content_type, folder, resource_type)
+
     _configure()
 
     try:
@@ -164,11 +163,35 @@ def upload_file(
         )
         return UploadResult(result)
     except Exception as exc:
-        logger.exception("Cloudinary upload échoué: %s", exc)
+        # Des identifiants invalides ne doivent pas bloquer le dossier Consort.
+        logger.exception("Cloudinary upload échoué, bascule sur le stockage local: %s", exc)
+        return _save_locally(data, content_type, folder, resource_type)
+
+
+def _save_locally(data: bytes, content_type: str, folder: str, resource_type: str) -> UploadResult:
+    from app.services.media import media_public_url, save_binary
+
+    extension = ALL_ALLOWED_TYPES.get(content_type, "")
+    try:
+        key = save_binary(data, folder=folder, extension=extension)
+    except OSError as exc:
+        logger.exception("Stockage local indisponible: %s", exc)
         raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Échec de l'upload vers le stockage cloud : {exc}",
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Stockage de fichiers indisponible. Veuillez contacter l'administrateur.",
         ) from exc
+
+    url = media_public_url(key)
+    logger.info("Upload stocké localement: key=%s bytes=%s", key, len(data))
+    return UploadResult(
+        {
+            "public_id": key,
+            "url": url,
+            "secure_url": url,
+            "resource_type": resource_type,
+            "bytes": len(data),
+        }
+    )
 
 
 # ── helpers par catégorie ─────────────────────────────────────────────────────

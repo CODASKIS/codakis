@@ -43,6 +43,16 @@ def save_cms_image(file: UploadFile) -> str:
     return key
 
 
+def save_binary(data: bytes, *, folder: str, extension: str) -> str:
+    """Écrit un fichier sur le volume média et retourne sa clé publique."""
+    safe_folder = "/".join(part for part in folder.replace("\\", "/").split("/") if part and part != "..")
+    key = f"{safe_folder}/{uuid.uuid4().hex}{extension}" if safe_folder else f"{uuid.uuid4().hex}{extension}"
+    target = _upload_root() / key
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(data)
+    return key
+
+
 def resolve_media_path(key: str) -> Path:
     safe_key = key.replace("\\", "/").lstrip("/")
     if ".." in safe_key.split("/"):
