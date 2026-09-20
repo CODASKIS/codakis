@@ -6810,6 +6810,34 @@ html.dark .ck-quest__bar {
   color: #4A3500;
 }
 
+button.ck-quest__chest.is-unlocked {
+  cursor: pointer;
+  animation: ck-quest-chest-pulse 1.6s ease-in-out infinite;
+}
+
+button.ck-quest__chest.is-unlocked:disabled {
+  cursor: progress;
+  animation: none;
+  opacity: 0.7;
+}
+
+.ck-quest__chest.is-claimed {
+  background: #00a859;
+  border-color: #047857;
+  color: #fff;
+}
+
+@keyframes ck-quest-chest-pulse {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-0.2rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.ck-quest__chest.is-unlocked {
+    animation: none;
+  }
+}
+
 @media (max-width: 420px) {
   .ck-quest__chest {
     width: 3rem;

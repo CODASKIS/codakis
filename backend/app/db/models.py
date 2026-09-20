@@ -1,8 +1,20 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, Uuid, func
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    ForeignKey,
+    Integer,
+    JSON,
+    String,
+    Text,
+    UniqueConstraint,
+    Uuid,
+    func,
+)
 from sqlalchemy import JSON
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -286,6 +298,23 @@ class LeconProgress(Base):
 
     candidat: Mapped["Utilisateur"] = relationship(foreign_keys=[candidat_id])
     lecon: Mapped["Lecon"] = relationship(foreign_keys=[lecon_id])
+
+
+class ActiviteQuotidienne(Base):
+    """Compteur journalier alimenté par le heartbeat de l'espace candidat (quêtes, série)."""
+
+    __tablename__ = "activites_quotidiennes"
+    __table_args__ = (UniqueConstraint("candidat_id", "jour", name="uq_activite_candidat_jour"),)
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    candidat_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), ForeignKey("utilisateurs.id"), nullable=False)
+    jour: Mapped[date] = mapped_column(Date, nullable=False)
+    minutes_etude: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    quetes_recompensees: Mapped[list] = mapped_column(JSON, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
 
 class Question(Base):

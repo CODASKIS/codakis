@@ -88,6 +88,26 @@ async def _subscription_reminder_loop() -> None:
         await asyncio.sleep(6 * 60 * 60)
 
 
+async def _payment_reconcile_loop() -> None:
+    from app.services.payments import reconcile_pending_payments
+
+    def run() -> dict:
+        db = db_session.SessionLocal()
+        try:
+            return reconcile_pending_payments(db)
+        finally:
+            db.close()
+
+    while True:
+        try:
+            stats = await asyncio.to_thread(run)
+            if stats.get("completed") or stats.get("failed") or stats.get("abandoned"):
+                logger.info("Réconciliation paiements : %s", stats)
+        except Exception:
+            logger.exception("Boucle réconciliation paiements")
+        await asyncio.sleep(10 * 60)
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     if (
@@ -102,15 +122,20 @@ async def lifespan(_: FastAPI):
     Base.metadata.create_all(bind=db_session.engine)
     apply_sql_migrations()
     seed_reference_data()
-    reminder_task = asyncio.create_task(_subscription_reminder_loop())
+    background_tasks = [
+        asyncio.create_task(_subscription_reminder_loop()),
+        asyncio.create_task(_payment_reconcile_loop()),
+    ]
     try:
         yield
     finally:
-        reminder_task.cancel()
-        try:
-            await reminder_task
-        except asyncio.CancelledError:
-            pass
+        for task in background_tasks:
+            task.cancel()
+        for task in background_tasks:
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
 
 _is_prod = settings.app_env.lower() in {"production", "prod"}

@@ -31,6 +31,7 @@ from app.services.payments import (
     list_user_invoices,
     payment_to_initiate_response,
     payment_to_status_response,
+    reconcile_pending_payments,
 )
 from app.services.subscription_lifecycle import process_subscription_reminders
 
@@ -252,6 +253,12 @@ def payment_confirm(reference: str, user: Utilisateur = Depends(AuthUser), db: S
                 return payment_to_status_response(paiement)
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=detail) from exc
     return payment_to_status_response(paiement)
+
+
+@admin_router.post("/reconcile")
+def admin_payments_reconcile(_admin: AdminUser, db: Session = Depends(get_db)):
+    """Repasse derrière l'opérateur sur les paiements encore en attente."""
+    return reconcile_pending_payments(db)
 
 
 @admin_router.get("/stats", response_model=AdminPaymentStatsResponse)

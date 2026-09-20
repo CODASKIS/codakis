@@ -13,10 +13,12 @@ from app.schemas.pedagogy import (
     CheckpointValidateRequest,
     CheckpointValidateResponse,
     CoursePathResponse,
+    DailyQuestsResponse,
     GamificationResponse,
     LeaderboardResponse,
     RoadmapResponse,
     QuestionPublic,
+    StudyHeartbeatRequest,
     TtsRequest,
     TutorRequest,
     TutorResponse,
@@ -85,6 +87,7 @@ from app.services.pedagogy import (
     _count_linked_questions_for_examens,
     _count_linked_questions_for_quizzes,
 )
+from app.services.quests import claim_quest, get_daily_quests, record_study_minutes
 from app.services.tts import TtsError, synthesize_speech
 from app.services.mistral import MistralError, chat_tutor
 
@@ -349,6 +352,33 @@ def candidat_get_progress(candidat: Utilisateur = Depends(CandidatUser), db: Ses
 @candidat_router.get("/dashboard", response_model=CandidatDashboardResponse)
 def candidat_dashboard(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
     return get_candidat_dashboard(db, candidat)
+
+
+@candidat_router.get("/quests", response_model=DailyQuestsResponse)
+def candidat_quests(candidat: Utilisateur = Depends(CandidatUser), db: Session = Depends(get_db)):
+    return get_daily_quests(db, candidat)
+
+
+@candidat_router.post("/quests/{quest_id}/claim", response_model=DailyQuestsResponse)
+def candidat_claim_quest(
+    quest_id: str,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    try:
+        return claim_quest(db, candidat, quest_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+
+@candidat_router.post("/activity/heartbeat", response_model=DailyQuestsResponse)
+def candidat_activity_heartbeat(
+    payload: StudyHeartbeatRequest,
+    candidat: Utilisateur = Depends(CandidatUser),
+    db: Session = Depends(get_db),
+):
+    record_study_minutes(db, candidat, payload.minutes)
+    return get_daily_quests(db, candidat)
 
 
 @candidat_router.get("/gamification", response_model=GamificationResponse)

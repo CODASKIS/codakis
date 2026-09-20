@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -319,6 +319,34 @@ class CandidatDashboardResponse(BaseModel):
     questions_total: int = 0
     correct_answers: int = 0
     first_try_rate: int = 0
+    streak_days: int = 0
+    study_minutes: int = 0
+
+
+class DailyQuestItem(BaseModel):
+    id: str
+    title: str
+    description: str
+    goal: int
+    current: int
+    reward_points: int
+    completed: bool
+    claimed: bool
+    claimable: bool
+
+
+class DailyQuestsResponse(BaseModel):
+    date: date
+    streak_days: int
+    study_minutes: int
+    completed_count: int
+    total: int
+    reset_in_seconds: int
+    quests: list[DailyQuestItem] = Field(default_factory=list)
+
+
+class StudyHeartbeatRequest(BaseModel):
+    minutes: int = Field(default=1, ge=0, le=10)
 
 
 class GamificationResponse(BaseModel):

@@ -592,6 +592,59 @@ def confirm_payment(
     return paiement
 
 
+# Un client qui paie puis ferme l'onglet ne déclenche jamais /confirm : on repasse
+# derrière l'opérateur pendant quelques jours avant d'abandonner la transaction.
+RECONCILE_WINDOW = timedelta(days=3)
+ABANDON_AFTER = timedelta(hours=6)
+
+
+def reconcile_pending_payments(db: Session, *, limit: int = 200) -> dict:
+    """Rattrape les paiements réglés chez l'opérateur mais jamais confirmés côté CODAKIS."""
+    now = datetime.now(UTC)
+    rows = (
+        db.query(Paiement)
+        .filter(Paiement.status == "pending", Paiement.created_at >= now - RECONCILE_WINDOW)
+        .order_by(Paiement.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    stats = {"checked": 0, "completed": 0, "failed": 0, "abandoned": 0, "pending": 0}
+    for paiement in rows:
+        stats["checked"] += 1
+        provider_status = _verify_provider_payment(paiement)
+
+        if provider_status == "completed":
+            user = db.get(Utilisateur, paiement.utilisateur_id)
+            if user is None:
+                continue
+            try:
+                confirm_payment(db, user, paiement.reference, skip_provider_check=True)
+            except ValueError:
+                logger.exception("Réconciliation impossible pour %s", paiement.reference)
+                continue
+            logger.info("Paiement %s confirmé par réconciliation", paiement.reference)
+            stats["completed"] += 1
+            continue
+
+        if provider_status == "failed":
+            fail_payment(db, paiement, "Paiement refusé ou expiré chez l'opérateur")
+            stats["failed"] += 1
+            continue
+
+        created = paiement.created_at
+        if created is not None and created.tzinfo is None:
+            created = created.replace(tzinfo=UTC)
+        if created is not None and now - created > ABANDON_AFTER:
+            fail_payment(db, paiement, "Paiement abandonné : aucune confirmation de l'opérateur")
+            stats["abandoned"] += 1
+            continue
+
+        stats["pending"] += 1
+
+    return stats
+
+
 def get_my_subscription(db: Session, user: Utilisateur) -> dict | None:
     row = (
         db.query(Paiement)

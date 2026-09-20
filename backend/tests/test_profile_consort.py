@@ -35,13 +35,23 @@ def test_profile_update_and_consort(client):
     assert len(body["pieces"]) == 6
     assert all(piece["status"] == "missing" for piece in body["pieces"])
 
-    submit = client.post("/api/v1/candidat/consort/pieces/id/submit", headers=headers)
+    empty = client.post("/api/v1/candidat/consort/pieces/id/submit", headers=headers, json={})
+    assert empty.status_code == 400
+
+    submit = client.post(
+        "/api/v1/candidat/consort/pieces/id/submit",
+        headers=headers,
+        json={"file_url": "https://cdn.codakis.cm/cni.pdf", "file_name": "cni.pdf"},
+    )
     assert submit.status_code == 200
     id_piece = next(item for item in submit.json()["pieces"] if item["key"] == "id")
     assert id_piece["status"] == "pending"
+    assert id_piece["file_name"] == "cni.pdf"
     assert submit.json()["validated_count"] == 0
 
-    submit_again = client.post("/api/v1/candidat/consort/pieces/id/submit", headers=headers)
+    # Un nouvel envoi sans fichier conserve la pièce déjà jointe.
+    submit_again = client.post("/api/v1/candidat/consort/pieces/id/submit", headers=headers, json={})
     assert submit_again.status_code == 200
     id_piece = next(item for item in submit_again.json()["pieces"] if item["key"] == "id")
     assert id_piece["status"] == "pending"
+    assert id_piece["file_url"] == "https://cdn.codakis.cm/cni.pdf"

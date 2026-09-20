@@ -1443,6 +1443,11 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
     success_rate = round(sum(scores) / len(scores)) if scores else first_try_rate
     gamification = get_gamification(db, candidat)
 
+    from app.services.quests import compute_streak, get_or_create_today
+
+    streak_days = compute_streak(db, candidat)
+    study_minutes = int(get_or_create_today(db, candidat).minutes_etude or 0)
+
     return {
         "progress_percent": progress["percent"],
         "completed_lecons": progress["completed_count"],
@@ -1460,4 +1465,6 @@ def get_candidat_dashboard(db: Session, candidat: Utilisateur) -> dict:
         "questions_total": questions_total,
         "correct_answers": correct_answers,
         "first_try_rate": first_try_rate,
+        "streak_days": streak_days,
+        "study_minutes": study_minutes,
     }

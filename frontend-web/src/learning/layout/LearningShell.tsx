@@ -21,6 +21,7 @@ import ThemeSwitcher from "../../components/common/ThemeSwitcher";
 import { getUserAvatarUrl } from "../../lib/uiAvatars";
 import { fetchCandidatDashboard, fetchGamification, type CandidatDashboard, type Gamification } from "../../lib/pedagogyApi";
 import StickyWidgets from "../components/StickyWidgets";
+import { useStudyHeartbeat } from "../lib/useStudyHeartbeat";
 
 const TOP_LINKS = [
   { to: "/espace/candidat", end: true, label: "Feuille de route", icon: Map, color: "#00a859" },
@@ -103,6 +104,8 @@ export default function LearningShell() {
 
   const displayName = formatDisplayName(session?.name, session?.email);
   const avatarSeed = session?.email || session?.id || displayName;
+
+  useStudyHeartbeat(session?.role === "candidat");
 
   useEffect(() => {
     let cancelled = false;

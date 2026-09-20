@@ -330,6 +330,28 @@ export type CandidatDashboard = {
   study_minutes?: number;
 };
 
+export type DailyQuest = {
+  id: string;
+  title: string;
+  description: string;
+  goal: number;
+  current: number;
+  reward_points: number;
+  completed: boolean;
+  claimed: boolean;
+  claimable: boolean;
+};
+
+export type DailyQuests = {
+  date: string;
+  streak_days: number;
+  study_minutes: number;
+  completed_count: number;
+  total: number;
+  reset_in_seconds: number;
+  quests: DailyQuest[];
+};
+
 export type Gamification = {
   points: number;
   niveau: number;
@@ -433,6 +455,24 @@ export async function fetchCandidatProgress(): Promise<CandidatProgress> {
 
 export async function fetchCandidatDashboard(): Promise<CandidatDashboard> {
   return authFetch<CandidatDashboard>("/api/v1/candidat/pedagogy/dashboard");
+}
+
+export async function fetchDailyQuests(): Promise<DailyQuests> {
+  return authFetch<DailyQuests>("/api/v1/candidat/pedagogy/quests");
+}
+
+export async function claimDailyQuest(questId: string): Promise<DailyQuests> {
+  return authFetch<DailyQuests>(`/api/v1/candidat/pedagogy/quests/${questId}/claim`, {
+    method: "POST",
+  });
+}
+
+/** Crédite le temps passé dans l'espace candidat (quête « apprends 10 minutes »). */
+export async function sendStudyHeartbeat(minutes: number): Promise<DailyQuests> {
+  return authFetch<DailyQuests>("/api/v1/candidat/pedagogy/activity/heartbeat", {
+    method: "POST",
+    body: JSON.stringify({ minutes }),
+  });
 }
 
 export async function askCandidatTutor(payload: {

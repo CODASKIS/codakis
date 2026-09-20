@@ -6,6 +6,7 @@ import {
   Clock,
   Download,
   Flame,
+  Gift,
   Lock,
   Medal,
   Shield,
@@ -18,11 +19,28 @@ import {
 import Loader from "../../../components/common/Loader";
 import { downloadBadge } from "../../lib/badgeCard";
 import {
+  claimDailyQuest,
   fetchCandidatDashboard,
+  fetchDailyQuests,
   fetchRoadmap,
   type CandidatDashboard,
+  type DailyQuests,
   type RoadmapSection,
 } from "../../../lib/pedagogyApi";
+
+/** Habillage local des quêtes servies par l'API. */
+const QUEST_STYLES: Record<string, { color: string; Icon: typeof Flame }> = {
+  serie: { color: "#FF9600", Icon: Flame },
+  score: { color: "#00CD66", Icon: Target },
+  etude: { color: "#1CB0F6", Icon: Clock },
+};
+
+function formatCountdown(seconds: number): string {
+  const hours = Math.floor(Math.max(0, seconds) / 3600);
+  if (hours >= 1) return `${hours} heure${hours > 1 ? "s" : ""}`;
+  const minutes = Math.max(1, Math.round(Math.max(0, seconds) / 60));
+  return `${minutes} min`;
+}
 
 const BADGES = [
   { id: "prodige", title: "Prodige", desc: "Avoir plus de 95% de bonnes réponses", goal: 1, color: "#38bdf8", Icon: Star },
@@ -44,6 +62,8 @@ type TabKey = "quests" | "badges";
 export default function StatsPage() {
   const [data, setData] = useState<CandidatDashboard | null>(null);
   const [sections, setSections] = useState<RoadmapSection[]>([]);
+  const [daily, setDaily] = useState<DailyQuests | null>(null);
+  const [claiming, setClaiming] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tab, setTab] = useState<TabKey>("quests");
@@ -53,12 +73,14 @@ export default function StatsPage() {
     void Promise.all([
       fetchCandidatDashboard().catch(() => null),
       fetchRoadmap().catch(() => null),
+      fetchDailyQuests().catch(() => null),
     ])
-      .then(([res, roadmap]) => {
+      .then(([res, roadmap, quests]) => {
         if (cancelled) return;
         if (res) setData(res);
         else setError("Impossible de charger les statistiques pour le moment.");
         setSections(roadmap?.sections ?? []);
+        setDaily(quests);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -87,51 +109,26 @@ export default function StatsPage() {
   const chaptersTotal = data?.chapters_total ?? data?.total_lecons ?? 0;
   const points = data?.points ?? 0;
   const niveau = data?.niveau ?? 1;
-  const streak = data?.streak_days ?? data?.streak ?? 0;
-  const studyMinutes = data?.study_minutes ?? 0;
+  const streak = daily?.streak_days ?? data?.streak_days ?? data?.streak ?? 0;
 
-  const quests = useMemo(() => {
-    const streakGoal = 1;
-    const scoreGoal = 2;
-    const minutesGoal = 10;
+  const questList = daily?.quests ?? [];
+  const questsDone = daily?.completed_count ?? 0;
+  const questsTotal = daily?.total ?? questList.length;
 
-    const streakCurrent = Math.min(streakGoal, streak > 0 ? 1 : 0);
-    const scoreCurrent = Math.min(scoreGoal, firstTry >= 80 ? (quizzes >= 2 ? 2 : quizzes >= 1 ? 1 : 0) : 0);
-    const minutesCurrent = Math.min(minutesGoal, studyMinutes);
-
-    const list = [
-      {
-        id: "streak",
-        title: "Prolonge ta série",
-        goal: streakGoal,
-        current: streakCurrent,
-        color: "#FF9600",
-        bg: "#FFF4E5",
-        Icon: Flame,
-      },
-      {
-        id: "score",
-        title: "Obtiens un score d'au moins 80 % dans 2 leçons",
-        goal: scoreGoal,
-        current: scoreCurrent,
-        color: "#00CD66",
-        bg: "#E5F9EF",
-        Icon: Target,
-      },
-      {
-        id: "minutes",
-        title: "Apprends pendant 10 minutes",
-        goal: minutesGoal,
-        current: minutesCurrent,
-        color: "#1CB0F6",
-        bg: "#E5F4FF",
-        Icon: Clock,
-      },
-    ] as const;
-
-    const doneCount = list.filter((q) => q.current >= q.goal).length;
-    return { list, doneCount, total: list.length };
-  }, [streak, firstTry, quizzes, studyMinutes]);
+  async function onClaim(questId: string) {
+    setClaiming(questId);
+    setError("");
+    try {
+      const updated = await claimDailyQuest(questId);
+      setDaily(updated);
+      const refreshed = await fetchCandidatDashboard().catch(() => null);
+      if (refreshed) setData(refreshed);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Récompense indisponible");
+    } finally {
+      setClaiming(null);
+    }
+  }
 
   const badgeProgress: Record<string, number> = {
     prodige: firstTry >= 95 ? 1 : 0,
@@ -176,8 +173,8 @@ export default function StatsPage() {
             <p className="ck-quests-hero__subtitle">
               Tu as terminé{" "}
               <strong>
-                {quests.doneCount} quête
-                {quests.doneCount > 1 ? "s" : ""} sur {quests.total}
+                {questsDone} quête
+                {questsDone > 1 ? "s" : ""} sur {questsTotal}
               </strong>{" "}
               aujourd
               {"'"}hui.
@@ -195,26 +192,29 @@ export default function StatsPage() {
             <h2 className="ck-quests-panel__title">Quêtes du jour</h2>
             <span className="ck-quests-panel__timer">
               <Clock size={16} strokeWidth={2.4} />
-              12 heures
+              {formatCountdown(daily?.reset_in_seconds ?? 0)}
             </span>
           </div>
 
+          {error ? <p className="ck-empty">{error}</p> : null}
+
           <ul className="ck-quest-list" role="list">
-            {quests.list.map((q) => {
+            {questList.map((q) => {
+              const style = QUEST_STYLES[q.id] ?? { color: "#1CB0F6", Icon: Target };
               const pct = Math.min(100, Math.round((q.current / q.goal) * 100));
-              const done = q.current >= q.goal;
+              const QuestIcon = style.Icon;
               return (
                 <li
                   key={q.id}
                   role="listitem"
-                  className={`ck-quest ${done ? "is-done" : ""}`}
+                  className={`ck-quest ${q.completed ? "is-done" : ""}`}
                 >
                   <span
                     className="ck-quest__icon"
-                    style={{ color: q.color }}
+                    style={{ color: style.color }}
                     aria-hidden
                   >
-                    <q.Icon size={36} strokeWidth={2.2} />
+                    <QuestIcon size={36} strokeWidth={2.2} />
                   </span>
                   <div className="ck-quest__body">
                     <strong className="ck-quest__title">{q.title}</strong>
@@ -223,32 +223,48 @@ export default function StatsPage() {
                         <span
                           style={{
                             width: `${pct}%`,
-                            background: done ? "#00a859" : q.color,
+                            background: q.completed ? "#00a859" : style.color,
                           }}
                         />
                       </div>
                       <span className="ck-quest__count">
                         {q.current} / {q.goal}
                       </span>
-                      <span
-                        className={`ck-quest__chest ${done ? "is-unlocked" : ""}`}
-                        aria-label={
-                          done
-                            ? "Récompense récupérée"
-                            : "Récompense à récupérer"
-                        }
-                      >
-                        {done ? (
-                          <Trophy size={20} color="#fff" strokeWidth={2.4} />
-                        ) : (
-                          <Lock size={20} strokeWidth={2.4} />
-                        )}
-                      </span>
+                      {q.claimable ? (
+                        <button
+                          type="button"
+                          className="ck-quest__chest is-unlocked"
+                          disabled={claiming === q.id}
+                          title={`Récupérer ${q.reward_points} points`}
+                          aria-label={`Récupérer la récompense : ${q.reward_points} points`}
+                          onClick={() => void onClaim(q.id)}
+                        >
+                          <Gift size={20} color="#fff" strokeWidth={2.4} />
+                        </button>
+                      ) : (
+                        <span
+                          className={`ck-quest__chest ${q.claimed ? "is-claimed" : ""}`}
+                          aria-label={
+                            q.claimed
+                              ? `Récompense récupérée : ${q.reward_points} points`
+                              : `Récompense à débloquer : ${q.reward_points} points`
+                          }
+                        >
+                          {q.claimed ? (
+                            <Trophy size={20} strokeWidth={2.4} />
+                          ) : (
+                            <Lock size={20} strokeWidth={2.4} />
+                          )}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </li>
               );
             })}
+            {!questList.length ? (
+              <li className="ck-empty">Quêtes indisponibles pour le moment.</li>
+            ) : null}
           </ul>
 
           <div className="ck-quest-kpis">
@@ -272,8 +288,10 @@ export default function StatsPage() {
                 <Flame size={26} strokeWidth={2.3} />
               </span>
               <div className="ck-kpi__body">
-                <strong>Niv. {niveau}</strong>
-                <span>Niveau actuel</span>
+                <strong>
+                  {streak} jour{streak > 1 ? "s" : ""}
+                </strong>
+                <span>Série en cours</span>
               </div>
             </article>
             <article className="ck-kpi">
