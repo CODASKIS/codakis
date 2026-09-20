@@ -1696,6 +1696,10 @@ html.dark .fj-pricing-dark__card.is-featured {
   color: var(--ck-text);
 }
 
+html.dark .fj-pricing-dark__card.is-featured {
+  border-color: var(--ck-green);
+}
+
 html.dark .fj-pricing-dark__header {
   border-bottom-color: var(--ck-line);
 }
