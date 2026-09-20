@@ -69,21 +69,18 @@ export default function RoadmapPage() {
     <div className="ck-roadmap ck-roadmap--duo">
       {error ? <p className="ck-empty">{error}</p> : null}
 
-      <aside className="ck-roadmap__intro">
-        <h2>Intro au code</h2>
-        <p>
-          Votre parcours permis. Route serpentine : validé, en cours, à reprendre.
-          {gamification
-            ? ` Niveau ${gamification.niveau}, ${gamification.points} points.`
-            : null}
-        </p>
-      </aside>
-
       {data?.sections?.length ? (
         <RoadmapWorldMap
           sections={data.sections}
           currentRef={currentGlobal?.ref ?? null}
           onOpenStep={openStep}
+          intro={{
+            title: "Intro au code",
+            body: [
+              "Votre parcours permis. Route serpentine : validé, en cours, à reprendre.",
+              gamification ? ` Niveau ${gamification.niveau}, ${gamification.points} points.` : "",
+            ].join(""),
+          }}
         />
       ) : null}
 

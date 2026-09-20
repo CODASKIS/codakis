@@ -1773,12 +1773,9 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 }
 
 .ck-learn__feed:has(.ck-roadmap--duo) {
-  background:
-    radial-gradient(ellipse 70% 40% at 10% 0%, rgba(0, 168, 89, 0.08), transparent 55%),
-    radial-gradient(ellipse 50% 30% at 100% 20%, rgba(56, 189, 248, 0.06), transparent 50%),
-    #d8f0e6;
+  background: #cfece0;
   margin: -1.6rem -1.6rem 0;
-  padding: 1.6rem 1.6rem 2rem;
+  padding: 1.2rem 1.2rem 2rem;
   border-radius: 1.6rem;
 }
 
@@ -1809,41 +1806,24 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 
 .ck-duo-map {
   position: relative;
-  margin: 0 auto 4rem;
-  max-width: 68rem;
-}
-
-.ck-duo-map__decor {
-  pointer-events: none;
-  position: absolute;
-  inset: -2rem -1rem;
-  background-image:
-    radial-gradient(circle at 8% 12%, color-mix(in srgb, var(--ck-green) 12%, transparent) 0 2.2rem, transparent 2.4rem),
-    radial-gradient(circle at 92% 28%, color-mix(in srgb, #f59e0b 14%, transparent) 0 1.8rem, transparent 2rem),
-    radial-gradient(circle at 12% 68%, color-mix(in srgb, #0ea5e9 12%, transparent) 0 2rem, transparent 2.2rem),
-    radial-gradient(circle at 88% 78%, color-mix(in srgb, var(--ck-green) 10%, transparent) 0 2.4rem, transparent 2.6rem),
-    /* silhouettes panneaux très légères (herbe) */
-    radial-gradient(circle at 78% 18%, color-mix(in srgb, var(--ck-green) 16%, transparent) 0 0.35rem, transparent 0.55rem),
-    radial-gradient(circle at 82% 62%, color-mix(in srgb, var(--ck-green) 14%, transparent) 0 0.4rem, transparent 0.6rem);
-  opacity: 0.95;
-  z-index: 0;
+  margin: 0 auto 2rem;
+  max-width: 72rem;
 }
 
 .ck-duo-map__road-wrap {
   position: relative;
   z-index: 1;
-  padding: 0.4rem 0 4rem;
+  padding: 0 0 3rem;
   overflow: visible;
 }
 
-/* Route centre-droite, derrière les cartes unité (comme maquette) */
+/* Route pleine largeur, calée centre-droite comme maquette */
 .ck-duo-map__road-layer {
   position: absolute;
   top: 0;
-  right: 2%;
+  left: 8%;
+  right: -2%;
   bottom: 0;
-  left: auto;
-  width: min(48rem, 58%);
   z-index: 0;
   pointer-events: none;
 }
@@ -1853,20 +1833,48 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   width: 100%;
   height: 100%;
   min-height: 100%;
-  filter: drop-shadow(0 0.2rem 0.35rem rgba(0, 0, 0, 0.18));
+  filter: drop-shadow(0 0.25rem 0.4rem rgba(0, 0, 0, 0.16));
 }
 
+/* Voiture juste après le 1er virage (segment horizontal haut) */
 .ck-duo-map__car {
   position: absolute;
-  top: 0.4%;
-  left: 52%;
-  width: 9.6rem;
+  top: 3.2%;
+  left: 58%;
+  width: 10rem;
   height: auto;
   z-index: 3;
-  transform: translateX(-30%);
+  transform: translateX(-50%) scaleX(-1);
   filter: drop-shadow(0 0.6rem 1rem rgba(0, 0, 0, 0.28));
   animation: ck-car-bob 1.6s ease-in-out infinite;
   pointer-events: none;
+}
+
+.ck-duo-map__intro {
+  position: relative;
+  z-index: 3;
+  max-width: 28rem;
+  margin: 0 0 1.2rem 0.4rem;
+  padding: 1.5rem 1.6rem 1.4rem;
+  border-radius: 1.6rem;
+  background: #fff;
+  border: 0.2rem solid #e5e7eb;
+  box-shadow: 0 0.55rem 0 #d1d5db;
+}
+
+.ck-duo-map__intro h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--ck-text);
+}
+
+.ck-duo-map__intro p {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 650;
+  line-height: 1.4;
+  color: var(--ck-muted);
 }
 
 .ck-duo-map__units {
@@ -1874,17 +1882,17 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 6.4rem;
-  padding: 2.4rem 0.4rem 2rem;
-  max-width: 36rem;
+  gap: 5.2rem;
+  padding: 1.6rem 0.2rem 2rem;
+  max-width: 34rem;
 }
 
 .ck-unit-card {
-  width: min(36rem, 100%);
+  width: min(34rem, 100%);
   border-radius: 2rem;
-  background: var(--ck-surface-2, #fff);
-  border: 0.22rem solid var(--ck-line, #e5e7eb);
-  box-shadow: 0 0.7rem 0 color-mix(in srgb, var(--ck-line, #e5e7eb) 80%, #000 20%);
+  background: #fffaf3;
+  border: 0.22rem solid #e8dcc8;
+  box-shadow: 0 0.7rem 0 #d6c4a8;
   overflow: hidden;
 }
 
@@ -1892,6 +1900,15 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 .ck-unit-card.is-first {
   align-self: flex-start;
   margin-left: 0;
+}
+
+.ck-unit-card.is-first {
+  margin-top: 2.4rem;
+}
+
+.ck-unit-card.is-second {
+  margin-left: 1.2rem;
+  opacity: 0.95;
 }
 
 .ck-unit-card.is-right {
@@ -2095,7 +2112,10 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 }
 
 .ck-unit-card.is-locked {
-  opacity: 0.92;
+  background: #e8edf2;
+  border-color: #cbd5e1;
+  box-shadow: 0 0.7rem 0 #94a3b8;
+  opacity: 0.88;
 }
 
 .ck-unit-card.is-locked .ck-unit-card__head {
@@ -2139,25 +2159,36 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 
 @media (max-width: 720px) {
   .ck-duo-map__road-layer {
-    width: 78%;
-    right: -8%;
-    opacity: 0.9;
+    left: -4%;
+    right: -10%;
+    opacity: 0.88;
   }
 
   .ck-duo-map__car {
-    left: 52%;
-    width: 7.4rem;
+    left: 62%;
+    width: 7.6rem;
+    top: 2.4%;
+  }
+
+  .ck-duo-map__intro {
+    max-width: none;
+    margin: 0 0 1rem;
   }
 
   .ck-duo-map__units {
     max-width: none;
     gap: 3.6rem;
-    padding-top: 5.2rem;
+    padding-top: 1.2rem;
   }
 
   .ck-unit-card {
     width: 100%;
     align-self: stretch !important;
+    margin-left: 0 !important;
+  }
+
+  .ck-unit-card.is-first {
+    margin-top: 0.8rem;
   }
 
   .ck-unit-card__steps {
@@ -2166,6 +2197,7 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
 }
 
 html.dark .ck-roadmap__intro,
+html.dark .ck-duo-map__intro,
 html.dark .ck-unit-card {
   background: #1e293b;
   border-color: #334155;
