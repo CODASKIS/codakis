@@ -1,17 +1,24 @@
 import { FormEvent, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import Loader from "../../../components/common/Loader";
 import { clearSession, getSession, setSession } from "../../../auth/authStore";
 import { fetchMe, updateProfile, userToSession } from "../../../lib/authApi";
 import { changePassword } from "../../../lib/pedagogyApi";
+import { AUTH_PATHS } from "../../../constants/authPaths";
 
 type Tab = "compte" | "securite";
 
 export default function ProfilePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("compte");
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") === "securite" ? "securite" : "compte";
+  const [tab, setTab] = useState<Tab>(initialTab);
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "securite") setTab("securite");
+  }, [searchParams]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -201,7 +208,7 @@ export default function ProfilePage() {
                     "Ce compte utilise la connexion Google. Utilisez « Mot de passe oublié » pour définir un mot de passe local si besoin.",
                   )}
                 </p>
-                <Link to="/mot-de-passe-oublie" className="ck-btn ck-btn--primary">
+                <Link to={AUTH_PATHS.forgotPassword} className="ck-btn ck-btn--primary">
                   Définir un mot de passe
                 </Link>
               </div>

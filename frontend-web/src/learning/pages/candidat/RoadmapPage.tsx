@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { BookOpen, Lock, Star, X } from "lucide-react";
 import LockedStepModal from "../../components/LockedStepModal";
@@ -6,7 +6,7 @@ import { chapterBannerColor } from "../../../lib/chapterColors";
 import { fetchRoadmap, type RoadmapResponse, type RoadmapSection, type RoadmapStep } from "../../../lib/pedagogyApi";
 import Loader from "../../../components/common/Loader";
 
-/** Oscillation gauche/droite pour la route en serpentin (style infographie). */
+/** Serpentin gauche/droite le long d'une seule route. */
 function pathOffset(index: number): number {
   const cycle = index % 8;
   let level = 0;
@@ -14,7 +14,7 @@ function pathOffset(index: number): number {
   else if (cycle <= 4) level = 4 - cycle;
   else if (cycle <= 6) level = 4 - cycle;
   else level = cycle - 8;
-  return level * 3.6;
+  return level * 4.2;
 }
 
 function toRoman(n: number): string {
@@ -37,13 +37,17 @@ function toRoman(n: number): string {
 }
 
 function stepStatusLabel(step: RoadmapStep): string {
-  if (step.status === "premium_locked") return "Premium — débloquer";
+  if (step.status === "premium_locked") return "Premium";
   if (step.status === "locked") return "Bloquée";
   if (step.status === "failed") return "À reprendre";
   if (step.status === "current") return "En cours";
-  if (step.status === "done") return "Validée — feu vert";
+  if (step.status === "done") return "Validée";
   return "";
 }
+
+type RoadNode =
+  | { kind: "chapter"; section: RoadmapSection }
+  | { kind: "step"; step: RoadmapStep; index: number };
 
 export default function RoadmapPage() {
   const navigate = useNavigate();
@@ -52,7 +56,6 @@ export default function RoadmapPage() {
   const [lockedModal, setLockedModal] = useState<{ title: string } | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeChapter, setActiveChapter] = useState<RoadmapSection | null>(null);
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -74,6 +77,20 @@ export default function RoadmapPage() {
   }, []);
 
   const flatSteps = useMemo(() => data?.sections.flatMap((s) => s.steps) ?? [], [data]);
+  const roadNodes = useMemo<RoadNode[]>(() => {
+    if (!data?.sections.length) return [];
+    const nodes: RoadNode[] = [];
+    let stepIndex = 0;
+    data.sections.forEach((section) => {
+      nodes.push({ kind: "chapter", section });
+      section.steps.forEach((step) => {
+        nodes.push({ kind: "step", step, index: stepIndex });
+        stepIndex += 1;
+      });
+    });
+    return nodes;
+  }, [data]);
+
   const gamification = data?.gamification;
   const currentGlobal =
     flatSteps.find((s) => s.status === "current" || s.status === "failed") ?? null;
@@ -90,27 +107,6 @@ export default function RoadmapPage() {
     }, 120);
     return () => window.clearTimeout(timer);
   }, [flatSteps, data]);
-
-  useEffect(() => {
-    if (!data?.sections.length) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        const id = (visible.target as HTMLElement).dataset.chapterId;
-        const section = data.sections.find((s) => s.theme_id === id);
-        if (section) setActiveChapter(section);
-      },
-      { rootMargin: "-20% 0px -55% 0px", threshold: [0.15, 0.35, 0.6] },
-    );
-    data.sections.forEach((section) => {
-      const el = sectionRefs.current[section.theme_id];
-      if (el) observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [data]);
 
   function openStep(step: RoadmapStep) {
     if (step.status === "premium_locked") {
@@ -161,8 +157,8 @@ export default function RoadmapPage() {
           <p className="ck-roadmap__hero-eyebrow">Feuille de route</p>
           <h1>Votre parcours permis</h1>
           <p>
-            Suivez la route étape par étape. Chaque <strong>feu</strong> est un cours ou un quiz :
-            vert = validé, orange = en cours, rouge = à reprendre.
+            Une seule route serpentine : chaque <strong>feu</strong> est un cours ou un quiz.
+            Vert = validé, orange = en cours, rouge = à reprendre, éteint = bloqué.
           </p>
           {gamification ? (
             <div className="ck-roadmap__hero-stats">
@@ -222,185 +218,120 @@ export default function RoadmapPage() {
         </div>
       ) : null}
 
-      {data?.sections.map((section) => {
-        const sectionSteps = section.steps;
-        const current = sectionSteps.find((s) => s.status === "current" || s.status === "failed");
-        const hasLocked = sectionSteps.some((s) => s.status === "locked" || s.status === "premium_locked");
-        const bannerColor = chapterBannerColor(section.theme_title, section.theme_index);
-        const doneCount = sectionSteps.filter((s) => s.status === "done").length;
-        return (
-          <section
-            key={section.theme_id}
-            className="ck-roadmap__section"
-            data-chapter-id={section.theme_id}
-            ref={(el) => {
-              sectionRefs.current[section.theme_id] = el;
-            }}
-          >
-            <div
-              className="ck-unit-banner"
-              style={{ ["--ck-chapter-color" as string]: bannerColor, background: bannerColor }}
-            >
-              <div>
-                <p className="ck-unit-banner__eyebrow">Chapitre {toRoman(section.theme_index)}</p>
-                <h2>{section.theme_title}</h2>
-                <p>
-                  {section.locked
-                    ? "Contenu premium — débloquez avec un forfait"
-                    : (() => {
-                        const total = sectionSteps.length;
-                        if (current?.status === "failed") {
-                          return `${doneCount}/${total} terminées · 1 à reprendre`;
-                        }
-                        if (current?.status === "current") {
-                          return `${doneCount}/${total} terminées · 1 en cours`;
-                        }
-                        return `${doneCount}/${total} étapes terminées`;
-                      })()}
-                </p>
-                {current?.status === "failed" ? (
-                  <button type="button" className="ck-locked-hint ck-locked-hint--fail" onClick={() => openStep(current)}>
-                    <X size={14} strokeWidth={2.5} aria-hidden />
-                    <span>Quiz raté — cliquez pour réessayer</span>
-                  </button>
-                ) : current?.status === "current" ? (
-                  <button
-                    type="button"
-                    className="ck-locked-hint ck-locked-hint--current"
-                    onClick={() => openStep(current)}
-                  >
-                    <Star size={14} strokeWidth={2.5} aria-hidden />
-                    <span>À faire : {current.title}</span>
-                  </button>
-                ) : hasLocked && !section.locked ? (
-                  <button
-                    type="button"
-                    className="ck-locked-hint"
-                    onClick={() =>
-                      setLockedModal({
-                        title: sectionSteps.find((s) => s.status === "locked")?.title ?? "Étape suivante",
-                      })
-                    }
-                  >
-                    <Lock size={14} strokeWidth={2.5} aria-hidden />
-                    <span>Étapes suivantes bloquées</span>
-                  </button>
-                ) : null}
-                {section.locked ? (
-                  <button type="button" className="ck-locked-hint" onClick={() => navigate("/espace/candidat/super")}>
-                    <Lock size={14} strokeWidth={2.5} aria-hidden />
-                    <span>Chapitre Super — débloquer</span>
-                  </button>
-                ) : null}
-              </div>
-              {current ? (
-                <button
-                  type="button"
-                  className={`ck-btn ck-unit-banner__cta ${current.status === "failed" ? "ck-btn--danger" : "ck-btn--primary"}`}
-                  style={current.status === "failed" ? undefined : { color: bannerColor }}
-                  onClick={() => openStep(current)}
+      <div className="ck-highway" aria-label="Parcours permis CODAKIS">
+        <div className="ck-highway__asphalt" aria-hidden />
+        <div className="ck-highway__edges" aria-hidden />
+        <div className="ck-highway__center" aria-hidden />
+
+        <div className="ck-path ck-path--highway">
+          {roadNodes.map((node) => {
+            if (node.kind === "chapter") {
+              const { section } = node;
+              const doneCount = section.steps.filter((s) => s.status === "done").length;
+              const color = chapterBannerColor(section.theme_title, section.theme_index);
+              return (
+                <div
+                  key={`chapter-${section.theme_id}`}
+                  className="ck-highway__mile"
+                  data-chapter-id={section.theme_id}
+                  style={{ ["--ck-chapter-color" as string]: color }}
                 >
-                  {current.status === "failed" ? "Réessayer" : "Continuer"}
-                </button>
-              ) : null}
-            </div>
+                  <span className="ck-highway__mile-flag">Chapitre {toRoman(section.theme_index)}</span>
+                  <strong className="ck-highway__mile-title">{section.theme_title}</strong>
+                  <span className="ck-highway__mile-meta">
+                    {section.locked
+                      ? "Premium — débloquer"
+                      : `${doneCount}/${section.steps.length} étapes`}
+                  </span>
+                </div>
+              );
+            }
 
-            <div className="ck-road" aria-label={`Parcours ${section.theme_title}`}>
-              <div className="ck-road__asphalt" aria-hidden />
-              <div className="ck-road__decor ck-road__decor--left" aria-hidden />
-              <div className="ck-road__decor ck-road__decor--right" aria-hidden />
+            const { step, index } = node;
+            const offset = pathOffset(index);
+            const side = index % 2 === 0 ? "left" : "right";
+            const isCurrent = step.status === "current";
+            const isFailed = step.status === "failed";
+            const isDone = step.status === "done";
+            const isLocked = step.status === "locked" || step.status === "premium_locked";
+            const showCar = Boolean(
+              currentGlobal &&
+                currentGlobal.ref === step.ref &&
+                step.status !== "locked" &&
+                step.status !== "premium_locked",
+            );
+            const cleanTitle = step.title.replace(/\s*[—–−]+\s*/g, " ").trim();
 
-              <div className="ck-path">
-                {sectionSteps.map((step, localIdx) => {
-                  const globalIdx = flatSteps.findIndex((s) => s.ref === step.ref);
-                  const offset = pathOffset(Math.max(globalIdx, 0));
-                  const side = offset >= 0 ? "left" : "right";
-                  const isCurrent = step.status === "current";
-                  const isFailed = step.status === "failed";
-                  const isDone = step.status === "done";
-                  const isLocked = step.status === "locked" || step.status === "premium_locked";
-                  const showCar = Boolean(
-                    currentGlobal &&
-                      currentGlobal.ref === step.ref &&
-                      step.status !== "locked" &&
-                      step.status !== "premium_locked",
-                  );
-                  const stepNumber = (globalIdx >= 0 ? globalIdx : localIdx) + 1;
-                  const cleanTitle = step.title.replace(/\s*[—–−]+\s*/g, " ").trim();
-                  return (
-                    <button
-                      key={step.ref}
-                      type="button"
-                      data-step-ref={step.ref}
-                      className={[
-                        "ck-path__item",
-                        `is-side-${side}`,
-                        isCurrent ? "is-current" : "",
-                        isFailed ? "is-failed" : "",
-                        isDone ? "is-done" : "",
-                        step.status === "locked" ? "is-locked" : "",
-                        step.status === "premium_locked" ? "is-premium" : "",
-                        showCar ? "has-car" : "",
-                        step.type === "quiz" ? "is-quiz" : "is-lesson",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                      style={{ ["--ck-path-x" as string]: `${offset}rem` }}
-                      onClick={(event) => {
-                        event.preventDefault();
-                        openStep(step);
-                      }}
-                      aria-label={
-                        isFailed
-                          ? `${cleanTitle} — à reprendre`
-                          : isLocked
-                            ? `${cleanTitle} — bloquée`
-                            : cleanTitle
-                      }
-                    >
-                      <span className="ck-path__flag" aria-hidden>
-                        Étape {stepNumber}
-                      </span>
+            return (
+              <button
+                key={step.ref}
+                type="button"
+                data-step-ref={step.ref}
+                className={[
+                  "ck-path__item",
+                  `is-side-${side}`,
+                  isCurrent ? "is-current" : "",
+                  isFailed ? "is-failed" : "",
+                  isDone ? "is-done" : "",
+                  step.status === "locked" ? "is-locked" : "",
+                  step.status === "premium_locked" ? "is-premium" : "",
+                  showCar ? "has-car" : "",
+                  step.type === "quiz" ? "is-quiz" : "is-lesson",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                style={{ ["--ck-path-x" as string]: `${offset}rem` }}
+                onClick={(event) => {
+                  event.preventDefault();
+                  openStep(step);
+                }}
+                aria-label={
+                  isFailed
+                    ? `${cleanTitle} — à reprendre`
+                    : isLocked
+                      ? `${cleanTitle} — bloquée`
+                      : cleanTitle
+                }
+              >
+                <span className="ck-path__flag" aria-hidden>
+                  Étape {index + 1}
+                </span>
 
-                      <span className={`ck-path__sign ck-path__sign--${side}`}>
-                        <span className="ck-path__sign-type">
-                          {step.type === "quiz" ? "Quiz" : "Cours"}
-                        </span>
-                        <span className="ck-path__sign-title">{cleanTitle}</span>
-                        <span className="ck-path__sign-status">{stepStatusLabel(step)}</span>
-                      </span>
+                <span className={`ck-path__sign ck-path__sign--${side}`}>
+                  <span className="ck-path__sign-type">{step.type === "quiz" ? "Quiz" : "Cours"}</span>
+                  <span className="ck-path__sign-title">{cleanTitle}</span>
+                  <span className="ck-path__sign-status">{stepStatusLabel(step)}</span>
+                </span>
 
-                      {showCar ? (
-                        <img
-                          src="/images/auth/cartoon-red-car.png"
-                          alt=""
-                          className="ck-path__car"
-                          width={72}
-                          height={52}
-                        />
-                      ) : null}
+                {showCar ? (
+                  <img
+                    src="/images/auth/cartoon-red-car.png"
+                    alt=""
+                    className="ck-path__car"
+                    width={88}
+                    height={64}
+                  />
+                ) : null}
 
-                      <span className="ck-path__feu" aria-hidden>
-                        <span className="ck-path__feu-box">
-                          <span className="ck-path__lamp ck-path__lamp--red" />
-                          <span className="ck-path__lamp ck-path__lamp--amber" />
-                          <span className="ck-path__lamp ck-path__lamp--green" />
-                        </span>
-                        <span className="ck-path__feu-pole" />
-                        {isLocked ? (
-                          <span className="ck-path__lock-badge">
-                            <Lock size={14} strokeWidth={3} />
-                          </span>
-                        ) : null}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        );
-      })}
+                <span className={`ck-path__feu ck-path__feu--${side}`} aria-hidden>
+                  <span className="ck-path__feu-box">
+                    <span className="ck-path__lamp ck-path__lamp--red" />
+                    <span className="ck-path__lamp ck-path__lamp--amber" />
+                    <span className="ck-path__lamp ck-path__lamp--green" />
+                  </span>
+                  <span className="ck-path__feu-pole" />
+                  {isLocked ? (
+                    <span className="ck-path__lock-badge">
+                      <Lock size={14} strokeWidth={3} />
+                    </span>
+                  ) : null}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <LockedStepModal
         open={Boolean(lockedModal)}
         title={lockedModal?.title}

@@ -1754,114 +1754,134 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   }
 }
 
-/* ─── Road trip learning path ─── */
-.ck-road {
+/* ─── Route unique serpentine (asphalte réel) ─── */
+.ck-highway {
   position: relative;
-  margin: 0 auto;
-  max-width: 48rem;
-  padding: 1.6rem 0.4rem 2.4rem;
-  border-radius: 2.4rem;
+  margin: 0 auto 3.2rem;
+  max-width: 56rem;
+  padding: 2.4rem 0.8rem 4rem;
+  border-radius: 2.8rem;
   overflow: hidden;
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 168, 89, 0.12), transparent 28%),
-    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.12), transparent 30%),
-    linear-gradient(180deg, #dff3e8 0%, #eef2f6 42%, #efe7d6 100%);
+    radial-gradient(ellipse 70% 40% at 20% 10%, rgba(34, 197, 94, 0.14), transparent 55%),
+    radial-gradient(ellipse 60% 35% at 85% 70%, rgba(251, 191, 36, 0.12), transparent 50%),
+    linear-gradient(180deg, #c5e8d4 0%, #d4e8c8 35%, #cfc9a8 100%);
 }
 
-html.dark .ck-road {
+html.dark .ck-highway {
   background:
-    radial-gradient(circle at 12% 18%, rgba(0, 168, 89, 0.18), transparent 28%),
-    radial-gradient(circle at 88% 72%, rgba(245, 158, 11, 0.1), transparent 30%),
-    linear-gradient(180deg, #121a14 0%, #151c27 50%, #1a1712 100%);
+    radial-gradient(ellipse 70% 40% at 20% 10%, rgba(0, 168, 89, 0.16), transparent 55%),
+    linear-gradient(180deg, #0f1712 0%, #151c27 50%, #1a1710 100%);
 }
 
-.ck-road__asphalt {
+.ck-highway__asphalt {
   position: absolute;
   left: 50%;
-  top: 1.2rem;
-  bottom: 1.2rem;
-  width: 8.4rem;
+  top: 1.6rem;
+  bottom: 1.6rem;
+  width: 14rem;
   transform: translateX(-50%);
-  border-radius: 4.2rem;
+  border-radius: 7rem;
   background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 1.2rem,
+      rgba(255, 255, 255, 0.03) 1.2rem 1.35rem
+    ),
     linear-gradient(
       90deg,
-      #1f232c 0,
-      #1f232c 0.55rem,
-      #fbbf24 0.55rem,
-      #fbbf24 0.9rem,
-      transparent 0.9rem,
-      transparent calc(100% - 0.9rem),
-      #fbbf24 calc(100% - 0.9rem),
-      #fbbf24 calc(100% - 0.55rem),
-      #1f232c calc(100% - 0.55rem),
-      #1f232c 100%
-    ),
-    repeating-linear-gradient(
-      180deg,
-      #f8fafc 0 1.4rem,
-      #f8fafc 1.4rem 2.2rem,
-      transparent 2.2rem 3.4rem
-    ),
-    #2b303b;
+      #1a1d24 0%,
+      #2a2e38 12%,
+      #32363f 50%,
+      #2a2e38 88%,
+      #1a1d24 100%
+    );
   box-shadow:
-    inset 0 0 0 0.28rem #111827,
-    0 0 0 0.35rem rgba(15, 23, 42, 0.12);
-  opacity: 0.96;
+    inset 0 0 0 0.35rem #0b0d11,
+    inset 0 0 2.4rem rgba(0, 0, 0, 0.45),
+    0 0 0 0.5rem rgba(15, 23, 42, 0.18),
+    0 1.2rem 2.4rem rgba(0, 0, 0, 0.22);
   pointer-events: none;
+  z-index: 0;
 }
 
-.ck-road__asphalt::after {
-  content: "";
+.ck-highway__edges {
   position: absolute;
-  inset: 0.8rem 50% 0.8rem auto;
-  width: 0.35rem;
-  margin-right: -0.175rem;
+  left: 50%;
+  top: 2.2rem;
+  bottom: 2.2rem;
+  width: 12.4rem;
+  transform: translateX(-50%);
+  border-left: 0.45rem solid #f8fafc;
+  border-right: 0.45rem solid #f8fafc;
+  border-radius: 6.2rem;
+  opacity: 0.92;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ck-highway__center {
+  position: absolute;
+  left: 50%;
+  top: 2.8rem;
+  bottom: 2.8rem;
+  width: 0.55rem;
+  margin-left: -0.275rem;
   border-radius: 999px;
   background: repeating-linear-gradient(
     180deg,
-    #fbbf24 0 1.2rem,
-    transparent 1.2rem 2.2rem
+    #fbbf24 0 1.6rem,
+    transparent 1.6rem 3rem
   );
   opacity: 0.95;
-}
-
-.ck-road__decor {
-  position: absolute;
-  width: 2.4rem;
-  height: 2.4rem;
-  border-radius: 40% 55% 45% 60%;
-  background: #c4c9d2;
-  opacity: 0.55;
   pointer-events: none;
+  z-index: 0;
 }
 
-html.dark .ck-road__decor {
-  background: #3a4454;
-}
-
-.ck-road__decor--left {
-  left: 1.4rem;
-  top: 18%;
-  box-shadow: 0 7rem 0 0.2rem #b8bec8, 0 16rem 0 -0.15rem #cbd0d8;
-}
-
-.ck-road__decor--right {
-  right: 1.6rem;
-  top: 36%;
-  width: 1.8rem;
-  height: 1.8rem;
-  box-shadow: 0 9rem 0 0.1rem #b7bdc7, 0 18rem 0 0.25rem #c9ced6;
-}
-
-.ck-path {
+.ck-highway__mile {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.6rem 0 4.8rem;
-  overflow: visible;
+  gap: 0.35rem;
+  width: min(28rem, 88%);
+  margin: 2.8rem auto 1.2rem;
+  padding: 1.1rem 1.4rem;
+  border-radius: 1.2rem;
+  background: color-mix(in srgb, var(--ck-chapter-color, #00a859) 92%, #000);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 0.45rem 0 color-mix(in srgb, var(--ck-chapter-color, #00a859) 70%, #000);
+}
+
+.ck-highway__mile-flag {
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+
+.ck-highway__mile-title {
+  font-size: 1.7rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.ck-highway__mile-meta {
+  font-size: 1.25rem;
+  font-weight: 700;
+  opacity: 0.92;
+}
+
+.ck-path--highway {
+  position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0 2rem;
 }
 
 .ck-path__item {
@@ -1869,8 +1889,8 @@ html.dark .ck-road__decor {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(100%, 34rem);
-  margin-top: 4.4rem;
+  width: min(100%, 36rem);
+  margin-top: 4.8rem;
   border: 0;
   background: transparent;
   padding: 0;
@@ -1881,12 +1901,12 @@ html.dark .ck-road__decor {
   color: inherit;
 }
 
-.ck-path__item:first-child {
-  margin-top: 2.8rem;
+.ck-path__item:first-of-type {
+  margin-top: 1.6rem;
 }
 
 .ck-path__item.has-car {
-  margin-top: 7.2rem;
+  margin-top: 7.6rem;
 }
 
 .ck-path__flag {
@@ -1909,9 +1929,9 @@ html.dark .ck-road__decor {
 
 .ck-path__sign {
   position: absolute;
-  top: 1.2rem;
+  top: 1.4rem;
   z-index: 3;
-  width: min(16rem, 42vw);
+  width: min(16.5rem, 40vw);
   padding: 0.85rem 1.1rem 0.95rem;
   border-radius: 0.55rem;
   background: linear-gradient(180deg, #00b35f 0%, #008f4c 100%);
@@ -1924,13 +1944,13 @@ html.dark .ck-road__decor {
 }
 
 .ck-path__sign--left {
-  right: calc(50% + 4.2rem);
+  right: calc(50% + 5.6rem);
   clip-path: polygon(1.1rem 0, 100% 0, 100% 100%, 1.1rem 100%, 0 50%);
   text-align: right;
 }
 
 .ck-path__sign--right {
-  left: calc(50% + 4.2rem);
+  left: calc(50% + 5.6rem);
 }
 
 .ck-path__sign-type {
@@ -1978,11 +1998,11 @@ html.dark .ck-road__decor {
 .ck-path__car {
   position: absolute;
   left: 50%;
-  bottom: calc(100% + 0.2rem);
-  width: 7.2rem;
+  bottom: calc(100% + 0.15rem);
+  width: 8.4rem;
   height: auto;
   transform: translateX(-50%);
-  filter: drop-shadow(0 0.4rem 0.8rem rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 0.4rem 0.8rem rgba(0, 0, 0, 0.28));
   animation: ck-car-bob 1.6s ease-in-out infinite;
   pointer-events: none;
   z-index: 4;
@@ -1998,7 +2018,7 @@ html.dark .ck-road__decor {
   }
 }
 
-/* Feu tricolore = un cours / quiz */
+/* Feux de part et d'autre de la route */
 .ck-path__feu {
   position: relative;
   display: flex;
@@ -2007,13 +2027,21 @@ html.dark .ck-road__decor {
   z-index: 2;
 }
 
+.ck-path__feu--left {
+  margin-right: 0.2rem;
+}
+
+.ck-path__feu--right {
+  margin-left: 0.2rem;
+}
+
 .ck-path__feu-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.7rem 0.65rem;
-  border-radius: 1.1rem;
+  gap: 0.5rem;
+  padding: 0.8rem 0.7rem;
+  border-radius: 1.15rem;
   background: linear-gradient(180deg, #374151 0%, #111827 100%);
   border: 0.22rem solid #0f172a;
   box-shadow:
@@ -2022,12 +2050,12 @@ html.dark .ck-road__decor {
 }
 
 .ck-path__lamp {
-  width: 2.2rem;
-  height: 2.2rem;
+  width: 2.35rem;
+  height: 2.35rem;
   border-radius: 50%;
   background: #1f2937;
   box-shadow: inset 0 0.15rem 0.35rem rgba(0, 0, 0, 0.55);
-  opacity: 0.35;
+  opacity: 0.32;
   transition: opacity 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
 }
 
@@ -2044,8 +2072,8 @@ html.dark .ck-road__decor {
 }
 
 .ck-path__feu-pole {
-  width: 0.55rem;
-  height: 2.4rem;
+  width: 0.6rem;
+  height: 2.6rem;
   background: linear-gradient(90deg, #6b7280, #9ca3af 45%, #4b5563);
   border-radius: 0 0 0.3rem 0.3rem;
   box-shadow: 0 0.2rem 0 #111827;
@@ -2125,35 +2153,43 @@ html.dark .ck-road__decor {
   cursor: not-allowed;
 }
 
-@media (max-width: 640px) {
+.ck-path__tip {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .ck-highway {
+    padding-inline: 0.2rem;
+    border-radius: 1.6rem;
+  }
+
+  .ck-highway__asphalt {
+    width: 9.2rem;
+  }
+
+  .ck-highway__edges {
+    width: 7.8rem;
+  }
+
   .ck-path__item {
-    transform: translateX(calc(var(--ck-path-x, 0rem) * -0.35));
-    width: min(100%, 28rem);
-  }
-
-  .ck-road__asphalt {
-    width: 5.2rem;
-  }
-
-  .ck-path__car {
-    width: 5.8rem;
+    transform: translateX(calc(var(--ck-path-x, 0rem) * -0.4));
+    width: min(100%, 30rem);
   }
 
   .ck-path__sign {
-    width: min(14.5rem, 46vw);
-    padding: 0.7rem 0.9rem;
+    width: min(13.5rem, 42vw);
   }
 
   .ck-path__sign--left {
-    right: calc(50% + 3.2rem);
+    right: calc(50% + 3.8rem);
   }
 
   .ck-path__sign--right {
-    left: calc(50% + 3.2rem);
+    left: calc(50% + 3.8rem);
   }
 
-  .ck-path__sign-title {
-    font-size: 1.25rem;
+  .ck-path__car {
+    width: 6.4rem;
   }
 
   .ck-path__lamp {
@@ -2162,17 +2198,16 @@ html.dark .ck-road__decor {
   }
 }
 
-/* Legacy tip styles no longer used on roadmap nodes */
-.ck-path__tip {
-  display: none;
-}
-
 html.dark .ck-path__item.is-locked .ck-path__feu-box,
 html.dark .ck-path__item.is-premium .ck-path__feu-box {
   background: linear-gradient(180deg, #1f2937 0%, #0b1220 100%);
 }
 
-/* Legacy roadmap list kept for fallbacks */
+/* Legacy */
+.ck-road {
+  display: none;
+}
+
 .ck-roadmap__section {
   margin-bottom: 2.4rem;
 }

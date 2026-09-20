@@ -246,9 +246,11 @@ def render_login_notification_email(
               ("Date", time_label),
           ])}
           {_text_link("Ce n'était pas vous ? Sécuriser le compte", login_url)}
+          {_cta_button("Sécuriser mon compte", login_url)}
           {_warning_box(
               "Si vous n'êtes pas à l'origine de cette connexion, votre compte peut être compromis. "
-              f'<a href="{escape(login_url)}" style="color:{WARN_TEXT};text-decoration:underline;">Sécuriser mon compte →</a>'
+              "Changez votre mot de passe immédiatement depuis votre profil (onglet Sécurité), "
+              "ou utilisez « Mot de passe oublié » si vous n'êtes plus connecté."
           )}
         """,
         footer_note="Vous recevez cet e-mail suite à une connexion sur votre compte CODAKIS.",

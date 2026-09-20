@@ -276,9 +276,12 @@ def send_login_notification_email(
 ) -> None:
     from app.services.email_templates import render_login_notification_email
 
+    base = settings.frontend_url.rstrip("/")
+    # Lien direct vers l'onglet Sécurité du profil (changement de mot de passe).
+    secure_url = f"{base}/espace/candidat/profil?tab=securite"
     plain, html = render_login_notification_email(
         full_name=full_name,
-        login_url=login_url(),
+        login_url=secure_url,
         device=device,
         location=location,
         ip_address=ip_address,
