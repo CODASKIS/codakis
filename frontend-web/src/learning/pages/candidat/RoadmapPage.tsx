@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { BookOpen, Check, Crown, Lock, Star, X } from "lucide-react";
+import { BookOpen, Lock, Star, X } from "lucide-react";
 import LockedStepModal from "../../components/LockedStepModal";
 import { chapterBannerColor } from "../../../lib/chapterColors";
 import { fetchRoadmap, type RoadmapResponse, type RoadmapSection, type RoadmapStep } from "../../../lib/pedagogyApi";
 import Loader from "../../../components/common/Loader";
 
+/** Oscillation gauche/droite pour la route en serpentin (style infographie). */
 function pathOffset(index: number): number {
   const cycle = index % 8;
   let level = 0;
@@ -13,7 +14,7 @@ function pathOffset(index: number): number {
   else if (cycle <= 4) level = 4 - cycle;
   else if (cycle <= 6) level = 4 - cycle;
   else level = cycle - 8;
-  return level * 3.2;
+  return level * 3.6;
 }
 
 function toRoman(n: number): string {
@@ -33,6 +34,15 @@ function toRoman(n: number): string {
     }
   }
   return out || String(n);
+}
+
+function stepStatusLabel(step: RoadmapStep): string {
+  if (step.status === "premium_locked") return "Premium — débloquer";
+  if (step.status === "locked") return "Bloquée";
+  if (step.status === "failed") return "À reprendre";
+  if (step.status === "current") return "En cours";
+  if (step.status === "done") return "Validée — feu vert";
+  return "";
 }
 
 export default function RoadmapPage() {
@@ -151,8 +161,8 @@ export default function RoadmapPage() {
           <p className="ck-roadmap__hero-eyebrow">Feuille de route</p>
           <h1>Votre parcours permis</h1>
           <p>
-            Suivez la route étape par étape — cours, quiz et examens. Votre voiture avance à chaque
-            validation.
+            Suivez la route étape par étape. Chaque <strong>feu</strong> est un cours ou un quiz :
+            vert = validé, orange = en cours, rouge = à reprendre.
           </p>
           {gamification ? (
             <div className="ck-roadmap__hero-stats">
@@ -301,9 +311,10 @@ export default function RoadmapPage() {
               <div className="ck-road__decor ck-road__decor--right" aria-hidden />
 
               <div className="ck-path">
-                {sectionSteps.map((step) => {
+                {sectionSteps.map((step, localIdx) => {
                   const globalIdx = flatSteps.findIndex((s) => s.ref === step.ref);
                   const offset = pathOffset(Math.max(globalIdx, 0));
+                  const side = offset >= 0 ? "left" : "right";
                   const isCurrent = step.status === "current";
                   const isFailed = step.status === "failed";
                   const isDone = step.status === "done";
@@ -314,7 +325,8 @@ export default function RoadmapPage() {
                       step.status !== "locked" &&
                       step.status !== "premium_locked",
                   );
-                  const Icon = isFailed ? X : isDone ? Check : step.type === "quiz" ? Crown : Star;
+                  const stepNumber = (globalIdx >= 0 ? globalIdx : localIdx) + 1;
+                  const cleanTitle = step.title.replace(/\s*[—–−]+\s*/g, " ").trim();
                   return (
                     <button
                       key={step.ref}
@@ -322,12 +334,14 @@ export default function RoadmapPage() {
                       data-step-ref={step.ref}
                       className={[
                         "ck-path__item",
+                        `is-side-${side}`,
                         isCurrent ? "is-current" : "",
                         isFailed ? "is-failed" : "",
                         isDone ? "is-done" : "",
                         step.status === "locked" ? "is-locked" : "",
                         step.status === "premium_locked" ? "is-premium" : "",
                         showCar ? "has-car" : "",
+                        step.type === "quiz" ? "is-quiz" : "is-lesson",
                       ]
                         .filter(Boolean)
                         .join(" ")}
@@ -338,12 +352,24 @@ export default function RoadmapPage() {
                       }}
                       aria-label={
                         isFailed
-                          ? `${step.title} — à reprendre`
+                          ? `${cleanTitle} — à reprendre`
                           : isLocked
-                            ? `${step.title} — bloquée`
-                            : step.title
+                            ? `${cleanTitle} — bloquée`
+                            : cleanTitle
                       }
                     >
+                      <span className="ck-path__flag" aria-hidden>
+                        Étape {stepNumber}
+                      </span>
+
+                      <span className={`ck-path__sign ck-path__sign--${side}`}>
+                        <span className="ck-path__sign-type">
+                          {step.type === "quiz" ? "Quiz" : "Cours"}
+                        </span>
+                        <span className="ck-path__sign-title">{cleanTitle}</span>
+                        <span className="ck-path__sign-status">{stepStatusLabel(step)}</span>
+                      </span>
+
                       {showCar ? (
                         <img
                           src="/images/auth/cartoon-red-car.png"
@@ -353,25 +379,16 @@ export default function RoadmapPage() {
                           height={52}
                         />
                       ) : null}
-                      <span className="ck-path__tip" role="tooltip">
-                        <span className="ck-path__tip-title">{step.title}</span>
+
+                      <span className="ck-path__feu" aria-hidden>
+                        <span className="ck-path__feu-box">
+                          <span className="ck-path__lamp ck-path__lamp--red" />
+                          <span className="ck-path__lamp ck-path__lamp--amber" />
+                          <span className="ck-path__lamp ck-path__lamp--green" />
+                        </span>
+                        <span className="ck-path__feu-pole" />
                         {isLocked ? (
-                          <span className="ck-path__tip-lock">
-                            <Lock size={12} strokeWidth={2.5} aria-hidden />
-                            Bloquée — cliquez pour voir
-                          </span>
-                        ) : isFailed ? (
-                          <span className="ck-path__tip-lock ck-path__tip-lock--fail">Ratée — à reprendre</span>
-                        ) : isCurrent ? (
-                          <span className="ck-path__tip-lock ck-path__tip-lock--current">En cours — à terminer</span>
-                        ) : isDone ? (
-                          <span className="ck-path__tip-lock ck-path__tip-lock--done">Terminée</span>
-                        ) : null}
-                      </span>
-                      <span className="ck-path__node">
-                        <Icon size={28} strokeWidth={isDone || isFailed ? 3 : 2.2} />
-                        {isLocked ? (
-                          <span className="ck-path__lock-badge" aria-hidden>
+                          <span className="ck-path__lock-badge">
                             <Lock size={14} strokeWidth={3} />
                           </span>
                         ) : null}
