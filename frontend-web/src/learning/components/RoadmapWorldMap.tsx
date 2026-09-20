@@ -67,13 +67,7 @@ function stepProgress(step: RoadmapStep): number {
 function RoadSvg() {
   return (
     <svg className="ck-duo-map__road" viewBox="0 0 420 1260" preserveAspectRatio="xMidYMin meet" aria-hidden>
-      <defs>
-        <filter id="ck-road-soft" x="-20%" y="-5%" width="140%" height="110%">
-          <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodOpacity="0.2" />
-        </filter>
-      </defs>
-
-      {/* Asphalte charcoal */}
+      {/* Asphalte charcoal — pas de filter url(#…) : Firefox résout ça en file:/// */}
       <path
         d={ROAD_D}
         fill="none"
@@ -81,7 +75,6 @@ function RoadSvg() {
         strokeWidth="54"
         strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#ck-road-soft)"
       />
       {/* Bords gris clair fins */}
       <path
