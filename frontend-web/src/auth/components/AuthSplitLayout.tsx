@@ -100,6 +100,7 @@ export default function AuthSplitLayout({
 
         <main className="codakis-auth__main">
           <div className="codakis-auth__card">{children}</div>
+          <p className="codakis-auth__version-mobile">CODAKIS v{CODAKIS_APP_VERSION}</p>
         </main>
       </div>
     </div>

@@ -5028,19 +5028,44 @@ html.dark .ck-footer .fj-brand__logo {
   display: block;
 }
 
+.ck-pay-result__version {
+  display: inline-flex;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 0.15rem solid var(--ck-line);
+  background: var(--ck-surface-2);
+  color: var(--ck-muted);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
 .ck-pay-result__car {
   width: min(26rem, 85%);
   height: auto;
   display: block;
 }
 
-.ck-pay-result__brand-text {
-  margin: 0;
-  max-width: 24rem;
-  color: var(--ck-muted);
-  font-size: 1.35rem;
+.ck-pay-result__points {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.7rem;
+  text-align: left;
+}
+
+.ck-pay-result__points li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  color: var(--ck-text);
+  font-size: 1.3rem;
   font-weight: 700;
-  line-height: 1.4;
+}
+
+.ck-pay-result__points li svg {
+  flex-shrink: 0;
+  color: var(--ck-green);
 }
 
 .ck-pay-result__card {
@@ -5053,26 +5078,31 @@ html.dark .ck-footer .fj-brand__logo {
 .ck-pay-result__badge {
   display: inline-grid;
   place-items: center;
-  width: 5.2rem;
-  height: 5.2rem;
+  width: 6.4rem;
+  height: 6.4rem;
   margin-bottom: 1rem;
   border-radius: 999px;
   background: var(--ck-green-soft);
   color: var(--ck-green-dark);
 }
 
-.ck-pay-result__shell.is-pending .ck-pay-result__badge {
+.ck-pay-result__badge.is-success {
+  background: rgba(0, 168, 89, 0.16);
+  color: var(--ck-green-dark);
+}
+
+.ck-pay-result__badge.is-pending {
   background: #fff7ed;
   color: #c2410c;
 }
 
-.ck-pay-result__shell.is-rejected .ck-pay-result__badge {
+.ck-pay-result__badge.is-rejected {
   background: #fef2f2;
   color: #b91c1c;
 }
 
-html.dark .ck-pay-result__shell.is-pending .ck-pay-result__badge,
-html.dark .ck-pay-result__shell.is-rejected .ck-pay-result__badge {
+html.dark .ck-pay-result__badge.is-pending,
+html.dark .ck-pay-result__badge.is-rejected {
   background: rgba(255, 255, 255, 0.06);
 }
 
@@ -5100,34 +5130,61 @@ html.dark .ck-pay-result__shell.is-rejected .ck-pay-result__badge {
   line-height: 1.45;
 }
 
-.ck-pay-result__meta {
+.ck-pay-result__info {
   display: grid;
   gap: 0.8rem;
   margin: 0 0 1.8rem;
-  padding: 1.2rem;
+  padding: 1rem;
   border-radius: 1.4rem;
   background: var(--ck-surface);
   text-align: left;
 }
 
-.ck-pay-result__meta div {
+.ck-pay-result__info-row {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
   gap: 1rem;
+  padding: 0.85rem 0.9rem;
+  border-radius: 1.1rem;
+  background: var(--ck-surface-2);
+  border: 0.15rem solid var(--ck-line);
 }
 
-.ck-pay-result__meta dt {
+.ck-pay-result__info-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 1rem;
+  background: var(--ck-green-soft);
+  color: var(--ck-green-dark);
+  flex-shrink: 0;
+}
+
+.ck-pay-result__shell.is-rejected .ck-pay-result__info-icon {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.ck-pay-result__shell.is-pending .ck-pay-result__info-icon {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.ck-pay-result__info-label {
+  display: block;
   color: var(--ck-muted);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
 }
 
-.ck-pay-result__meta dd {
-  margin: 0;
+.ck-pay-result__info-value {
+  display: block;
+  margin-top: 0.15rem;
   color: var(--ck-text);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .ck-pay-result__actions {
@@ -5135,6 +5192,12 @@ html.dark .ck-pay-result__shell.is-rejected .ck-pay-result__badge {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.8rem;
+}
+
+.ck-pay-result__actions .ck-public-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
 }
 
 .ck-consort__grid {

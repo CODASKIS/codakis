@@ -215,6 +215,35 @@ html.dark .codakis-auth__logo {
   text-transform: uppercase;
 }
 
+.codakis-auth__version {
+  margin: -0.2rem 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  border: 0.15rem solid var(--ck-line);
+  background: var(--ck-surface);
+  color: var(--ck-muted);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.codakis-auth__version-mobile {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.6rem;
+  color: var(--ck-muted);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+@media (min-width: 992px) {
+  .codakis-auth__version-mobile {
+    display: none;
+  }
+}
+
 .codakis-auth__brand-title {
   margin: 0 0 1rem;
   font-size: 2.8rem;

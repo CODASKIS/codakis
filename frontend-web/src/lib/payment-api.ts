@@ -33,6 +33,8 @@ export type PaymentStatusResult = {
   amount_fcfa: number;
   channel: string;
   message?: string | null;
+  receipt_number?: string | null;
+  inscription_id?: string | null;
 };
 
 type InitiateDto = {
@@ -55,6 +57,8 @@ type StatusDto = {
   amount_fcfa: number;
   channel: string;
   message?: string | null;
+  receipt_number?: string | null;
+  inscription_id?: string | null;
 };
 
 export type PaymentConfig = {
