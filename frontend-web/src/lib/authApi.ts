@@ -1,4 +1,10 @@
 import type { UserRole } from "../auth/types";
+import {
+  clearSessionTokens,
+  getSessionAccessToken,
+  getSessionRefreshToken,
+  setSessionTokens,
+} from "./sessionTokenStore";
 
 export type ApiUser = {
   id: string;
@@ -146,9 +152,6 @@ export type AutoEcolePending = {
   moniteur_count?: number | null;
 };
 
-const TOKEN_KEY = "codakis-access-token";
-const REFRESH_KEY = "codakis-refresh-token";
-
 function apiUrl(path: string): string {
   const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") ?? "";
   return base ? `${base}${path}` : path;
@@ -179,21 +182,19 @@ async function parseError(response: Response): Promise<string> {
 }
 
 export function getAccessToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return getSessionAccessToken();
 }
 
 export function getRefreshToken(): string | null {
-  return localStorage.getItem(REFRESH_KEY);
+  return getSessionRefreshToken();
 }
 
 export function setTokens(tokens: TokenResponse): void {
-  localStorage.setItem(TOKEN_KEY, tokens.access_token);
-  localStorage.setItem(REFRESH_KEY, tokens.refresh_token);
+  setSessionTokens(tokens.access_token, tokens.refresh_token);
 }
 
 export function clearTokens(): void {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(REFRESH_KEY);
+  clearSessionTokens();
 }
 
 export async function authFetch<T>(path: string, init: RequestInit = {}, retry = true): Promise<T> {

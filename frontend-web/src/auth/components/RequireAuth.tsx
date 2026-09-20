@@ -3,8 +3,9 @@ import { Navigate, useLocation } from "react-router";
 import type { ReactNode } from "react";
 import Loader from "../../components/common/Loader";
 import { getAccessToken } from "../../lib/authApi";
-import { getSession, hydrateSessionFromApi } from "../authStore";
+import { hydrateSessionFromApi } from "../authStore";
 import type { UserRole } from "../types";
+import { buildLoginUrl } from "../purchaseIntent";
 
 type RequireAuthProps = {
   role: UserRole;
@@ -29,10 +30,8 @@ export default function RequireAuth({ role, children }: RequireAuthProps) {
         return;
       }
 
-      let session = getSession();
-      if (!session || !session.id) {
-        session = (await hydrateSessionFromApi()) ?? null;
-      }
+      // Toujours vérifier le token auprès de l’API (lien e-mail, nouvel onglet, etc.)
+      const session = await hydrateSessionFromApi();
 
       if (!cancelled) {
         setAllowed(session?.role === role);
@@ -43,14 +42,15 @@ export default function RequireAuth({ role, children }: RequireAuthProps) {
     return () => {
       cancelled = true;
     };
-  }, [role]);
+  }, [role, location.pathname, location.search]);
 
   if (!ready) {
     return <Loader variant="page" />;
   }
 
   if (!allowed) {
-    return <Navigate to="/connexion" replace state={{ from: location.pathname }} />;
+    const returnTo = `${location.pathname}${location.search}`;
+    return <Navigate to={buildLoginUrl(returnTo)} replace />;
   }
 
   return children;

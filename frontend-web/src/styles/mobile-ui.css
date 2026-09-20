@@ -12,8 +12,8 @@
 
   /* Accueil / public — plus d’air */
   .fj-container {
-    padding-left: 2rem !important;
-    padding-right: 2rem !important;
+    padding-left: 1.6rem !important;
+    padding-right: 1.6rem !important;
     width: 100% !important;
     max-width: 100% !important;
   }
@@ -27,29 +27,29 @@
   .fj-hero,
   section.ck-hero,
   .ck-public-hero {
-    padding-top: 2.8rem !important;
-    padding-bottom: 2.8rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 
   .ck-home-hero h1,
   .fj-hero h1,
   .ck-public-hero h1,
   .ck-home-hero__title {
-    font-size: clamp(2.8rem, 8vw, 3.6rem) !important;
+    font-size: clamp(2.6rem, 7.5vw, 3.4rem) !important;
     line-height: 1.15 !important;
-    margin-bottom: 1.4rem !important;
+    margin-bottom: 1.2rem !important;
   }
 
   .ck-home-hero p,
   .fj-hero p,
   .ck-home-hero__lead {
-    font-size: 1.6rem !important;
+    font-size: 1.5rem !important;
     line-height: 1.5 !important;
-    margin-bottom: 2rem !important;
+    margin-bottom: 1.6rem !important;
   }
 
+  /* Ne pas toucher .fj-search-box du hero (grille compacte) */
   .ck-home-search,
-  .fj-search-box,
   .ck-search-panel {
     margin-top: 1.6rem !important;
     margin-bottom: 2rem !important;
@@ -92,29 +92,35 @@
     line-height: 1.5 !important;
   }
 
-  .fj-btn,
-  .ck-public-btn {
+  /* Boutons de contenu uniquement — pas la topbar */
+  .fj-main .fj-btn,
+  .fj-main .ck-public-btn,
+  .ck-home-hero .ck-public-btn,
+  .ck-page-section .ck-public-btn,
+  .ck-page-banner .ck-public-btn {
     min-height: 5.2rem !important;
     font-size: 1.5rem !important;
-    margin-top: 0.6rem !important;
   }
 
   .fj-header-mobile .fj-btn,
-  .fj-header-mobile .ck-public-btn {
-    min-height: 4.2rem !important;
-    font-size: 1.3rem !important;
-    padding-inline: 1.4rem !important;
+  .fj-header-mobile .ck-public-btn,
+  .ck-public-topbar .ck-public-btn {
+    min-height: 3.6rem !important;
+    font-size: 1.15rem !important;
+    padding-inline: 1rem !important;
+    margin-top: 0 !important;
   }
 
-  /* Auth — carte aérée */
+  /* Auth — carte aérée mais compacte sur 360px */
   .codakis-auth {
     width: 100%;
     min-height: 100dvh;
+    overflow-x: clip;
   }
 
   .codakis-auth__body {
-    padding: 2rem 1.6rem 3.2rem !important;
-    gap: 2rem !important;
+    padding: 1.6rem 1.2rem 2.8rem !important;
+    gap: 1.6rem !important;
     align-items: stretch !important;
     width: 100% !important;
   }
@@ -122,66 +128,78 @@
   .codakis-auth__card {
     max-width: none !important;
     width: 100% !important;
-    padding: 2.8rem 2rem !important;
-    border-radius: 1.8rem !important;
+    padding: 2rem 1.6rem !important;
+    border-radius: 1.6rem !important;
   }
 
   .codakis-auth__title {
-    font-size: 3rem !important;
-    margin-bottom: 1rem !important;
+    font-size: 2.6rem !important;
+    margin-bottom: 0.6rem !important;
   }
 
   .codakis-auth__lead,
+  .codakis-auth__subtitle,
   .codakis-auth__panel > p {
-    font-size: 1.55rem !important;
-    line-height: 1.5 !important;
-    margin-bottom: 1.6rem !important;
+    font-size: 1.45rem !important;
+    line-height: 1.45 !important;
+    margin-bottom: 1.4rem !important;
   }
 
   .codakis-auth__top {
-    padding: 1.2rem 1.4rem !important;
+    padding: 1rem 1.2rem !important;
+    gap: 0.6rem !important;
   }
 
   .codakis-auth__top .fj-brand__logo,
   .codakis-auth__logo {
+    height: 3rem !important;
+    max-width: min(13rem, 36vw) !important;
+  }
+
+  .codakis-auth__top-actions {
+    gap: 0.4rem !important;
+  }
+
+  .codakis-auth__top-actions .ck-theme-toggle {
+    width: 3.4rem !important;
     height: 3.4rem !important;
   }
 
   .codakis-auth-form {
-    gap: 1.6rem !important;
+    gap: 1.4rem !important;
     display: flex !important;
     flex-direction: column !important;
   }
 
   .codakis-auth-form label,
   .codakis-auth label {
-    margin-bottom: 0.5rem !important;
-    font-size: 1.4rem !important;
+    margin-bottom: 0.4rem !important;
+    font-size: 1.35rem !important;
   }
 
-  .codakis-auth-form input,
-  .codakis-auth-form select,
-  .codakis-auth input[type="email"],
-  .codakis-auth input[type="password"],
-  .codakis-auth input[type="text"] {
-    min-height: 5.4rem !important;
-    font-size: 1.65rem !important;
-    padding: 1.3rem 1.5rem !important;
-    margin-bottom: 0.4rem !important;
+  .codakis-auth-box__input,
+  .codakis-auth-box__select {
+    min-height: 4.8rem !important;
+    height: 4.8rem !important;
+    font-size: 1.5rem !important;
+    padding: 0.8rem 1.2rem !important;
+    margin-bottom: 0 !important;
   }
 
   .codakis-auth-form__submit,
   .codakis-auth .ck-btn,
   .codakis-auth button[type="submit"] {
-    min-height: 5.4rem !important;
-    font-size: 1.6rem !important;
+    min-height: 5rem !important;
+    font-size: 1.5rem !important;
     width: 100% !important;
-    margin-top: 0.8rem !important;
+    margin-top: 0.4rem !important;
   }
 
-  .codakis-auth__card a {
-    display: inline-block;
-    margin-top: 0.8rem !important;
+  .codakis-auth__version-mobile {
+    width: 100%;
+    text-align: center;
+    writing-mode: horizontal-tb;
+    transform: none;
   }
 
   /* Espace candidat / learning */

@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { useTranslation } from "react-i18next";
 import Loader from "../../../components/common/Loader";
+import PrefToggle from "../../../components/prefs/PrefToggle";
 import { clearSession, getSession, setSession } from "../../../auth/authStore";
 import { fetchMe, updateProfile, userToSession } from "../../../lib/authApi";
 import { changePassword } from "../../../lib/pedagogyApi";
@@ -15,10 +16,6 @@ export default function ProfilePage() {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") === "securite" ? "securite" : "compte";
   const [tab, setTab] = useState<Tab>(initialTab);
-
-  useEffect(() => {
-    if (searchParams.get("tab") === "securite") setTab("securite");
-  }, [searchParams]);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
@@ -35,6 +32,21 @@ export default function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  /** MFA non implémentée — toggle visible mais désactivé. */
+  const [mfaEnabled] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("tab") === "securite") setTab("securite");
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (tab !== "securite" || loading) return;
+    const hash = window.location.hash.replace("#", "");
+    if (!hash) return;
+    window.setTimeout(() => {
+      document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  }, [tab, loading]);
 
   useEffect(() => {
     let cancelled = false;
@@ -119,11 +131,9 @@ export default function ProfilePage() {
           Gérer le compte
         </button>
         <button type="button" className={tab === "securite" ? "is-active" : undefined} onClick={() => setTab("securite")}>
-          Mot de passe
+          Sécurité
         </button>
-        <Link to="/espace/candidat/preferences" className={undefined}>
-          Préférences
-        </Link>
+        <Link to="/espace/candidat/preferences">Préférences</Link>
       </nav>
 
       <div className="ck-settings__panel">
@@ -195,13 +205,29 @@ export default function ProfilePage() {
           </>
         ) : (
           <>
-            <h1 className="ck-title">{t("account.passwordTitle", "Mot de passe")}</h1>
+            <h1 className="ck-title">{t("account.securityTitle", "Sécurité du compte")}</h1>
             <p className="ck-subtitle">
-              {t("account.passwordHint", "Utilisez au moins 8 caractères. Votre session reste active après le changement.")}
+              {t(
+                "account.securityHint",
+                "Changez votre mot de passe. La double authentification sera disponible bientôt.",
+              )}
             </p>
 
+            <div className="ck-settings__section ck-settings__mfa" id="mfa">
+              <h2>Authentification à deux facteurs (MFA)</h2>
+              <PrefToggle
+                id="mfa-toggle"
+                label="Activer la MFA"
+                hint="Bientôt disponible — non implémentée pour le moment."
+                checked={mfaEnabled}
+                disabled
+                onChange={() => undefined}
+              />
+            </div>
+
             {!hasPassword ? (
-              <div className="ck-settings__section">
+              <div className="ck-settings__section" id="mot-de-passe">
+                <h2>{t("account.passwordTitle", "Mot de passe")}</h2>
                 <p className="ck-subtitle">
                   {t(
                     "account.passwordGoogleHint",
@@ -213,8 +239,18 @@ export default function ProfilePage() {
                 </Link>
               </div>
             ) : (
-              <form className="ck-form ck-settings__section" onSubmit={(e) => void onPasswordSubmit(e)}>
-                <h2>Sécurité</h2>
+              <form
+                className="ck-form ck-settings__section"
+                id="mot-de-passe"
+                onSubmit={(e) => void onPasswordSubmit(e)}
+              >
+                <h2>{t("account.passwordTitle", "Mot de passe")}</h2>
+                <p className="ck-subtitle">
+                  {t(
+                    "account.passwordHint",
+                    "Utilisez au moins 8 caractères. Votre session reste active après le changement.",
+                  )}
+                </p>
                 <label>
                   {t("account.currentPassword", "Mot de passe actuel")}
                   <input

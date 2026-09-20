@@ -18,10 +18,27 @@ import { syncCandidateEnrollmentFromApi } from "./candidateEnrollment";
 export { resolveAuthRedirect } from "./purchaseIntent";
 
 const STORAGE_KEY = "codakis-auth-session";
+const LEGACY_STORAGE_KEY = "codakis-auth-session";
+
+function readSessionRaw(): string | null {
+  try {
+    const fromSession = sessionStorage.getItem(STORAGE_KEY);
+    if (fromSession) return fromSession;
+    const legacy = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (legacy) {
+      sessionStorage.setItem(STORAGE_KEY, legacy);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+      return legacy;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
 
 export function getSession(): AuthSession | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = readSessionRaw();
     if (!raw) return null;
     return JSON.parse(raw) as AuthSession;
   } catch {
@@ -30,11 +47,21 @@ export function getSession(): AuthSession | null {
 }
 
 export function setSession(session: AuthSession): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(session));
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    /* ignore */
+  }
 }
 
 export function clearSession(): void {
-  localStorage.removeItem(STORAGE_KEY);
+  try {
+    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
+  } catch {
+    /* ignore */
+  }
   clearTokens();
 }
 

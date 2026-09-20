@@ -39,9 +39,9 @@ export default function AuthSplitLayout({
           <ThemeSwitcher />
           <LanguageSwitcher variant="auth" />
           {backLabel ? (
-            <Link to={backHref} className="codakis-auth__back">
+            <Link to={backHref} className="codakis-auth__back" aria-label={backLabel}>
               <ArrowLeft size={16} aria-hidden />
-              <span>{backLabel}</span>
+              <span className="codakis-auth__back-label">{backLabel}</span>
             </Link>
           ) : null}
         </div>
