@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Check, Lock, Star, TrafficCone } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Check, ChevronDown, ChevronUp, Lock, Star, TrafficCone } from "lucide-react";
 import { chapterBannerColor } from "../../lib/chapterColors";
 import type { RoadmapSection, RoadmapStep } from "../../lib/pedagogyApi";
 
@@ -24,8 +24,10 @@ const ROAD_D =
   "V 350 Q 152 390, 112 390 " +
   "H 88 Q 48 390, 48 430";
 
-const ROAD_W = 46;
-const ROAD_EDGE = 54;
+const ROAD_W = 58;
+const ROAD_EDGE = 68;
+
+type DriveDirection = "next" | "prev";
 
 function cleanTitle(title: string) {
   return title.replace(/\s*[—–−]+\s*/g, " ").trim();
@@ -55,7 +57,7 @@ function stepProgress(step: RoadmapStep): number {
   return 0;
 }
 
-function RoadSvg() {
+function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDirection }) {
   return (
     <svg className="ck-duo-map__road" viewBox="0 0 200 460" preserveAspectRatio="xMinYMin meet" aria-hidden>
       {/* Bords clairs */}
@@ -107,36 +109,95 @@ function RoadSvg() {
         </text>
       </g>
 
-      {/* Voiture posée au départ de la route */}
-      <image
-        className="ck-duo-map__car"
-        href="/images/auth/cartoon-red-car.png"
-        x="22"
-        y="2"
-        width="76"
-        height="56"
-        preserveAspectRatio="xMidYMid meet"
-      />
+      {/* Voiture posée au départ de la route ; roule lors d’un changement d’unité */}
+      <g
+        key={driveKey}
+        className={`ck-duo-map__car-track${driveDir ? ` is-driving-${driveDir}` : ""}`}
+      >
+        <image
+          className="ck-duo-map__car"
+          href="/images/auth/cartoon-red-car.png"
+          x="-38"
+          y="-28"
+          width="76"
+          height="56"
+          preserveAspectRatio="xMidYMid meet"
+        />
+      </g>
     </svg>
   );
 }
 
+/** Unité mise en avant par défaut : celle de l’étape en cours. */
+function defaultActiveIndex(sections: RoadmapSection[], currentRef?: string | null) {
+  const byRef = sections.findIndex((s) => s.steps.some((step) => step.ref === currentRef));
+  if (byRef >= 0) return byRef;
+  const byProgress = sections.findIndex((s) => unitStatus(s) === "active");
+  return byProgress >= 0 ? byProgress : 0;
+}
+
 export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intro }: Props) {
   const minHeight = useMemo(() => Math.max(680, sections.length * 340 + 180), [sections.length]);
+  const [activeIndex, setActiveIndex] = useState(() => defaultActiveIndex(sections, currentRef));
+  const [drive, setDrive] = useState<{ dir: DriveDirection; n: number } | null>(null);
+
+  useEffect(() => {
+    setActiveIndex(defaultActiveIndex(sections, currentRef));
+    setDrive(null);
+  }, [sections, currentRef]);
+
+  function goToUnit(index: number) {
+    if (index === activeIndex || index < 0 || index >= sections.length) return;
+    setDrive((prev) => ({ dir: index > activeIndex ? "next" : "prev", n: (prev?.n ?? 0) + 1 }));
+    setActiveIndex(index);
+  }
+
+  const activeSection = sections[activeIndex];
 
   return (
     <div className="ck-duo-map">
       <div className="ck-duo-map__grid">
-        {intro ? (
-          <aside className="ck-duo-map__intro">
-            <h2>{intro.title}</h2>
-            <p>{intro.body}</p>
-          </aside>
-        ) : null}
+        <div className="ck-duo-map__aside">
+          {intro ? (
+            <aside className="ck-duo-map__intro">
+              <h2>{intro.title}</h2>
+              <p>{intro.body}</p>
+            </aside>
+          ) : null}
+
+          {sections.length > 1 ? (
+            <nav className="ck-duo-map__nav" aria-label="Navigation entre les unités">
+              <button
+                type="button"
+                className="ck-duo-map__nav-btn"
+                onClick={() => goToUnit(activeIndex - 1)}
+                disabled={activeIndex === 0}
+                aria-label="Unité précédente"
+              >
+                <ChevronUp size={18} strokeWidth={3} />
+              </button>
+
+              <span className="ck-duo-map__nav-label">
+                <small>Unité {activeSection?.theme_index ?? activeIndex + 1}</small>
+                <strong>{activeSection?.theme_title ?? ""}</strong>
+              </span>
+
+              <button
+                type="button"
+                className="ck-duo-map__nav-btn"
+                onClick={() => goToUnit(activeIndex + 1)}
+                disabled={activeIndex >= sections.length - 1}
+                aria-label="Unité suivante"
+              >
+                <ChevronDown size={18} strokeWidth={3} />
+              </button>
+            </nav>
+          ) : null}
+        </div>
 
         <div className="ck-duo-map__path" style={{ minHeight }}>
           <div className="ck-duo-map__road-layer" aria-hidden>
-            <RoadSvg />
+            <RoadSvg driveKey={drive?.n ?? 0} driveDir={drive?.dir} />
           </div>
 
           <div className="ck-duo-map__units">
@@ -148,7 +209,10 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
                 section.steps.find((s) => s.ref === currentRef) ??
                 section.steps.find((s) => s.status === "current" || s.status === "failed") ??
                 section.steps.find((s) => s.status !== "locked" && s.status !== "premium_locked");
-              const layout = sIdx === 0 ? "is-first" : "is-upcoming";
+              const isActive = sIdx === activeIndex;
+              const layout = isActive
+                ? `is-first${drive ? ` is-promote-${drive.dir}` : ""}`
+                : "is-upcoming";
 
               return (
                 <article
@@ -158,8 +222,16 @@ export default function RoadmapWorldMap({ sections, currentRef, onOpenStep, intr
                   data-chapter-id={section.theme_id}
                 >
                   <header className="ck-unit-card__head">
-                    <span>Unité {section.theme_index}</span>
-                    <strong>{section.theme_title}</strong>
+                    <button
+                      type="button"
+                      className="ck-unit-card__jump"
+                      onClick={() => goToUnit(sIdx)}
+                      aria-pressed={isActive}
+                      aria-label={`Afficher l’unité ${section.theme_index}`}
+                    >
+                      <span>Unité {section.theme_index}</span>
+                      <strong>{section.theme_title}</strong>
+                    </button>
                   </header>
 
                   {status === "locked" ? (
