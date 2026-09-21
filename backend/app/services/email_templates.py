@@ -457,6 +457,10 @@ def render_examen_result_email(*, full_name: str, exam_title: str, score: int, p
     return plain, html
 
 
+def _fcfa(amount: int) -> str:
+    return f"{amount:,} FCFA".replace(",", " ")
+
+
 def render_payment_confirmation_email(
     *,
     full_name: str,
@@ -470,66 +474,110 @@ def render_payment_confirmation_email(
     billing_period_label: str | None = None,
     expires_at_label: str | None = None,
     paid_at_label: str | None = None,
+    payer_email: str | None = None,
+    seller_label: str | None = None,
+    line_items: list[tuple[str, int]] | None = None,
+    service_fee_fcfa: int | None = None,
 ) -> tuple[str, str]:
-    amount = f"{amount_fcfa:,} FCFA".replace(",", " ")
-    rows: list[tuple[str, str]] = [
-        ("Objet", purpose_label),
-        ("Montant", amount),
-        ("Référence", reference),
-        ("N° de reçu", receipt_number),
-    ]
+    """Facture détaillée : en-tête, lignes de prestation, frais de service et total réglé."""
+    items = line_items or [(purpose_label, amount_fcfa)]
+    subtotal = sum(price for _, price in items)
+
+    header_rows: list[tuple[str, str]] = [("Facture n°", receipt_number)]
     if paid_at_label:
-        rows.append(("Date", paid_at_label))
-    if channel:
-        rows.append(("Canal", channel))
-    if phone:
-        rows.append(("Téléphone", phone))
+        header_rows.append(("Date", paid_at_label))
+    header_rows.append(("Client", full_name))
+    if payer_email:
+        header_rows.append(("E-mail", payer_email))
+    if seller_label:
+        header_rows.append(("Prestataire", seller_label))
     if billing_period_label:
-        rows.append(("Période", billing_period_label))
+        header_rows.append(("Périodicité", billing_period_label))
     if expires_at_label:
-        rows.append(("Valable jusqu'au", expires_at_label))
+        header_rows.append(("Valable jusqu'au", expires_at_label))
+    header_rows.append(("Règlement", channel or "Mobile Money"))
+    if phone:
+        header_rows.append(("Téléphone", phone))
+    header_rows.append(("Référence", reference))
+
+    total_rows: list[tuple[str, str, bool]] = [("Sous-total", _fcfa(subtotal), False)]
+    if service_fee_fcfa:
+        total_rows.append(("dont frais de service CODAKIS", _fcfa(service_fee_fcfa), False))
+    total_rows.append(("Total réglé", _fcfa(amount_fcfa), True))
 
     plain_lines = [
         f"Bonjour {full_name},",
         "",
-        "Votre paiement CODAKIS a été confirmé. Récapitulatif :",
+        f"Facture n° {receipt_number} — paiement confirmé.",
         "",
     ]
-    for label, value in rows:
+    for label, value in header_rows:
         plain_lines.append(f"- {label} : {value}")
+    plain_lines.extend(["", "Détail :"])
+    for label, price in items:
+        plain_lines.append(f"- {label} : {_fcfa(price)}")
+    plain_lines.append("")
+    for label, value, _ in total_rows:
+        plain_lines.append(f"{label} : {value}")
     plain_lines.extend(["", f"Voir mon tableau de bord : {dashboard_url}", "", "— L'équipe CODAKIS"])
     plain = "\n".join(plain_lines)
 
-    table_rows = "".join(
+    header_html = "".join(
         f"""
           <tr>
-            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:13px;font-weight:700;color:{TEXT_MUTED};text-transform:uppercase;font-family:{FONT_SANS};">{escape(label)}</td>
-            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:15px;font-weight:600;color:{TEXT};text-align:right;font-family:{FONT_MONO};">{escape(value)}</td>
+            <td style="padding:10px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:12px;font-weight:700;color:{TEXT_MUTED};text-transform:uppercase;font-family:{FONT_SANS};">{escape(label)}</td>
+            <td style="padding:10px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:14px;font-weight:600;color:{TEXT};text-align:right;font-family:{FONT_MONO};">{escape(value)}</td>
           </tr>
         """
-        for label, value in rows
+        for label, value in header_rows
     )
-    receipt_table = f"""
+    items_html = "".join(
+        f"""
+          <tr>
+            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:14px;font-weight:600;color:{TEXT};font-family:{FONT_SANS};">{escape(label)}</td>
+            <td style="padding:12px 14px;border-bottom:1px solid {BORDER_SOFT};font-size:14px;font-weight:600;color:{TEXT};text-align:right;font-family:{FONT_MONO};">{escape(_fcfa(price))}</td>
+          </tr>
+        """
+        for label, price in items
+    )
+    totals_html = "".join(
+        f"""
+          <tr>
+            <td style="padding:{'14px' if strong else '10px'} 14px;font-size:{'15px' if strong else '13px'};font-weight:{'800' if strong else '600'};color:{TEXT if strong else TEXT_MUTED};font-family:{FONT_SANS};{f'background:{BG_MUTED};' if strong else ''}">{escape(label)}</td>
+            <td style="padding:{'14px' if strong else '10px'} 14px;font-size:{'17px' if strong else '13px'};font-weight:800;color:{TEXT};text-align:right;font-family:{FONT_MONO};{f'background:{BG_MUTED};' if strong else ''}">{escape(value)}</td>
+          </tr>
+        """
+        for label, value, strong in total_rows
+    )
+
+    invoice_table = f"""
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;border-collapse:separate;border:1px solid {BORDER_SOFT};border-radius:12px;overflow:hidden;background:#fff;">
         <tr>
           <td colspan="2" style="padding:14px 16px;background:{BG_MUTED};font-size:14px;font-weight:800;color:{TEXT};font-family:{FONT_SANS};text-transform:uppercase;letter-spacing:0.04em;">
-            Récapitulatif du paiement
+            Facture
           </td>
         </tr>
-        {table_rows}
+        {header_html}
+        <tr>
+          <td colspan="2" style="padding:14px 16px;background:{BG_MUTED};font-size:13px;font-weight:800;color:{TEXT};font-family:{FONT_SANS};text-transform:uppercase;letter-spacing:0.04em;">
+            Détail de la prestation
+          </td>
+        </tr>
+        {items_html}
+        {totals_html}
       </table>
     """
 
     html = _base_layout(
-        preheader="Paiement confirmé — CODAKIS",
+        preheader=f"Facture {receipt_number} — CODAKIS",
         body_html=f"""
           {_hero_image("Paiement validé")}
-          {_icon_badge("💳", "Paiement confirmé")}
+          {_icon_badge("🧾", "Facture")}
           {_heading("Paiement validé")}
-          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement <strong>CODAKIS</strong> a bien été reçu. Voici le détail de votre commande.")}
-          {receipt_table}
+          {_paragraph(f"Bonjour <strong>{escape(full_name)}</strong>, votre règlement a bien été reçu. Cette facture vaut justificatif de paiement.")}
+          {invoice_table}
           {_cta_button("Accéder à mon espace", dashboard_url)}
-          {_paragraph("Un suivi de votre parcours est disponible dès maintenant dans votre feuille de route.")}
+          {_paragraph("Vous retrouvez toutes vos factures dans votre espace, rubrique Paiements.")}
         """,
     )
     return plain, html

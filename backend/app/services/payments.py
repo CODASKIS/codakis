@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.db.models import AutoEcole, Forfait, Inscription, Paiement, StatutInscription, Utilisateur
-from app.services.enrollments import create_inscription
+from app.services.enrollments import create_inscription, forfait_duree_mois
 from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
 from app.services.pawapay import (
     is_configured as pawapay_configured,
@@ -163,19 +163,8 @@ def initiate_payment(
         forfait = db.get(Forfait, forfait_id)
         if forfait is None or forfait.auto_ecole_id != school.id or not forfait.est_actif:
             raise ValueError("Forfait invalide")
-        # Les forfaits se cumulent (code + conduite) ; seul le rachat à l'identique est bloqué.
-        existing = (
-            db.query(Inscription)
-            .filter(
-                Inscription.candidat_id == user.id,
-                Inscription.auto_ecole_id == school.id,
-                Inscription.forfait_id == forfait.id,
-                Inscription.statut != StatutInscription.annulee.value,
-            )
-            .first()
-        )
-        if existing:
-            raise ValueError("Vous avez déjà ce forfait dans cette auto-école")
+        # Les forfaits se cumulent (code + conduite) et sont mensuels : repayer le même
+        # forfait est un renouvellement, géré à la confirmation.
         amount_fcfa = forfait.prix
         commission_rate_pct, commission_fcfa, school_payout_fcfa = _calc_enrollment_split(amount_fcfa)
         label_fr = (
@@ -569,23 +558,33 @@ def confirm_payment(
         )
 
     purpose_label = "Inscription auto-école"
+    seller_label = "CODAKIS"
+    period_label = None
+    expires_label = None
+
     if paiement.purpose == "subscription":
         purpose_label = PLAN_LABELS.get(paiement.plan_id or "", "Abonnement CODAKIS")
-    elif paiement.purpose == "enrollment" and paiement.forfait_id:
-        forfait = db.get(Forfait, paiement.forfait_id)
+        period_label = "Annuel" if (paiement.billing_period or "") == "yearly" else "Mensuel"
+        if paiement.expires_at:
+            expires_label = paiement.expires_at.strftime("%d/%m/%Y")
+    elif paiement.purpose == "enrollment":
+        forfait = db.get(Forfait, paiement.forfait_id) if paiement.forfait_id else None
+        school = db.get(AutoEcole, paiement.auto_ecole_id) if paiement.auto_ecole_id else None
         if forfait:
             purpose_label = f"Forfait {forfait.label_fr}"
+            months = forfait_duree_mois(forfait)
+            period_label = "Mensuel" if months == 1 else f"{months} mois"
+        if school:
+            seller_label = school.raison_sociale
+        if paiement.inscription_id:
+            inscription = db.get(Inscription, paiement.inscription_id)
+            if inscription and inscription.expires_at:
+                expires_label = inscription.expires_at.strftime("%d/%m/%Y")
 
     try:
         from app.services.email import send_payment_confirmation_email
 
         full_name = f"{user.prenom or ''} {user.nom or ''}".strip() or user.email
-        period_label = None
-        expires_label = None
-        if paiement.purpose == "subscription":
-            period_label = "Annuel" if (paiement.billing_period or "") == "yearly" else "Mensuel"
-            if paiement.expires_at:
-                expires_label = paiement.expires_at.strftime("%d/%m/%Y")
         send_payment_confirmation_email(
             user.email,
             full_name,
@@ -598,6 +597,9 @@ def confirm_payment(
             billing_period_label=period_label,
             expires_at_label=expires_label,
             paid_at_label=(paiement.completed_at or datetime.now(UTC)).strftime("%d/%m/%Y %H:%M UTC"),
+            seller_label=seller_label,
+            line_items=[(purpose_label, paiement.amount_fcfa)],
+            service_fee_fcfa=paiement.commission_fcfa,
         )
     except Exception:
         logger.exception("E-mail confirmation paiement non envoyé pour %s", paiement.reference)

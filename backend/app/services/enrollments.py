@@ -1,4 +1,5 @@
 import uuid
+from calendar import monthrange
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy.orm import Session
@@ -55,6 +56,7 @@ def forfait_to_public(forfait: Forfait) -> dict:
         "label_en": forfait.label_en,
         "prix": forfait.prix,
         "heures_conduite": forfait.heures_conduite,
+        "duree_mois": forfait_duree_mois(forfait),
         "description_fr": forfait.description_fr,
         "description_en": forfait.description_en,
     }
@@ -94,6 +96,7 @@ def gerant_create_forfait(db: Session, gerant: Utilisateur, data) -> Forfait:
         label_en=data.label_en.strip(),
         prix=data.prix,
         heures_conduite=data.heures_conduite,
+        duree_mois=data.duree_mois,
         description_fr=(data.description_fr or "").strip() or None,
         description_en=(data.description_en or "").strip() or None,
         est_actif=data.est_actif,
@@ -121,6 +124,8 @@ def gerant_update_forfait(db: Session, gerant: Utilisateur, forfait_id: uuid.UUI
         forfait.prix = data.prix
     if data.heures_conduite is not None:
         forfait.heures_conduite = data.heures_conduite
+    if data.duree_mois is not None:
+        forfait.duree_mois = data.duree_mois
     if data.description_fr is not None:
         forfait.description_fr = data.description_fr.strip() or None
     if data.description_en is not None:
@@ -159,6 +164,9 @@ def _inscription_base(db: Session, inscription: Inscription) -> dict:
         "payment_ref": inscription.payment_ref,
         "heures_conduite_total": inscription.heures_conduite_total,
         "heures_conduite_restantes": inscription.heures_conduite_restantes,
+        "expires_at": inscription.expires_at,
+        "days_left": inscription_days_left(inscription),
+        "is_active": inscription_is_active(inscription),
         "enrolled_at": inscription.enrolled_at,
         "seances_count": seances_count,
     }
@@ -181,6 +189,40 @@ def seance_to_public(db: Session, seance: SeancePratique) -> dict:
     }
 
 
+def forfait_duree_mois(forfait: Forfait | None) -> int:
+    """Durée de validité d'un forfait, en mois. Mensuel par défaut."""
+    return max(1, int(getattr(forfait, "duree_mois", None) or 1))
+
+
+def add_months(start: datetime, months: int) -> datetime:
+    """Ajoute des mois calendaires en ramenant le jour au dernier du mois si besoin."""
+    total = start.month - 1 + months
+    year = start.year + total // 12
+    month = total % 12 + 1
+    last_day = monthrange(year, month)[1]
+    return start.replace(year=year, month=month, day=min(start.day, last_day))
+
+
+def inscription_days_left(inscription: Inscription, *, now: datetime | None = None) -> int | None:
+    expires = inscription.expires_at
+    if expires is None:
+        return None
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=UTC)
+    return (expires.date() - (now or datetime.now(UTC)).date()).days
+
+
+def inscription_is_active(inscription: Inscription, *, now: datetime | None = None) -> bool:
+    if inscription.statut == StatutInscription.annulee.value:
+        return False
+    expires = inscription.expires_at
+    if expires is None:
+        return True
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=UTC)
+    return expires > (now or datetime.now(UTC))
+
+
 def create_inscription(
     db: Session,
     *,
@@ -191,7 +233,46 @@ def create_inscription(
     forfait_label: str,
     payment_ref: str | None = None,
 ) -> Inscription:
+    """
+    Enregistre un forfait payé.
+
+    Un forfait étant mensuel, un second paiement du même forfait est un
+    renouvellement : on prolonge l'échéance et on recrédite les heures plutôt
+    que de créer une inscription en double.
+    """
     heures = forfait.heures_conduite if forfait and forfait.heures_conduite else 0
+    months = forfait_duree_mois(forfait)
+    now = datetime.now(UTC)
+
+    existing = (
+        db.query(Inscription)
+        .filter(
+            Inscription.candidat_id == candidat.id,
+            Inscription.auto_ecole_id == school.id,
+            Inscription.forfait_id == (forfait.id if forfait else None),
+            Inscription.statut != StatutInscription.annulee.value,
+        )
+        .first()
+        if forfait
+        else None
+    )
+
+    if existing:
+        # On prolonge depuis l'échéance en cours si elle court encore, sinon depuis aujourd'hui.
+        base = existing.expires_at
+        if base is not None and base.tzinfo is None:
+            base = base.replace(tzinfo=UTC)
+        existing.expires_at = add_months(base if base and base > now else now, months)
+        existing.heures_conduite_total += heures
+        existing.heures_conduite_restantes += heures
+        existing.statut = StatutInscription.confirmee.value
+        existing.payment_ref = payment_ref or existing.payment_ref
+        existing.reminder_7d_sent_at = None
+        existing.reminder_3d_sent_at = None
+        db.commit()
+        db.refresh(existing)
+        return existing
+
     inscription = Inscription(
         candidat_id=candidat.id,
         auto_ecole_id=school.id,
@@ -202,6 +283,7 @@ def create_inscription(
         payment_ref=payment_ref,
         heures_conduite_total=heures,
         heures_conduite_restantes=heures,
+        expires_at=add_months(now, months),
     )
     db.add(inscription)
     db.commit()

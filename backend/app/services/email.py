@@ -412,6 +412,9 @@ def send_payment_confirmation_email(
     billing_period_label: str | None = None,
     expires_at_label: str | None = None,
     paid_at_label: str | None = None,
+    seller_label: str | None = None,
+    line_items: list[tuple[str, int]] | None = None,
+    service_fee_fcfa: int | None = None,
 ) -> None:
     from app.services.email_templates import render_payment_confirmation_email
 
@@ -428,8 +431,12 @@ def send_payment_confirmation_email(
         billing_period_label=billing_period_label,
         expires_at_label=expires_at_label,
         paid_at_label=paid_at_label,
+        payer_email=to,
+        seller_label=seller_label,
+        line_items=line_items,
+        service_fee_fcfa=service_fee_fcfa,
     )
-    send_email(to, f"Paiement confirmé — {reference}", plain, html)
+    send_email(to, f"Facture {receipt_number} — paiement confirmé", plain, html)
 
 
 def send_subscription_expiry_reminder_email(

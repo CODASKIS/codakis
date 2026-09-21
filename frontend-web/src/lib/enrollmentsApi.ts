@@ -13,6 +13,9 @@ export type GerantInscription = {
   payment_ref: string | null;
   heures_conduite_total: number;
   heures_conduite_restantes: number;
+  expires_at: string | null;
+  days_left: number | null;
+  is_active: boolean;
   enrolled_at: string;
   seances_count: number;
 };
@@ -58,6 +61,7 @@ export type GerantForfait = {
   label_en: string;
   prix: number;
   heures_conduite: number | null;
+  duree_mois: number;
   description_fr: string | null;
   description_en: string | null;
   est_actif: boolean;
@@ -76,6 +80,7 @@ export async function createGerantForfait(payload: {
   label_en: string;
   prix: number;
   heures_conduite?: number | null;
+  duree_mois?: number;
   description_fr?: string;
   description_en?: string;
   est_actif?: boolean;
@@ -94,6 +99,7 @@ export async function updateGerantForfait(
     label_en: string;
     prix: number;
     heures_conduite: number | null;
+    duree_mois: number;
     description_fr: string;
     description_en: string;
     est_actif: boolean;

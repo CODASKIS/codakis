@@ -32,6 +32,7 @@ type ForfaitDraft = {
   label_en: string;
   prix: string;
   heures_conduite: string;
+  duree_mois: string;
   description_fr: string;
   est_actif: boolean;
 };
@@ -42,6 +43,7 @@ const emptyDraft = (): ForfaitDraft => ({
   label_en: "",
   prix: "",
   heures_conduite: "",
+  duree_mois: "1",
   description_fr: "",
   est_actif: true,
 });
@@ -118,6 +120,7 @@ export default function GerantAssignerPage() {
       label_en: item.label_en,
       prix: String(item.prix),
       heures_conduite: item.heures_conduite != null ? String(item.heures_conduite) : "",
+      duree_mois: String(item.duree_mois || 1),
       description_fr: item.description_fr || "",
       est_actif: item.est_actif,
     });
@@ -137,6 +140,7 @@ export default function GerantAssignerPage() {
       label_en: forfaitDraft.label_en || forfaitDraft.label_fr,
       prix: Number(forfaitDraft.prix),
       heures_conduite: forfaitDraft.heures_conduite ? Number(forfaitDraft.heures_conduite) : null,
+      duree_mois: Math.max(1, Number(forfaitDraft.duree_mois) || 1),
       description_fr: forfaitDraft.description_fr || undefined,
       est_actif: forfaitDraft.est_actif,
     };
@@ -333,6 +337,16 @@ export default function GerantAssignerPage() {
                   onChange={(e) => setForfaitDraft((d) => ({ ...d, heures_conduite: e.target.value }))}
                 />
               </label>
+              <label>
+                Durée de validité (mois)
+                <input
+                  type="number"
+                  min={1}
+                  max={60}
+                  value={forfaitDraft.duree_mois}
+                  onChange={(e) => setForfaitDraft((d) => ({ ...d, duree_mois: e.target.value }))}
+                />
+              </label>
             </div>
             <label>
               Description
@@ -385,6 +399,7 @@ export default function GerantAssignerPage() {
                 <p className="ta-package-card__meta">
                   {FORFAIT_TYPES.find((t) => t.value === item.type)?.label || item.type}
                   {item.heures_conduite ? ` · ${item.heures_conduite}h conduite` : ""}
+                  {` · ${item.duree_mois > 1 ? `${item.duree_mois} mois` : "mensuel"}`}
                 </p>
               </div>
               <div className="ta-package-card__actions">

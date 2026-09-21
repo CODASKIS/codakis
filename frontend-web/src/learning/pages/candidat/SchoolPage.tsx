@@ -7,6 +7,25 @@ import { fetchCandidatInscriptions, type CandidatInscription } from "../../../li
 const SCHOOL_ICONS = [Landmark, Building2, School] as const;
 const SCHOOL_COLORS = ["#f59e0b", "#00a859", "#2563eb", "#8b5cf6", "#ef4444", "#0ea5e9"];
 
+const DATE_FMT = new Intl.DateTimeFormat("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+
+function expiryLabel(item: CandidatInscription): string {
+  if (!item.expires_at) return "Sans échéance";
+  const date = DATE_FMT.format(new Date(item.expires_at));
+  if (!item.is_active) return `Forfait expiré le ${date} — à renouveler`;
+  const days = item.days_left;
+  if (days === null) return `Valable jusqu'au ${date}`;
+  if (days <= 0) return `Dernier jour — expire le ${date}`;
+  if (days <= 7) return `Expire dans ${days} jour${days > 1 ? "s" : ""} (${date})`;
+  return `Valable jusqu'au ${date}`;
+}
+
+function expiryClass(item: CandidatInscription): string {
+  if (!item.expires_at) return "";
+  if (!item.is_active) return "ck-list__alert";
+  return (item.days_left ?? 99) <= 7 ? "ck-list__warn" : "";
+}
+
 export default function SchoolPage() {
   const [items, setItems] = useState<CandidatInscription[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,6 +81,7 @@ export default function SchoolPage() {
                   <small>
                     {item.forfait_label} · {item.statut} · {item.heures_conduite_restantes}h restantes
                   </small>
+                  <small className={expiryClass(item)}>{expiryLabel(item)}</small>
                 </span>
               </Link>
             );

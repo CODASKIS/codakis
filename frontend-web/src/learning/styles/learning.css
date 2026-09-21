@@ -3667,8 +3667,20 @@ html.dark .ck-path__item.is-premium .ck-path__feu-box {
 }
 
 .ck-list__row small {
+  display: block;
   color: var(--ck-muted);
   font-size: 1.25rem;
+}
+
+/* Échéance d'un forfait : neutre, puis orange à l'approche, rouge une fois expiré. */
+.ck-list__warn {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.ck-list__alert {
+  color: #b91c1c;
+  font-weight: 700;
 }
 
 .ck-consort-list {

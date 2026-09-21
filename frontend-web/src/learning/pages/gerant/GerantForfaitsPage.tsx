@@ -39,6 +39,7 @@ export default function GerantForfaitsPage() {
               <small>
                 {item.type} · {item.prix.toLocaleString("fr-FR")} FCFA
                 {item.heures_conduite ? ` · ${item.heures_conduite}h` : ""}
+                {item.duree_mois > 1 ? ` · ${item.duree_mois} mois` : " · mensuel"}
                 {item.est_actif ? "" : " · inactif"}
               </small>
             </span>

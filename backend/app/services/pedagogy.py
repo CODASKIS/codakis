@@ -2,7 +2,7 @@ import re
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload, load_only
 
 from app.db.models import (
@@ -185,7 +185,8 @@ def _has_active_subscription(db: Session, user: Utilisateur) -> bool:
 
 
 def has_code_forfait(db: Session, user: Utilisateur) -> bool:
-    """Forfait auto-école incluant le code : l'accès plateforme suit l'inscription."""
+    """Forfait auto-école incluant le code : l'accès suit l'inscription tant qu'elle n'a pas expiré."""
+    now = datetime.now(UTC)
     return (
         db.query(Inscription.id)
         .filter(
@@ -194,6 +195,7 @@ def has_code_forfait(db: Session, user: Utilisateur) -> bool:
             Inscription.forfait_type.in_(
                 (TypeForfait.code_seul.value, TypeForfait.complet.value)
             ),
+            or_(Inscription.expires_at.is_(None), Inscription.expires_at > now),
         )
         .first()
         is not None

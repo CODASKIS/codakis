@@ -40,6 +40,13 @@ export default function GerantInscriptionsPage() {
                 {item.candidat_email} · {item.forfait_label} · {item.heures_conduite_restantes}h restantes ·{" "}
                 {item.seances_count} séances
               </small>
+              <small className={item.expires_at && !item.is_active ? "ck-list__alert" : ""}>
+                {item.expires_at
+                  ? `${item.is_active ? "Forfait actif jusqu'au" : "Forfait expiré le"} ${new Date(
+                      item.expires_at,
+                    ).toLocaleDateString("fr-FR")}`
+                  : "Forfait sans échéance"}
+              </small>
             </span>
           </div>
         ))}

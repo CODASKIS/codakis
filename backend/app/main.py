@@ -76,13 +76,16 @@ def seed_reference_data() -> None:
 
 
 async def _subscription_reminder_loop() -> None:
-    from app.services.subscription_lifecycle import process_subscription_reminders
+    from app.services.subscription_lifecycle import process_forfait_reminders, process_subscription_reminders
 
     while True:
         try:
             stats = await asyncio.to_thread(process_subscription_reminders)
             if stats.get("reminder_7d") or stats.get("reminder_3d"):
                 logger.info("Rappels abonnement envoyés : %s", stats)
+            forfaits = await asyncio.to_thread(process_forfait_reminders)
+            if forfaits.get("forfait_7d") or forfaits.get("forfait_3d"):
+                logger.info("Relances forfait envoyées : %s", forfaits)
         except Exception:
             logger.exception("Boucle rappels abonnement")
         await asyncio.sleep(6 * 60 * 60)

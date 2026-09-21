@@ -11,6 +11,7 @@ class PublicForfait(BaseModel):
     label_en: str
     prix: int
     heures_conduite: int | None = None
+    duree_mois: int = 1
     description_fr: str | None = None
     description_en: str | None = None
 
@@ -53,6 +54,9 @@ class InscriptionListItem(BaseModel):
     payment_ref: str | None = None
     heures_conduite_total: int
     heures_conduite_restantes: int
+    expires_at: datetime | None = None
+    days_left: int | None = None
+    is_active: bool = True
     enrolled_at: datetime
     seances_count: int = 0
 
@@ -129,6 +133,7 @@ class ForfaitCreateRequest(BaseModel):
     label_en: str = Field(min_length=2)
     prix: int = Field(ge=0)
     heures_conduite: int | None = Field(default=None, ge=0)
+    duree_mois: int = Field(default=1, ge=1, le=60)
     description_fr: str | None = None
     description_en: str | None = None
     est_actif: bool = True
@@ -140,6 +145,7 @@ class ForfaitUpdateRequest(BaseModel):
     label_en: str | None = Field(default=None, min_length=2)
     prix: int | None = Field(default=None, ge=0)
     heures_conduite: int | None = Field(default=None, ge=0)
+    duree_mois: int | None = Field(default=None, ge=1, le=60)
     description_fr: str | None = None
     description_en: str | None = None
     est_actif: bool | None = None
