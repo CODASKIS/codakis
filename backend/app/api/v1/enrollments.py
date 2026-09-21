@@ -160,12 +160,16 @@ def candidat_create_inscription(
         .filter(
             Inscription.candidat_id == candidat.id,
             Inscription.auto_ecole_id == school.id,
+            Inscription.forfait_id == forfait.id,
             Inscription.statut != "annulee",
         )
         .first()
     )
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Vous êtes déjà inscrit à cette auto-école")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Vous avez déjà ce forfait dans cette auto-école",
+        )
     try:
         inscription = create_inscription(
             db,

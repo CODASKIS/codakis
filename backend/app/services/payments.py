@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.db.models import AutoEcole, Forfait, Inscription, Paiement, Utilisateur
+from app.db.models import AutoEcole, Forfait, Inscription, Paiement, StatutInscription, Utilisateur
 from app.services.enrollments import create_inscription
 from app.services.cinetpay import is_configured as cinetpay_configured, create_checkout as cinetpay_create_checkout
 from app.services.pawapay import (
@@ -163,17 +163,19 @@ def initiate_payment(
         forfait = db.get(Forfait, forfait_id)
         if forfait is None or forfait.auto_ecole_id != school.id or not forfait.est_actif:
             raise ValueError("Forfait invalide")
+        # Les forfaits se cumulent (code + conduite) ; seul le rachat à l'identique est bloqué.
         existing = (
             db.query(Inscription)
             .filter(
                 Inscription.candidat_id == user.id,
                 Inscription.auto_ecole_id == school.id,
-                Inscription.statut != "annulee",
+                Inscription.forfait_id == forfait.id,
+                Inscription.statut != StatutInscription.annulee.value,
             )
             .first()
         )
         if existing:
-            raise ValueError("Vous êtes déjà inscrit à cette auto-école")
+            raise ValueError("Vous avez déjà ce forfait dans cette auto-école")
         amount_fcfa = forfait.prix
         commission_rate_pct, commission_fcfa, school_payout_fcfa = _calc_enrollment_split(amount_fcfa)
         label_fr = (
