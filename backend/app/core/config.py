@@ -48,7 +48,7 @@ class Settings(BaseSettings):
     smtp_port: int = 587
     smtp_user: str = ""
     smtp_password: str = ""
-    smtp_from: str = Field(default="noreply@codakis.cm", validation_alias=AliasChoices("SMTP_FROM", "EMAIL_FROM"))
+    smtp_from: str = Field(default="noreply@efymotors.com", validation_alias=AliasChoices("SMTP_FROM", "EMAIL_FROM"))
     smtp_fallback_host: str = Field(default="", validation_alias=AliasChoices("SMTP_FALLBACK_HOST"))
     smtp_fallback_port: int = Field(default=25, validation_alias=AliasChoices("SMTP_FALLBACK_PORT"))
 
