@@ -104,20 +104,6 @@ export function GoogleIcon() {
   );
 }
 
-type GoogleAuthButtonProps = {
-  label: string;
-  onClick: () => void;
-};
-
-export function GoogleAuthButton({ label, onClick }: GoogleAuthButtonProps) {
-  return (
-    <button type="button" className="codakis-auth-google" onClick={onClick}>
-      <GoogleIcon />
-      <span>{label}</span>
-    </button>
-  );
-}
-
 export function AuthDivider({ label }: { label: string }) {
   return (
     <div className="codakis-auth-divider" role="separator">

@@ -1,6 +1,5 @@
-import { useRef } from "react";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
-import { GoogleAuthButton } from "./AuthFormControls";
+import { GoogleIcon } from "./AuthFormControls";
 
 type GoogleSignInButtonProps = {
   label: string;
@@ -12,10 +11,16 @@ export function isGoogleAuthEnabled(): boolean {
   return Boolean(import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim());
 }
 
-/** Bouton Google custom (Nunito) ; le widget officiel reste invisible pour le flux OAuth. */
+/**
+ * Habillage Nunito du bouton Google.
+ *
+ * Le widget officiel est rendu dans une iframe accounts.google.com : il est donc
+ * impossible de le déclencher depuis notre page. On le superpose transparent
+ * au-dessus de l'habillage pour que le clic parte du vrai bouton Google — seule
+ * façon fiable sur mobile, où le flux s'ouvre dans un nouvel onglet.
+ */
 export default function GoogleSignInButton({ label, onSuccess, onError }: GoogleSignInButtonProps) {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim();
-  const hiddenBtnRef = useRef<HTMLDivElement>(null);
 
   if (!clientId) {
     return null;
@@ -29,19 +34,13 @@ export default function GoogleSignInButton({ label, onSuccess, onError }: Google
     onError?.();
   }
 
-  function handleClick() {
-    const btn = hiddenBtnRef.current?.querySelector("div[role='button']") as HTMLElement | null;
-    if (btn) {
-      btn.click();
-      return;
-    }
-    onError?.();
-  }
-
   return (
     <div className="codakis-auth-google-wrap">
-      <GoogleAuthButton label={label} onClick={handleClick} />
-      <div ref={hiddenBtnRef} className="codakis-auth-google-hidden" aria-hidden="true">
+      <span className="codakis-auth-google" aria-hidden="true">
+        <GoogleIcon />
+        <span>{label}</span>
+      </span>
+      <div className="codakis-auth-google-overlay">
         <GoogleLogin
           onSuccess={handleSuccess}
           onError={() => onError?.()}

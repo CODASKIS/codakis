@@ -546,12 +546,22 @@ html.dark .codakis-auth__logo {
   margin-bottom: 0.4rem;
 }
 
-.codakis-auth-google-hidden {
+/* Vrai bouton Google, transparent, au-dessus de l'habillage : c'est lui qui reçoit le clic. */
+.codakis-auth-google-overlay {
   position: absolute;
   inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   opacity: 0;
-  pointer-events: none;
+}
+
+/* Le widget mesure 400 × 40 px : on l'agrandit pour couvrir toute la surface visible. */
+.codakis-auth-google-overlay > div {
+  transform: scale(2);
+  transform-origin: center;
 }
 
 /* Google OAuth button */
@@ -574,10 +584,11 @@ html.dark .codakis-auth__logo {
   font-weight: 700;
   letter-spacing: 0;
   cursor: pointer;
+  pointer-events: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.codakis-auth-google:hover {
+.codakis-auth-google-wrap:hover .codakis-auth-google {
   border-color: var(--ck-line);
   background: var(--ck-surface);
   color: var(--ck-text);

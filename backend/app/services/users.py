@@ -13,9 +13,11 @@ from app.db.models import (
     CodeVerification,
     DossierAdministratif,
     FournisseurAuth,
+    Inscription,
     MoniteurAutoEcole,
     Pays,
     RoleUtilisateur,
+    StatutInscription,
     Utilisateur,
     Ville,
 )
@@ -98,6 +100,24 @@ def user_to_public(db: Session, user: Utilisateur) -> UserPublic:
                 school_validated = school.est_validee
                 school_id = school.id
                 school_name = school.raison_sociale
+
+    if user.role == RoleUtilisateur.candidat.value:
+        # Le forfait payé rattache le candidat à son auto-école.
+        inscription = (
+            db.query(Inscription)
+            .filter(
+                Inscription.candidat_id == user.id,
+                Inscription.statut != StatutInscription.annulee.value,
+            )
+            .order_by(Inscription.enrolled_at.desc())
+            .first()
+        )
+        if inscription:
+            school = db.get(AutoEcole, inscription.auto_ecole_id)
+            if school:
+                school_id = school.id
+                school_name = school.raison_sociale
+                school_validated = inscription.statut == StatutInscription.confirmee.value
 
     city = None
     if user.ville_id:

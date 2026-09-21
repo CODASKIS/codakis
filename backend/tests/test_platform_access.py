@@ -128,6 +128,31 @@ def test_cancelled_enrollment_revokes_access(db):
     assert has_platform_access(db, candidat) is False
 
 
+def test_paid_forfait_shows_school_on_candidate_profile(db):
+    """Le forfait payé doit rattacher le candidat à son auto-école dans son profil."""
+    from app.services.users import user_to_public
+
+    candidat = _candidat(db, "candidat-rattachement@test.cm")
+    assert user_to_public(db, candidat).school_name is None
+
+    school = _school(db)
+    forfait = _forfait(db, school, TypeForfait.code_seul.value)
+    create_inscription(
+        db,
+        candidat=candidat,
+        school=school,
+        forfait=forfait,
+        forfait_type=forfait.type,
+        forfait_label=forfait.label_fr,
+        payment_ref="MM-RATTACH",
+    )
+
+    public = user_to_public(db, candidat)
+    assert public.school_id == school.id
+    assert public.school_name == school.raison_sociale
+    assert public.school_validated is True
+
+
 def test_orphan_enrollment_payment_is_repaired(db):
     """Un forfait payé dont la confirmation s'est arrêtée avant l'inscription est rattrapé."""
     candidat = _candidat(db, "candidat-orphelin@test.cm")
