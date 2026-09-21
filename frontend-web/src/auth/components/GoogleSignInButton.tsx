@@ -36,10 +36,18 @@ export default function GoogleSignInButton({ label, onSuccess, onError }: Google
 
   return (
     <div className="codakis-auth-google-wrap">
-      <span className="codakis-auth-google" aria-hidden="true">
+      {/* Habillage seul : l'overlay Google le recouvre. Il n'est atteignable que si
+          le widget Google n'a pas pu se charger, et signale alors l'indisponibilité. */}
+      <button
+        type="button"
+        className="codakis-auth-google"
+        aria-hidden="true"
+        tabIndex={-1}
+        onClick={() => onError?.()}
+      >
         <GoogleIcon />
         <span>{label}</span>
-      </span>
+      </button>
       <div className="codakis-auth-google-overlay">
         <GoogleLogin
           onSuccess={handleSuccess}
