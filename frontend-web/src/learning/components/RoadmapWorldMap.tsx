@@ -46,19 +46,16 @@ function buildRoadPath(periods: number): string {
   return parts.join(" ");
 }
 
+const SIGN_KINDS = ["diamond", "info", "danger"] as const;
+
+/** Deux panneaux par boucle, les trois motifs se relaient pour éviter les doublons voisins. */
 function roadSigns(periods: number) {
-  const signs: { key: string; kind: "diamond" | "danger" | "info"; x: number; y: number }[] = [];
+  const signs: { key: string; kind: (typeof SIGN_KINDS)[number]; x: number; y: number }[] = [];
   for (let k = 0; k < periods; k += 1) {
     const base = ROAD_FIRST_TURN_Y + k * ROAD_PERIOD;
     signs.push(
-      k % 2 === 0
-        ? { key: `a${k}`, kind: "diamond", x: 85, y: base + 20 }
-        : { key: `a${k}`, kind: "danger", x: 80, y: base + 20 },
-    );
-    signs.push(
-      k % 2 === 0
-        ? { key: `b${k}`, kind: "info", x: 125, y: base + 140 }
-        : { key: `b${k}`, kind: "diamond", x: 125, y: base + 140 },
+      { key: `a${k}`, kind: SIGN_KINDS[signs.length % SIGN_KINDS.length], x: 85, y: base + 20 },
+      { key: `b${k}`, kind: SIGN_KINDS[(signs.length + 1) % SIGN_KINDS.length], x: 125, y: base + 140 },
     );
   }
   return signs;
@@ -279,7 +276,9 @@ export default function RoadmapWorldMap({
     .map((section, index) => ({ section, index }))
     .filter(({ index }) => index >= activeIndex);
 
-  const minHeight = Math.max(680, stackedSections.length * 340 + 180);
+  /** Plancher pour qu’une unité seule garde de la route sous les roues ; au-delà,
+   *  la pile fixe la hauteur et la route s’arrête avec la dernière carte. */
+  const minHeight = 680;
 
   /** Assez de boucles pour dépasser la pile ; le trop-plein est rogné par le calque. */
   const roadPeriods = Math.max(3, Math.ceil(stackedSections.length * 0.9));
