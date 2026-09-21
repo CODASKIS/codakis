@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown, ChevronUp, Lock, RotateCcw, Star, TrafficCone } from "lucide-react";
 import { chapterBannerColor } from "../../lib/chapterColors";
 import type { RoadmapSection, RoadmapStep } from "../../lib/pedagogyApi";
@@ -12,25 +12,57 @@ type Props = {
   isPremium?: boolean;
 };
 
-/**
- * Tracé rectiligne à virages arrondis. Le premier segment part en dehors du
- * viewBox (x négatif) pour venir se glisser sous la carte de l’unité en cours ;
- * le reste du zigzag garde ses distances.
- */
-const ROAD_D =
-  "M -60 30 " +
-  "H 112 Q 152 30, 152 70 " +
-  "V 110 Q 152 150, 112 150 " +
-  "H 88 Q 48 150, 48 190 " +
-  "V 230 Q 48 270, 88 270 " +
-  "H 112 Q 152 270, 152 310 " +
-  "V 350 Q 152 390, 112 390 " +
-  "H 88 Q 48 390, 48 430";
-
 const ROAD_W = 58;
 const ROAD_EDGE = 68;
 
+/** Le zigzag boucle tous les 240 unités de viewBox, à partir du premier virage. */
+const ROAD_FIRST_TURN_Y = 70;
+const ROAD_PERIOD = 240;
+
+/** Durée de ck-map-car-next / ck-map-car-prev : la pile attend la fin du trajet. */
+const CAR_DRIVE_MS = 1250;
+
 type DriveDirection = "next" | "prev";
+
+/**
+ * Tracé rectiligne à virages arrondis. Le premier segment part en dehors du
+ * viewBox (x négatif) pour venir se glisser sous la carte de l’unité en cours,
+ * puis le motif se répète autant de fois qu’il faut pour que la route descende
+ * le long de toute la pile au lieu de s’arrêter derrière la deuxième carte.
+ */
+function buildRoadPath(periods: number): string {
+  const parts = ["M -60 30", `H 112 Q 152 30, 152 ${ROAD_FIRST_TURN_Y}`];
+  for (let k = 0; k < periods; k += 1) {
+    const base = ROAD_FIRST_TURN_Y + k * ROAD_PERIOD;
+    parts.push(
+      `V ${base + 40} Q 152 ${base + 80}, 112 ${base + 80}`,
+      `H 88 Q 48 ${base + 80}, 48 ${base + 120}`,
+      `V ${base + 160} Q 48 ${base + 200}, 88 ${base + 200}`,
+      `H 112 Q 152 ${base + 200}, 152 ${base + 240}`,
+    );
+  }
+  // On prolonge sous le bord bas : la route paraît continuer plutôt que s’arrêter net.
+  parts.push(`V ${ROAD_FIRST_TURN_Y + periods * ROAD_PERIOD + 60}`);
+  return parts.join(" ");
+}
+
+function roadSigns(periods: number) {
+  const signs: { key: string; kind: "diamond" | "danger" | "info"; x: number; y: number }[] = [];
+  for (let k = 0; k < periods; k += 1) {
+    const base = ROAD_FIRST_TURN_Y + k * ROAD_PERIOD;
+    signs.push(
+      k % 2 === 0
+        ? { key: `a${k}`, kind: "diamond", x: 85, y: base + 20 }
+        : { key: `a${k}`, kind: "danger", x: 80, y: base + 20 },
+    );
+    signs.push(
+      k % 2 === 0
+        ? { key: `b${k}`, kind: "info", x: 125, y: base + 140 }
+        : { key: `b${k}`, kind: "diamond", x: 125, y: base + 140 },
+    );
+  }
+  return signs;
+}
 
 function cleanTitle(title: string) {
   return title.replace(/\s*[—–−]+\s*/g, " ").trim();
@@ -80,12 +112,28 @@ function stepProgress(step: RoadmapStep): number {
   return 0;
 }
 
-function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDirection }) {
+function RoadSvg({
+  driveKey,
+  driveDir,
+  periods,
+}: {
+  driveKey: number;
+  driveDir?: DriveDirection;
+  periods: number;
+}) {
+  const roadD = buildRoadPath(periods);
+  const height = ROAD_FIRST_TURN_Y + periods * ROAD_PERIOD + 60;
+
   return (
-    <svg className="ck-duo-map__road" viewBox="0 0 200 460" preserveAspectRatio="xMinYMin meet" aria-hidden>
+    <svg
+      className="ck-duo-map__road"
+      viewBox={`0 0 200 ${height}`}
+      preserveAspectRatio="xMinYMin meet"
+      aria-hidden
+    >
       {/* Bords clairs */}
       <path
-        d={ROAD_D}
+        d={roadD}
         fill="none"
         stroke="#ccd3da"
         strokeWidth={ROAD_EDGE}
@@ -94,7 +142,7 @@ function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDir
       />
       {/* Asphalte */}
       <path
-        d={ROAD_D}
+        d={roadD}
         fill="none"
         stroke="#3a414d"
         strokeWidth={ROAD_W}
@@ -103,7 +151,7 @@ function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDir
       />
       {/* Ligne centrale pointillée */}
       <path
-        d={ROAD_D}
+        d={roadD}
         fill="none"
         stroke="#f8fafc"
         strokeWidth="2.6"
@@ -111,26 +159,34 @@ function RoadSvg({ driveKey, driveDir }: { driveKey: number; driveDir?: DriveDir
         strokeDasharray="11 13"
       />
 
-      {/* Losange doré dans le premier virage */}
-      <g transform="translate(85 90) rotate(45)">
-        <rect x={-8} y={-8} width={16} height={16} rx={2} fill="#fbbf24" stroke="#d97706" strokeWidth="1.4" />
-      </g>
-
-      {/* Panneau bleu dans le deuxième virage */}
-      <g transform="translate(125 210)">
-        <line x1="0" y1="10" x2="0" y2="30" stroke="#64748b" strokeWidth="2.4" />
-        <circle cx="0" cy="0" r="10" fill="#2563eb" stroke="#fff" strokeWidth="2.4" />
-        <circle cx="0" cy="0" r="3.6" fill="#fff" />
-      </g>
-
-      {/* Panneau danger dans le troisième virage */}
-      <g transform="translate(80 330)">
-        <line x1="0" y1="8" x2="0" y2="28" stroke="#64748b" strokeWidth="2.4" />
-        <polygon points="0,-11 12,10 -12,10" fill="#fff" stroke="#e11d48" strokeWidth="2.4" />
-        <text x="0" y="8" textAnchor="middle" fill="#e11d48" fontSize="10" fontWeight="900">
-          !
-        </text>
-      </g>
+      {/* Panneaux semés le long du parcours, un motif par boucle */}
+      {roadSigns(periods).map((sign) => {
+        if (sign.kind === "diamond") {
+          return (
+            <g key={sign.key} transform={`translate(${sign.x} ${sign.y}) rotate(45)`}>
+              <rect x={-8} y={-8} width={16} height={16} rx={2} fill="#fbbf24" stroke="#d97706" strokeWidth="1.4" />
+            </g>
+          );
+        }
+        if (sign.kind === "info") {
+          return (
+            <g key={sign.key} transform={`translate(${sign.x} ${sign.y})`}>
+              <line x1="0" y1="10" x2="0" y2="30" stroke="#64748b" strokeWidth="2.4" />
+              <circle cx="0" cy="0" r="10" fill="#2563eb" stroke="#fff" strokeWidth="2.4" />
+              <circle cx="0" cy="0" r="3.6" fill="#fff" />
+            </g>
+          );
+        }
+        return (
+          <g key={sign.key} transform={`translate(${sign.x} ${sign.y})`}>
+            <line x1="0" y1="8" x2="0" y2="28" stroke="#64748b" strokeWidth="2.4" />
+            <polygon points="0,-11 12,10 -12,10" fill="#fff" stroke="#e11d48" strokeWidth="2.4" />
+            <text x="0" y="8" textAnchor="middle" fill="#e11d48" fontSize="10" fontWeight="900">
+              !
+            </text>
+          </g>
+        );
+      })}
 
       {/* Voiture posée au départ de la route ; roule lors d’un changement d’unité */}
       <g
@@ -173,16 +229,42 @@ export default function RoadmapWorldMap({
 }: Props) {
   const [activeIndex, setActiveIndex] = useState(() => defaultActiveIndex(sections, currentRef));
   const [drive, setDrive] = useState<{ dir: DriveDirection; n: number } | null>(null);
+  const [driving, setDriving] = useState(false);
+  const driveTimer = useRef<number | null>(null);
+
+  function clearDriveTimer() {
+    if (driveTimer.current !== null) {
+      window.clearTimeout(driveTimer.current);
+      driveTimer.current = null;
+    }
+  }
 
   useEffect(() => {
+    clearDriveTimer();
     setActiveIndex(defaultActiveIndex(sections, currentRef));
     setDrive(null);
+    setDriving(false);
   }, [sections, currentRef]);
 
+  useEffect(() => clearDriveTimer, []);
+
+  /** La voiture parcourt la route en entier, puis seulement la pile se réorganise. */
   function goToUnit(index: number) {
-    if (index === activeIndex || index < 0 || index >= sections.length) return;
-    setDrive((prev) => ({ dir: index > activeIndex ? "next" : "prev", n: (prev?.n ?? 0) + 1 }));
-    setActiveIndex(index);
+    if (driving || index === activeIndex || index < 0 || index >= sections.length) return;
+    const dir: DriveDirection = index > activeIndex ? "next" : "prev";
+    setDrive((prev) => ({ dir, n: (prev?.n ?? 0) + 1 }));
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setActiveIndex(index);
+      return;
+    }
+
+    setDriving(true);
+    driveTimer.current = window.setTimeout(() => {
+      driveTimer.current = null;
+      setDriving(false);
+      setActiveIndex(index);
+    }, CAR_DRIVE_MS);
   }
 
   const activeSection = sections[activeIndex];
@@ -198,6 +280,9 @@ export default function RoadmapWorldMap({
     .filter(({ index }) => index >= activeIndex);
 
   const minHeight = Math.max(680, stackedSections.length * 340 + 180);
+
+  /** Assez de boucles pour dépasser la pile ; le trop-plein est rogné par le calque. */
+  const roadPeriods = Math.max(3, Math.ceil(stackedSections.length * 0.9));
 
   return (
     <div className="ck-duo-map">
@@ -216,7 +301,7 @@ export default function RoadmapWorldMap({
                 type="button"
                 className="ck-duo-map__nav-btn"
                 onClick={() => goToUnit(activeIndex - 1)}
-                disabled={activeIndex === 0}
+                disabled={driving || activeIndex === 0}
                 aria-label="Unité précédente"
               >
                 <ChevronUp size={18} strokeWidth={3} />
@@ -231,7 +316,7 @@ export default function RoadmapWorldMap({
                 type="button"
                 className="ck-duo-map__nav-btn"
                 onClick={() => goToUnit(activeIndex + 1)}
-                disabled={activeIndex >= sections.length - 1}
+                disabled={driving || activeIndex >= sections.length - 1}
                 aria-label="Unité suivante"
               >
                 <ChevronDown size={18} strokeWidth={3} />
@@ -250,6 +335,7 @@ export default function RoadmapWorldMap({
                     role="listitem"
                     className={`ck-duo-map__done-chip${done ? "" : " is-todo"}`}
                     onClick={() => goToUnit(index)}
+                    disabled={driving}
                   >
                     {done ? (
                       <Check size={14} strokeWidth={3} />
@@ -267,7 +353,7 @@ export default function RoadmapWorldMap({
 
         <div className="ck-duo-map__path" style={{ minHeight }}>
           <div className="ck-duo-map__road-layer" aria-hidden>
-            <RoadSvg driveKey={drive?.n ?? 0} driveDir={drive?.dir} />
+            <RoadSvg driveKey={drive?.n ?? 0} driveDir={drive?.dir} periods={roadPeriods} />
           </div>
 
           <div className="ck-duo-map__units">

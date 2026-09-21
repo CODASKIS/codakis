@@ -1822,13 +1822,16 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   position: relative;
 }
 
-/* Route : démarre juste à droite de la carte de l’unité en cours */
+/* Route : voie dédiée à droite des cartes, du haut jusqu’en bas de la pile.
+   overflow caché pour rogner l’amorce qui part sous la carte et la fin du tracé. */
 .ck-duo-map__road-layer {
   position: absolute;
   top: 0.8rem;
   left: 55%;
   right: 0;
+  bottom: 0;
   z-index: 1;
+  overflow: hidden;
   pointer-events: none;
 }
 
@@ -2148,10 +2151,10 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
   width: 55%;
 }
 
-/* Unités pas encore parcourues : pleine largeur sous la route */
+/* Unités pas encore parcourues : même gabarit, pour laisser la route visible */
 .ck-unit-card.is-upcoming {
-  align-self: stretch;
-  width: 100%;
+  align-self: flex-start;
+  width: 55%;
 }
 
 /* Promotion d’une unité : elle arrive depuis le bas (suivante) ou le haut */
@@ -2466,7 +2469,8 @@ html.dark .ck-locked-modal__actions .ck-btn--ghost {
     left: 60%;
   }
 
-  .ck-unit-card.is-first {
+  .ck-unit-card.is-first,
+  .ck-unit-card.is-upcoming {
     width: 60%;
   }
 }
